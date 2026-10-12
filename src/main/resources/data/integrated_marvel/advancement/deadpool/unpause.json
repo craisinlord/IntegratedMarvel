@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_marvel:deadpool/maximum_effort",
+  "display": {
+    "icon": {
+      "id": "minecraft:iron_sword"
+    },
+    "title": {
+      "translate": "advancements.integrated_marvel.deadpool.unpause.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_marvel.deadpool.unpause.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

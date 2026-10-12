@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "marvel:deadpool_helmet"
+    },
+    "title": {
+      "translate": "advancements.integrated_marvel.deadpool.maximum_effort.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_marvel.deadpool.maximum_effort.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false,
+    "background": "minecraft:textures/block/red_wool.png"
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

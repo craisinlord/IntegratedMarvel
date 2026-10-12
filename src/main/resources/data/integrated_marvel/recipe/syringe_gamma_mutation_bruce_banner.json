@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "marvellegacy:syringe_empty"
+    },
+    {
+      "item": "marvel:villager_blood_sample"
+    },
+    {
+      "item": "alexscaves:uranium"
+    },
+    {
+      "item": "minecraft:slime_ball"
+    }
+  ],
+  "result": {
+    "id": "integrated_marvel:syringe_gamma_mutation_bruce_banner",
+    "count": 1
+  }
+}

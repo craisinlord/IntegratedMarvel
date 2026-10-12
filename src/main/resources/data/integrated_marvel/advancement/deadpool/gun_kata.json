@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_marvel:deadpool/maximum_effort",
+  "display": {
+    "icon": {
+      "id": "minecraft:crossbow"
+    },
+    "title": {
+      "translate": "advancements.integrated_marvel.deadpool.gun_kata.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_marvel.deadpool.gun_kata.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

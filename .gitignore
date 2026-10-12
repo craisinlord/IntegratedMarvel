@@ -1,0 +1,14 @@
+bin
+out
+run
+build
+.gradle
+.idea
+*.iml
+*.ipr
+*.iws
+.settings
+.classpath
+.project
+.claude
+libs/runtime/*.jar

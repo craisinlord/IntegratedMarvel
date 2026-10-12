@@ -1,0 +1,214 @@
+{
+  "sections": [
+    {
+      "id": "workstations",
+      "entries": [
+        "marvel:suit_table",
+        "marvellegacy:tailoring_bench_block",
+        "marvellegacy:sewing_kit",
+        "marvel:suit_charger",
+        "marvel:mark_38_charger"
+      ]
+    },
+    {
+      "id": "metals",
+      "entries": [
+        "marvel:vibranium_ore",
+        "marvel:deepslate_vibranium_ore",
+        "marvel:vibranium",
+        "marvel:vibranium_ingot",
+        "marvel:vibranium_nugget",
+        "marvel:vibranium_block",
+        "marvel:adamantium_ingot",
+        "marvel:adamantium_nugget",
+        "marvel:adamantium_block",
+        "marvel:gold_titanium_ingot",
+        "marvel:gold_titanium_nugget",
+        "marvel:gold_titanium_block",
+        "marvel:uru_ingot",
+        "marvel:uru_nugget",
+        "marvel:uru_block"
+      ]
+    },
+    {
+      "id": "materials",
+      "entries": [
+        "marvel:vibranium_weave",
+        "marvel:vibranium_nanites",
+        "marvel:pym_particle",
+        "marvel:unstable_pym_particle",
+        "marvel:x_genes",
+        "marvel:villager_blood_sample",
+        "marvel:tesseract_shard",
+        "marvellegacy:cloth_white",
+        "marvellegacy:cloth_light_gray",
+        "marvellegacy:cloth_gray",
+        "marvellegacy:cloth_black",
+        "marvellegacy:cloth_brown",
+        "marvellegacy:cloth_red",
+        "marvellegacy:cloth_orange",
+        "marvellegacy:cloth_yellow",
+        "marvellegacy:cloth_lime",
+        "marvellegacy:cloth_green",
+        "marvellegacy:cloth_cyan",
+        "marvellegacy:cloth_light_blue",
+        "marvellegacy:cloth_blue",
+        "marvellegacy:cloth_purple",
+        "marvellegacy:cloth_magenta",
+        "marvellegacy:cloth_pink",
+        "marvellegacy:web_cartridge",
+        "marvellegacy:vial_empty",
+        "marvellegacy:vial_water",
+        "marvellegacy:vial_web_fluid",
+        "marvellegacy:paper_bag",
+        "marvel:katana_upgrade_smithing_template",
+        "marvel:hydra_banner_pattern"
+      ]
+    },
+    {
+      "id": "blocks",
+      "entries": [
+        "marvel:stone_brick_lamp",
+        "marvel:deepslate_brick_lamp",
+        "marvel:tesseract"
+      ]
+    },
+    {
+      "id": "gadgets",
+      "entries": [
+        "marvel:diamond_arc_reactor",
+        "marvel:palladium_arc_reactor",
+        "marvel:iron_man_mark_5_suitcase",
+        "marvel:iron_man_mark_38",
+        "marvel:iron_man_mark_38_helmet_component",
+        "marvel:iron_man_mark_38_chestplate_component",
+        "marvel:iron_man_mark_38_leggings_component",
+        "marvel:iron_man_mark_38_boots_component",
+        "marvel:veronica_remote",
+        "marvel:veronica_satellite",
+        "marvel:veronica_repair_module_mark_1",
+        "marvel:veronica_repair_module_mark_2",
+        "marvellegacy:web_shooters",
+        "infinity_gauntlet:milano_music"
+      ]
+    },
+    {
+      "id": "weapons",
+      "entries": [
+        "marvel:mjolnir",
+        "marvel:stormbreaker",
+        "marvel:vibranium_shield",
+        "marvel:proto_adamantium_shield",
+        "marvel:katana",
+        "marvel:katanas",
+        "marvel:winter_soldier_knife",
+        "marvel:tesseract_crossbow",
+        "infinity_gauntlet:single_uru_sword",
+        "infinity_gauntlet:dual_uru_sword",
+        "marvel:vibranium_sword",
+        "marvel:vibranium_axe",
+        "marvel:vibranium_pickaxe",
+        "marvel:vibranium_shovel",
+        "marvel:vibranium_hoe",
+        "marvel:vibranium_helmet",
+        "marvel:vibranium_chestplate",
+        "marvel:vibranium_leggings",
+        "marvel:vibranium_boots"
+      ]
+    },
+    {
+      "id": "suits",
+      "entries": [
+        "marvel:captain_america_*",
+        "marvel:captain_america_stealth_*",
+        "marvel:captain_carter_*",
+        "marvel:us_agent_*",
+        "marvel:thor_*",
+        "infinity_gauntlet:uru_*",
+        "marvel:black_panther_*",
+        "marvel:black_panther_shuri_*",
+        "marvel:kinetic_black_panther_*",
+        "marvel:killmonger_*",
+        "marvel:ant_man_*",
+        "marvel:ant_man_upgraded_*",
+        "marvel:wasp_*",
+        "marvel:captain_marvel_*",
+        "marvel:captain_marvel_838_*",
+        "marvel:spider_man_*",
+        "marvel:spider_man_mcu_*",
+        "marvel:spider_man_insomniac_*",
+        "marvel:miles_morales_*",
+        "marvel:spider_gwen_*",
+        "marvellegacy:spiderman_original_*",
+        "marvellegacy:spiderman_classic_*",
+        "marvellegacy:spiderman_bagman_*",
+        "marvellegacy:spiderman_tasmii_*",
+        "marvel:wolverine_*",
+        "marvel:wolverine_brown_*",
+        "marvel:wolverine_x_force_*",
+        "marvellegacy:wolverine_original_*",
+        "marvellegacy:wolverine_classic_*",
+        "marvel:deadpool_*",
+        "marvel:deadpool_x_force_*",
+        "marvel:cyclops_*",
+        "marvel:cyclops_astonishing_*",
+        "marvel:quicksilver_*",
+        "marvel:quicksilver_mcu_*",
+        "marvel:winter_soldier_*",
+        "marvel:red_guardian_*",
+        "marvel:iron_man_mark_*",
+        "marvel:iron_patriot_*",
+        "marvel:war_machine_*"
+      ]
+    },
+    {
+      "id": "gauntlet",
+      "entries": [
+        "integrated_marvel:nano_gauntlet",
+        "integrated_marvel:infinity_gauntlet",
+        "integrated_marvel:space_stone",
+        "integrated_marvel:mind_stone",
+        "integrated_marvel:reality_stone",
+        "integrated_marvel:power_stone",
+        "integrated_marvel:time_stone",
+        "integrated_marvel:soul_stone"
+      ]
+    },
+    {
+      "id": "serums",
+      "entries": [
+        "marvellegacy:syringe_empty",
+        "integrated_marvel:syringe_heart_shaped_herb_tchalla",
+        "integrated_marvel:syringe_super_soldier_steve_rogers",
+        "integrated_marvel:syringe_binary_carol_danvers",
+        "integrated_marvel:syringe_organic_steel_piotr_rasputin",
+        "integrated_marvel:syringe_optic_blasts_scott_summers",
+        "integrated_marvel:syringe_radar_sense_matt_murdock",
+        "integrated_marvel:syringe_weapon_x_wade_wilson",
+        "integrated_marvel:syringe_gamma_mutation_bruce_banner",
+        "integrated_marvel:syringe_flame_on_johnny_storm",
+        "integrated_marvel:syringe_cryokinesis_bobby_drake",
+        "integrated_marvel:syringe_invisibility_sue_storm",
+        "integrated_marvel:syringe_phasing_kitty_pryde",
+        "integrated_marvel:syringe_magnetism_erik_lehnsherr",
+        "integrated_marvel:syringe_elasticity_reed_richards",
+        "integrated_marvel:syringe_super_speed_pietro_maximoff",
+        "integrated_marvel:syringe_chaos_magic_wanda_maximoff",
+        "marvellegacy:syringe_spider_powers_peter_parker",
+        "integrated_marvel:syringe_squirrel_powers_doreen_green",
+        "integrated_marvel:syringe_weather_manipulation_ororo_munroe",
+        "integrated_marvel:syringe_rock_hide_ben_grimm",
+        "marvellegacy:syringe_weapon_x_logan"
+      ]
+    },
+    {
+      "id": "spawn_eggs",
+      "entries": [
+        "marvel:hydra_agent_spawn_egg",
+        "marvel:red_skull_spawn_egg",
+        "marvel:baron_zemo_spawn_egg",
+        "marvel:winter_soldier_spawn_egg"
+      ]
+    }
+  ]
+}

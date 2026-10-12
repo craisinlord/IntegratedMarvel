@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_marvel:deadpool/maximum_effort",
+  "display": {
+    "icon": {
+      "id": "minecraft:writable_book"
+    },
+    "title": {
+      "translate": "advancements.integrated_marvel.deadpool.i_read_the_wiki.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_marvel.deadpool.i_read_the_wiki.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

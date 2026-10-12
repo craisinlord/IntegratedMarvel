@@ -1,0 +1,1 @@
+{"type":"minecraft:crafting_shaped","category":"misc","pattern":["aab","cde","f  "],"key":{"a":{"item":"minecraft:iron_ingot"},"b":{"item":"minecraft:red_dye"},"c":{"item":"minecraft:redstone_block"},"d":{"item":"minecraft:netherite_ingot"},"e":{"item":"minecraft:iron_block"},"f":{"item":"minecraft:gold_ingot"}},"result":{"id":"integrated_marvel:nano_gauntlet","count":1}}
