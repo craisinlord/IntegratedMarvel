@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:fantastic_four/thing",
+  "display": {
+    "icon": {
+      "id": "minecraft:obsidian"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.fantastic_four.thing.immovable.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.fantastic_four.thing.immovable.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

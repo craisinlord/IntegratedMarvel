@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:deadpool/maximum_effort",
+  "display": {
+    "icon": {
+      "id": "minecraft:bee_nest"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.deadpool.not_the_hero_we_deserve.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.deadpool.not_the_hero_we_deserve.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:avengers/identity_crisis",
+  "display": {
+    "icon": {
+      "id": "integrated_superheroes:syringe_gamma_mutation_bruce_banner"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.avengers.power_sampler.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.avengers.power_sampler.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

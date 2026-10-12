@@ -1,0 +1,9 @@
+{
+  "type": "marvel:suit_variant",
+  "results": {
+    "id": "marvellegacy:wolverine_classic_leggings"
+  },
+  "suit": {
+    "tag": "integrated_superheroes:costume/wolverine_leggings"
+  }
+}

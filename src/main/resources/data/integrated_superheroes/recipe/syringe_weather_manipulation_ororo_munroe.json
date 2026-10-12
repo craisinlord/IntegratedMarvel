@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "marvellegacy:syringe_empty"
+    },
+    {
+      "item": "marvel:x_genes"
+    },
+    {
+      "item": "minecraft:lightning_rod"
+    },
+    {
+      "item": "minecraft:wind_charge"
+    }
+  ],
+  "result": {
+    "id": "integrated_superheroes:syringe_weather_manipulation_ororo_munroe",
+    "count": 1
+  }
+}

@@ -1,0 +1,392 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "minecraft:item/iron_nugget"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 0
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_00"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 1
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_01"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 2
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_02"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 3
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_03"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 4
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_04"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 5
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_05"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 6
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_06"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 7
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_07"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 8
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_08"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 9
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_09"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 10
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_10"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 11
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_11"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 12
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_12"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 13
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_13"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 14
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_14"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 15
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_15"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 16
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_16"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 17
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_17"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 18
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_18"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 19
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_19"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 20
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_20"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 21
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_21"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 22
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_22"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 23
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_23"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 24
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_24"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 25
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_25"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 26
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_26"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 27
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_27"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 28
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_28"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 29
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_29"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 30
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_30"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 31
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_31"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 32
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_32"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 33
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_33"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 34
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_34"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 35
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_35"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 36
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_36"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 37
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_37"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 38
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_38"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 39
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_39"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 40
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_40"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 41
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_41"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 42
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_42"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 43
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_43"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 44
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_44"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 45
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_45"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 46
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_46"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 47
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_47"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 48
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_48"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 49
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_49"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 50
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_50"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 51
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_51"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 52
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_52"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 53
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_53"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 54
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_54"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 55
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_55"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 56
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_56"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 57
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_57"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 58
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_58"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 59
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_59"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 60
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_60"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 61
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_61"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 62
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_62"
+    },
+    {
+      "predicate": {
+        "integrated_superheroes:installed_stones": 63
+      },
+      "model": "infinity_gauntlet:item/gauntlet_variant_63"
+    }
+  ]
+}

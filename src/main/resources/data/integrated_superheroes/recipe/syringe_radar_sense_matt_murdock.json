@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "marvellegacy:syringe_empty"
+    },
+    {
+      "item": "marvel:villager_blood_sample"
+    },
+    {
+      "item": "minecraft:echo_shard"
+    },
+    {
+      "item": "minecraft:sculk_sensor"
+    }
+  ],
+  "result": {
+    "id": "integrated_superheroes:syringe_radar_sense_matt_murdock",
+    "count": 1
+  }
+}

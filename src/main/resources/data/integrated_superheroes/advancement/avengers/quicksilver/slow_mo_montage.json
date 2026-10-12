@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:avengers/quicksilver",
+  "display": {
+    "icon": {
+      "id": "minecraft:clock"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.avengers.quicksilver.slow_mo_montage.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.avengers.quicksilver.slow_mo_montage.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

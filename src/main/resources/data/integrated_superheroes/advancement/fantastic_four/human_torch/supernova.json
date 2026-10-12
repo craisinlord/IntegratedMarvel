@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:fantastic_four/human_torch",
+  "display": {
+    "icon": {
+      "id": "minecraft:fire_charge"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.fantastic_four.human_torch.supernova.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.fantastic_four.human_torch.supernova.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

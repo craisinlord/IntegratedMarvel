@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:fantastic_four/mr_fantastic",
+  "display": {
+    "icon": {
+      "id": "minecraft:slime_ball"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.fantastic_four.mr_fantastic.clean_sweep.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.fantastic_four.mr_fantastic.clean_sweep.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

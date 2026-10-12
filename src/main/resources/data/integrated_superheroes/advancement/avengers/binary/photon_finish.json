@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:avengers/binary",
+  "display": {
+    "icon": {
+      "id": "minecraft:firework_rocket"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.avengers.binary.photon_finish.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.avengers.binary.photon_finish.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

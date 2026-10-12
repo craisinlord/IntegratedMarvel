@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:street_level/squirrel_girl",
+  "display": {
+    "icon": {
+      "id": "minecraft:sweet_berries"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.street_level.squirrel_girl.squirrel_pile.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.street_level.squirrel_girl.squirrel_pile.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

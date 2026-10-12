@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:avengers/iron_man",
+  "display": {
+    "icon": {
+      "id": "marvel:iron_man_mark_43_helmet"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.avengers.iron_man.house_party_protocol.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.avengers.iron_man.house_party_protocol.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

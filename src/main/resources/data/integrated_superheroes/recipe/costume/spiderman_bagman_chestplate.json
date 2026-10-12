@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "B B",
+    "BWB",
+    "BKB"
+  ],
+  "key": {
+    "B": {
+      "item": "marvellegacy:cloth_blue"
+    },
+    "W": {
+      "item": "marvellegacy:cloth_white"
+    },
+    "K": {
+      "item": "marvellegacy:cloth_black"
+    }
+  },
+  "result": {
+    "id": "marvellegacy:spiderman_bagman_chestplate",
+    "count": 1
+  }
+}

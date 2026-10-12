@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "marvellegacy:syringe_empty"
+    },
+    {
+      "item": "marvel:x_genes"
+    },
+    {
+      "item": "marvel:adamantium_ingot"
+    },
+    {
+      "item": "minecraft:bone"
+    }
+  ],
+  "result": {
+    "id": "marvellegacy:syringe_weapon_x_logan",
+    "count": 1
+  }
+}

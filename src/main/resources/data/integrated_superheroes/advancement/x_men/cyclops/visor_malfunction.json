@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:x_men/cyclops",
+  "display": {
+    "icon": {
+      "id": "marvel:cyclops_helmet"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.x_men.cyclops.visor_malfunction.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.x_men.cyclops.visor_malfunction.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": true
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:x_men/cyclops",
+  "display": {
+    "icon": {
+      "id": "minecraft:red_stained_glass"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.x_men.cyclops.wide_open.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.x_men.cyclops.wide_open.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

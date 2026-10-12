@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "antarchy:light_gray_truffalo_tuft"
+    }
+  ],
+  "result": {
+    "id": "marvellegacy:cloth_light_gray",
+    "count": 3
+  }
+}

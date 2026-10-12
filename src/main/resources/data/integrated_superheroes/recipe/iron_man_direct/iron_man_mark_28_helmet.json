@@ -1,0 +1,42 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "ABC",
+    "HID",
+    "GFE"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:netherite_helmet"
+    },
+    "A": {
+      "tag": "c:ingots/titanium"
+    },
+    "B": {
+      "tag": "c:ingots/titanium"
+    },
+    "C": {
+      "tag": "c:ingots/gold"
+    },
+    "D": {
+      "tag": "c:ingots/gold"
+    },
+    "E": {
+      "tag": "c:ingots/gold"
+    },
+    "F": {
+      "tag": "c:dusts/redstone"
+    },
+    "G": {
+      "tag": "c:glass_panes/colorless"
+    },
+    "H": {
+      "tag": "c:buckets/milk"
+    }
+  },
+  "result": {
+    "id": "marvel:iron_man_mark_28_helmet",
+    "count": 1
+  }
+}

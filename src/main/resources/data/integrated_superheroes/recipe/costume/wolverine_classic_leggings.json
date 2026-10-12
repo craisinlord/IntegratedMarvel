@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "BBB",
+    "Y Y",
+    "Y Y"
+  ],
+  "key": {
+    "B": {
+      "item": "marvellegacy:cloth_blue"
+    },
+    "Y": {
+      "item": "marvellegacy:cloth_yellow"
+    }
+  },
+  "result": {
+    "id": "marvellegacy:wolverine_classic_leggings",
+    "count": 1
+  }
+}

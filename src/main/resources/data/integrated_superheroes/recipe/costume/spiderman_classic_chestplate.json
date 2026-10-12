@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "R R",
+    "BRB",
+    "BRB"
+  ],
+  "key": {
+    "R": {
+      "item": "marvellegacy:cloth_red"
+    },
+    "B": {
+      "item": "marvellegacy:cloth_blue"
+    }
+  },
+  "result": {
+    "id": "marvellegacy:spiderman_classic_chestplate",
+    "count": 1
+  }
+}

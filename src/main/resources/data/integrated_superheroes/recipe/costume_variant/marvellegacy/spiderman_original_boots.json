@@ -1,0 +1,9 @@
+{
+  "type": "marvel:suit_variant",
+  "results": {
+    "id": "marvellegacy:spiderman_original_boots"
+  },
+  "suit": {
+    "tag": "integrated_superheroes:costume/spider_boots"
+  }
+}

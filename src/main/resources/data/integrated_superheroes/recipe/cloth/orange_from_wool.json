@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:orange_wool"
+    }
+  ],
+  "result": {
+    "id": "marvellegacy:cloth_orange",
+    "count": 3
+  }
+}

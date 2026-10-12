@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "antarchy:cyan_truffalo_tuft"
+    }
+  ],
+  "result": {
+    "id": "marvellegacy:cloth_cyan",
+    "count": 3
+  }
+}

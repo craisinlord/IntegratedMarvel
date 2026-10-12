@@ -1,0 +1,15 @@
+{
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "ingredients": [
+    {
+      "item": "marvellegacy:paper_bag"
+    }
+  ],
+  "results": {
+    "id": "marvellegacy:spiderman_bagman_helmet"
+  },
+  "suit": {
+    "tag": "integrated_superheroes:costume/spider_helmet"
+  }
+}

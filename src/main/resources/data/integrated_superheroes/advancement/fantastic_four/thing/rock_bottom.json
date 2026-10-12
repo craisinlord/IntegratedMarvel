@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:fantastic_four/thing",
+  "display": {
+    "icon": {
+      "id": "minecraft:prismarine"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.fantastic_four.thing.rock_bottom.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.fantastic_four.thing.rock_bottom.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

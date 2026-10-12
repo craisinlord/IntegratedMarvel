@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:avengers/iron_man",
+  "display": {
+    "icon": {
+      "id": "minecraft:redstone_torch"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.avengers.iron_man.running_on_fumes.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.avengers.iron_man.running_on_fumes.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": true
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

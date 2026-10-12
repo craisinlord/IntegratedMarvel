@@ -1,0 +1,14 @@
+{
+  "type": "marvel:suit_variant",
+  "results": {
+    "id": "marvel:spider_gwen_helmet"
+  },
+  "suit": [
+    {
+      "tag": "integrated_superheroes:costume/spider_helmet"
+    },
+    {
+      "item": "marvellegacy:spiderman_bagman_helmet"
+    }
+  ]
+}

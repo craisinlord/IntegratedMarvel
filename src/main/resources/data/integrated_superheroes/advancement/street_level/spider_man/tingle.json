@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:street_level/spider_man",
+  "display": {
+    "icon": {
+      "id": "minecraft:creeper_head"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.street_level.spider_man.tingle.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.street_level.spider_man.tingle.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": true
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:x_men/kitty_pryde",
+  "display": {
+    "icon": {
+      "id": "minecraft:ender_pearl"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.x_men.kitty_pryde.plus_one.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.x_men.kitty_pryde.plus_one.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

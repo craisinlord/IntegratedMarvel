@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:street_level/spider_man",
+  "display": {
+    "icon": {
+      "id": "minecraft:cobweb"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.street_level.spider_man.ceiling_fan.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.street_level.spider_man.ceiling_fan.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "antarchy:pink_truffalo_tuft"
+    }
+  ],
+  "result": {
+    "id": "marvellegacy:cloth_pink",
+    "count": 3
+  }
+}

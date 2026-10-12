@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:x_men/root",
+  "display": {
+    "icon": {
+      "id": "integrated_superheroes:syringe_phasing_kitty_pryde"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.x_men.kitty_pryde.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.x_men.kitty_pryde.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

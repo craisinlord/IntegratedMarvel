@@ -1,0 +1,29 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "alexscaves"
+    }
+  ],
+  "parent": "integrated_superheroes:x_men/magneto",
+  "display": {
+    "icon": {
+      "id": "minecraft:arrow"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.x_men.magneto.magnetic_personality.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.x_men.magneto.magnetic_personality.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

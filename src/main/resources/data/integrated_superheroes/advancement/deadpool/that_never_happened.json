@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:deadpool/maximum_effort",
+  "display": {
+    "icon": {
+      "id": "minecraft:clock"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.deadpool.that_never_happened.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.deadpool.that_never_happened.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

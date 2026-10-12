@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "c:ingots/netherite"
+    },
+    {
+      "tag": "c:ingots/titanium"
+    }
+  ],
+  "result": {
+    "id": "marvel:adamantium_ingot",
+    "count": 1
+  }
+}

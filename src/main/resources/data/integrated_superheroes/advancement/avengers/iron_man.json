@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:avengers/root",
+  "display": {
+    "icon": {
+      "id": "marvel:iron_man_mark_42_helmet"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.avengers.iron_man.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.avengers.iron_man.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

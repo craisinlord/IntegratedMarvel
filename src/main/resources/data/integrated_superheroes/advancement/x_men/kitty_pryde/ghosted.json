@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:x_men/kitty_pryde",
+  "display": {
+    "icon": {
+      "id": "minecraft:glass"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.x_men.kitty_pryde.ghosted.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.x_men.kitty_pryde.ghosted.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

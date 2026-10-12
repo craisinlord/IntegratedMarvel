@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "B B",
+    "YKY",
+    "YYY"
+  ],
+  "key": {
+    "B": {
+      "item": "marvellegacy:cloth_blue"
+    },
+    "Y": {
+      "item": "marvellegacy:cloth_yellow"
+    },
+    "K": {
+      "item": "marvellegacy:cloth_black"
+    }
+  },
+  "result": {
+    "id": "marvellegacy:wolverine_classic_chestplate",
+    "count": 1
+  }
+}

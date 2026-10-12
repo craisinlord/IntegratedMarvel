@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:avengers/root",
+  "display": {
+    "icon": {
+      "id": "integrated_superheroes:syringe_super_soldier_steve_rogers"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.avengers.captain_america.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.avengers.captain_america.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

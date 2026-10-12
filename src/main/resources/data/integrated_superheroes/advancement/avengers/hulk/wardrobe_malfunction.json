@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:avengers/hulk",
+  "display": {
+    "icon": {
+      "id": "minecraft:leather_chestplate"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.avengers.hulk.wardrobe_malfunction.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.avengers.hulk.wardrobe_malfunction.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": true
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

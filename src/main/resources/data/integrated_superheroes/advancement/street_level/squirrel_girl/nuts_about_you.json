@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:street_level/squirrel_girl",
+  "display": {
+    "icon": {
+      "id": "minecraft:oak_log"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.street_level.squirrel_girl.nuts_about_you.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.street_level.squirrel_girl.nuts_about_you.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "ABC",
+    "HID",
+    "GFE"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:netherite_leggings"
+    },
+    "A": {
+      "tag": "c:ingots/titanium"
+    },
+    "B": {
+      "tag": "c:ingots/titanium"
+    },
+    "C": {
+      "tag": "c:ingots/titanium"
+    },
+    "D": {
+      "tag": "c:ingots/iron"
+    },
+    "E": {
+      "tag": "c:ingots/iron"
+    },
+    "F": {
+      "tag": "c:ingots/iron"
+    },
+    "G": {
+      "tag": "c:dusts/redstone"
+    },
+    "H": {
+      "tag": "c:ingots/titanium"
+    }
+  },
+  "result": {
+    "id": "marvel:iron_man_mark_30_leggings",
+    "count": 1
+  }
+}

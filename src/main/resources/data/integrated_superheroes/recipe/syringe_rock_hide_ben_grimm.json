@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "marvellegacy:syringe_empty"
+    },
+    {
+      "item": "marvel:villager_blood_sample"
+    },
+    {
+      "item": "minecraft:tuff"
+    },
+    {
+      "item": "minecraft:obsidian"
+    }
+  ],
+  "result": {
+    "id": "integrated_superheroes:syringe_rock_hide_ben_grimm",
+    "count": 1
+  }
+}

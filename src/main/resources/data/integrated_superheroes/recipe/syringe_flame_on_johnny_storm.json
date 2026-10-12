@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "marvellegacy:syringe_empty"
+    },
+    {
+      "item": "marvel:villager_blood_sample"
+    },
+    {
+      "item": "minecraft:blaze_rod"
+    },
+    {
+      "item": "minecraft:fire_charge"
+    }
+  ],
+  "result": {
+    "id": "integrated_superheroes:syringe_flame_on_johnny_storm",
+    "count": 1
+  }
+}

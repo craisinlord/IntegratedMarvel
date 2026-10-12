@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:avengers/root",
+  "display": {
+    "icon": {
+      "id": "integrated_superheroes:syringe_chaos_magic_wanda_maximoff"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.avengers.scarlet_witch.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.avengers.scarlet_witch.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

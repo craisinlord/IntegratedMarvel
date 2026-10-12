@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:avengers/power_sampler",
+  "display": {
+    "icon": {
+      "id": "minecraft:nether_star"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.avengers.who_needs_a_team.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.avengers.who_needs_a_team.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

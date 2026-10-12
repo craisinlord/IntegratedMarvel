@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:avengers/root",
+  "display": {
+    "icon": {
+      "id": "integrated_superheroes:syringe_super_speed_pietro_maximoff"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.avengers.quicksilver.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.avengers.quicksilver.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

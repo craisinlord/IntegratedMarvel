@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:street_level/root",
+  "display": {
+    "icon": {
+      "id": "marvellegacy:syringe_spider_powers_peter_parker"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.street_level.spider_man.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.street_level.spider_man.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

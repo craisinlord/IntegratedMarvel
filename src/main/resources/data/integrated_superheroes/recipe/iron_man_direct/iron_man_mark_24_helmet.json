@@ -1,0 +1,42 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "ABC",
+    "HID",
+    "GFE"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:diamond_helmet"
+    },
+    "A": {
+      "tag": "c:ingots/titanium"
+    },
+    "B": {
+      "tag": "c:ingots/titanium"
+    },
+    "C": {
+      "tag": "c:ingots/iron"
+    },
+    "D": {
+      "tag": "c:ingots/iron"
+    },
+    "E": {
+      "tag": "c:ingots/iron"
+    },
+    "F": {
+      "tag": "c:ingots/gold"
+    },
+    "G": {
+      "tag": "c:dusts/redstone"
+    },
+    "H": {
+      "tag": "c:glass_panes/colorless"
+    }
+  },
+  "result": {
+    "id": "marvel:iron_man_mark_24_helmet",
+    "count": 1
+  }
+}

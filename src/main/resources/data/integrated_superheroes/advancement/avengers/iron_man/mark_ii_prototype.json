@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:avengers/iron_man",
+  "display": {
+    "icon": {
+      "id": "marvel:iron_man_mark_2_helmet"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.avengers.iron_man.mark_ii_prototype.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.avengers.iron_man.mark_ii_prototype.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

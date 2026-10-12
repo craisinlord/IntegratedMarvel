@@ -1,6 +1,0 @@
-{
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "integrated_marvel:item/syringe_filled_super_speed"
-  }
-}

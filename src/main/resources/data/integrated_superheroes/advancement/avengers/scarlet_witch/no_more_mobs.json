@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:avengers/scarlet_witch",
+  "display": {
+    "icon": {
+      "id": "minecraft:redstone"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.avengers.scarlet_witch.no_more_mobs.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.avengers.scarlet_witch.no_more_mobs.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:avengers/black_panther",
+  "display": {
+    "icon": {
+      "id": "marvel:black_panther_helmet"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.avengers.black_panther.vibranium_kinetics.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.avengers.black_panther.vibranium_kinetics.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

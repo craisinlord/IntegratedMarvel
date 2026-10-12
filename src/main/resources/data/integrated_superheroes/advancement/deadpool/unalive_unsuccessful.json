@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:deadpool/maximum_effort",
+  "display": {
+    "icon": {
+      "id": "minecraft:totem_of_undying"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.deadpool.unalive_unsuccessful.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.deadpool.unalive_unsuccessful.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

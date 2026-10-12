@@ -1,0 +1,9 @@
+{
+  "type": "marvel:suit_variant",
+  "results": {
+    "id": "marvellegacy:spiderman_tasmii_chestplate"
+  },
+  "suit": {
+    "tag": "integrated_superheroes:costume/spider_chestplate"
+  }
+}

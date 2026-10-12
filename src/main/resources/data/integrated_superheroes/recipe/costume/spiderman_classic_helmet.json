@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "ROR",
+    "R R"
+  ],
+  "key": {
+    "R": {
+      "item": "marvellegacy:cloth_red"
+    },
+    "O": {
+      "item": "minecraft:glass_pane"
+    }
+  },
+  "result": {
+    "id": "marvellegacy:spiderman_classic_helmet",
+    "count": 1
+  }
+}

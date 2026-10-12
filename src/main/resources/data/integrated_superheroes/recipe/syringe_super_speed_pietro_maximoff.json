@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "marvellegacy:syringe_empty"
+    },
+    {
+      "item": "marvel:x_genes"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:rabbit_foot"
+    }
+  ],
+  "result": {
+    "id": "integrated_superheroes:syringe_super_speed_pietro_maximoff",
+    "count": 1
+  }
+}

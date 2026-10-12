@@ -1,0 +1,42 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "ABC",
+    "HID",
+    "GFE"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_leggings"
+    },
+    "A": {
+      "tag": "c:ingots/gold_titanium"
+    },
+    "B": {
+      "tag": "c:ingots/gold_titanium"
+    },
+    "C": {
+      "tag": "c:ingots/gold_titanium"
+    },
+    "D": {
+      "tag": "c:ingots/gold"
+    },
+    "E": {
+      "tag": "c:ingots/gold"
+    },
+    "F": {
+      "item": "minecraft:redstone_block"
+    },
+    "G": {
+      "tag": "c:dusts/redstone"
+    },
+    "H": {
+      "tag": "c:ingots/gold_titanium"
+    }
+  },
+  "result": {
+    "id": "marvel:iron_man_mark_7_leggings",
+    "count": 1
+  }
+}

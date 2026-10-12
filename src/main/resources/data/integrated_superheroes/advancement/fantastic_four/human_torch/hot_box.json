@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:fantastic_four/human_torch",
+  "display": {
+    "icon": {
+      "id": "minecraft:campfire"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.fantastic_four.human_torch.hot_box.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.fantastic_four.human_torch.hot_box.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}
