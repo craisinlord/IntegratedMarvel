@@ -214,7 +214,7 @@ public final class ColossusPower {
         if (HeroGrip.isHolding(player)) {
             UUID held = FASTBALL_HELD.remove(player.getUUID());
             boolean ally = held != null && player.serverLevel().getEntity(held) instanceof ServerPlayer;
-            float damage = ally ? 0.0F : (float) (HeroPowers.powerDamage(player) * 0.8D);
+            float damage = ally ? 0.0F : MarvelBalanceConfig.FASTBALL_THROW_DAMAGE.get().floatValue();
             HeroGrip.release(player, MarvelBalanceConfig.FASTBALL_SPEED.get(), damage);
             if (ally && player.serverLevel().getEntity(held) instanceof ServerPlayer thrown) {
                 FASTBALL.put(thrown.getUUID(), player.level().getGameTime() + 60L);
@@ -245,7 +245,7 @@ public final class ColossusPower {
         }
         Vec3 look = player.getLookAngle();
         Vec3 direction = new Vec3(look.x, 0.0D, look.z).normalize();
-        double damage = HeroPowers.powerDamage(player) * MarvelBalanceConfig.STEEL_CHARGE_DAMAGE_MULTIPLIER.get();
+        double damage = MarvelBalanceConfig.STEEL_CHARGE_DAMAGE.get();
         HeroAdvancements.cast(player).hits(8, "x_men/colossus/unstoppable_object")
                 .run(() -> HeroAbilities.startDash(player, direction.scale(1.6D).add(0.0D, 0.1D, 0.0D), 8, damage, 1.6D));
         ServerLevel level = player.serverLevel();
@@ -279,7 +279,7 @@ public final class ColossusPower {
             return 0.0D;
         }
         LivingEntity target = beam.targets().get(0);
-        float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.IRON_SLAM_DAMAGE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.IRON_SLAM_DAMAGE.get().floatValue();
         HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().mobAttack(player), damage));
         target.setDeltaMovement(0.0D, -1.5D, 0.0D);
         target.hurtMarked = true;

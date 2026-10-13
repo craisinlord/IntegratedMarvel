@@ -1,8 +1,8 @@
 package com.craisinlord.integrated_superheroes.hero;
 
-import com.craisinlord.antarchy.content.entity.royal.beam.RoyalBeamController;
-import com.craisinlord.antarchy.content.entity.royal.beam.RoyalBeamSettings;
-import com.craisinlord.antarchy.content.entity.royal.beam.RoyalBeamTerrainMode;
+import com.craisinlord.anthology.beam.BeamController;
+import com.craisinlord.anthology.beam.BeamSettings;
+import com.craisinlord.anthology.beam.BeamTerrainMode;
 import com.craisinlord.integrated_superheroes.gauntlet.MindBeamStatePayload;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -28,35 +28,35 @@ public final class HeroBeams {
     private HeroBeams() {
     }
 
-    public record Spec(int renderKind, RoyalBeamSettings settings, RoyalBeamTerrainMode terrain, float yawOffset,
+    public record Spec(int renderKind, BeamSettings settings, BeamTerrainMode terrain, float yawOffset,
                        double forwardOffset, double downOffset, int fireSeconds, float wobble) {
     }
 
     private static final class Active {
-        private final RoyalBeamController controller;
+        private final BeamController controller;
         private final Spec spec;
         private final HeroAdvancements.Cast cast = HeroAdvancements.current();
         private int ticksLeft;
         private int age;
 
-        private Active(RoyalBeamController controller, Spec spec) {
+        private Active(BeamController controller, Spec spec) {
             this.controller = controller;
             this.spec = spec;
             this.ticksLeft = spec.settings().durationTicks();
         }
     }
 
-    public static RoyalBeamSettings settings(double range, int durationTicks, float pathRadius, float impactRadius, double damage,
+    public static BeamSettings settings(double range, int durationTicks, float pathRadius, float impactRadius, double damage,
                                              float knockback, int terrainInterval, double terrainRadius, double dropChance,
                                              double maxResistance) {
-        return new RoyalBeamSettings(range, 0.0D, 1.5D, durationTicks, 1, 1, pathRadius, impactRadius, (float) damage,
+        return new BeamSettings(range, 0.0D, 1.5D, durationTicks, 1, 1, pathRadius, impactRadius, (float) damage,
                 knockback, terrainInterval, range, (float) (terrainRadius * 0.5D), (float) terrainRadius, 6, 1.0F,
                 (float) dropChance, (float) maxResistance, terrainRadius > 0.0D, false);
     }
 
     public static void fire(ServerPlayer player, int channel, Spec spec) {
         stop(player, channel);
-        BEAMS.computeIfAbsent(player.getUUID(), ignored -> new HashMap<>()).put(channel, new Active(new RoyalBeamController(player), spec));
+        BEAMS.computeIfAbsent(player.getUUID(), ignored -> new HashMap<>()).put(channel, new Active(new BeamController(player), spec));
     }
 
     public static boolean isFiring(ServerPlayer player, int channel) {
@@ -139,7 +139,7 @@ public final class HeroBeams {
             }
         }
         level.sendParticles(ParticleTypes.FLAME, end.x, end.y, end.z, 6, 0.3D, 0.3D, 0.3D, 0.02D);
-        if (spec.terrain() == RoyalBeamTerrainMode.DESTROY && player.tickCount % 5 == 0
+        if (spec.terrain() == BeamTerrainMode.DESTROY && player.tickCount % 5 == 0
                 && level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
             BlockPos firePos = BlockPos.containing(end);
             if (level.getBlockState(firePos).isAir() && BaseFireBlock.canBePlacedAt(level, firePos, player.getDirection())) {

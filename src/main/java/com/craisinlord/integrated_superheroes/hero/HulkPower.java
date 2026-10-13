@@ -313,7 +313,7 @@ public final class HulkPower {
             return 0.0D;
         }
         double range = MarvelBalanceConfig.THUNDERCLAP_RANGE.get();
-        float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.THUNDERCLAP_DAMAGE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.THUNDERCLAP_DAMAGE.get().floatValue();
         Vec3 look = player.getLookAngle();
         HeroAdvancements.cast(player).hits(8, "avengers/hulk/thunderclap").run(() -> {
             for (LivingEntity target : HeroAbilities.cone(player, range, 50.0D)) {
@@ -337,7 +337,7 @@ public final class HulkPower {
         if (!requireHulk(player)) {
             return 0.0D;
         }
-        float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.HULK_SMASH_DAMAGE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.HULK_SMASH_DAMAGE.get().floatValue();
         HeroAdvancements.cast(player).kills(entity -> entity instanceof net.minecraft.world.entity.animal.IronGolem
                         || entity instanceof net.minecraft.world.entity.monster.Ravager, "avengers/hulk/puny")
                 .run(() -> HeroShockwaves.ring(player, 8, MarvelBalanceConfig.HULK_SMASH_LENGTH.get(), damage));
@@ -444,7 +444,7 @@ public final class HulkPower {
             return;
         }
         double scale = Math.min(MarvelBalanceConfig.GAMMA_LANDING_DAMAGE_MULTIPLIER.get(), 0.4D + drop / 20.0D);
-        float damage = (float) (HeroPowers.powerDamage(player) * scale);
+        float damage = (float) (MarvelBalanceConfig.GAMMA_LANDING_DAMAGE.get() * scale);
         double radius = MarvelBalanceConfig.GAMMA_LANDING_RADIUS.get();
         for (LivingEntity target : HeroAbilities.sphere(player, radius)) {
             target.hurt(player.damageSources().mobAttack(player), damage);

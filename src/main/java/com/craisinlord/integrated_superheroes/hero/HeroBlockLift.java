@@ -31,7 +31,7 @@ public final class HeroBlockLift {
     private HeroBlockLift() {
     }
 
-    public record Profile(double range, int maxBlocks, int holdTicks, double throwSpeed, double damageMultiplier,
+    public record Profile(double range, int maxBlocks, int holdTicks, double throwSpeed, double damage,
                           Predicate<BlockState> filter, BiConsumer<ServerLevel, Vec3> aura,
                           Supplier<SoundEvent> liftSound, Supplier<SoundEvent> loopSound, Supplier<SoundEvent> throwSound) {
     }

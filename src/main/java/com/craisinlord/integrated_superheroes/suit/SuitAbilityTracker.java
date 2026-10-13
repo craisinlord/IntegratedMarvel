@@ -7,9 +7,10 @@ import com.stxllarplanes.marvellegacy.power.Power;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public final class SuitAbilityTracker {
@@ -26,9 +27,10 @@ public final class SuitAbilityTracker {
 
     public static void sync(ServerPlayer player) {
         SuitContext context = player.isSpectator() ? null : SuitAbilities.context(player);
-        List<SuitAbility> wanted = SuitAbilities.loadout(context == null ? null : context.suitId());
-        Set<String> wantedNames = new HashSet<>();
-        wanted.forEach(ability -> wantedNames.add(ability.name()));
+        Map<String, String> wanted = new LinkedHashMap<>();
+        SuitAbilities.loadout(context == null ? null : context.suitId()).forEach(ability -> wanted.put(ability.name(), ability.displayName()));
+        wanted.putAll(PymAbilities.loadout(player));
+        Set<String> wantedNames = wanted.keySet();
 
         PlayerData data = HeroPowers.data(player);
         data.retainActivePowerSize();
@@ -53,11 +55,11 @@ public final class SuitAbilityTracker {
             }
         }
 
-        for (SuitAbility ability : wanted) {
-            if (data.hasActivePower(ability.name()) || data.hasAvailablePower(ability.name())) {
+        for (Map.Entry<String, String> ability : wanted.entrySet()) {
+            if (data.hasActivePower(ability.getKey()) || data.hasAvailablePower(ability.getKey())) {
                 continue;
             }
-            data.addAvailablePowers(SuitAbilities.newPower(ability, remainingCooldown(player, ability.name())));
+            data.addAvailablePowers(SuitAbilities.newPower(ability.getKey(), ability.getValue(), remainingCooldown(player, ability.getKey())));
             changed = true;
         }
         changed |= HeroSlots.arrange(data);

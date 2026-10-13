@@ -1,6 +1,6 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
-import com.craisinlord.antarchy.content.portal.CrossDimensionTravelApi;
+import com.craisinlord.anthology.travel.CrossDimensionTravelApi;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

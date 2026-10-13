@@ -21,6 +21,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -75,7 +76,7 @@ public final class ZemoBrain extends VillainBrain {
 
     @Override
     protected void initEquipment() {
-        ItemStack sword = new ItemStack(HeroFx.item("antarchy:ultimate_sword"));
+        ItemStack sword = new ItemStack(HeroFx.item("antarchy:ultimate_sword", Items.DIAMOND_SWORD));
         try {
             sword.enchant(mob.level().registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.SHARPNESS), 5);
         } catch (RuntimeException ignored) {

@@ -1,0 +1,28 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:bedrock",
+    "minecraft:barrier",
+    "minecraft:light",
+    "minecraft:spawner",
+    "minecraft:trial_spawner",
+    "minecraft:vault",
+    "minecraft:reinforced_deepslate",
+    "minecraft:end_portal_frame",
+    "minecraft:end_portal",
+    "minecraft:end_gateway",
+    "minecraft:nether_portal",
+    "minecraft:command_block",
+    "minecraft:chain_command_block",
+    "minecraft:repeating_command_block",
+    "minecraft:structure_block",
+    "minecraft:structure_void",
+    "minecraft:jigsaw",
+    "minecraft:moving_piston",
+    "minecraft:piston_head",
+    {
+      "id": "#antarchy:gravity_gun_blacklist",
+      "required": false
+    }
+  ]
+}

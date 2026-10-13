@@ -364,7 +364,7 @@ public final class KittyPower {
         if (isPhasing(player)) {
             endPhase(player);
         }
-        float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.PHASE_STRIKE_DAMAGE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.PHASE_STRIKE_DAMAGE.get().floatValue();
         HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().indirectMagic(player, player), damage));
         target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 2));
         target.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 60, 2));

@@ -10,6 +10,8 @@ public final class ModCompat {
     public static final boolean MUTANT_MONSTERS = ModList.get().isLoaded("mutantmonsters");
     public static final boolean BETTER_COMBAT = ModList.get().isLoaded("bettercombat");
     public static final boolean CELESTISYNTH = ModList.get().isLoaded("celestisynth");
+    public static final boolean ANTARCHY = ModList.get().isLoaded("antarchy");
+    public static final boolean INFINITE_DIMENSIONS = ModList.get().isLoaded("infinity");
 
     private ModCompat() {
     }

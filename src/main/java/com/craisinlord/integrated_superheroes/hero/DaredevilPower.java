@@ -194,7 +194,7 @@ public final class DaredevilPower {
         level.addFreshEntity(display);
         HeroAbilities.Beam beam = HeroAbilities.beam(player, player.getLookAngle(), 24.0D, 1);
         LivingEntity target = beam.targets().isEmpty() ? null : beam.targets().get(0);
-        float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.BILLY_CLUB_DAMAGE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.BILLY_CLUB_DAMAGE.get().floatValue();
         CLUBS.put(player.getUUID(), new Club(display, start, player.getLookAngle(), target, damage));
         HeroFx.play(player, SoundEvents.TRIDENT_THROW.value(), 0.8F, 1.4F);
         HeroAnimations.play(player, "celestisynth:cs_crescentia_throw");
@@ -307,7 +307,7 @@ public final class DaredevilPower {
         Vec3 lunge = target.position().subtract(player.position()).normalize().scale(1.1D);
         player.setDeltaMovement(lunge.x, 0.25D, lunge.z);
         player.hurtMarked = true;
-        float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.TAKEDOWN_DAMAGE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.TAKEDOWN_DAMAGE.get().floatValue();
         HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().mobAttack(player), damage));
         if (HeroAbilities.canControl(target)) {
             HeroStun.stun(target, MarvelBalanceConfig.TAKEDOWN_STUN_TICKS.get());

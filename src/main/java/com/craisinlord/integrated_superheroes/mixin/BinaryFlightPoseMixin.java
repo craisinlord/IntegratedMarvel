@@ -1,16 +1,15 @@
 package com.craisinlord.integrated_superheroes.mixin;
 
 import com.craisinlord.integrated_superheroes.hero.BinaryFlight;
+import com.craisinlord.integrated_superheroes.hero.BinaryFlightTilt;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,11 +30,10 @@ public abstract class BinaryFlightPoseMixin<T extends LivingEntity, M extends En
         if (!BinaryFlight.isFlying(living)) {
             return;
         }
-        Vec3 motion = new Vec3(living.getX() - living.xo, living.getY() - living.yo, living.getZ() - living.zo);
-        Vec3 local = motion.yRot((Mth.lerp(partialTick, living.yRotO, living.getYRot()) + 90.0F) * Mth.DEG_TO_RAD);
-        double forward = Mth.clamp(local.x / 0.6D, -1.0D, 1.0D);
-        double side = Mth.clamp(local.z / 0.6D, -1.0D, 1.0D);
-        double climb = Mth.clamp(motion.y / 0.6D, -1.0D, 1.0D);
+        BinaryFlightTilt.Tilt tilt = BinaryFlightTilt.sample(living, partialTick);
+        double forward = tilt.forward();
+        double side = tilt.side();
+        double climb = tilt.climb();
         if (this.model instanceof HumanoidModel<?> humanoid) {
             humanoid.head.xRot -= (float) forward;
             humanoid.hat.xRot -= (float) forward;

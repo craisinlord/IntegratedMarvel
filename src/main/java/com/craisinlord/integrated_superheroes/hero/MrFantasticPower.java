@@ -33,9 +33,11 @@ public final class MrFantasticPower {
     public static final int CLEAR = 4;
     public static final int SLING = 5;
     public static final int HAMMER = 6;
+    public static final int BRIDGE = 7;
     public static final int HAMMER_TICKS = 14;
     public static final int HAMMER_IMPACT = 6;
     private static final Map<Integer, Stretch> STRETCHES = new HashMap<>();
+    private static final Map<Integer, Vec3> BRIDGES = new HashMap<>();
     private static final Map<UUID, Hammer> HAMMERS = new HashMap<>();
 
     private MrFantasticPower() {
@@ -72,7 +74,7 @@ public final class MrFantasticPower {
                         }
                         ReedShapes.tick(player);
                         FantasticSeat seat = ReedShapes.seat(player);
-                        if (seat != null && seat.getPassengers().stream().anyMatch(passenger -> passenger instanceof ServerPlayer && passenger != player)) {
+                        if (seat != null && seat.getPassengers().stream().anyMatch(passenger -> passenger instanceof ServerPlayer)) {
                             HeroAdvancements.award(player, "fantastic_four/mr_fantastic/family_car");
                         }
                     }
@@ -121,11 +123,21 @@ public final class MrFantasticPower {
     }
 
     public static void receive(StretchPayload payload, long now) {
-        if (payload.mode() == CLEAR) {
+        if (payload.mode() == BRIDGE) {
+            if (payload.ticks() > 0) {
+                BRIDGES.put(payload.entityId(), new Vec3(payload.x(), payload.y(), payload.z()));
+            } else {
+                BRIDGES.remove(payload.entityId());
+            }
+        } else if (payload.mode() == CLEAR) {
             STRETCHES.remove(payload.entityId());
         } else {
             STRETCHES.put(payload.entityId(), new Stretch(payload.mode(), new Vec3(payload.x(), payload.y(), payload.z()), now, payload.ticks()));
         }
+    }
+
+    public static Vec3 bridgeEnd(Player player) {
+        return BRIDGES.get(player.getId());
     }
 
     public static Stretch stretch(Player player, long now) {
@@ -170,7 +182,7 @@ public final class MrFantasticPower {
         if (!beam.targets().isEmpty()) {
             LivingEntity target = beam.targets().get(0);
             point = target.getBoundingBox().getCenter();
-            float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.STRETCH_PUNCH_DAMAGE_MULTIPLIER.get());
+            float damage = MarvelBalanceConfig.STRETCH_PUNCH_DAMAGE.get().floatValue();
             HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
             Vec3 look = player.getLookAngle();
             target.setDeltaMovement(look.x * 1.3D, 0.35D, look.z * 1.3D);
@@ -212,7 +224,7 @@ public final class MrFantasticPower {
         Vec3 point = hammer.point();
         double radius = MarvelBalanceConfig.STRETCH_HAMMER_RADIUS.get();
         double reach = (radius + 0.5D) * (radius + 0.5D);
-        float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.STRETCH_HAMMER_DAMAGE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.STRETCH_HAMMER_DAMAGE.get().floatValue();
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, new AABB(point, point).inflate(radius, 2.0D, radius),
                 entity -> entity != player && entity.isAlive() && entity.getBoundingBox().getCenter().distanceToSqr(point) <= reach)) {
             HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
@@ -237,7 +249,7 @@ public final class MrFantasticPower {
 
     private static double stretchSweep(ServerPlayer player, int slot) {
         double radius = MarvelBalanceConfig.STRETCH_SWEEP_RADIUS.get();
-        float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.STRETCH_SWEEP_DAMAGE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.STRETCH_SWEEP_DAMAGE.get().floatValue();
         HeroAdvancements.cast(player).hits(6, "fantastic_four/mr_fantastic/clean_sweep").run(() -> {
             for (LivingEntity target : HeroAbilities.sphere(player, radius)) {
                 HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));

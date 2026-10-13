@@ -246,7 +246,7 @@ public final class InvisibleWomanPower {
     private static double forceBlast(ServerPlayer player, int slot) {
         ServerLevel level = player.serverLevel();
         double range = MarvelBalanceConfig.FORCE_BLAST_RANGE.get();
-        float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.FORCE_BLAST_DAMAGE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.FORCE_BLAST_DAMAGE.get().floatValue();
         Vec3 look = player.getLookAngle();
         for (LivingEntity target : HeroAbilities.cone(player, range, 25.0D)) {
             HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));

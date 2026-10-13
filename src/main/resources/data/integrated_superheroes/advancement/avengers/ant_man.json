@@ -1,0 +1,29 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "antarchy"
+    }
+  ],
+  "parent": "integrated_superheroes:avengers/root",
+  "display": {
+    "icon": {
+      "id": "marvel:ant_man_helmet"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.avengers.ant_man.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.avengers.ant_man.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

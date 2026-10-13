@@ -1,7 +1,9 @@
 package com.craisinlord.integrated_superheroes.hero;
 
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
-import com.craisinlord.antarchy.content.time.TimeDilationApi;
+import com.craisinlord.anthology.time.TimeDilationApi;
+import com.craisinlord.integrated_superheroes.suit.PymAbilities;
+import com.craisinlord.integrated_superheroes.suit.PymColony;
 import com.craisinlord.integrated_superheroes.suit.SuitAbilities;
 import com.craisinlord.integrated_superheroes.suit.SuitAbilityTracker;
 import com.craisinlord.integrated_superheroes.suit.SuitPassives;
@@ -122,11 +124,14 @@ public final class HeroContent {
         NeoForge.EVENT_BUS.addListener(KittyPower::onProjectile);
         NeoForge.EVENT_BUS.addListener(HumanTorchPower::onImpact);
         NeoForge.EVENT_BUS.addListener(IcemanPower::onProjectile);
-        NeoForge.EVENT_BUS.addListener(ReedShapes::onProjectile);
         HeroAdvancements.register();
         NeoForge.EVENT_BUS.addListener(InvisibleWomanPower::onAttack);
         NeoForge.EVENT_BUS.addListener(InvisibleWomanPower::onTarget);
         SuitStates.registerEvents();
+        if (ModCompat.ANTARCHY) {
+            PymAbilities.registerWheels();
+            PymColony.register();
+        }
     }
 
     private static void commonSetup(FMLCommonSetupEvent event) {
@@ -162,6 +167,7 @@ public final class HeroContent {
         ColossusPower.tickFastball(player);
         KittyPower.tickAny(player);
         SuitAbilityTracker.tick(player);
+        PymColony.tick(player);
         SuitStates.tick(player);
         SuitPassives.tick(player);
         HeroBeams.tick(player);

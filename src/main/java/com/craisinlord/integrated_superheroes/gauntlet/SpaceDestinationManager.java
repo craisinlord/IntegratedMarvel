@@ -1,6 +1,7 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
-import com.craisinlord.antarchy.compat.infinity.InfinityCompat;
+import com.craisinlord.integrated_superheroes.compat.InfiniteDimensionsCompat;
+import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -12,6 +13,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,24 +42,32 @@ public final class SpaceDestinationManager {
             return;
         }
         ResourceLocation id = payload.dimension();
-        if (payload.generate()) {
-            id = InfinityCompat.get().getRandomDimensionId(player.getRandom());
-            if (id == null || !id.getNamespace().equals("infinity")) {
+        boolean generated = false;
+        if (payload.generate() && ModCompat.INFINITE_DIMENSIONS) {
+            id = InfiniteDimensionsCompat.randomDimensionId(player.getRandom());
+            if (id == null || !id.getNamespace().equals(InfiniteDimensionsCompat.NAMESPACE)) {
                 player.displayClientMessage(Component.literal("Infinite Dimensions could not create a destination."), true);
                 return;
             }
-            String generation = requestDimensionCreation(player.server, id);
-            if (!"READY".equals(generation) && !"PENDING".equals(generation)) {
-                String message = "UNAVAILABLE".equals(generation)
-                        ? "This Antarchy build lacks the generation-only Infinity hook; rebuild/update Antarchy first."
+            InfiniteDimensionsCompat.Generation generation = InfiniteDimensionsCompat.requestCreation(player.server, id);
+            if (generation != InfiniteDimensionsCompat.Generation.READY && generation != InfiniteDimensionsCompat.Generation.PENDING) {
+                String message = generation == InfiniteDimensionsCompat.Generation.UNAVAILABLE
+                        ? "This Infinite Dimensions version does not support generating destinations."
                         : "Infinite Dimensions rejected the generation request.";
                 player.displayClientMessage(Component.literal(message), true);
                 return;
             }
+            generated = true;
             player.displayClientMessage(Component.literal("Generating " + id + "; destination saved."), true);
+        } else if (payload.generate()) {
+            id = randomVanillaDimension(player);
+            if (id == null) {
+                player.displayClientMessage(Component.literal("No other dimension is available."), true);
+                return;
+            }
         }
         ResourceKey<Level> key = ResourceKey.create(Registries.DIMENSION, id);
-        if (!payload.generate() && player.server.getLevel(key) == null) {
+        if (!generated && player.server.getLevel(key) == null) {
             player.displayClientMessage(Component.literal("Dimension " + id + " is not available on this server."), true);
             return;
         }
@@ -188,15 +199,14 @@ public final class SpaceDestinationManager {
                 && InfinityGauntletStones.selectedStone(stack).equals("space");
     }
 
-    private static String requestDimensionCreation(MinecraftServer server, ResourceLocation id) {
-        try {
-            var method = InfinityCompat.get().getClass().getMethod("requestDimensionCreation", MinecraftServer.class,
-                    ResourceLocation.class);
-            Object result = method.invoke(InfinityCompat.get(), server, id);
-            return result instanceof Enum<?> status ? status.name() : "REJECTED";
-        } catch (ReflectiveOperationException exception) {
-            return "UNAVAILABLE";
+    private static ResourceLocation randomVanillaDimension(ServerPlayer player) {
+        List<ResourceLocation> options = new ArrayList<>();
+        for (ResourceKey<Level> key : List.of(Level.OVERWORLD, Level.NETHER, Level.END)) {
+            if (!key.equals(player.level().dimension()) && player.server.getLevel(key) != null) {
+                options.add(key.location());
+            }
         }
+        return options.isEmpty() ? null : options.get(player.getRandom().nextInt(options.size()));
     }
 
     public record Destination(ResourceKey<Level> dimension, BlockPos position) {}

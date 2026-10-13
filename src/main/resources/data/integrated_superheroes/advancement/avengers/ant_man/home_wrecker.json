@@ -1,0 +1,29 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "antarchy"
+    }
+  ],
+  "parent": "integrated_superheroes:avengers/ant_man",
+  "display": {
+    "icon": {
+      "id": "minecraft:oak_log"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.avengers.ant_man.home_wrecker.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.avengers.ant_man.home_wrecker.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

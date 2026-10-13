@@ -22,8 +22,9 @@ public final class HeroEntities {
 
     public static final DeferredHolder<EntityType<?>, EntityType<FantasticSeat>> FANTASTIC_SEAT = ENTITY_TYPES.register("fantastic_seat",
             () -> EntityType.Builder.<FantasticSeat>of(FantasticSeat::new, MobCategory.MISC)
-                    .sized(1.375F, 0.5625F)
+                    .sized(1.0F, 0.6F)
                     .clientTrackingRange(10)
+                    .updateInterval(1)
                     .build("fantastic_seat"));
 
     private HeroEntities() {

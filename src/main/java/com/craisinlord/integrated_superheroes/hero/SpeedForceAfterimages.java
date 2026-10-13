@@ -1,7 +1,7 @@
 package com.craisinlord.integrated_superheroes.hero;
 
-import com.craisinlord.antarchy.content.client.ContractionAfterimages;
-import com.craisinlord.antarchy.content.time.TimeDilationApi;
+import com.craisinlord.anthology.time.client.ContractionAfterimages;
+import com.craisinlord.anthology.time.TimeDilationApi;
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import com.stxllarplanes.marvellegacy.data.PlayerData;
 import com.stxllarplanes.marvellegacy.init.AttachmentsRegistry;

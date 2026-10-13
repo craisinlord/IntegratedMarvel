@@ -115,7 +115,7 @@ public final class SuitAbilities {
     }
 
     public static boolean isSuitAbility(String name) {
-        return name != null && ABILITIES.containsKey(name);
+        return name != null && (ABILITIES.containsKey(name) || PymAbilities.isPym(name));
     }
 
     public static List<SuitAbility> loadout(String suitId) {
@@ -140,13 +140,21 @@ public final class SuitAbilities {
 
     public static void registerLegacyPowerEntries() {
         ABILITIES.values().forEach(ability -> ActivePowerList.activePowerList.put(ability.name(), newPower(ability, 0.0D)));
+        PymAbilities.names().forEach((name, displayName) -> ActivePowerList.activePowerList.put(name, newPower(name, displayName, 0.0D)));
     }
 
     static Power newPower(SuitAbility ability, double cooldown) {
-        return new Power(ability.name(), ability.displayName(), 2, cooldown, false, false);
+        return newPower(ability.name(), ability.displayName(), cooldown);
+    }
+
+    static Power newPower(String name, String displayName, double cooldown) {
+        return new Power(name, displayName, 2, cooldown, false, false);
     }
 
     public static boolean handle(ServerPlayer player, String name, int slot, String inputType) {
+        if (PymAbilities.isPym(name)) {
+            return PymAbilities.handle(player, name, slot, inputType);
+        }
         SuitAbility ability = ABILITIES.get(name);
         if (ability == null) {
             return false;

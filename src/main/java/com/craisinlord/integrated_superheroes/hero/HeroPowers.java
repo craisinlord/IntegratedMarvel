@@ -163,11 +163,8 @@ public final class HeroPowers {
             HeroAttributes.apply(player, stats);
         } else {
             HeroAttributes.syncExtras(player, null);
+            HeroAttributes.syncStrength(player, 0);
         }
-    }
-
-    public static double powerDamage(Player player) {
-        return player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE) + unarmedBonus(player);
     }
 
     public static double unarmedBonus(Player player) {

@@ -1,7 +1,7 @@
 package com.craisinlord.integrated_superheroes.hero;
 
-import com.craisinlord.antarchy.content.entity.royal.beam.RoyalBeamSettings;
-import com.craisinlord.antarchy.content.entity.royal.beam.RoyalBeamTerrainMode;
+import com.craisinlord.anthology.beam.BeamSettings;
+import com.craisinlord.anthology.beam.BeamTerrainMode;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -99,10 +99,10 @@ public final class CyclopsPower {
 
     private static HeroBeams.Spec spec(double range, int duration, double damage, float pathRadius, float impactRadius, float yaw,
                                        float wobble, int terrainInterval) {
-        RoyalBeamSettings settings = HeroBeams.settings(range, duration, pathRadius, impactRadius, damage, 0.6F, terrainInterval,
+        BeamSettings settings = HeroBeams.settings(range, duration, pathRadius, impactRadius, damage, 0.6F, terrainInterval,
                 MarvelBalanceConfig.OPTIC_TERRAIN_RADIUS.get(), MarvelBalanceConfig.OPTIC_BLOCK_DROP_CHANCE.get(),
                 MarvelBalanceConfig.OPTIC_MAX_BLOCK_RESISTANCE.get());
-        return new HeroBeams.Spec(HeroBeams.QUEEN_RED, settings, RoyalBeamTerrainMode.DESTROY, yaw, 0.6D, 0.0D,
+        return new HeroBeams.Spec(HeroBeams.QUEEN_RED, settings, BeamTerrainMode.DESTROY, yaw, 0.6D, 0.0D,
                 MarvelBalanceConfig.OPTIC_FIRE_SECONDS.get(), wobble);
     }
 }

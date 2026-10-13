@@ -6,7 +6,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import com.craisinlord.antarchy.content.AntarchyTags;
+import com.craisinlord.integrated_superheroes.registry.ModTags;
+import com.craisinlord.integrated_superheroes.villain.VillainFx;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.LiquidBlock;
@@ -147,7 +148,7 @@ public final class ScarletWitchPower {
     }
 
     private static double hexBolt(ServerPlayer player, int slot) {
-        float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.HEX_BOLT_DAMAGE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.HEX_BOLT_DAMAGE.get().floatValue();
         int maxAge = (int) Math.ceil(MarvelBalanceConfig.HEX_BOLT_RANGE.get() / BOLT_SPEED);
         Vec3 start = player.getEyePosition().add(player.getLookAngle().scale(0.8D)).subtract(0.0D, 0.2D, 0.0D);
         BOLTS.computeIfAbsent(player.getUUID(), ignored -> new ArrayList<>()).add(new Bolt(start, player.getLookAngle().scale(BOLT_SPEED), maxAge, damage));
@@ -320,7 +321,7 @@ public final class ScarletWitchPower {
     private static double telekinesis(ServerPlayer player, int slot) {
         if (HeroGrip.isHolding(player) || HeroBlockLift.isLifting(player)) {
             if (HeroGrip.isHolding(player)) {
-                HeroGrip.release(player, MarvelBalanceConfig.TELEKINESIS_THROW_SPEED.get(), (float) (HeroPowers.powerDamage(player) * 0.8D));
+                HeroGrip.release(player, MarvelBalanceConfig.TELEKINESIS_THROW_SPEED.get(), MarvelBalanceConfig.TELEKINESIS_THROW_DAMAGE.get().floatValue());
             } else {
                 HeroBlockLift.throwHeld(player);
             }
@@ -346,8 +347,8 @@ public final class ScarletWitchPower {
 
     private static HeroBlockLift.Profile blockLift() {
         return new HeroBlockLift.Profile(MarvelBalanceConfig.TELEKINESIS_RANGE.get(), MarvelBalanceConfig.TELEKINESIS_MAX_BLOCKS.get(),
-                MarvelBalanceConfig.TELEKINESIS_HOLD_TICKS.get(), MarvelBalanceConfig.TELEKINESIS_THROW_SPEED.get(), 0.8D,
-                state -> !(state.getBlock() instanceof LiquidBlock) && !state.is(BlockTags.BEDS) && !state.is(AntarchyTags.Blocks.GRAVITY_GUN_BLACKLIST),
+                MarvelBalanceConfig.TELEKINESIS_HOLD_TICKS.get(), MarvelBalanceConfig.TELEKINESIS_THROW_SPEED.get(), MarvelBalanceConfig.TELEKINESIS_THROW_DAMAGE.get(),
+                state -> !(state.getBlock() instanceof LiquidBlock) && !state.is(BlockTags.BEDS) && !state.is(ModTags.UNLIFTABLE),
                 (level, center) -> level.sendParticles(HEX_RED, center.x, center.y, center.z, 4, 0.45D, 0.45D, 0.45D, 0.0D),
                 () -> SoundEvents.ILLUSIONER_CAST_SPELL, () -> SoundEvents.BEACON_AMBIENT, () -> SoundEvents.ILLUSIONER_CAST_SPELL);
     }
@@ -356,7 +357,7 @@ public final class ScarletWitchPower {
         ServerLevel level = player.serverLevel();
         double radius = MarvelBalanceConfig.REALITY_WARP_RADIUS.get();
         List<Mob> targets = new ArrayList<>(level.getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(radius),
-                mob -> mob instanceof Enemy && mob.isAlive() && HeroAbilities.canControl(mob) && mob.distanceToSqr(player) <= radius * radius));
+                mob -> mob instanceof Enemy && mob.isAlive() && canWarp(mob) && mob.distanceToSqr(player) <= radius * radius));
         if (targets.isEmpty()) {
             player.displayClientMessage(Component.literal("§7Nothing here to rewrite."), true);
             return 0.0D;
@@ -383,5 +384,11 @@ public final class ScarletWitchPower {
         HeroAnimations.play(player, "celestisynth:cs_solaris_spin");
         player.displayClientMessage(Component.literal("§cNo more."), true);
         return MarvelBalanceConfig.REALITY_WARP_COOLDOWN.get();
+    }
+
+    private static boolean canWarp(Mob mob) {
+        return HeroAbilities.canControl(mob)
+                && !mob.getType().is(ModTags.REALITY_WARP_IMMUNE)
+                && !VillainFx.hasBossBar(mob);
     }
 }

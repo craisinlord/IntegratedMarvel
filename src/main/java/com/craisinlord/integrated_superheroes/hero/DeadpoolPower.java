@@ -307,7 +307,7 @@ public final class DeadpoolPower {
                 .orElse(null);
         Vec3 direction = target == null ? player.getLookAngle() : target.getBoundingBox().getCenter().subtract(eye).normalize();
         HeroAbilities.Beam beam = HeroAbilities.beam(player, direction, range, 1);
-        float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.UNLOAD_DAMAGE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.UNLOAD_DAMAGE.get().floatValue();
         for (LivingEntity hit : beam.targets()) {
             unload.hit.add(hit.getUUID());
             hit.invulnerableTime = 0;
@@ -325,7 +325,7 @@ public final class DeadpoolPower {
 
     private static double pullThePin(ServerPlayer player, int slot) {
         ServerLevel level = player.serverLevel();
-        float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.GRENADE_DAMAGE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.GRENADE_DAMAGE.get().floatValue();
         float radius = MarvelBalanceConfig.GRENADE_RADIUS.get().floatValue();
         SuitFx.sound(level, player.position(), SuitFx.GRENADE_PIN, SoundEvents.TRIPWIRE_CLICK_ON, 1.0F, 1.0F);
         if (player.getRandom().nextDouble() < MarvelBalanceConfig.GRENADE_FUMBLE_CHANCE.get()) {
@@ -486,7 +486,7 @@ public final class DeadpoolPower {
 
     private static double rageQuit(ServerPlayer player) {
         ServerLevel level = player.serverLevel();
-        float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.RAGE_QUIT_DAMAGE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.RAGE_QUIT_DAMAGE.get().floatValue();
         double knockback = MarvelBalanceConfig.RAGE_QUIT_KNOCKBACK.get();
         for (LivingEntity target : HeroAbilities.sphere(player, MarvelBalanceConfig.RAGE_QUIT_RADIUS.get())) {
             if (!HeroAbilities.canControl(target) || target instanceof OwnableEntity pet && player.getUUID().equals(pet.getOwnerUUID())) {

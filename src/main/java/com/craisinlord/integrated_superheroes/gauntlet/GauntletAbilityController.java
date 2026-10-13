@@ -2,20 +2,19 @@ package com.craisinlord.integrated_superheroes.gauntlet;
 
 import com.craisinlord.integrated_superheroes.gauntlet.InfinityGauntletStones;
 import com.craisinlord.integrated_superheroes.hero.HealingFactor;
-import com.craisinlord.antarchy.content.time.TimeDilationApi;
-import com.craisinlord.antarchy.content.time.TimeDilationEntityAccess;
-import com.craisinlord.antarchy.content.time.TimeDilationManager;
-import com.craisinlord.antarchy.content.time.TimeDilationMath;
-import com.craisinlord.antarchy.content.gravity.AntarchyGravityApi;
-import com.craisinlord.antarchy.content.gravity.AntarchyGravityDirection;
-import com.craisinlord.antarchy.content.entity.SizeRayProjectileEntity;
+import com.craisinlord.anthology.time.TimeDilationApi;
+import com.craisinlord.anthology.time.TimeDilationEntityAccess;
+import com.craisinlord.anthology.time.TimeDilationManager;
+import com.craisinlord.anthology.time.TimeDilationMath;
+import com.craisinlord.anthology.gravity.GravityApi;
+import com.craisinlord.anthology.gravity.GravityDirection;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import com.craisinlord.antarchy.content.entity.royal.beam.RoyalBeamController;
-import com.craisinlord.antarchy.content.entity.royal.beam.RoyalBeamSettings;
-import com.craisinlord.antarchy.content.entity.royal.beam.RoyalBeamTerrainMode;
+import com.craisinlord.anthology.beam.BeamController;
+import com.craisinlord.anthology.beam.BeamSettings;
+import com.craisinlord.anthology.beam.BeamTerrainMode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -336,10 +335,10 @@ public final class GauntletAbilityController {
     }
 
     private static void startBeam(ServerPlayer player, BeamKind kind, double charge) {
-        RoyalBeamSettings base = kind == BeamKind.INFINITY ? infinityBeamSettings()
+        BeamSettings base = kind == BeamKind.INFINITY ? infinityBeamSettings()
                 : kind == BeamKind.MIND ? mindBeamSettings() : annihilationBeamSettings();
         double strength = 0.35D + Math.clamp(charge, 0.0D, 1.0D) * 0.65D;
-        RoyalBeamSettings settings = new RoyalBeamSettings(
+        BeamSettings settings = new BeamSettings(
                 base.range() * (0.5D + 0.5D * charge), base.targetTracking(), base.pathStep(),
                 Math.max(6, (int) Math.round(base.durationTicks() * (0.5D + 0.5D * charge))), base.travelTicks(),
                 base.cooldownTicks(), (float) (base.pathDamageRadius() * strength),
@@ -348,7 +347,7 @@ public final class GauntletAbilityController {
                 (float) (base.pathTerrainRadius() * strength), (float) (base.impactTerrainRadius() * strength),
                 Math.max(0, (int) Math.round(base.maxTerrainMutationsPerTick() * strength)), base.terrainMutationChance(),
                 base.terrainDropChance(), base.maxTerrainResistance(), base.terrainEnabled(), base.requireLineOfSightForDamage());
-        RoyalBeamController controller = new RoyalBeamController(player);
+        BeamController controller = new BeamController(player);
         Vec3 start = player.getEyePosition();
         controller.start(start, start.add(player.getLookAngle().normalize().scale(settings.range())), settings.durationTicks());
         ACTIVE_BEAMS.put(player.getUUID(), new ActiveBeam(controller, settings, kind));
@@ -397,18 +396,18 @@ public final class GauntletAbilityController {
         startBeam(player, charge.kind(), elapsed / (double) MAX_BEAM_CHARGE_TICKS);
     }
 
-    private static RoyalBeamSettings mindBeamSettings() {
-        return new RoyalBeamSettings(64.0D, 0.0D, 1.5D, 24, 3, 1, 3.0F, 6.0F,
+    private static BeamSettings mindBeamSettings() {
+        return new BeamSettings(64.0D, 0.0D, 1.5D, 24, 3, 1, 3.0F, 6.0F,
                 100.0F, 6.0F, 1, 64.0D, 0.0F, 0.0F, 0, 0.0F, 0.0F, 0.0F, false, false);
     }
 
-    private static RoyalBeamSettings annihilationBeamSettings() {
-        return new RoyalBeamSettings(64.0D, 0.0D, 2.0D, 18, 4, 1, 4.0F, 8.0F,
+    private static BeamSettings annihilationBeamSettings() {
+        return new BeamSettings(64.0D, 0.0D, 2.0D, 18, 4, 1, 4.0F, 8.0F,
                 250.0F, 8.0F, 1, 64.0D, 3.0F, 8.0F, 512, 1.0F, 1.0F, 1_000_000.0F, true, false);
     }
 
-    private static RoyalBeamSettings infinityBeamSettings() {
-        return new RoyalBeamSettings(96.0D, 0.0D, 1.5D, 24, 4, 1, 4.0F, 8.0F,
+    private static BeamSettings infinityBeamSettings() {
+        return new BeamSettings(96.0D, 0.0D, 1.5D, 24, 4, 1, 4.0F, 8.0F,
                 250.0F, 10.0F, 1, 96.0D, 0.0F, 0.0F, 0, 0.0F, 0.0F, 0.0F, false, false);
     }
 
@@ -450,7 +449,7 @@ public final class GauntletAbilityController {
         }
         Vec3 start = player.getEyePosition();
         active.controller().tick(start, player.getLookAngle(), null, active.settings(),
-                active.kind() == BeamKind.POWER ? RoyalBeamTerrainMode.DESTROY : RoyalBeamTerrainMode.NONE, ignored -> {});
+                active.kind() == BeamKind.POWER ? BeamTerrainMode.DESTROY : BeamTerrainMode.NONE, ignored -> {});
         Vec3 end = active.controller().beamEndPosition();
         if (end == null) {
             ACTIVE_BEAMS.remove(player.getUUID());
@@ -521,14 +520,14 @@ public final class GauntletAbilityController {
                 continue;
             }
             if (effect.gravity() != null && entity instanceof LivingEntity living
-                    && AntarchyGravityApi.getGravityDirection(living) == AntarchyGravityDirection.UP) {
-                AntarchyGravityApi.setGravityDirection(living, effect.gravity());
-                AntarchyGravityApi.notifyGravityStateChanged(living);
+                    && GravityApi.getGravityDirection(living) == GravityDirection.UP) {
+                GravityApi.setGravityDirection(living, effect.gravity());
+                GravityApi.notifyGravityStateChanged(living);
             }
             if (effect.scaleOffset() != null && entity instanceof LivingEntity living) {
                 AttributeInstance scale = living.getAttribute(Attributes.SCALE);
-                if (scale != null && scale.getModifier(SizeRayProjectileEntity.SIZE_RAY_MODIFIER_ID) != null) {
-                    SizeRayProjectileEntity.writeModifier(scale, effect.previousScaleOffset());
+                if (scale != null && GauntletScale.has(scale)) {
+                    GauntletScale.write(scale, effect.previousScaleOffset());
                 }
             }
             iterator.remove();
@@ -552,14 +551,14 @@ public final class GauntletAbilityController {
             if (!(entity instanceof LivingEntity living)) {
                 continue;
             }
-            if (effect.gravity() != null && AntarchyGravityApi.getGravityDirection(living) == AntarchyGravityDirection.UP) {
-                AntarchyGravityApi.setGravityDirection(living, effect.gravity());
-                AntarchyGravityApi.notifyGravityStateChanged(living);
+            if (effect.gravity() != null && GravityApi.getGravityDirection(living) == GravityDirection.UP) {
+                GravityApi.setGravityDirection(living, effect.gravity());
+                GravityApi.notifyGravityStateChanged(living);
             }
             if (effect.scaleOffset() != null) {
                 AttributeInstance scale = living.getAttribute(Attributes.SCALE);
-                if (scale != null && scale.getModifier(SizeRayProjectileEntity.SIZE_RAY_MODIFIER_ID) != null) {
-                    SizeRayProjectileEntity.writeModifier(scale, effect.previousScaleOffset());
+                if (scale != null && GauntletScale.has(scale)) {
+                    GauntletScale.write(scale, effect.previousScaleOffset());
                 }
             }
         }
@@ -619,11 +618,11 @@ public final class GauntletAbilityController {
         }
         if (ability == 1) {
             TemporaryEntityEffect previousEffect = TEMPORARY_ENTITY_EFFECTS.get(target.getUUID());
-            AntarchyGravityDirection original = previousEffect != null && previousEffect.gravity() != null
-                    ? previousEffect.gravity() : AntarchyGravityApi.getGravityDirection(target);
-            if (original != AntarchyGravityDirection.UP) {
-                AntarchyGravityApi.setGravityDirection(target, AntarchyGravityDirection.UP);
-                AntarchyGravityApi.notifyGravityStateChanged(target);
+            GravityDirection original = previousEffect != null && previousEffect.gravity() != null
+                    ? previousEffect.gravity() : GravityApi.getGravityDirection(target);
+            if (original != GravityDirection.UP) {
+                GravityApi.setGravityDirection(target, GravityDirection.UP);
+                GravityApi.notifyGravityStateChanged(target);
             }
             TEMPORARY_ENTITY_EFFECTS.put(target.getUUID(), new TemporaryEntityEffect(target.level().dimension(),
                     player.serverLevel().getGameTime() + 300L, original, null, 0.0D));
@@ -712,7 +711,7 @@ public final class GauntletAbilityController {
             BlockState original, BlockState replacement, int cycleIndex, long expiry) {}
 
     private record TemporaryEntityEffect(net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dimension,
-            long expiry, AntarchyGravityDirection gravity, Double scaleOffset, double previousScaleOffset) {}
+            long expiry, GravityDirection gravity, Double scaleOffset, double previousScaleOffset) {}
 
     public static void cancelBeam(ServerPlayer player) {
         CHARGING_BEAMS.remove(player.getUUID());
@@ -729,7 +728,7 @@ public final class GauntletAbilityController {
 
     private enum BeamKind { POWER, INFINITY, MIND }
 
-    private record ActiveBeam(RoyalBeamController controller, RoyalBeamSettings settings, BeamKind kind) {}
+    private record ActiveBeam(BeamController controller, BeamSettings settings, BeamKind kind) {}
     private record ChargingBeam(BeamKind kind, long startedAt) {}
 
     private static void activateLifeHalvingSnap(ServerPlayer player, ItemStack gauntlet) {
@@ -813,7 +812,7 @@ public final class GauntletAbilityController {
             player.displayClientMessage(Component.translatable("message.integrated_superheroes.gauntlet.time_no_target"), true);
             return;
         }
-        double currentRate = access.antarchy$getInheritedTimeDilationRate();
+        double currentRate = access.anthology$getInheritedTimeDilationRate();
         double adjustedRate = Math.clamp(currentRate + Math.signum(delta) * 0.05D, 0.05D, 3.0D);
         TimeDilationApi.setInheritedRate(target, adjustedRate);
         TimeDilationManager.trackPotentiallyAffected(target);
@@ -833,12 +832,11 @@ public final class GauntletAbilityController {
         }
         AttributeInstance scale = target.getAttribute(Attributes.SCALE);
         if (scale == null) return;
-        var existing = scale.getModifier(SizeRayProjectileEntity.SIZE_RAY_MODIFIER_ID);
-        double currentOffset = existing == null ? 0.0D : existing.amount();
+        double currentOffset = GauntletScale.offset(scale);
         double currentScale = Math.clamp(1.0D + currentOffset, MIN_REALITY_SCALE, MAX_REALITY_SCALE);
         double nextScale = Math.clamp(currentScale * Math.pow(1.25D, Math.signum(delta)), MIN_REALITY_SCALE, MAX_REALITY_SCALE);
         double nextOffset = nextScale - 1.0D;
-        SizeRayProjectileEntity.writeModifier(scale, nextOffset);
+        GauntletScale.write(scale, nextOffset);
         player.displayClientMessage(Component.translatable("message.integrated_superheroes.gauntlet.reality_size", target.getDisplayName(),
                 String.format(java.util.Locale.ROOT, "%.2f", nextScale)), true);
     }

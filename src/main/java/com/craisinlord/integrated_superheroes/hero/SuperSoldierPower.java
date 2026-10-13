@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 public final class SuperSoldierPower {
     public static final String ID = "super_soldier_steve_rogers";
     private static final Map<Holder<MobEffect>, Integer> PERMANENT_EFFECTS = Map.of(
-            MobEffects.DAMAGE_BOOST, 0, MobEffects.MOVEMENT_SPEED, 0, MobEffects.JUMP, 0, MobEffects.DAMAGE_RESISTANCE, 0);
+            MobEffects.MOVEMENT_SPEED, 0, MobEffects.JUMP, 0, MobEffects.DAMAGE_RESISTANCE, 0);
     private static final Map<Holder<MobEffect>, HeroPower.Toggle> EFFECT_TOGGLES = Map.of(
             MobEffects.MOVEMENT_SPEED, HeroToggles.SPEED, MobEffects.JUMP, HeroToggles.SUPER_LEAP);
 
@@ -74,7 +74,7 @@ public final class SuperSoldierPower {
             return 0.0D;
         }
         Vec3 push = horizontal.normalize().scale(MarvelBalanceConfig.SHIELD_CHARGE_SPEED.get());
-        double damage = HeroPowers.powerDamage(player) * MarvelBalanceConfig.SHIELD_CHARGE_DAMAGE_MULTIPLIER.get();
+        double damage = MarvelBalanceConfig.SHIELD_CHARGE_DAMAGE.get();
         if (player.getOffhandItem().getItem() instanceof ShieldItem) {
             damage *= MarvelBalanceConfig.SHIELD_CHARGE_SHIELD_MULTIPLIER.get();
         }

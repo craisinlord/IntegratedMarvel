@@ -1,7 +1,6 @@
 package com.craisinlord.integrated_superheroes.hero;
 
-import com.craisinlord.antarchy.content.AntarchySoundEvents;
-import com.craisinlord.integrated_superheroes.mixin.FlyingSquirrelInvoker;
+import com.craisinlord.integrated_superheroes.registry.ModSounds;
 import com.craisinlord.integrated_superheroes.registry.HeroEntities;
 import com.stxllarplanes.marvellegacy.data.PlayerData;
 import net.minecraft.core.BlockPos;
@@ -12,7 +11,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -22,23 +20,16 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
 
-import java.util.ArrayDeque;
 import java.util.Comparator;
-import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -56,7 +47,7 @@ public final class SquirrelGirlPower {
             MobEffects.MOVEMENT_SPEED, HeroToggles.SPEED, MobEffects.JUMP, HeroToggles.JUMP);
     private static final List<HeroWheels.Option> OPTIONS = List.of(
             new HeroWheels.Option(DEFEND, "Defend", () -> Items.SHIELD),
-            new HeroWheels.Option(FORAGE, "Forage", () -> HeroFx.item("antarchy:ouranwood_acorn")),
+            new HeroWheels.Option(FORAGE, "Forage", () -> HeroFx.item("antarchy:ouranwood_acorn", Items.SWEET_BERRIES)),
             new HeroWheels.Option(GNAW, "Gnaw", () -> Items.OAK_LOG),
             new HeroWheels.Option(STAY, "Stay", () -> Items.LEAD)
     );
@@ -64,24 +55,9 @@ public final class SquirrelGirlPower {
     private static final Map<UUID, Long> NEXT_SQUIRREL = new HashMap<>();
     private static final Map<UUID, UUID> TIPPY = new HashMap<>();
     private static final Map<UUID, Long> TIPPY_BACK = new HashMap<>();
-    private static final Map<UUID, Gnaw> GNAWING = new HashMap<>();
+    private static final Map<UUID, HeroGnaw> GNAWING = new HashMap<>();
 
     private SquirrelGirlPower() {
-    }
-
-    private static final class Gnaw {
-        private final Block block;
-        private final Deque<BlockPos> queue = new ArrayDeque<>();
-        private final Set<BlockPos> seen = new HashSet<>();
-        private BlockPos current;
-        private float progress;
-        private int broken;
-
-        private Gnaw(Block block, BlockPos start) {
-            this.block = block;
-            this.queue.add(start);
-            this.seen.add(start);
-        }
     }
 
     public static HeroPower create(Supplier<Item> syringe) {
@@ -170,15 +146,8 @@ public final class SquirrelGirlPower {
     }
 
     public static BlockPos gnawTarget(Player player) {
-        Gnaw gnaw = GNAWING.get(player.getUUID());
-        if (gnaw == null) {
-            return null;
-        }
-        return gnaw.current != null ? gnaw.current : gnaw.queue.peek();
-    }
-
-    private static float biteDamage(ServerPlayer player, double multiplier) {
-        return (float) Math.max(1.0D, HeroPowers.powerDamage(player) * multiplier);
+        HeroGnaw gnaw = GNAWING.get(player.getUUID());
+        return gnaw == null ? null : gnaw.target();
     }
 
     private static List<SwarmSquirrel> squirrels(ServerPlayer player) {
@@ -205,7 +174,7 @@ public final class SquirrelGirlPower {
             SwarmSquirrel tippy = spawn(player, true, false);
             if (tippy != null) {
                 TIPPY.put(player.getUUID(), tippy.getUUID());
-                ((FlyingSquirrelInvoker) tippy).integratedSuperheroes$mountShoulder(player);
+                tippy.mountShoulder(player);
             }
         }
         if (!swarmOut(player)) {
@@ -226,8 +195,8 @@ public final class SquirrelGirlPower {
         if (squirrel == null) {
             return null;
         }
-        double multiplier = tippy ? MarvelBalanceConfig.TIPPY_BITE_MULTIPLIER.get() : MarvelBalanceConfig.SWARM_BITE_MULTIPLIER.get();
-        squirrel.setup(player, tippy, biteDamage(player, multiplier), MarvelBalanceConfig.SWARM_SQUIRREL_HEALTH.get());
+        float bite = (tippy ? MarvelBalanceConfig.TIPPY_BITE_DAMAGE.get() : MarvelBalanceConfig.SWARM_BITE_DAMAGE.get()).floatValue();
+        squirrel.setup(player, tippy, bite, MarvelBalanceConfig.SWARM_SQUIRREL_HEALTH.get());
         BlockPos ground = tippy ? player.blockPosition() : groundNear(player);
         BlockPos sky = ground.above(8);
         boolean glide = dramatic && level.canSeeSky(ground) && level.isEmptyBlock(sky) && level.isEmptyBlock(sky.above()) && level.random.nextBoolean();
@@ -238,7 +207,7 @@ public final class SquirrelGirlPower {
         }
         level.addFreshEntity(squirrel);
         if (glide) {
-            ((FlyingSquirrelInvoker) squirrel).integratedSuperheroes$startGliding(ground, "integrated_superheroes_swarm");
+            squirrel.startGliding(ground);
         } else if (dramatic) {
             BlockState below = level.getBlockState(ground.below());
             if (!below.isAir()) {
@@ -276,7 +245,7 @@ public final class SquirrelGirlPower {
             data.removeState(SWARM_STATE);
             squirrels(player).forEach(SwarmSquirrel::vanish);
             stopGnaw(player);
-            HeroFx.play(player, AntarchySoundEvents.FLYING_SQUIRREL_BEG.get(), 0.8F, 0.8F);
+            HeroFx.play(player, ModSounds.SWARM_SQUIRREL_BEG.get(), 0.8F, 0.8F);
             player.displayClientMessage(Component.literal("§6The swarm scatters."), true);
         } else {
             data.addState(SWARM_STATE);
@@ -288,8 +257,8 @@ public final class SquirrelGirlPower {
                 }
             }
             NEXT_SQUIRREL.put(player.getUUID(), player.serverLevel().getGameTime() + (long) (MarvelBalanceConfig.SWARM_RESPAWN_SECONDS.get() * 20.0D));
-            HeroFx.play(player, AntarchySoundEvents.FLYING_SQUIRREL_IDLE.get(), 1.2F, 1.0F);
-            HeroFx.play(player, AntarchySoundEvents.FLYING_SQUIRREL_BEG.get(), 1.0F, 1.3F);
+            HeroFx.play(player, ModSounds.SWARM_SQUIRREL_IDLE.get(), 1.2F, 1.0F);
+            HeroFx.play(player, ModSounds.SWARM_SQUIRREL_BEG.get(), 1.0F, 1.3F);
             HeroAnimations.play(player, "web_shoot_both");
             player.displayClientMessage(Component.literal("§6Squirrels, assemble!"), true);
         }
@@ -344,7 +313,7 @@ public final class SquirrelGirlPower {
                     8, 0.4D, 0.2D, 0.4D, 0.0D);
             player.displayClientMessage(Component.literal("§6Guard that spot!"), true);
         }
-        HeroFx.play(player, AntarchySoundEvents.FLYING_SQUIRREL_BEG.get(), 1.0F, 1.5F);
+        HeroFx.play(player, ModSounds.SWARM_SQUIRREL_BEG.get(), 1.0F, 1.5F);
         HeroAnimations.play(player, "web_shoot_r");
         return MarvelBalanceConfig.SIC_EM_COOLDOWN.get();
     }
@@ -358,7 +327,7 @@ public final class SquirrelGirlPower {
             return 0.0D;
         }
         int ticks = MarvelBalanceConfig.PILE_TICKS.get();
-        float damage = biteDamage(player, MarvelBalanceConfig.PILE_BITE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.PILE_BITE_DAMAGE.get().floatValue();
         List<SwarmSquirrel> swarm = squirrels(player).stream()
                 .sorted(Comparator.comparingDouble(squirrel -> squirrel.distanceToSqr(target)))
                 .toList();
@@ -374,7 +343,7 @@ public final class SquirrelGirlPower {
         if (swarm.size() >= MarvelBalanceConfig.SWARM_SIZE.get()) {
             HeroAdvancements.award(player, "street_level/squirrel_girl/squirrel_pile");
         }
-        HeroFx.play(target, AntarchySoundEvents.FLYING_SQUIRREL_BEG.get(), 1.5F, 1.1F);
+        HeroFx.play(target, ModSounds.SWARM_SQUIRREL_BEG.get(), 1.5F, 1.1F);
         HeroFx.play(target, SoundEvents.PLAYER_ATTACK_SWEEP, 1.0F, 1.6F);
         HeroAnimations.play(player, "web_shoot_both");
         player.displayClientMessage(Component.literal("§6Squirrel pile!"), true);
@@ -402,35 +371,22 @@ public final class SquirrelGirlPower {
         });
         String label = OPTIONS.stream().filter(entry -> entry.id().equals(option)).map(HeroWheels.Option::label).findFirst().orElse(option);
         player.displayClientMessage(Component.literal("§6Swarm: " + label), true);
-        HeroFx.play(player, AntarchySoundEvents.FLYING_SQUIRREL_IDLE.get(), 0.8F, 1.2F);
-    }
-
-    private static boolean gnawable(ServerLevel level, BlockPos pos, BlockState state) {
-        return !state.isAir() && state.getFluidState().isEmpty() && state.getDestroySpeed(level, pos) >= 0.0F
-                && !state.is(BlockTags.WITHER_IMMUNE);
+        HeroFx.play(player, ModSounds.SWARM_SQUIRREL_IDLE.get(), 0.8F, 1.2F);
     }
 
     private static boolean startGnaw(ServerPlayer player) {
-        Vec3 eye = player.getEyePosition();
-        BlockHitResult hit = player.level().clip(new ClipContext(eye, eye.add(player.getLookAngle().scale(MarvelBalanceConfig.SIC_EM_RANGE.get())),
-                ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
-        if (hit.getType() == HitResult.Type.MISS) {
+        HeroGnaw gnaw = HeroGnaw.aim(player, MarvelBalanceConfig.SIC_EM_RANGE.get(), state -> true, crackId(player));
+        if (gnaw == null) {
             return false;
         }
-        BlockPos pos = hit.getBlockPos();
-        BlockState state = player.level().getBlockState(pos);
-        if (!gnawable(player.serverLevel(), pos, state)) {
-            return false;
-        }
-        GNAWING.put(player.getUUID(), new Gnaw(state.getBlock(), pos.immutable()));
-        player.serverLevel().sendParticles(ParticleTypes.HAPPY_VILLAGER, pos.getX() + 0.5D, pos.getY() + 1.1D, pos.getZ() + 0.5D, 6, 0.3D, 0.1D, 0.3D, 0.0D);
+        GNAWING.put(player.getUUID(), gnaw);
         return true;
     }
 
     private static void stopGnaw(ServerPlayer player) {
-        Gnaw gnaw = GNAWING.remove(player.getUUID());
-        if (gnaw != null && gnaw.current != null) {
-            player.serverLevel().destroyBlockProgress(crackId(player), gnaw.current, -1);
+        HeroGnaw gnaw = GNAWING.remove(player.getUUID());
+        if (gnaw != null) {
+            gnaw.stop(player.serverLevel());
         }
     }
 
@@ -439,73 +395,23 @@ public final class SquirrelGirlPower {
     }
 
     private static void tickGnaw(ServerPlayer player) {
-        Gnaw gnaw = GNAWING.get(player.getUUID());
+        HeroGnaw gnaw = GNAWING.get(player.getUUID());
         if (gnaw == null) {
             return;
         }
-        ServerLevel level = player.serverLevel();
         if (!swarmOut(player) || !GNAW.equals(order(player))) {
             stopGnaw(player);
             return;
         }
-        while (gnaw.current == null) {
-            BlockPos next = gnaw.queue.poll();
-            if (next == null) {
-                stopGnaw(player);
-                setOrder(player, DEFEND);
-                player.displayClientMessage(Component.literal("§6The swarm finished gnawing."), true);
-                return;
-            }
-            BlockState state = level.getBlockState(next);
-            if (state.is(gnaw.block) && gnawable(level, next, state)) {
-                gnaw.current = next;
-                gnaw.progress = 0.0F;
-            }
-        }
-        BlockPos pos = gnaw.current;
-        BlockState state = level.getBlockState(pos);
-        if (!state.is(gnaw.block)) {
-            level.destroyBlockProgress(crackId(player), pos, -1);
-            gnaw.current = null;
-            return;
-        }
-        Vec3 center = Vec3.atCenterOf(pos);
-        long chewing = squirrels(player).stream()
-                .filter(squirrel -> squirrel.distanceToSqr(center) < GNAW_REACH * GNAW_REACH)
-                .count();
-        if (chewing == 0) {
-            return;
-        }
-        float hardness = Math.max(0.3F, state.getDestroySpeed(level, pos));
-        gnaw.progress += chewing / (float) (hardness * MarvelBalanceConfig.GNAW_TICKS_PER_HARDNESS.get());
-        if (player.tickCount % 4 == 0) {
-            level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), center.x, center.y, center.z, 4, 0.3D, 0.3D, 0.3D, 0.05D);
-            level.playSound(null, pos, state.getSoundType().getHitSound(), player.getSoundSource(), 0.4F, 1.3F);
-        }
-        if (gnaw.progress < 1.0F) {
-            level.destroyBlockProgress(crackId(player), pos, (int) (gnaw.progress * 10.0F));
-            return;
-        }
-        level.destroyBlockProgress(crackId(player), pos, -1);
-        gnaw.current = null;
-        BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(level, pos, state, player);
-        NeoForge.EVENT_BUS.post(event);
-        if (event.isCanceled()) {
-            return;
-        }
-        level.destroyBlock(pos, MarvelBalanceConfig.GNAW_DROPS.get(), player);
-        gnaw.broken++;
-        HeroAdvancements.count(player, "street_level/squirrel_girl/nuts_about_you", 1.0D, 100.0D);
-        int max = MarvelBalanceConfig.GNAW_MAX_BLOCKS.get();
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dy = -1; dy <= 1; dy++) {
-                for (int dz = -1; dz <= 1; dz++) {
-                    BlockPos neighbor = pos.offset(dx, dy, dz);
-                    if (gnaw.broken + gnaw.queue.size() < max && gnaw.seen.add(neighbor) && level.getBlockState(neighbor).is(gnaw.block)) {
-                        gnaw.queue.add(neighbor);
-                    }
-                }
-            }
+        HeroGnaw.Step step = gnaw.tick(player,
+                center -> squirrels(player).stream().filter(squirrel -> squirrel.distanceToSqr(center) < GNAW_REACH * GNAW_REACH).count(),
+                MarvelBalanceConfig.GNAW_TICKS_PER_HARDNESS.get(), MarvelBalanceConfig.GNAW_DROPS.get(), MarvelBalanceConfig.GNAW_MAX_BLOCKS.get());
+        if (step == HeroGnaw.Step.DONE) {
+            stopGnaw(player);
+            setOrder(player, DEFEND);
+            player.displayClientMessage(Component.literal("§6The swarm finished gnawing."), true);
+        } else if (step == HeroGnaw.Step.BROKE) {
+            HeroAdvancements.count(player, "street_level/squirrel_girl/nuts_about_you", 1.0D, 100.0D);
         }
     }
 }

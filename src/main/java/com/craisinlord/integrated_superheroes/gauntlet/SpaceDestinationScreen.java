@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
+import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -76,7 +77,7 @@ public final class SpaceDestinationScreen extends Screen {
                 .bounds(center - 60, top + 124, 120, 20).build());
         addRenderableWidget(Button.builder(Component.literal("Set destination"), button -> send(false))
                 .bounds(left + 12, top + 154, 132, 20).build());
-        addRenderableWidget(Button.builder(Component.literal("Generate new dimension"), button -> send(true))
+        addRenderableWidget(Button.builder(Component.literal(ModCompat.INFINITE_DIMENSIONS ? "Generate new dimension" : "Random dimension"), button -> send(true))
                 .bounds(left + PANEL_WIDTH - 144, top + 154, 132, 20).build());
         addRenderableWidget(Button.builder(Component.literal("Done"), button -> onClose())
                 .bounds(center - 40, top + 180, 80, 20).build());

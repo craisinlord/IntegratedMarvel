@@ -218,7 +218,7 @@ public final class MagnetoPower {
 
     private static HeroBlockLift.Profile metalLift() {
         return new HeroBlockLift.Profile(MarvelBalanceConfig.GRIP_RANGE.get(), MarvelBalanceConfig.LIFT_MAX_BLOCKS.get(), MarvelBalanceConfig.LIFT_HOLD_TICKS.get(),
-                MarvelBalanceConfig.LIFT_THROW_SPEED.get(), MarvelBalanceConfig.GRIP_THROW_DAMAGE_MULTIPLIER.get(),
+                MarvelBalanceConfig.LIFT_THROW_SPEED.get(), MarvelBalanceConfig.GRIP_THROW_DAMAGE.get(),
                 state -> state.is(FERROMAGNETIC_BLOCKS), (level, center) -> orbitAround(level, center, 3),
                 () -> HeroFx.sound("alexscaves:magnetron_assemble", SoundEvents.ANVIL_USE),
                 () -> HeroFx.sound("alexscaves:galena_gauntlet_use_loop", SoundEvents.BEACON_AMBIENT),
@@ -258,7 +258,7 @@ public final class MagnetoPower {
     private static double grip(ServerPlayer player, int slot) {
         if (HeroGrip.isHolding(player) || HeroBlockLift.isLifting(player)) {
             if (HeroGrip.isHolding(player)) {
-                float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.GRIP_THROW_DAMAGE_MULTIPLIER.get());
+                float damage = MarvelBalanceConfig.GRIP_THROW_DAMAGE.get().floatValue();
                 HeroGrip.release(player, MarvelBalanceConfig.GRIP_THROW_SPEED.get(), damage);
                 HeroFx.play(player, HeroFx.sound("alexscaves:galena_gauntlet_stop", SoundEvents.ANVIL_LAND), 1.0F, 0.8F);
             } else {
@@ -305,9 +305,9 @@ public final class MagnetoPower {
             return 0.0D;
         }
         LivingEntity target = beam.targets().get(0);
-        double multiplier = MarvelBalanceConfig.CRUSH_BASE_MULTIPLIER.get() + MarvelBalanceConfig.CRUSH_PER_ARMOR_MULTIPLIER.get() * target.getArmorValue();
+        double damage = MarvelBalanceConfig.CRUSH_BASE_DAMAGE.get() + MarvelBalanceConfig.CRUSH_PER_ARMOR_DAMAGE.get() * target.getArmorValue();
         HeroAdvancements.cast(player).kills(entity -> entity instanceof IronGolem, "x_men/magneto/iron_deficiency")
-                .run(() -> target.hurt(player.damageSources().mobAttack(player), (float) (HeroPowers.powerDamage(player) * multiplier)));
+                .run(() -> target.hurt(player.damageSources().mobAttack(player), (float) damage));
         HeroFx.effect("alexscaves:magnetizing").ifPresent(effect -> target.addEffect(new MobEffectInstance(effect, 80, 0)));
         target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 80, 1));
         ServerLevel level = player.serverLevel();

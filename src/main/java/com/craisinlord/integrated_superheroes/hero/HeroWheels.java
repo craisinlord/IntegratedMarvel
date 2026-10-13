@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.hero;
 
+import com.craisinlord.integrated_superheroes.suit.PymAbilities;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -34,7 +35,9 @@ public final class HeroWheels {
     public static void choose(ServerPlayer player, String ability, String option) {
         Wheel wheel = WHEELS.get(ability);
         HeroPower hero = HeroPowers.activeHero(player);
-        if (wheel == null || hero == null || hero.abilities().stream().noneMatch(entry -> entry.name().equals(ability))) {
+        boolean granted = hero != null && hero.abilities().stream().anyMatch(entry -> entry.name().equals(ability))
+                || PymAbilities.granted(player, ability);
+        if (wheel == null || !granted) {
             return;
         }
         if (wheel.options().stream().anyMatch(entry -> entry.id().equals(option))) {

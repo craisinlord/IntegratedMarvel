@@ -11,7 +11,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class BinaryFlightWalkMixin {
     @Inject(method = "updateWalkAnimation", at = @At("HEAD"), cancellable = true)
     private void integratedSuperheroes$freezeLegsWhileFlying(float distance, CallbackInfo ci) {
-        if (BinaryFlight.isFlying((LivingEntity) (Object) this)) {
+        LivingEntity living = (LivingEntity) (Object) this;
+        if (BinaryFlight.isFlying(living)) {
+            living.walkAnimation.update(0.0F, 0.4F);
             ci.cancel();
         }
     }

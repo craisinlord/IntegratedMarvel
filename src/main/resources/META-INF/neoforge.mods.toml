@@ -58,9 +58,30 @@ file="META-INF/accesstransformer.cfg"
     side="BOTH"
 
 [[dependencies.${mod_id}]]
-    modId="antarchy"
+    modId="anthology"
     type="required"
-    versionRange="[2.2.0,)"
+    versionRange="[1.0.0,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="geckolib"
+    type="required"
+    versionRange="[4.7,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="antarchy"
+    type="optional"
+    versionRange="[2.2.2,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="infinity"
+    type="optional"
+    versionRange="*"
     ordering="AFTER"
     side="BOTH"
 

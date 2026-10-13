@@ -1,10 +1,6 @@
 package com.craisinlord.integrated_superheroes.hero;
 
-import com.craisinlord.antarchy.content.AntarchyObjects;
-import com.craisinlord.antarchy.content.entity.vortex.WindVortexEntity;
-import com.craisinlord.antarchy.content.item.EyeOfTheStormItem;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -16,6 +12,7 @@ import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -34,7 +31,7 @@ public final class StormPower {
     public static final String ID = "weather_manipulation_ororo_munroe";
     private static final ResourceLocation FLIGHT_ID = ResourceLocation.fromNamespaceAndPath("integrated_superheroes", "storm_flight");
     public static final HeroPower.Toggle STORM_AURA = new HeroPower.Toggle("integrated_superheroes_off_storm_aura", "Storm Aura",
-            () -> HeroFx.item("antarchy:eye_of_the_storm"));
+            () -> HeroFx.item("antarchy:eye_of_the_storm", Items.WIND_CHARGE));
     private static final Set<UUID> WAS_FLYING = new HashSet<>();
 
     private StormPower() {
@@ -120,12 +117,7 @@ public final class StormPower {
         if (!nearGround) {
             return;
         }
-        WindVortexEntity vortex = WindVortexEntity.create(level, AntarchyObjects.WIND_VORTEX.get(), player.position().subtract(0.0D, 1.0D, 0.0D), Vec3.ZERO, player, false);
-        vortex.setMode(WindVortexEntity.VortexMode.UPWARD);
-        vortex.setAxis(Direction.UP);
-        vortex.setVortexSize(5.0F, 1.5F);
-        vortex.setVortexDurationTicks(25);
-        level.addFreshEntity(vortex);
+        StormWind.takeoff(player);
         HeroFx.play(player, SoundEvents.BREEZE_WIND_CHARGE_BURST.value(), 0.9F, 1.1F);
         HeroAnimations.play(player, "celestisynth:cs_breezebreaker_jump");
     }
@@ -142,7 +134,7 @@ public final class StormPower {
             point = hit.getLocation();
         }
         boolean stormy = StormWeather.isStormy(player);
-        float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.LIGHTNING_DAMAGE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.LIGHTNING_DAMAGE.get().floatValue();
         double radius = MarvelBalanceConfig.LIGHTNING_RADIUS.get();
         Set<Integer> hit = new HashSet<>();
         int bolts = stormy ? 3 : 1;
@@ -204,7 +196,7 @@ public final class StormPower {
             starts.put(target, target.position());
         }
         GUSTS.put(player.getUUID(), new Gust(starts, player.level().getGameTime() + 120L));
-        EyeOfTheStormItem.launchStormVortex(player.serverLevel(), player.getEyePosition().add(look), look, player);
+        StormWind.gale(player, player.getEyePosition().add(look), look);
         HeroAnimations.play(player, "celestisynth:cs_solaris_spin");
         return MarvelBalanceConfig.GALE_COOLDOWN.get();
     }

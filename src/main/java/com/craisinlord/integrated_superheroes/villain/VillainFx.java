@@ -142,6 +142,10 @@ public final class VillainFx {
         }
     }
 
+    public static boolean hasBossBar(Entity mob) {
+        return bossEvent(mob) != null;
+    }
+
     private static ServerBossEvent bossEvent(Entity mob) {
         Field field = BOSS_EVENT_FIELDS.computeIfAbsent(mob.getClass(), VillainFx::findField);
         if (field == null) {

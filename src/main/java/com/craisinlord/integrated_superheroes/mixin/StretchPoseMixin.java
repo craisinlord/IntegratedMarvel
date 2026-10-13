@@ -29,7 +29,6 @@ public abstract class StretchPoseMixin {
             FantasticClient.pose(player, playerModel, partialTick, pose);
             original.call(model, pose, consumer, light, overlay, color);
             FantasticClient.renderNeck(player, playerModel, pose, consumer, light, overlay, color);
-            FantasticClient.renderUmbrella(player, playerModel, pose, consumer, light, overlay, color);
             return;
         }
         original.call(model, pose, consumer, light, overlay, color);

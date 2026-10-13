@@ -142,7 +142,7 @@ public final class AlexsCavesBlockLift {
         moving.setDeltaMovement(player.getLookAngle().scale(profile.throwSpeed()));
         moving.hasImpulse = true;
         moving.setPlacementCooldown(10);
-        float damage = (float) (HeroPowers.powerDamage(player) * profile.damageMultiplier() * (1.0D + held.blocks() / 16.0D));
+        float damage = (float) (profile.damage() * (1.0D + held.blocks() / 16.0D));
         THROWN.put(moving.getId(), new Thrown(player.getUUID(), 100, damage, new HashSet<>()));
         HeroFx.play(player, profile.throwSound().get(), 1.0F, 0.7F);
         return true;

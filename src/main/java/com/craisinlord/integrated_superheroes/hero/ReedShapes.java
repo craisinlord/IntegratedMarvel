@@ -3,6 +3,8 @@ package com.craisinlord.integrated_superheroes.hero;
 import com.craisinlord.integrated_superheroes.registry.HeroEntities;
 import com.stxllarplanes.marvellegacy.data.PlayerData;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -10,22 +12,22 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,38 +39,46 @@ public final class ReedShapes {
     public static final String PARACHUTE = "parachute";
     public static final String BOAT = "boat";
     public static final String SOFA = "sofa";
-    public static final String TRAMPOLINE = "trampoline";
+    public static final String BRIDGE = "bridge";
     public static final String SLINGSHOT = "slingshot";
     public static final String BALL = "bouncy_ball";
     public static final String NECK = "periscope_neck";
     public static final String POGO = "pogo_stick";
-    public static final String UMBRELLA = "umbrella";
-    public static final String TRAMPOLINE_STATE = "integrated_superheroes_trampoline";
+    public static final String STILTS = "stilts";
+    public static final String BOAT_STATE = "integrated_superheroes_boat";
+    public static final String SOFA_STATE = "integrated_superheroes_sofa";
+    public static final String BRIDGE_STATE = "integrated_superheroes_bridge";
     public static final String BALL_STATE = "integrated_superheroes_ball";
     public static final String NECK_STATE = "integrated_superheroes_neck";
     public static final String POGO_STATE = "integrated_superheroes_pogo";
-    public static final String UMBRELLA_STATE = "integrated_superheroes_umbrella";
+    public static final String STILTS_STATE = "integrated_superheroes_stilts";
     private static final ResourceLocation ROOTED = ResourceLocation.fromNamespaceAndPath("integrated_superheroes", "reed_rooted");
-    private static final ResourceLocation SHELTERED = ResourceLocation.fromNamespaceAndPath("integrated_superheroes", "reed_umbrella");
+    private static final ResourceLocation STILT_STEP = ResourceLocation.fromNamespaceAndPath("integrated_superheroes", "reed_stilt_step");
+    private static final ResourceLocation STILT_STRIDE = ResourceLocation.fromNamespaceAndPath("integrated_superheroes", "reed_stilt_stride");
     private static final List<HeroWheels.Option> OPTIONS = List.of(
             new HeroWheels.Option(BOAT, "Boat", () -> Items.OAK_BOAT),
             new HeroWheels.Option(SOFA, "Sofa", () -> Items.RED_WOOL),
-            new HeroWheels.Option(TRAMPOLINE, "Trampoline", () -> Items.SLIME_BLOCK),
+            new HeroWheels.Option(BRIDGE, "Bridge", () -> Items.OAK_SLAB),
             new HeroWheels.Option(SLINGSHOT, "Slingshot", () -> Items.STRING),
             new HeroWheels.Option(BALL, "Bouncy Ball", () -> Items.SLIME_BALL),
             new HeroWheels.Option(NECK, "Periscope Neck", () -> Items.SPYGLASS),
             new HeroWheels.Option(PARACHUTE, "Parachute", () -> Items.FEATHER),
             new HeroWheels.Option(POGO, "Pogo Stick", () -> Items.PISTON),
-            new HeroWheels.Option(UMBRELLA, "Umbrella", () -> Items.SHIELD)
+            new HeroWheels.Option(STILTS, "Stilts", () -> Items.BAMBOO)
     );
     private static final Map<UUID, Vec3> ANCHORS = new HashMap<>();
     private static final Map<UUID, String> SELECTED = new HashMap<>();
     private static final Map<UUID, Long> BALL_UNTIL = new HashMap<>();
     private static final Map<UUID, Integer> SLINGS = new HashMap<>();
+    private static final Map<UUID, FantasticSeat> SEATS = new HashMap<>();
+    private static final Map<UUID, Bridge> BRIDGES = new HashMap<>();
     private static final Map<Integer, Long> LAST_HIT = new HashMap<>();
     private static final Map<UUID, Vec3> CLIENT_LAST_MOTION = new HashMap<>();
 
     private ReedShapes() {
+    }
+
+    private record Bridge(ServerLevel level, List<BlockPos> blocks, Vec3 end, long until) {
     }
 
     public static HeroWheels.Wheel wheel() {
@@ -80,7 +90,8 @@ public final class ReedShapes {
     }
 
     public static FantasticSeat seat(Player player) {
-        return player.getVehicle() instanceof FantasticSeat seat && seat.getFirstPassenger() == player ? seat : null;
+        FantasticSeat seat = SEATS.get(player.getUUID());
+        return seat != null && !seat.isRemoved() ? seat : null;
     }
 
     private static String label(String option) {
@@ -100,15 +111,15 @@ public final class ReedShapes {
         }
         String option = SELECTED.getOrDefault(player.getUUID(), SLINGSHOT);
         boolean started = switch (option) {
-            case BOAT -> startSeat(player, false);
-            case SOFA -> startSeat(player, true);
-            case TRAMPOLINE -> startTrampoline(player);
+            case BOAT -> startBoat(player);
+            case SOFA -> startSofa(player);
+            case BRIDGE -> startBridge(player);
             case SLINGSHOT -> startSlingshot(player);
             case BALL -> startBall(player);
             case NECK -> startNeck(player);
             case PARACHUTE -> startParachute(player);
             case POGO -> startPogo(player);
-            case UMBRELLA -> startUmbrella(player);
+            case STILTS -> startStilts(player);
             default -> false;
         };
         if (!started) {
@@ -121,25 +132,31 @@ public final class ReedShapes {
         return SLINGSHOT.equals(option) ? MarvelBalanceConfig.SLINGSHOT_COOLDOWN.get() : MarvelBalanceConfig.SHAPE_COOLDOWN.get();
     }
 
-    private static boolean startParachute(ServerPlayer player) {
-        HeroPowers.data(player).addState(MrFantasticPower.PARACHUTE_STATE);
-        PlayerData.sync(player);
-        return true;
-    }
-
     public static String end(ServerPlayer player) {
         String previous = null;
-        FantasticSeat seat = seat(player);
+        FantasticSeat seat = SEATS.remove(player.getUUID());
         if (seat != null) {
-            previous = seat.isSofa() ? SOFA : BOAT;
-            player.stopRiding();
+            seat.ejectPassengers();
+            seat.discard();
         }
         PlayerData data = HeroPowers.data(player);
         boolean changed = false;
-        if (data.hasState(TRAMPOLINE_STATE)) {
-            data.removeState(TRAMPOLINE_STATE);
-            unroot(player);
-            previous = TRAMPOLINE;
+        if (data.hasState(SOFA_STATE)) {
+            data.removeState(SOFA_STATE);
+            removeModifier(player, Attributes.MOVEMENT_SPEED, ROOTED);
+            previous = SOFA;
+            changed = true;
+        }
+        if (data.hasState(BOAT_STATE)) {
+            data.removeState(BOAT_STATE);
+            previous = BOAT;
+            changed = true;
+        }
+        if (data.hasState(BRIDGE_STATE)) {
+            data.removeState(BRIDGE_STATE);
+            removeModifier(player, Attributes.MOVEMENT_SPEED, ROOTED);
+            clearBridge(player);
+            previous = BRIDGE;
             changed = true;
         }
         if (data.hasState(BALL_STATE)) {
@@ -162,13 +179,11 @@ public final class ReedShapes {
             previous = POGO;
             changed = true;
         }
-        if (data.hasState(UMBRELLA_STATE)) {
-            data.removeState(UMBRELLA_STATE);
-            AttributeInstance speed = player.getAttribute(Attributes.MOVEMENT_SPEED);
-            if (speed != null) {
-                speed.removeModifier(SHELTERED);
-            }
-            previous = UMBRELLA;
+        if (data.hasState(STILTS_STATE)) {
+            data.removeState(STILTS_STATE);
+            removeModifier(player, Attributes.STEP_HEIGHT, STILT_STEP);
+            removeModifier(player, Attributes.MOVEMENT_SPEED, STILT_STRIDE);
+            previous = STILTS;
             changed = true;
         }
         ANCHORS.remove(player.getUUID());
@@ -185,54 +200,128 @@ public final class ReedShapes {
         SELECTED.remove(player.getUUID());
     }
 
-    private static boolean startSeat(ServerPlayer player, boolean sofa) {
-        if (sofa ? !player.onGround() : !player.isInWater()) {
-            player.displayClientMessage(Component.literal(sofa ? "§7Stand on the ground first." : "§7Get in the water first."), true);
-            return false;
+    private static void addModifier(ServerPlayer player, Holder<Attribute> attribute,
+                                    ResourceLocation id, double amount, AttributeModifier.Operation operation) {
+        AttributeInstance instance = player.getAttribute(attribute);
+        if (instance != null && !instance.hasModifier(id)) {
+            instance.addTransientModifier(new AttributeModifier(id, amount, operation));
         }
-        FantasticSeat seat = HeroEntities.FANTASTIC_SEAT.get().create(player.serverLevel());
-        if (seat == null) {
-            return false;
-        }
-        seat.setSofa(sofa);
-        double y = player.getY();
-        if (!sofa) {
-            ServerLevel level = player.serverLevel();
-            BlockPos pos = player.blockPosition();
-            while (level.getFluidState(pos.above()).is(FluidTags.WATER) && pos.getY() < player.getBlockY() + 8) {
-                pos = pos.above();
-            }
-            y = pos.getY() + level.getFluidState(pos).getHeight(level, pos);
-        }
-        seat.moveTo(player.getX(), y, player.getZ(), player.getYRot(), 0.0F);
-        player.serverLevel().addFreshEntity(seat);
-        if (!player.startRiding(seat, true)) {
-            seat.discard();
-            return false;
-        }
-        return true;
     }
 
-    private static boolean startTrampoline(ServerPlayer player) {
+    private static void removeModifier(ServerPlayer player, Holder<Attribute> attribute,
+                                       ResourceLocation id) {
+        AttributeInstance instance = player.getAttribute(attribute);
+        if (instance != null) {
+            instance.removeModifier(id);
+        }
+    }
+
+    private static void root(ServerPlayer player) {
+        addModifier(player, Attributes.MOVEMENT_SPEED, ROOTED, -1.0D, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+    }
+
+    private static void spawnSeat(ServerPlayer player, boolean sofa) {
+        FantasticSeat seat = HeroEntities.FANTASTIC_SEAT.get().create(player.serverLevel());
+        if (seat == null) {
+            return;
+        }
+        seat.setSofa(sofa);
+        seat.setOwner(player);
+        seat.moveTo(player.getX(), player.getY(), player.getZ(), player.getYRot(), 0.0F);
+        player.serverLevel().addFreshEntity(seat);
+        SEATS.put(player.getUUID(), seat);
+    }
+
+    private static boolean startSofa(ServerPlayer player) {
         if (!player.onGround()) {
             player.displayClientMessage(Component.literal("§7Stand on the ground first."), true);
             return false;
         }
-        HeroPowers.data(player).addState(TRAMPOLINE_STATE);
+        HeroPowers.data(player).addState(SOFA_STATE);
         PlayerData.sync(player);
         ANCHORS.put(player.getUUID(), player.position());
-        AttributeInstance speed = player.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (speed != null && !speed.hasModifier(ROOTED)) {
-            speed.addTransientModifier(new AttributeModifier(ROOTED, -1.0D, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
-        }
+        root(player);
+        spawnSeat(player, true);
         return true;
     }
 
-    private static void unroot(ServerPlayer player) {
-        AttributeInstance speed = player.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (speed != null) {
-            speed.removeModifier(ROOTED);
+    private static boolean startBoat(ServerPlayer player) {
+        if (!player.isInWater()) {
+            player.displayClientMessage(Component.literal("§7Get in the water first."), true);
+            return false;
         }
+        HeroPowers.data(player).addState(BOAT_STATE);
+        PlayerData.sync(player);
+        spawnSeat(player, false);
+        return true;
+    }
+
+    private static boolean startBridge(ServerPlayer player) {
+        if (!player.onGround()) {
+            player.displayClientMessage(Component.literal("§7Stand on the ground first."), true);
+            return false;
+        }
+        ServerLevel level = player.serverLevel();
+        Direction direction = player.getDirection();
+        BlockPos feet = player.blockPosition();
+        int length = 0;
+        for (int i = 1; i <= MarvelBalanceConfig.BRIDGE_LENGTH.get(); i++) {
+            BlockPos column = feet.relative(direction, i);
+            if (!level.getBlockState(column).getCollisionShape(level, column).isEmpty()
+                    || !level.getBlockState(column.above()).getCollisionShape(level, column.above()).isEmpty()) {
+                break;
+            }
+            length = i;
+        }
+        if (length < 2) {
+            player.displayClientMessage(Component.literal("§7No room to stretch out."), true);
+            return false;
+        }
+        int ticks = (int) (MarvelBalanceConfig.BRIDGE_SECONDS.get() * 20.0D);
+        List<BlockPos> blocks = new ArrayList<>();
+        for (int i = 1; i <= length; i++) {
+            BlockPos below = feet.relative(direction, i).below();
+            if (TempBlocks.placeOver(level, player, below, Blocks.BARRIER.defaultBlockState(), ticks + 40)) {
+                blocks.add(below.immutable());
+            }
+        }
+        Vec3 start = Vec3.atBottomCenterOf(feet);
+        player.connection.teleport(start.x, player.getY(), start.z, direction.toYRot(), player.getXRot());
+        Vec3 end = start.add(direction.getStepX() * (length + 0.5D), 0.0D, direction.getStepZ() * (length + 0.5D));
+        HeroPowers.data(player).addState(BRIDGE_STATE);
+        PlayerData.sync(player);
+        ANCHORS.put(player.getUUID(), new Vec3(start.x, player.getY(), start.z));
+        root(player);
+        BRIDGES.put(player.getUUID(), new Bridge(level, blocks, end, level.getGameTime() + ticks));
+        MrFantasticPower.send(player, MrFantasticPower.BRIDGE, end, ticks);
+        return true;
+    }
+
+    private static void clearBridge(ServerPlayer player) {
+        Bridge bridge = BRIDGES.remove(player.getUUID());
+        if (bridge != null) {
+            bridge.blocks().forEach(pos -> TempBlocks.release(bridge.level(), pos));
+        }
+        MrFantasticPower.send(player, MrFantasticPower.BRIDGE, player.position(), 0);
+    }
+
+    private static boolean startStilts(ServerPlayer player) {
+        if (player.isInWater()) {
+            player.displayClientMessage(Component.literal("§7Get out of the water first."), true);
+            return false;
+        }
+        HeroPowers.data(player).addState(STILTS_STATE);
+        PlayerData.sync(player);
+        addModifier(player, Attributes.STEP_HEIGHT, STILT_STEP, MarvelBalanceConfig.STILTS_STEP_HEIGHT.get(), AttributeModifier.Operation.ADD_VALUE);
+        addModifier(player, Attributes.MOVEMENT_SPEED, STILT_STRIDE, MarvelBalanceConfig.STILTS_SPEED_BONUS.get(),
+                AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+        return true;
+    }
+
+    private static boolean startParachute(ServerPlayer player) {
+        HeroPowers.data(player).addState(MrFantasticPower.PARACHUTE_STATE);
+        PlayerData.sync(player);
+        return true;
     }
 
     private static boolean startSlingshot(ServerPlayer player) {
@@ -272,17 +361,6 @@ public final class ReedShapes {
         return true;
     }
 
-    private static boolean startUmbrella(ServerPlayer player) {
-        HeroPowers.data(player).addState(UMBRELLA_STATE);
-        PlayerData.sync(player);
-        AttributeInstance speed = player.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (speed != null && !speed.hasModifier(SHELTERED)) {
-            speed.addTransientModifier(new AttributeModifier(SHELTERED, -MarvelBalanceConfig.UMBRELLA_SLOWDOWN.get(),
-                    AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
-        }
-        return true;
-    }
-
     public static void jump(Player player) {
         if (!player.level().isClientSide || !player.isLocalPlayer() || !has(player, POGO_STATE)) {
             return;
@@ -291,44 +369,28 @@ public final class ReedShapes {
         player.setDeltaMovement(motion.x, MarvelBalanceConfig.POGO_BOOST_BOUNCE.get(), motion.z);
     }
 
-    public static void onProjectile(ProjectileImpactEvent event) {
-        Projectile projectile = event.getProjectile();
-        if (!(event.getRayTraceResult() instanceof EntityHitResult hit) || !(hit.getEntity() instanceof LivingEntity target)
-                || !(projectile.level() instanceof ServerLevel level)) {
-            return;
-        }
-        double radius = MarvelBalanceConfig.UMBRELLA_RADIUS.get();
-        for (ServerPlayer player : level.players()) {
-            if (!has(player, UMBRELLA_STATE) || projectile.getOwner() == player
-                    || horizontal(target.position(), player.position()) > radius || target.getY() > player.getY() + 1.0D) {
-                continue;
-            }
-            event.setCanceled(true);
-            Vec3 motion = projectile.getDeltaMovement();
-            projectile.setDeltaMovement(-motion.x * 0.3D, Math.abs(motion.y) * 0.3D + 0.3D, -motion.z * 0.3D);
-            projectile.hurtMarked = true;
-            level.playSound(null, projectile.getX(), projectile.getY(), projectile.getZ(), SoundEvents.SLIME_SQUISH, SoundSource.PLAYERS, 1.0F, 1.6F);
-            level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SLIME_BALL)),
-                    projectile.getX(), projectile.getY(), projectile.getZ(), 6, 0.2D, 0.2D, 0.2D, 0.05D);
-            return;
-        }
-    }
-
     public static void tick(ServerPlayer player) {
         tickSling(player);
         PlayerData data = HeroPowers.data(player);
         Vec3 anchor = ANCHORS.get(player.getUUID());
-        if (data.hasState(TRAMPOLINE_STATE)) {
-            if (anchor == null || player.isShiftKeyDown() || player.getY() > anchor.y + 0.6D || horizontal(player.position(), anchor) > 1.0D) {
+        if (data.hasState(SOFA_STATE) && (anchor == null || player.isShiftKeyDown() || player.getY() > anchor.y + 0.6D
+                || horizontal(player.position(), anchor) > 1.0D)) {
+            end(player);
+        }
+        if (data.hasState(BOAT_STATE) && (player.isShiftKeyDown() || !player.isInWater() && player.onGround())) {
+            end(player);
+        }
+        if (data.hasState(BRIDGE_STATE)) {
+            Bridge bridge = BRIDGES.get(player.getUUID());
+            if (bridge == null || anchor == null || player.isShiftKeyDown() || horizontal(player.position(), anchor) > 0.6D
+                    || player.serverLevel().getGameTime() >= bridge.until()) {
                 end(player);
             } else {
-                tickTrampoline(player);
+                tickBridge(player, anchor, bridge);
             }
         }
-        if (data.hasState(NECK_STATE)) {
-            if (anchor == null || player.isShiftKeyDown() || horizontal(player.position(), anchor) > 0.4D) {
-                end(player);
-            }
+        if (data.hasState(NECK_STATE) && (anchor == null || player.isShiftKeyDown() || horizontal(player.position(), anchor) > 0.4D)) {
+            end(player);
         }
         if (data.hasState(POGO_STATE)) {
             if (player.isShiftKeyDown() || player.isInWater() || player.isPassenger() || player.getAbilities().flying) {
@@ -337,7 +399,7 @@ public final class ReedShapes {
                 tickPogo(player);
             }
         }
-        if (data.hasState(UMBRELLA_STATE) && player.isShiftKeyDown()) {
+        if (data.hasState(STILTS_STATE) && (player.isShiftKeyDown() || player.isInWater() || player.isPassenger() || player.getAbilities().flying)) {
             end(player);
         }
         if (data.hasState(BALL_STATE)) {
@@ -357,12 +419,8 @@ public final class ReedShapes {
         if (has(player, POGO_STATE)) {
             tickPogoClient(player);
         }
-        if (has(player, UMBRELLA_STATE)) {
-            Vec3 motion = player.getDeltaMovement();
-            if (!player.onGround() && motion.y < -0.3D) {
-                player.setDeltaMovement(motion.x, -0.3D, motion.z);
-            }
-            player.fallDistance = 0.0F;
+        if (has(player, BOAT_STATE)) {
+            tickBoatClient(player);
         }
         if (!has(player, BALL_STATE)) {
             CLIENT_LAST_MOTION.remove(player.getUUID());
@@ -420,6 +478,26 @@ public final class ReedShapes {
         player.fallDistance = 0.0F;
     }
 
+    private static void tickBoatClient(Player player) {
+        if (!player.isInWater()) {
+            return;
+        }
+        Vec3 motion = player.getDeltaMovement();
+        double y = Mth.clamp((player.getFluidHeight(FluidTags.WATER) - 0.35D) * 0.4D, -0.08D, 0.1D);
+        double max = MarvelBalanceConfig.BOAT_SPEED.get();
+        double thrust = player.zza > 0.0F ? max * 0.2D : player.zza < 0.0F ? -max * 0.1D : 0.0D;
+        Vec3 forward = Vec3.directionFromRotation(0.0F, player.getYRot());
+        double x = motion.x + forward.x * thrust;
+        double z = motion.z + forward.z * thrust;
+        double speed = Math.sqrt(x * x + z * z);
+        if (speed > max) {
+            x = x / speed * max;
+            z = z / speed * max;
+        }
+        player.setDeltaMovement(x, y, z);
+        player.fallDistance = 0.0F;
+    }
+
     private static double horizontal(Vec3 a, Vec3 b) {
         double dx = a.x - b.x;
         double dz = a.z - b.z;
@@ -438,24 +516,17 @@ public final class ReedShapes {
         return true;
     }
 
-    private static void tickTrampoline(ServerPlayer player) {
+    private static void tickBridge(ServerPlayer player, Vec3 anchor, Bridge bridge) {
         ServerLevel level = player.serverLevel();
         long now = level.getGameTime();
-        AABB area = new AABB(player.getX() - 1.6D, player.getY() - 0.3D, player.getZ() - 1.6D,
-                player.getX() + 1.6D, player.getY() + 1.4D, player.getZ() + 1.6D);
-        for (Entity entity : level.getEntities(player, area, entity -> entity instanceof LivingEntity && entity.isAlive())) {
-            boolean falling = entity.fallDistance > 0.4F || entity.getDeltaMovement().y < -0.25D;
-            if (!falling || !ready(entity, now, 6L)) {
+        AABB path = new AABB(anchor, bridge.end()).inflate(0.5D, 0.0D, 0.5D).expandTowards(0.0D, 1.0D, 0.0D);
+        for (LivingEntity walker : level.getEntitiesOfClass(LivingEntity.class, path,
+                entity -> entity != player && entity.isAlive() && entity.onGround())) {
+            if (!ready(walker, now, 20L)) {
                 continue;
             }
-            double bounce = Math.min(MarvelBalanceConfig.TRAMPOLINE_MAX_BOUNCE.get(), 0.9D + entity.fallDistance * 0.07D);
-            Vec3 motion = entity.getDeltaMovement();
-            entity.setDeltaMovement(motion.x, bounce, motion.z);
-            entity.fallDistance = 0.0F;
-            entity.hurtMarked = true;
-            level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SLIME_BALL)),
-                    entity.getX(), player.getY() + 0.3D, entity.getZ(), 8, 0.4D, 0.1D, 0.4D, 0.1D);
-            HeroFx.play(player, SoundEvents.SLIME_JUMP, 1.2F, 0.7F + player.getRandom().nextFloat() * 0.4F);
+            HeroFx.play(walker, SoundEvents.SLIME_SQUISH_SMALL, 0.8F, 0.6F);
+            HeroFx.play(player, SoundEvents.PLAYER_HURT, 0.5F, 0.8F + player.getRandom().nextFloat() * 0.3F);
         }
     }
 
@@ -468,7 +539,7 @@ public final class ReedShapes {
         if (player.getY() - player.yOld >= -0.05D) {
             return;
         }
-        float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.POGO_STOMP_DAMAGE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.POGO_STOMP_DAMAGE.get().floatValue();
         AABB feet = new AABB(player.getX() - 0.5D, player.getY() - 0.8D, player.getZ() - 0.5D,
                 player.getX() + 0.5D, player.getY() + 0.2D, player.getZ() + 0.5D);
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, feet,
@@ -494,7 +565,7 @@ public final class ReedShapes {
         }
         ServerLevel level = player.serverLevel();
         long now = level.getGameTime();
-        float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.BALL_DAMAGE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.BALL_DAMAGE.get().floatValue();
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(0.4D),
                 entity -> entity != player && entity.isAlive())) {
             if (!ready(target, now, 10L)) {

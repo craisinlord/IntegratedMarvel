@@ -9,6 +9,8 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 
 public final class SoulSeverRenderLayer<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
@@ -23,21 +25,30 @@ public final class SoulSeverRenderLayer<T extends LivingEntity, M extends Entity
         if (!entity.hasEffect(ModEffects.soulSevered()) || entity.isInvisible() || entity.isSpectator()) {
             return;
         }
-        M entityModel = getParentModel();
-        RenderType renderType = RenderType.entityTranslucent(getTextureLocation(entity));
-        VertexConsumer consumer = buffers.getBuffer(renderType);
-        entityModel.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-        int overlay = LivingEntityRenderer.getOverlayCoords(entity, 0.0F);
-        renderProjection(poseStack, entityModel, consumer, overlay, entity.getBbHeight() + 0.35D, 0xA8B8EFFF);
-        renderProjection(poseStack, entityModel, consumer, overlay, entity.getBbHeight() + 0.75D, 0x56B8EFFF);
-        renderProjection(poseStack, entityModel, consumer, overlay, entity.getBbHeight() + 1.10D, 0x28B8EFFF);
-        entityModel.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+        M model = getParentModel();
+        float modelHeight = entity.getBbHeight() / Math.max(0.01F, entity.getScale());
+        float bob = Mth.sin(ageInTicks * 0.12F) * 0.04F * modelHeight;
+        float lift = modelHeight * 0.45F + bob;
+        float drift = modelHeight * 0.08F;
+        float pulse = 0.85F + 0.15F * Mth.sin(ageInTicks * 0.25F);
+
+        RenderType ghost = RenderType.entityTranslucent(getTextureLocation(entity));
+        renderGhost(poseStack, buffers.getBuffer(ghost), model, lift * 0.35F, drift * 0.35F, 1.0F, argb(0.18F, 0xFF7A1A));
+        renderGhost(poseStack, buffers.getBuffer(ghost), model, lift * 0.7F, drift * 0.7F, 1.0F, argb(0.32F, 0xFF8A24));
+        renderGhost(poseStack, buffers.getBuffer(ghost), model, lift, drift, 1.0F, argb(0.6F * pulse, 0xFFA040));
+        renderGhost(poseStack, buffers.getBuffer(ghost), model, lift, drift, 1.08F, argb(0.22F * pulse, 0xFF6A00));
     }
 
-    private void renderProjection(PoseStack poseStack, M entityModel, VertexConsumer consumer, int overlay, double height, int color) {
+    private void renderGhost(PoseStack poseStack, VertexConsumer consumer, M model,
+                             float lift, float drift, float grow, int color) {
         poseStack.pushPose();
-        poseStack.translate(0.0D, height, 0.0D);
-        entityModel.renderToBuffer(poseStack, consumer, LightTexture.FULL_BRIGHT, overlay, color);
+        poseStack.translate(0.0F, -lift, drift);
+        poseStack.scale(grow, grow, grow);
+        model.renderToBuffer(poseStack, consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, color);
         poseStack.popPose();
+    }
+
+    private static int argb(float alpha, int rgb) {
+        return ((int) (Mth.clamp(alpha, 0.0F, 1.0F) * 255.0F) << 24) | (rgb & 0xFFFFFF);
     }
 }

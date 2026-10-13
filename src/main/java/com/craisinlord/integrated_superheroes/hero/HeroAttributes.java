@@ -10,6 +10,8 @@ import java.util.Set;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -32,12 +34,13 @@ public final class HeroAttributes {
 
     public static void apply(Player player, MarvelBalanceConfig.HeroStats stats) {
         set(player, Attributes.MAX_HEALTH, HEALTH, stats.health.get());
-        set(player, Attributes.ATTACK_DAMAGE, ATTACK, stats.attack.get());
+        set(player, Attributes.ATTACK_DAMAGE, ATTACK, 0.0D);
         set(player, Attributes.ARMOR, ARMOR, stats.armor.get());
         set(player, Attributes.ATTACK_KNOCKBACK, KNOCKBACK, stats.attackKnockback.get());
         set(player, Attributes.STEP_HEIGHT, STEP_HEIGHT, stats.stepHeight.get());
         set(player, Attributes.MOVEMENT_SPEED, SPEED, stats.movementSpeed.get());
         syncExtras(player, stats);
+        syncStrength(player, stats.strength.get());
     }
 
     public static void clear(Player player) {
@@ -48,6 +51,7 @@ public final class HeroAttributes {
         set(player, Attributes.STEP_HEIGHT, STEP_HEIGHT, 0.0D);
         set(player, Attributes.MOVEMENT_SPEED, SPEED, 0.0D);
         syncExtras(player, null);
+        syncStrength(player, 0);
         if (player.getHealth() > player.getMaxHealth()) {
             player.setHealth(player.getMaxHealth());
         }
@@ -70,6 +74,28 @@ public final class HeroAttributes {
         }
         instance.removeModifier(id);
         instance.addPermanentModifier(new AttributeModifier(id, amount, AttributeModifier.Operation.ADD_VALUE));
+    }
+
+    public static void syncStrength(Player player, int level) {
+        if (player.level().isClientSide) {
+            return;
+        }
+        MobEffectInstance current = player.getEffect(MobEffects.DAMAGE_BOOST);
+        boolean ours = current != null && current.isInfiniteDuration() && current.isAmbient();
+        int amplifier = level - 1;
+        if (level <= 0) {
+            if (ours) {
+                player.removeEffect(MobEffects.DAMAGE_BOOST);
+            }
+            return;
+        }
+        if (current != null && (ours ? current.getAmplifier() == amplifier : current.getAmplifier() >= amplifier)) {
+            return;
+        }
+        if (ours) {
+            player.removeEffect(MobEffects.DAMAGE_BOOST);
+        }
+        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, MobEffectInstance.INFINITE_DURATION, amplifier, true, false, true));
     }
 
     public static void syncExtras(Player player, MarvelBalanceConfig.HeroStats stats) {

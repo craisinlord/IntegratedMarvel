@@ -28,7 +28,7 @@ public final class PantherPower {
     public static final String ID = "heart_shaped_herb_tchalla";
     private static final String ANCESTRAL_PLANE = "ancestral_plane";
     private static final Map<Holder<MobEffect>, Integer> PERMANENT_EFFECTS = Map.of(
-            MobEffects.NIGHT_VISION, 0, MobEffects.DAMAGE_BOOST, 1, MobEffects.MOVEMENT_SPEED, 1, MobEffects.JUMP, 1);
+            MobEffects.NIGHT_VISION, 0, MobEffects.MOVEMENT_SPEED, 1, MobEffects.JUMP, 1);
     private static final Map<Holder<MobEffect>, HeroPower.Toggle> EFFECT_TOGGLES = Map.of(
             MobEffects.NIGHT_VISION, HeroToggles.SENSES, MobEffects.MOVEMENT_SPEED, HeroToggles.SPEED, MobEffects.JUMP, HeroToggles.JUMP);
 
@@ -117,7 +117,7 @@ public final class PantherPower {
     private static double pounce(ServerPlayer player, int slot) {
         Vec3 look = player.getLookAngle();
         Vec3 velocity = new Vec3(look.x * 1.4D, Math.max(0.6D, look.y + 0.4D), look.z * 1.4D);
-        double damage = HeroPowers.powerDamage(player) * MarvelBalanceConfig.POUNCE_DAMAGE_MULTIPLIER.get();
+        double damage = MarvelBalanceConfig.POUNCE_DAMAGE.get();
         HeroAbilities.startDash(player, velocity, 20, damage, 1.0D);
         player.fallDistance = 0.0F;
         HeroAnimations.play(player, "wolverine_pounce");
@@ -126,7 +126,7 @@ public final class PantherPower {
     }
 
     private static double clawSwipe(ServerPlayer player, int slot) {
-        double damage = HeroPowers.powerDamage(player) * MarvelBalanceConfig.CLAW_SWIPE_DAMAGE_MULTIPLIER.get();
+        double damage = MarvelBalanceConfig.CLAW_SWIPE_DAMAGE.get();
         for (LivingEntity target : HeroAbilities.cone(player, 4.0D, 60.0D)) {
             target.hurt(player.damageSources().mobAttack(player), (float) damage);
             target.knockback(0.6D, player.getX() - target.getX(), player.getZ() - target.getZ());

@@ -109,7 +109,7 @@ final class VanillaBlockLift {
             return false;
         }
         HeroBlockLift.Profile profile = held.profile();
-        float damage = (float) (HeroPowers.powerDamage(player) * profile.damageMultiplier() * (1.0D + held.entityIds().size() / 16.0D));
+        float damage = (float) (profile.damage() * (1.0D + held.entityIds().size() / 16.0D));
         Set<Integer> hit = new HashSet<>();
         Vec3 velocity = player.getLookAngle().scale(profile.throwSpeed());
         boolean any = false;

@@ -4,7 +4,6 @@ import com.craisinlord.integrated_superheroes.hero.HeroAbilities;
 import com.craisinlord.integrated_superheroes.hero.MarvelBalanceConfig;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +20,7 @@ public abstract class LegacyWolverineDamageMixin {
     private static boolean integratedSuperheroes$scaleClawDamage(LivingEntity target, DamageSource source, float amount) {
         float scaled = amount;
         if (source.getEntity() instanceof Player player) {
-            scaled = (float) (MarvelBalanceConfig.LOGAN_CLAW_DAMAGE.get() + player.getAttributeValue(Attributes.ATTACK_DAMAGE));
+            scaled = MarvelBalanceConfig.LOGAN_CLAW_DAMAGE.get().floatValue();
         }
         boolean[] result = new boolean[1];
         float finalDamage = scaled;

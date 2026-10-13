@@ -1,0 +1,78 @@
+{
+  "swarm_squirrel_idle": {
+    "subtitle": "subtitles.integrated_superheroes.swarm_squirrel_idle",
+    "sounds": [
+      {
+        "name": "integrated_superheroes:mob/swarm_squirrel/swarm_squirrel_idle1"
+      },
+      {
+        "name": "minecraft:mob/fox/sniff1"
+      },
+      {
+        "name": "minecraft:mob/fox/sniff2"
+      },
+      {
+        "name": "minecraft:mob/fox/sniff4"
+      }
+    ]
+  },
+  "swarm_squirrel_beg": {
+    "subtitle": "subtitles.integrated_superheroes.swarm_squirrel_beg",
+    "sounds": [
+      {
+        "name": "entity.cat.beg_for_food",
+        "type": "event"
+      }
+    ]
+  },
+  "swarm_squirrel_nut": {
+    "subtitle": "subtitles.integrated_superheroes.swarm_squirrel_nut",
+    "sounds": [
+      {
+        "name": "minecraft:mob/fox/eat1"
+      },
+      {
+        "name": "minecraft:mob/fox/eat2"
+      },
+      {
+        "name": "minecraft:mob/fox/eat3"
+      }
+    ]
+  },
+  "swarm_squirrel_glide_loop": {
+    "subtitle": "subtitles.integrated_superheroes.swarm_squirrel_glide_loop",
+    "sounds": [
+      {
+        "name": "integrated_superheroes:mob/swarm_squirrel/swarm_squirrel_glide_loop"
+      }
+    ]
+  },
+  "swarm_squirrel_hurt": {
+    "subtitle": "subtitles.integrated_superheroes.swarm_squirrel_hurt",
+    "sounds": [
+      {
+        "name": "minecraft:mob/fox/hurt1"
+      },
+      {
+        "name": "minecraft:mob/fox/hurt2"
+      },
+      {
+        "name": "minecraft:mob/fox/hurt3"
+      },
+      {
+        "name": "minecraft:mob/fox/hurt4"
+      }
+    ]
+  },
+  "swarm_squirrel_death": {
+    "subtitle": "subtitles.integrated_superheroes.swarm_squirrel_death",
+    "sounds": [
+      {
+        "name": "minecraft:mob/fox/death1"
+      },
+      {
+        "name": "minecraft:mob/fox/death2"
+      }
+    ]
+  }
+}

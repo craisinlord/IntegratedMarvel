@@ -12,3 +12,4 @@ build
 .project
 .claude
 libs/runtime/*.jar
+/anthology_jars/

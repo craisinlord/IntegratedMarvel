@@ -61,6 +61,8 @@ configurations {
 
 dependencies {
     compileOnly fileTree(dir: 'libs', include: '*.jar')
+    compileOnly files('anthology_jars/anthology-1.0.0+1.21.1-neoforge.jar')
+    localRuntime files('anthology_jars/anthology-1.0.0+1.21.1-neoforge.jar')
     compileOnly(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-common:0.3.3"))
     jarJar(implementation("com.github.bawnorton.mixinsquared:mixinsquared-neoforge:0.3.3"))
     localRuntime fileTree(dir: 'libs/runtime', include: '*.jar')

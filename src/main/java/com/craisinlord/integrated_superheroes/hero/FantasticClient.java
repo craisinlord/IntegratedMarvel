@@ -40,6 +40,7 @@ public final class FantasticClient {
     private static final float ARM_LENGTH = 0.586F;
     private static final float MAX_SCALE = 30.0F;
     private static final double NECK_HEIGHT = 5.0D;
+    private static final float STILT_SCALE = 3.0F;
     private static final float[] PIVOTS = new float[18];
     private static final double BLEND_TICKS = 8.0D;
     private static final Map<UUID, Blend> BLENDS = new HashMap<>();
@@ -205,12 +206,17 @@ public final class FantasticClient {
         if (!MrFantasticPower.isReed(player)) {
             return null;
         }
-        FantasticSeat seat = ReedShapes.seat(player);
-        if (seat != null) {
-            return seat.isSofa() ? ReedShapes.SOFA : ReedShapes.BOAT;
+        if (ReedShapes.has(player, ReedShapes.SOFA_STATE)) {
+            return ReedShapes.SOFA;
         }
-        if (ReedShapes.has(player, ReedShapes.TRAMPOLINE_STATE)) {
-            return ReedShapes.TRAMPOLINE;
+        if (ReedShapes.has(player, ReedShapes.BOAT_STATE)) {
+            return ReedShapes.BOAT;
+        }
+        if (ReedShapes.has(player, ReedShapes.BRIDGE_STATE)) {
+            return ReedShapes.BRIDGE;
+        }
+        if (ReedShapes.has(player, ReedShapes.STILTS_STATE)) {
+            return ReedShapes.STILTS;
         }
         if (ReedShapes.has(player, ReedShapes.BALL_STATE)) {
             return ReedShapes.BALL;
@@ -220,9 +226,6 @@ public final class FantasticClient {
         }
         if (ReedShapes.has(player, ReedShapes.POGO_STATE)) {
             return ReedShapes.POGO;
-        }
-        if (ReedShapes.has(player, ReedShapes.UMBRELLA_STATE)) {
-            return ReedShapes.UMBRELLA;
         }
         return MrFantasticPower.gliding(player) ? ReedShapes.PARACHUTE : null;
     }
@@ -308,9 +311,9 @@ public final class FantasticClient {
         save(model);
         float clock = player.tickCount + partial;
         if (b > 0.0F && ReedShapes.BOAT.equals(form)) {
-            lie(pose, 2.0F, 1.5F, 1.0F, 0.55F, b);
-            Entity vehicle = player.getVehicle();
-            float paddle = vehicle != null && vehicle.getDeltaMovement().horizontalDistanceSqr() > 1.0E-3D ? Mth.sin(clock * 0.45F) * 0.35F : 0.0F;
+            lie(pose, 2.0F, 1.5F, 1.0F, 0.4F, b);
+            double moved = Mth.lengthSquared(player.getX() - player.xo, player.getZ() - player.zo);
+            float paddle = moved > 1.0E-3D ? Mth.sin(clock * 0.45F) * 0.35F : 0.0F;
             blendArm(model.rightArm, model.rightSleeve, paddle, 0.12F, 1.8F, 1.2F, 3.0F, b);
             blendArm(model.leftArm, model.leftSleeve, -paddle, -0.12F, 1.8F, 1.2F, 3.0F, b);
             blendLeg(model.rightLeg, model.rightPants, 0.0F, 0.1F, 1.3F, 1.2F, 2.6F, b);
@@ -318,6 +321,7 @@ public final class FantasticClient {
             return;
         }
         if (b > 0.0F && ReedShapes.SOFA.equals(form)) {
+            pose.translate(0.0F, 0.7F * b, 0.0F);
             pose.translate(0.0F, 0.75F, 0.0F);
             pose.scale(Mth.lerp(b, 1.0F, 2.2F), 1.0F, Mth.lerp(b, 1.0F, 1.4F));
             pose.translate(0.0F, -0.75F, 0.0F);
@@ -327,12 +331,30 @@ public final class FantasticClient {
             blendLeg(model.leftLeg, model.leftPants, -1.4F, 0.0F, 1.1F, 1.8F, 1.8F, b);
             return;
         }
-        if (b > 0.0F && ReedShapes.TRAMPOLINE.equals(form)) {
-            lie(pose, 2.6F, 1.3F, 0.35F, 0.62F, b);
-            blendArm(model.rightArm, model.rightSleeve, 0.0F, 1.3F, 1.4F, 1.2F, 1.2F, b);
-            blendArm(model.leftArm, model.leftSleeve, 0.0F, -1.3F, 1.4F, 1.2F, 1.2F, b);
-            blendLeg(model.rightLeg, model.rightPants, 0.0F, 0.6F, 1.2F, 1.2F, 1.2F, b);
-            blendLeg(model.leftLeg, model.leftPants, 0.0F, -0.6F, 1.2F, 1.2F, 1.2F, b);
+        if (b > 0.0F && ReedShapes.BRIDGE.equals(form)) {
+            Vec3 end = MrFantasticPower.bridgeEnd(player);
+            Vec3 at = player.getPosition(partial);
+            float body = Mth.rotLerp(partial, player.yBodyRotO, player.yBodyRot);
+            float turn = 0.0F;
+            double length = MarvelBalanceConfig.BRIDGE_LENGTH.get() + 0.5D;
+            if (end != null) {
+                double dx = end.x - at.x;
+                double dz = end.z - at.z;
+                length = Math.max(1.0D, Math.sqrt(dx * dx + dz * dz));
+                turn = Mth.wrapDegrees((float) (Mth.atan2(dz, dx) * Mth.RAD_TO_DEG) - 90.0F - body);
+            }
+            pose.mulPose(Axis.YP.rotationDegrees(turn * b));
+            pose.translate(0.0F, 1.5F - 0.125F * b, 0.0F);
+            pose.mulPose(Axis.XP.rotationDegrees(90.0F * b));
+            pose.scale(Mth.lerp(b, 1.0F, 1.8F), Mth.lerp(b, 1.0F, (float) (length / 0.9375D / 2.25D)), Mth.lerp(b, 1.0F, 0.5F));
+            pose.translate(0.0F, -1.5F, 0.0F);
+            model.head.xRot = Mth.lerp(b, model.head.xRot, 0.0F);
+            model.head.yRot = Mth.lerp(b, model.head.yRot, 0.0F);
+            model.hat.copyFrom(model.head);
+            blendArm(model.rightArm, model.rightSleeve, -Mth.PI, 0.1F, 1.0F, 1.0F, 1.0F, b);
+            blendArm(model.leftArm, model.leftSleeve, -Mth.PI, -0.1F, 1.0F, 1.0F, 1.0F, b);
+            blendLeg(model.rightLeg, model.rightPants, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F, b);
+            blendLeg(model.leftLeg, model.leftPants, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F, b);
             return;
         }
         if (b > 0.0F && ReedShapes.BALL.equals(form)) {
@@ -357,10 +379,10 @@ public final class FantasticClient {
             blendLeg(model.leftLeg, model.leftPants, 0.0F, 0.06F, spring, 0.8F, 0.8F, b);
             return;
         }
-        if (b > 0.0F && ReedShapes.UMBRELLA.equals(form)) {
-            blendArm(model.rightArm, model.rightSleeve, -Mth.PI, 0.12F, 1.6F, 1.0F, 1.0F, b);
-            blendArm(model.leftArm, model.leftSleeve, -Mth.PI, -0.12F, 1.6F, 1.0F, 1.0F, b);
-            return;
+        if (b > 0.0F && ReedShapes.STILTS.equals(form)) {
+            pose.translate(0.0F, -(Mth.lerp(b, 1.0F, STILT_SCALE) - 1.0F) * 0.75F, 0.0F);
+            blendLeg(model.rightLeg, model.rightPants, model.rightLeg.xRot * 0.5F, 0.0F, STILT_SCALE, 0.6F, 0.6F, b);
+            blendLeg(model.leftLeg, model.leftPants, model.leftLeg.xRot * 0.5F, 0.0F, STILT_SCALE, 0.6F, 0.6F, b);
         }
         if (b > 0.0F && ReedShapes.NECK.equals(form)) {
             model.head.y -= (float) (b * NECK_HEIGHT * 16.0D / 0.9375D);
@@ -434,37 +456,6 @@ public final class FantasticClient {
         restore(arm, state);
     }
 
-    public static void renderUmbrella(Player player, PlayerModel<?> model, PoseStack pose, VertexConsumer consumer, int light, int overlay, int color) {
-        if (!MrFantasticPower.isReed(player)) {
-            return;
-        }
-        float b = ease(amount(player, ReedShapes.UMBRELLA, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false)));
-        if (b <= 0.0F) {
-            return;
-        }
-        ModelPart arm = model.rightArm;
-        float[] state = store(arm);
-        float bottom = Mth.lerp(b, -8.0F, -15.0F);
-        canopy(arm, pose, consumer, light, overlay, color, 10.0F * b, 0.15F, bottom);
-        canopy(arm, pose, consumer, light, overlay, color, 6.0F * b, 0.15F, bottom - 1.8F);
-        canopy(arm, pose, consumer, light, overlay, color, 2.5F * b, 0.2F, bottom - 3.6F);
-        restore(arm, state);
-    }
-
-    private static void canopy(ModelPart arm, PoseStack pose, VertexConsumer consumer, int light, int overlay, int color, float wide, float thick, float bottom) {
-        arm.x = wide;
-        arm.y = bottom - 10.0F * thick;
-        arm.z = 0.0F;
-        arm.xRot = 0.0F;
-        arm.yRot = 0.0F;
-        arm.zRot = 0.0F;
-        arm.xScale = wide;
-        arm.yScale = thick;
-        arm.zScale = wide;
-        arm.visible = true;
-        arm.render(pose, consumer, light, overlay, color);
-    }
-
     public static void reset(PlayerModel<?> model) {
         if (saved) {
             ModelPart[] parts = pivotParts(model);
@@ -493,22 +484,28 @@ public final class FantasticClient {
             return 0.0D;
         }
         float b = ease((float) blend.value(time));
+        double raise;
         switch (blend.form) {
-            case ReedShapes.TRAMPOLINE:
+            case ReedShapes.BRIDGE:
                 return -1.2D * b;
             case ReedShapes.BALL:
                 return -0.9D * b;
             case ReedShapes.BOAT:
-                return -0.35D * b;
+                return -1.0D * b;
+            case ReedShapes.SOFA:
+                return -0.6D * b;
             case ReedShapes.NECK:
+                raise = b * NECK_HEIGHT;
+                break;
+            case ReedShapes.STILTS:
+                raise = b * (STILT_SCALE - 1.0F) * 0.75D * 0.9375D;
                 break;
             default:
                 return 0.0D;
         }
-        double neck = b * NECK_HEIGHT;
         Vec3 eye = player.getEyePosition(partial);
-        HitResult hit = player.level().clip(new ClipContext(eye, eye.add(0.0D, neck + 0.3D, 0.0D), ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, player));
-        return hit.getType() == HitResult.Type.MISS ? neck : Math.max(0.0D, hit.getLocation().y - eye.y - 0.3D);
+        HitResult hit = player.level().clip(new ClipContext(eye, eye.add(0.0D, raise + 0.3D, 0.0D), ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, player));
+        return hit.getType() == HitResult.Type.MISS ? raise : Math.max(0.0D, hit.getLocation().y - eye.y - 0.3D);
     }
 
     private static boolean firstPerson(Player player) {
@@ -520,8 +517,7 @@ public final class FantasticClient {
         if (!firstPerson(player)) {
             return false;
         }
-        if (ReedShapes.has(player, ReedShapes.TRAMPOLINE_STATE) || ReedShapes.has(player, ReedShapes.BALL_STATE)
-                || ReedShapes.has(player, ReedShapes.UMBRELLA_STATE)) {
+        if (ReedShapes.has(player, ReedShapes.BRIDGE_STATE) || ReedShapes.has(player, ReedShapes.BALL_STATE)) {
             return true;
         }
         MrFantasticPower.Stretch stretch = MrFantasticPower.stretch(player, now(player));
@@ -544,8 +540,7 @@ public final class FantasticClient {
         long now = now(player);
         MrFantasticPower.Stretch stretch = MrFantasticPower.stretch(player, now);
         boolean gliding = stretch == null && MrFantasticPower.gliding(player);
-        boolean umbrella = stretch == null && !gliding && ReedShapes.has(player, ReedShapes.UMBRELLA_STATE);
-        if (stretch == null && !gliding && !umbrella) {
+        if (stretch == null && !gliding) {
             return;
         }
         EntityRenderer<? super LocalPlayer> renderer = minecraft.getEntityRenderDispatcher().getRenderer(player);
@@ -564,11 +559,7 @@ public final class FantasticClient {
         PlayerModel<AbstractClientPlayer> model = playerRenderer.getModel();
         MultiBufferSource.BufferSource buffers = minecraft.renderBuffers().bufferSource();
         ArmPass pass = new ArmPass(event.getPoseStack(), buffers, playerRenderer, player, camera, partial);
-        if (umbrella) {
-            Vec3 top = camera.add(0.0D, 1.2D, 0.0D).add(flat.scale(0.2D));
-            drawArm(pass, model.rightArm, model.rightSleeve, rightStart, top.add(right.scale(0.12D)), 1.0F, 1.0F, true);
-            drawArm(pass, model.leftArm, model.leftSleeve, leftStart, top.subtract(right.scale(0.12D)), 1.0F, 1.0F, false);
-        } else if (stretch == null) {
+        if (stretch == null) {
             Vec3 outRight = right.scale(0.85D).add(flat.scale(0.45D)).add(0.0D, -0.2D, 0.0D).normalize();
             Vec3 outLeft = right.scale(-0.85D).add(flat.scale(0.45D)).add(0.0D, -0.2D, 0.0D).normalize();
             drawArm(pass, model.rightArm, model.rightSleeve, rightStart, rightStart.add(outRight.scale(2.4D)), 1.3F, 3.0F, true);

@@ -1,12 +1,15 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
-import com.craisinlord.antarchy.content.AntarchySoundEvents;
-import com.craisinlord.antarchy.content.entity.portal.DimensionalTearEntity;
+import com.craisinlord.integrated_superheroes.compat.AntarchyDimensionalTear;
+import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -46,21 +49,22 @@ public final class SpacePortalManager {
 
         Endpoint first = new Endpoint(source.dimension(), sourceCenter, normal, returnArrival, towardOpener);
         Endpoint second = new Endpoint(destination.dimension(), exitCenter, exitNormal, arrival, exitNormal.scale(-1.0D));
-        DimensionalTearEntity firstVisual = createVisual(source, first);
-        DimensionalTearEntity secondVisual = createVisual(destination, second);
-        if (!source.addFreshEntity(firstVisual)) {
+        Entity firstVisual = createVisual(source, first);
+        Entity secondVisual = createVisual(destination, second);
+        if (firstVisual != null && !source.addFreshEntity(firstVisual)) {
             firstVisual.discard();
             return false;
         }
-        if (!destination.addFreshEntity(secondVisual)) {
-            firstVisual.discard();
+        if (secondVisual != null && !destination.addFreshEntity(secondVisual)) {
+            if (firstVisual != null) firstVisual.discard();
             secondVisual.discard();
             return false;
         }
         SpaceTravel.keepLoaded(source, BlockPos.containing(sourceCenter));
         SpaceTravel.keepLoaded(destination, BlockPos.containing(exitCenter));
-        PortalPair previous = PORTAL_PAIRS.put(owner.getUUID(), new PortalPair(first, second, firstVisual.getUUID(),
-                secondVisual.getUUID(), now + PORTAL_LIFETIME_TICKS));
+        PortalPair previous = PORTAL_PAIRS.put(owner.getUUID(), new PortalPair(first, second,
+                firstVisual == null ? null : firstVisual.getUUID(), secondVisual == null ? null : secondVisual.getUUID(),
+                now + PORTAL_LIFETIME_TICKS));
         if (previous != null) {
             discardVisuals(source.getServer(), previous);
         }
@@ -99,10 +103,32 @@ public final class SpacePortalManager {
         return candidates[0];
     }
 
-    private static DimensionalTearEntity createVisual(ServerLevel level, Endpoint endpoint) {
+    private static Entity createVisual(ServerLevel level, Endpoint endpoint) {
+        if (!ModCompat.ANTARCHY) {
+            return null;
+        }
         Vec3 normal = endpoint.normal();
         float yaw = (float) Math.toDegrees(Math.atan2(normal.x, -normal.z));
-        return DimensionalTearEntity.createGauntletVisual(level, endpoint.center(), yaw, PORTAL_LIFETIME_TICKS);
+        return AntarchyDimensionalTear.create(level, endpoint.center(), yaw, PORTAL_LIFETIME_TICKS);
+    }
+
+    private static SoundEvent idleSound() {
+        return ModCompat.ANTARCHY ? AntarchyDimensionalTear.idleSound() : SoundEvents.PORTAL_AMBIENT;
+    }
+
+    private static void portalParticles(ServerLevel level, Endpoint endpoint, long now) {
+        Vec3 center = endpoint.center();
+        Vec3 normal = endpoint.normal();
+        Vec3 right = new Vec3(-normal.z, 0.0D, normal.x);
+        for (int i = 0; i < 12; i++) {
+            double angle = now * 0.15D + i * (Math.PI * 2.0D / 12.0D);
+            Vec3 rim = center.add(right.scale(Math.cos(angle) * HALF_WIDTH)).add(0.0D, Math.sin(angle) * HALF_HEIGHT, 0.0D);
+            level.sendParticles(ParticleTypes.PORTAL, rim.x, rim.y, rim.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        }
+        double inner = level.random.nextDouble() * 0.8D;
+        double theta = level.random.nextDouble() * Math.PI * 2.0D;
+        Vec3 fill = center.add(right.scale(Math.cos(theta) * HALF_WIDTH * inner)).add(0.0D, Math.sin(theta) * HALF_HEIGHT * inner, 0.0D);
+        level.sendParticles(ParticleTypes.REVERSE_PORTAL, fill.x, fill.y, fill.z, 2, 0.05D, 0.05D, 0.05D, 0.01D);
     }
 
     public static void tick(MinecraftServer server) {
@@ -141,9 +167,13 @@ public final class SpacePortalManager {
     }
 
     private static void discardVisual(MinecraftServer server, ResourceKey<Level> dimension, UUID id) {
+        if (id == null) {
+            return;
+        }
         ServerLevel level = server.getLevel(dimension);
-        if (level != null && level.getEntity(id) instanceof DimensionalTearEntity tear) {
-            tear.discard();
+        Entity visual = level == null ? null : level.getEntity(id);
+        if (visual != null) {
+            visual.discard();
         }
     }
 
@@ -158,8 +188,10 @@ public final class SpacePortalManager {
             SpaceTravel.keepLoaded(level, BlockPos.containing(endpoint.center()));
         }
         if (now % 80L == 0L) {
-            level.playSound(null, BlockPos.containing(endpoint.center()), AntarchySoundEvents.DIMENSIONAL_TEAR_IDLE.get(),
-                    SoundSource.AMBIENT, 0.45F, 0.95F);
+            level.playSound(null, BlockPos.containing(endpoint.center()), idleSound(), SoundSource.AMBIENT, 0.45F, 0.95F);
+        }
+        if (!ModCompat.ANTARCHY && now % 2L == 0L) {
+            portalParticles(level, endpoint, now);
         }
         AABB bounds = AABB.ofSize(endpoint.center(), 8.0D, 6.0D, 8.0D);
         for (Entity entity : level.getEntitiesOfClass(Entity.class, bounds, SpacePortalManager::canTravel)) {
@@ -182,7 +214,7 @@ public final class SpacePortalManager {
 
     private static boolean canTravel(Entity entity) {
         return entity.isAlive() && !entity.isSpectator() && !entity.isPassenger()
-                && !(entity instanceof DimensionalTearEntity);
+                && !(ModCompat.ANTARCHY && AntarchyDimensionalTear.isTear(entity));
     }
 
     private static boolean crosses(Vec3 previous, Vec3 current, Endpoint endpoint) {

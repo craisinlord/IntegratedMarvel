@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.cleanup;
 
+import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -59,12 +60,14 @@ public final class Cleanup {
         }
         extras.feature("infinity_gauntlet:mjolnir_structure_feature");
 
-        Group titanium = group(CleanupConfig.TITANIUM);
-        for (String id : List.of("titanium_ingot", "raw_titanium", "titanium_nugget", "titanium_block", "raw_titanium_block",
-                "titanium_ore", "deepslate_titanium_ore")) {
-            titanium.replace("marvel:" + id, "antarchy:" + id);
+        if (ModCompat.ANTARCHY) {
+            Group titanium = group(CleanupConfig.TITANIUM);
+            for (String id : List.of("titanium_ingot", "raw_titanium", "titanium_nugget", "titanium_block", "raw_titanium_block",
+                    "titanium_ore", "deepslate_titanium_ore")) {
+                titanium.replace("marvel:" + id, "antarchy:" + id);
+            }
+            titanium.feature("marvel:ore_titanium");
         }
-        titanium.feature("marvel:ore_titanium");
 
         Group palladium = group(CleanupConfig.PALLADIUM);
         palladium.replace("marvel:palladium_ingot", "minecraft:netherite_ingot");

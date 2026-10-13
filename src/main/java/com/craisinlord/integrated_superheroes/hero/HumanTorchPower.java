@@ -204,7 +204,7 @@ public final class HumanTorchPower {
         }
         if (hit instanceof EntityHitResult entityHit && fireball.getOwner() instanceof ServerPlayer owner
                 && entityHit.getEntity() instanceof LivingEntity target) {
-            float damage = (float) (HeroPowers.powerDamage(owner) * MarvelBalanceConfig.FIREBALL_DAMAGE_MULTIPLIER.get());
+            float damage = MarvelBalanceConfig.FIREBALL_DAMAGE.get().floatValue();
             HeroAbilities.runAsAbilityDamage(() -> target.hurt(owner.damageSources().fireball(fireball, owner), damage));
             target.igniteForSeconds(5.0F);
         }
@@ -260,7 +260,7 @@ public final class HumanTorchPower {
                     target.getZ() + Math.sin(angle) * radius, 1, 0.0D, 0.05D, 0.0D, 0.0D);
         }
         if (cage.ticks % 20 == 0) {
-            float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.FLAME_CAGE_DAMAGE_MULTIPLIER.get());
+            float damage = MarvelBalanceConfig.FLAME_CAGE_DAMAGE.get().floatValue();
             target.invulnerableTime = 0;
             HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
             target.igniteForSeconds(3.0F);
@@ -273,7 +273,7 @@ public final class HumanTorchPower {
         }
         ServerLevel level = player.serverLevel();
         double radius = MarvelBalanceConfig.NOVA_RADIUS.get();
-        float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.NOVA_DAMAGE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.NOVA_DAMAGE.get().floatValue();
         HeroAdvancements.cast(player).kills(5, "fantastic_four/human_torch/supernova").run(() -> {
             for (LivingEntity target : HeroAbilities.sphere(player, radius)) {
                 HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));

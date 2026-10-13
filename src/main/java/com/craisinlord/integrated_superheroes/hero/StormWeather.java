@@ -32,7 +32,7 @@ public final class StormWeather {
             new HeroWheels.Option("blizzard", "Blizzard", () -> Items.POWDER_SNOW_BUCKET),
             new HeroWheels.Option("sandstorm", "Sandstorm", () -> Items.SAND),
             new HeroWheels.Option("winds", "Winds", () -> Items.FEATHER),
-            new HeroWheels.Option("tornado", "Tornado", () -> HeroFx.item("antarchy:eye_of_the_storm"))
+            new HeroWheels.Option("tornado", "Tornado", () -> HeroFx.item("antarchy:eye_of_the_storm", Items.WIND_CHARGE))
     );
 
     private StormWeather() {

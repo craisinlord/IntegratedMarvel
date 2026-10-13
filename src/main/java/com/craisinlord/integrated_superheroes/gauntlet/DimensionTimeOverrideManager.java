@@ -1,10 +1,10 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
-import com.craisinlord.antarchy.content.time.TimeDilationApi;
-import com.craisinlord.antarchy.content.time.TimeDilationEntityAccess;
-import com.craisinlord.antarchy.content.time.TimeDilationManager;
-import com.craisinlord.antarchy.content.time.TimeDilationMath;
-import com.craisinlord.antarchy.content.time.TimeDilationFieldEntity;
+import com.craisinlord.anthology.time.TimeDilationApi;
+import com.craisinlord.anthology.time.TimeDilationEntityAccess;
+import com.craisinlord.anthology.time.TimeDilationManager;
+import com.craisinlord.anthology.time.TimeDilationMath;
+import com.craisinlord.anthology.time.TimeDilationFieldEntity;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -58,10 +58,10 @@ public final class DimensionTimeOverrideManager {
     private static void applyLevel(ServerLevel level, Override override) {
         for (Entity entity : level.getAllEntities()) {
             if (entity instanceof TimeDilationFieldEntity || !(entity instanceof TimeDilationEntityAccess access)
-                    || entity.getType().is(com.craisinlord.antarchy.content.AntarchyTags.Entities.TIME_DILATION_IMMUNE)) continue;
+                    || entity.getType().is(com.craisinlord.anthology.time.TimeDilationTags.TIME_DILATION_IMMUNE)) continue;
             RateState state = override.entities.computeIfAbsent(entity.getUUID(), ignored ->
-                    new RateState(entity, level.dimension(), access.antarchy$getInheritedTimeDilationRate(), Double.NaN));
-            double current = access.antarchy$getInheritedTimeDilationRate();
+                    new RateState(entity, level.dimension(), access.anthology$getInheritedTimeDilationRate(), Double.NaN));
+            double current = access.anthology$getInheritedTimeDilationRate();
             if (Double.isFinite(state.appliedRate) && Math.abs(current - state.appliedRate) > 0.001D) {
                 state.originalRate = current;
             }
@@ -78,7 +78,7 @@ public final class DimensionTimeOverrideManager {
         for (RateState state : override.entities.values()) {
             Entity entity = state.entity;
             if (!(entity instanceof TimeDilationEntityAccess access)) continue;
-            double current = access.antarchy$getInheritedTimeDilationRate();
+            double current = access.anthology$getInheritedTimeDilationRate();
             if (Double.isFinite(state.appliedRate) && Math.abs(current - state.appliedRate) <= 0.001D) {
                 TimeDilationApi.setInheritedRate(entity, state.originalRate);
                 TimeDilationManager.trackPotentiallyAffected(entity);
@@ -100,7 +100,7 @@ public final class DimensionTimeOverrideManager {
 
     private static void restoreEntity(RateState state) {
         if (!(state.entity instanceof TimeDilationEntityAccess access)) return;
-        double current = access.antarchy$getInheritedTimeDilationRate();
+        double current = access.anthology$getInheritedTimeDilationRate();
         if (Double.isFinite(state.appliedRate) && Math.abs(current - state.appliedRate) <= 0.001D) {
             TimeDilationApi.setInheritedRate(state.entity, state.originalRate);
             TimeDilationManager.trackPotentiallyAffected(state.entity);

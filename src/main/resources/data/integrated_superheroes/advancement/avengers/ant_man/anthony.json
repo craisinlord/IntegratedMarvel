@@ -1,0 +1,29 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "antarchy"
+    }
+  ],
+  "parent": "integrated_superheroes:avengers/ant_man",
+  "display": {
+    "icon": {
+      "id": "minecraft:saddle"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.avengers.ant_man.anthony.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.avengers.ant_man.anthony.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

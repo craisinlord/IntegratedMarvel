@@ -141,7 +141,7 @@ public final class IcemanPower {
 
     private static double freezeBlast(ServerPlayer player, int slot) {
         double range = MarvelBalanceConfig.FREEZE_RANGE.get();
-        float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.FREEZE_DAMAGE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.FREEZE_DAMAGE.get().floatValue();
         ServerLevel level = player.serverLevel();
         for (LivingEntity target : HeroAbilities.cone(player, range, 30.0D)) {
             target.hurt(player.damageSources().mobAttack(player), damage);
@@ -164,7 +164,7 @@ public final class IcemanPower {
     private static double cryogenesis(ServerPlayer player, int slot) {
         double radius = MarvelBalanceConfig.CRYOGENESIS_RADIUS.get();
         ServerLevel level = player.serverLevel();
-        float damage = (float) (HeroPowers.powerDamage(player) * 0.3D);
+        float damage = MarvelBalanceConfig.CRYOGENESIS_DAMAGE.get().floatValue();
         for (LivingEntity target : HeroAbilities.sphere(player, radius)) {
             target.hurt(player.damageSources().mobAttack(player), damage);
             freeze(target, MarvelBalanceConfig.CRYOGENESIS_TICKS.get());

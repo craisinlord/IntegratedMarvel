@@ -28,6 +28,22 @@ public final class TempBlocks {
     }
 
     public static boolean place(ServerLevel level, ServerPlayer player, BlockPos pos, BlockState block, int ticks) {
+        return place(level, player, pos, block, ticks, false);
+    }
+
+    public static boolean placeOver(ServerLevel level, ServerPlayer player, BlockPos pos, BlockState block, int ticks) {
+        return place(level, player, pos, block, ticks, true);
+    }
+
+    public static void release(ServerLevel level, BlockPos pos) {
+        Map<BlockPos, Entry> placed = PLACED.get(level.dimension());
+        Entry entry = placed == null ? null : placed.remove(pos);
+        if (entry != null && level.getBlockState(pos).is(entry.placed().getBlock())) {
+            level.setBlockAndUpdate(pos, entry.original());
+        }
+    }
+
+    private static boolean place(ServerLevel level, ServerPlayer player, BlockPos pos, BlockState block, int ticks, boolean overFluids) {
         BlockState current = level.getBlockState(pos);
         Map<BlockPos, Entry> placed = PLACED.computeIfAbsent(level.dimension(), ignored -> new HashMap<>());
         Entry existing = placed.get(pos);
@@ -40,7 +56,7 @@ public final class TempBlocks {
         }
         BlockState state;
         if (block != null) {
-            if (!current.canBeReplaced() || !current.getFluidState().isEmpty()) {
+            if (!current.canBeReplaced() || !overFluids && !current.getFluidState().isEmpty()) {
                 return false;
             }
             state = block;

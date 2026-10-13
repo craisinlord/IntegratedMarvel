@@ -11,6 +11,7 @@ import com.craisinlord.integrated_superheroes.registry.GauntletContent;
 import com.craisinlord.integrated_superheroes.registry.HeroEntities;
 import com.craisinlord.integrated_superheroes.registry.ModCreativeTab;
 import com.craisinlord.integrated_superheroes.registry.ModEffects;
+import com.craisinlord.integrated_superheroes.registry.ModSounds;
 import com.craisinlord.integrated_superheroes.registry.SuitEntities;
 import com.craisinlord.integrated_superheroes.villain.VillainConfig;
 import com.craisinlord.integrated_superheroes.villain.Villains;
@@ -34,6 +35,7 @@ public final class IntegratedSuperheroes {
         modContainer.registerConfig(ModConfig.Type.COMMON, MarvelWeaponConfig.SPEC, "integrated_superheroes-weapons.toml");
         modContainer.registerConfig(ModConfig.Type.COMMON, CleanupConfig.SPEC, "integrated_superheroes-cleanup.toml");
         ModEffects.register(modEventBus);
+        ModSounds.register(modEventBus);
         ModCreativeTab.register(modEventBus);
         HeroContent.register(modEventBus);
         SuitEntities.register(modEventBus);

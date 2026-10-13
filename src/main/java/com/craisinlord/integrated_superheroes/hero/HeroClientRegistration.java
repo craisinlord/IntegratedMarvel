@@ -1,6 +1,5 @@
 package com.craisinlord.integrated_superheroes.hero;
 
-import com.craisinlord.antarchy.content.client.renderer.FlyingSquirrelRenderer;
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import com.craisinlord.integrated_superheroes.registry.HeroEntities;
 import net.minecraft.client.renderer.entity.NoopRenderer;
@@ -16,7 +15,7 @@ public final class HeroClientRegistration {
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(HeroEntities.SWARM_SQUIRREL.get(), FlyingSquirrelRenderer::new);
+        event.registerEntityRenderer(HeroEntities.SWARM_SQUIRREL.get(), SwarmSquirrelRenderer::new);
         event.registerEntityRenderer(HeroEntities.FANTASTIC_SEAT.get(), NoopRenderer::new);
     }
 }

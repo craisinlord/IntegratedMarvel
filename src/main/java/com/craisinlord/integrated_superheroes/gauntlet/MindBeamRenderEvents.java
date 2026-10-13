@@ -1,7 +1,7 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
-import com.craisinlord.antarchy.content.client.renderer.RoyalBeamRenderTypes;
+import com.craisinlord.anthology.beam.client.BeamRenderTypes;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -20,18 +20,18 @@ import org.joml.Matrix4f;
 
 @EventBusSubscriber(modid = IntegratedSuperheroes.MODID, value = Dist.CLIENT)
 public final class MindBeamRenderEvents {
-    private static final ResourceLocation OUTER = ResourceLocation.fromNamespaceAndPath("antarchy", "textures/entity/king/fire_beam_outer.png");
-    private static final ResourceLocation INNER = ResourceLocation.fromNamespaceAndPath("antarchy", "textures/entity/king/fire_beam_inner.png");
-    private static final ResourceLocation END_ONE = ResourceLocation.fromNamespaceAndPath("antarchy", "textures/entity/king/fire_beam_end_1.png");
-    private static final ResourceLocation END_TWO = ResourceLocation.fromNamespaceAndPath("antarchy", "textures/entity/king/fire_beam_end_2.png");
-    private static final ResourceLocation QUEEN_OUTER = ResourceLocation.fromNamespaceAndPath("antarchy", "textures/entity/queen/queen_purple_beam_outer.png");
-    private static final ResourceLocation QUEEN_INNER = ResourceLocation.fromNamespaceAndPath("antarchy", "textures/entity/queen/queen_purple_beam_inner.png");
-    private static final ResourceLocation QUEEN_END_ONE = ResourceLocation.fromNamespaceAndPath("antarchy", "textures/entity/queen/queen_purple_beam_end_1.png");
-    private static final ResourceLocation QUEEN_END_TWO = ResourceLocation.fromNamespaceAndPath("antarchy", "textures/entity/queen/queen_purple_beam_end_2.png");
-    private static final ResourceLocation QUEEN_RED_OUTER = ResourceLocation.fromNamespaceAndPath("antarchy", "textures/entity/queen/queen_red_beam_outer.png");
-    private static final ResourceLocation QUEEN_RED_INNER = ResourceLocation.fromNamespaceAndPath("antarchy", "textures/entity/queen/queen_red_beam_inner.png");
-    private static final ResourceLocation QUEEN_RED_END_ONE = ResourceLocation.fromNamespaceAndPath("antarchy", "textures/entity/queen/queen_red_beam_end_1.png");
-    private static final ResourceLocation QUEEN_RED_END_TWO = ResourceLocation.fromNamespaceAndPath("antarchy", "textures/entity/queen/queen_red_beam_end_2.png");
+    private static final ResourceLocation OUTER = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "textures/entity/king_beam/fire_beam_outer.png");
+    private static final ResourceLocation INNER = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "textures/entity/king_beam/fire_beam_inner.png");
+    private static final ResourceLocation END_ONE = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "textures/entity/king_beam/fire_beam_end_1.png");
+    private static final ResourceLocation END_TWO = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "textures/entity/king_beam/fire_beam_end_2.png");
+    private static final ResourceLocation QUEEN_OUTER = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "textures/entity/queen_beam/queen_purple_beam_outer.png");
+    private static final ResourceLocation QUEEN_INNER = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "textures/entity/queen_beam/queen_purple_beam_inner.png");
+    private static final ResourceLocation QUEEN_END_ONE = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "textures/entity/queen_beam/queen_purple_beam_end_1.png");
+    private static final ResourceLocation QUEEN_END_TWO = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "textures/entity/queen_beam/queen_purple_beam_end_2.png");
+    private static final ResourceLocation QUEEN_RED_OUTER = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "textures/entity/queen_beam/queen_red_beam_outer.png");
+    private static final ResourceLocation QUEEN_RED_INNER = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "textures/entity/queen_beam/queen_red_beam_inner.png");
+    private static final ResourceLocation QUEEN_RED_END_ONE = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "textures/entity/queen_beam/queen_red_beam_end_1.png");
+    private static final ResourceLocation QUEEN_RED_END_TWO = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "textures/entity/queen_beam/queen_red_beam_end_2.png");
     private static final ResourceLocation RAINBOW_OUTER = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "textures/entity/infinity_beam/outer.png");
     private static final ResourceLocation RAINBOW_INNER = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "textures/entity/infinity_beam/inner.png");
     private static final ResourceLocation RAINBOW_END_ONE = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "textures/entity/infinity_beam/end_1.png");
@@ -43,22 +43,22 @@ public final class MindBeamRenderEvents {
     private static final float RAINBOW_BAND_LENGTH = 6.0F;
     private static final float RAINBOW_SPEED = 0.06F;
 
-    private static final RenderType OUTER_TYPE = RoyalBeamRenderTypes.beam(OUTER);
-    private static final RenderType INNER_TYPE = RoyalBeamRenderTypes.beam(INNER);
-    private static final RenderType END_ONE_TYPE = RoyalBeamRenderTypes.beam(END_ONE);
-    private static final RenderType END_TWO_TYPE = RoyalBeamRenderTypes.beam(END_TWO);
-    private static final RenderType QUEEN_OUTER_TYPE = RoyalBeamRenderTypes.beam(QUEEN_OUTER);
-    private static final RenderType QUEEN_INNER_TYPE = RoyalBeamRenderTypes.beam(QUEEN_INNER);
-    private static final RenderType QUEEN_END_ONE_TYPE = RoyalBeamRenderTypes.beam(QUEEN_END_ONE);
-    private static final RenderType QUEEN_END_TWO_TYPE = RoyalBeamRenderTypes.beam(QUEEN_END_TWO);
-    private static final RenderType QUEEN_RED_OUTER_TYPE = RoyalBeamRenderTypes.beam(QUEEN_RED_OUTER);
-    private static final RenderType QUEEN_RED_INNER_TYPE = RoyalBeamRenderTypes.beam(QUEEN_RED_INNER);
-    private static final RenderType QUEEN_RED_END_ONE_TYPE = RoyalBeamRenderTypes.beam(QUEEN_RED_END_ONE);
-    private static final RenderType QUEEN_RED_END_TWO_TYPE = RoyalBeamRenderTypes.beam(QUEEN_RED_END_TWO);
-    private static final RenderType RAINBOW_OUTER_TYPE = RoyalBeamRenderTypes.beam(RAINBOW_OUTER);
-    private static final RenderType RAINBOW_INNER_TYPE = RoyalBeamRenderTypes.beam(RAINBOW_INNER);
-    private static final RenderType RAINBOW_END_ONE_TYPE = RoyalBeamRenderTypes.beam(RAINBOW_END_ONE);
-    private static final RenderType RAINBOW_END_TWO_TYPE = RoyalBeamRenderTypes.beam(RAINBOW_END_TWO);
+    private static final RenderType OUTER_TYPE = BeamRenderTypes.beam(OUTER);
+    private static final RenderType INNER_TYPE = BeamRenderTypes.beam(INNER);
+    private static final RenderType END_ONE_TYPE = BeamRenderTypes.beam(END_ONE);
+    private static final RenderType END_TWO_TYPE = BeamRenderTypes.beam(END_TWO);
+    private static final RenderType QUEEN_OUTER_TYPE = BeamRenderTypes.beam(QUEEN_OUTER);
+    private static final RenderType QUEEN_INNER_TYPE = BeamRenderTypes.beam(QUEEN_INNER);
+    private static final RenderType QUEEN_END_ONE_TYPE = BeamRenderTypes.beam(QUEEN_END_ONE);
+    private static final RenderType QUEEN_END_TWO_TYPE = BeamRenderTypes.beam(QUEEN_END_TWO);
+    private static final RenderType QUEEN_RED_OUTER_TYPE = BeamRenderTypes.beam(QUEEN_RED_OUTER);
+    private static final RenderType QUEEN_RED_INNER_TYPE = BeamRenderTypes.beam(QUEEN_RED_INNER);
+    private static final RenderType QUEEN_RED_END_ONE_TYPE = BeamRenderTypes.beam(QUEEN_RED_END_ONE);
+    private static final RenderType QUEEN_RED_END_TWO_TYPE = BeamRenderTypes.beam(QUEEN_RED_END_TWO);
+    private static final RenderType RAINBOW_OUTER_TYPE = BeamRenderTypes.beam(RAINBOW_OUTER);
+    private static final RenderType RAINBOW_INNER_TYPE = BeamRenderTypes.beam(RAINBOW_INNER);
+    private static final RenderType RAINBOW_END_ONE_TYPE = BeamRenderTypes.beam(RAINBOW_END_ONE);
+    private static final RenderType RAINBOW_END_TWO_TYPE = BeamRenderTypes.beam(RAINBOW_END_TWO);
 
     private MindBeamRenderEvents() {
     }

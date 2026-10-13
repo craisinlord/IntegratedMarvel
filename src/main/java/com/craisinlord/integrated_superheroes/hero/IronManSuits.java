@@ -58,6 +58,7 @@ public final class IronManSuits {
         suit(builder, "war_machine_mark_2", 5, 12, 9, 6, 3.16, 27, 11, 93, 1.8);
         suit(builder, "iron_patriot", 5, 12, 9, 6, 3.16, 27, 11, 93, 1.9);
         com.craisinlord.integrated_superheroes.suit.SuitAbilityConfig.define(builder);
+        com.craisinlord.integrated_superheroes.suit.PymConfig.define(builder);
         IronManEnergy.define(builder);
         builder.pop();
     }

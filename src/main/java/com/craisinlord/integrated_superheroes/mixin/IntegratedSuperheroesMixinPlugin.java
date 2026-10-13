@@ -16,7 +16,8 @@ public final class IntegratedSuperheroesMixinPlugin implements IMixinConfigPlugi
             "IceAndFire", "iceandfire",
             "MutantMonsters", "mutantmonsters",
             "BetterCombat", "bettercombat",
-            "Celestisynth", "celestisynth");
+            "Celestisynth", "celestisynth",
+            "Antarchy", "antarchy");
 
     @Override
     public void onLoad(String mixinPackage) {

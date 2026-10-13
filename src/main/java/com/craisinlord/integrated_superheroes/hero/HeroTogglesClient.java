@@ -35,9 +35,6 @@ public final class HeroTogglesClient {
             return;
         }
         HeroPower hero = HeroPowers.activeHero(player);
-        if (hero == null) {
-            return;
-        }
         PlayerData data = HeroPowers.data(player);
         KeyMapping[] keys = HeroSlotsClient.allKeys();
         for (int slot = 0; slot < keys.length; slot++) {
@@ -46,7 +43,7 @@ public final class HeroTogglesClient {
                 continue;
             }
             if (HeroToggles.WHEEL_ABILITY.equals(power.getName())) {
-                if (!hero.toggles().isEmpty()) {
+                if (hero != null && !hero.toggles().isEmpty()) {
                     setOpen(player, hero, data, keys[slot].isDown());
                 }
                 continue;

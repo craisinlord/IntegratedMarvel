@@ -2,7 +2,6 @@ package com.craisinlord.integrated_superheroes.hero;
 
 import com.stxllarplanes.marvellegacy.data.PlayerData;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -11,7 +10,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -42,7 +40,6 @@ public final class ThingPower {
     private static final Map<UUID, Wrestle> WRESTLES = new HashMap<>();
     private static final Map<UUID, Long> SERVER_LEAPS = new HashMap<>();
     private static final Map<UUID, Long> CLIENT_LEAPS = new HashMap<>();
-    private static final Map<Holder<MobEffect>, Integer> EFFECTS = Map.of(MobEffects.DAMAGE_BOOST, 0);
     public static final HeroPower.Toggle ROCK_LEAP = new HeroPower.Toggle("integrated_superheroes_off_jump", "Super Jump", () -> Items.TUFF);
 
     private ThingPower() {
@@ -79,7 +76,6 @@ public final class ThingPower {
                     @Override
                     public void tick(ServerPlayer player) {
                         if (player.tickCount % 20 == 0) {
-                            HeroToggles.applyEffects(player, EFFECTS, Map.of());
                             if (player.isUnderWater() && player.onGround() && deepWater(player, 20)) {
                                 HeroAdvancements.award(player, "fantastic_four/thing/rock_bottom");
                             }
@@ -103,12 +99,6 @@ public final class ThingPower {
                         COMBOS.remove(player.getUUID());
                         LAST_HURT.remove(player.getUUID());
                         player.setAbsorptionAmount(0.0F);
-                        EFFECTS.keySet().forEach(effect -> {
-                            MobEffectInstance current = player.getEffect(effect);
-                            if (current != null && current.isInfiniteDuration() && current.isAmbient()) {
-                                player.removeEffect(effect);
-                            }
-                        });
                     }
 
                     @Override
@@ -280,7 +270,7 @@ public final class ThingPower {
             level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, below), player.getX(), player.getY() + 0.1D, player.getZ(),
                     40, 1.2D, 0.1D, 1.2D, 0.2D);
         }
-        HeroShockwaves.ring(player, 8, Math.min(6, 2 + (int) (amount / 4.0F)), (float) (HeroPowers.powerDamage(player) * 0.4D));
+        HeroShockwaves.ring(player, 8, Math.min(6, 2 + (int) (amount / 4.0F)), MarvelBalanceConfig.CRATER_DAMAGE.get().floatValue());
         HeroFx.shake(level, player.position(), 16.0D, 0.6F, 12);
         HeroFx.play(player, SoundEvents.GENERIC_EXPLODE.value(), 0.8F, 0.6F);
     }
@@ -305,7 +295,7 @@ public final class ThingPower {
         if (target == null) {
             return 0.0D;
         }
-        float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.CLOBBER_DAMAGE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.CLOBBER_DAMAGE.get().floatValue();
         HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
         launch(player, target, 2.6D, 1.0D);
         HeroFx.shake(player.serverLevel(), target.position(), 12.0D, 0.7F, 10);
@@ -354,7 +344,7 @@ public final class ThingPower {
         move(target, behind);
         target.setDeltaMovement(0.0D, -1.5D, 0.0D);
         target.hurtMarked = true;
-        float damage = (float) (HeroPowers.powerDamage(player) * MarvelBalanceConfig.WRESTLE_DAMAGE_MULTIPLIER.get());
+        float damage = MarvelBalanceConfig.WRESTLE_DAMAGE.get().floatValue();
         HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
         ServerLevel level = player.serverLevel();
         BlockState ground = level.getBlockState(BlockPos.containing(behind).below());
@@ -375,7 +365,7 @@ public final class ThingPower {
 
     private static HeroBlockLift.Profile tossProfile() {
         return new HeroBlockLift.Profile(5.0D, MarvelBalanceConfig.TOSS_MAX_BLOCKS.get(), 100, MarvelBalanceConfig.TOSS_THROW_SPEED.get(),
-                MarvelBalanceConfig.TOSS_DAMAGE_MULTIPLIER.get(),
+                MarvelBalanceConfig.TOSS_DAMAGE.get(),
                 state -> !(state.getBlock() instanceof LiquidBlock) && !state.is(BlockTags.BEDS) && !state.hasBlockEntity() && state.isSolid(),
                 (level, center) -> level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, ROCK), center.x, center.y, center.z, 2, 0.4D, 0.4D, 0.4D, 0.0D),
                 () -> SoundEvents.STONE_BREAK, () -> SoundEvents.GRAVEL_STEP, () -> SoundEvents.PLAYER_ATTACK_SWEEP);

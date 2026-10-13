@@ -1,7 +1,7 @@
 package com.craisinlord.integrated_superheroes.hero;
 
-import com.craisinlord.antarchy.content.entity.royal.beam.RoyalBeamSettings;
-import com.craisinlord.antarchy.content.entity.royal.beam.RoyalBeamTerrainMode;
+import com.craisinlord.anthology.beam.BeamSettings;
+import com.craisinlord.anthology.beam.BeamTerrainMode;
 import com.stxllarplanes.marvellegacy.data.PlayerData;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
@@ -34,7 +34,7 @@ public final class BinaryPower {
     public static final String ID = "binary_carol_danvers";
     public static final String FLYING_STATE = "integrated_superheroes_flying";
     private static final Map<Holder<MobEffect>, Integer> PERMANENT_EFFECTS = Map.of(
-            MobEffects.DAMAGE_BOOST, 1, MobEffects.DAMAGE_RESISTANCE, 0, MobEffects.FIRE_RESISTANCE, 0);
+            MobEffects.DAMAGE_RESISTANCE, 0, MobEffects.FIRE_RESISTANCE, 0);
     private static final ResourceLocation FLIGHT_ID = ResourceLocation.fromNamespaceAndPath("integrated_superheroes", "binary_flight");
     private static final float DEFAULT_FLY_SPEED = 0.05F;
     private static final int PHOTON_COLOR = 16760130;
@@ -131,10 +131,10 @@ public final class BinaryPower {
         boolean binary = BINARY_MODE.containsKey(player.getUUID());
         double multiplier = binary ? 2.0D : 1.0D;
         double range = MarvelBalanceConfig.PHOTON_BLAST_RANGE.get();
-        RoyalBeamSettings settings = HeroBeams.settings(range, MarvelBalanceConfig.PHOTON_BLAST_DURATION_TICKS.get(),
+        BeamSettings settings = HeroBeams.settings(range, MarvelBalanceConfig.PHOTON_BLAST_DURATION_TICKS.get(),
                 binary ? 1.6F : 1.1F, binary ? 3.5F : 2.5F, MarvelBalanceConfig.PHOTON_BLAST_DAMAGE.get() * multiplier, 1.5F, 1,
                 MarvelBalanceConfig.PHOTON_BLAST_TERRAIN_RADIUS.get() * (binary ? 1.5D : 1.0D), 0.1D, 1200.0D);
-        HeroBeams.fire(player, 0, new HeroBeams.Spec(HeroBeams.KING_FIRE, settings, RoyalBeamTerrainMode.DESTROY, 0.0F, 0.8D, 0.45D,
+        HeroBeams.fire(player, 0, new HeroBeams.Spec(HeroBeams.KING_FIRE, settings, BeamTerrainMode.DESTROY, 0.0F, 0.8D, 0.45D,
                 MarvelBalanceConfig.PHOTON_FIRE_SECONDS.get(), 0.0F));
         player.level().playSound(null, player.blockPosition(), MarvelSoundEvents.CAPTAIN_MARVEL_PHOTON_BLAST.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
         return MarvelBalanceConfig.PHOTON_BLAST_COOLDOWN.get();
