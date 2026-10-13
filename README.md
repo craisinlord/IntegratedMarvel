@@ -30,32 +30,6 @@ Most heroes come from a **serum**. Each serum is a shapeless recipe:
 Costumes are cosmetic. Wall climbing, claws, healing and every other power comes from the serum, not the suit. 
 There are some exceptions to this like Iron Man Suits, Ant Man, Black Panther
 
-| Hero | Catalyst | Ingredients |
-| --- | --- | --- |
-| Captain America | Blood | Golden apple, blaze powder |
-| Black Panther | Blood | Allium, vibranium ingot |
-| Captain Marvel | Blood | Nether star, glowstone |
-| Hulk | Blood | Uranium ingot + slime ball (glowstone dust + slime ball without Antarchy) |
-| Daredevil | Blood | Echo shard, sculk sensor |
-| Squirrel Girl | Blood | Ouranwood acorn + rabbit foot (sweet berries + rabbit foot without Antarchy) |
-| Spider-Man | Blood | Fermented spider eye, cobweb |
-| Human Torch | Blood | Blaze rod, fire charge |
-| Invisible Woman | Blood | Fermented spider eye, golden carrot |
-| Mr. Fantastic | Blood | Slime block, magma cream |
-| The Thing | Blood | Tuff, obsidian |
-| Deadpool | X-Genes | Totem of undying, rotten flesh |
-| Wolverine | X-Genes | Adamantium ingot, bone |
-| Quicksilver | X-Genes | Sugar, rabbit foot |
-| Cyclops | X-Genes | Eye of ender, redstone block |
-| Storm | X-Genes | Lightning rod, wind charge |
-| Iceman | X-Genes | Blue ice, snowball |
-| Scarlet Witch | X-Genes | Amethyst shard, bottle o' enchanting |
-| Colossus | X-Genes | Iron block, netherite scrap |
-| Kitty Pryde | X-Genes | Phantom membrane, ender pearl |
-| Magneto *(Alex's Caves)* | X-Genes | Scarlet + azure neodymium ingots |
-
-**Adamantium** is netherite + titanium, shapeless.
-
 ## Controls
 
 You have **10 ability slots**, shown in a list at the bottom right with each key and cooldown.
