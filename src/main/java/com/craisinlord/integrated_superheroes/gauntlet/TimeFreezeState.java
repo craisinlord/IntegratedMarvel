@@ -33,6 +33,7 @@ public final class TimeFreezeState {
         if (owners.isEmpty() || owners.contains(entity.getUUID())) return false;
         if (!level.isClientSide && entity instanceof Player) return false;
         if (entity instanceof LivingEntity living && living.isDeadOrDying()) return false;
+        if (!entity.isVehicle()) return true;
         for (Entity passenger : entity.getIndirectPassengers()) {
             if (owners.contains(passenger.getUUID())) return false;
         }

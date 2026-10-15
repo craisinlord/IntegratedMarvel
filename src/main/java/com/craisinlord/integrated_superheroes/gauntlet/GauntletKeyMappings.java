@@ -48,6 +48,14 @@ public final class GauntletKeyMappings {
             CATEGORY
     );
 
+    public static final KeyMapping ABILITY_INFO = new KeyMapping(
+            "key.integrated_superheroes.gauntlet_ability_info",
+            KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,
+            InputConstants.KEY_LALT,
+            CATEGORY
+    );
+
     private GauntletKeyMappings() {
     }
 
@@ -58,5 +66,6 @@ public final class GauntletKeyMappings {
         event.register(PREVIOUS_ABILITY);
         event.register(NEXT_ABILITY);
         event.register(SPACE_DESTINATION);
+        event.register(ABILITY_INFO);
     }
 }

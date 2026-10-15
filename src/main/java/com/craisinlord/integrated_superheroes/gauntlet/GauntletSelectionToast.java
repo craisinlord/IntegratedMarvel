@@ -30,16 +30,8 @@ public final class GauntletSelectionToast {
         if (minecraft.level == null || minecraft.player == null || !InfinityGauntletStones.isKnownStone(stone)) {
             return;
         }
-        int color = switch (ability) {
-            case 0 -> 0x55FFFF;
-            case 1 -> 0xAA55FF;
-            default -> 0xFFAA00;
-        };
-        String roman = switch (ability) {
-            case 0 -> "I";
-            case 1 -> "II";
-            default -> "III";
-        };
+        int color = GauntletAbilities.numeralColor(ability);
+        String roman = GauntletAbilities.numeral(ability);
         MutableComponent title = Component.literal(roman + " ")
                 .withStyle(Style.EMPTY.withColor(color).withBold(true))
                 .append(Component.translatable("tooltip.integrated_superheroes.gauntlet.stone." + stone)

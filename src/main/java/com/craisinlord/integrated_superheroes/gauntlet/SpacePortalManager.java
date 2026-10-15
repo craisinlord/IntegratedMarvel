@@ -120,11 +120,7 @@ public final class SpacePortalManager {
         Vec3 center = endpoint.center();
         Vec3 normal = endpoint.normal();
         Vec3 right = new Vec3(-normal.z, 0.0D, normal.x);
-        for (int i = 0; i < 12; i++) {
-            double angle = now * 0.15D + i * (Math.PI * 2.0D / 12.0D);
-            Vec3 rim = center.add(right.scale(Math.cos(angle) * HALF_WIDTH)).add(0.0D, Math.sin(angle) * HALF_HEIGHT, 0.0D);
-            level.sendParticles(ParticleTypes.PORTAL, rim.x, rim.y, rim.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        }
+        GauntletFx.ellipse(level, ParticleTypes.PORTAL, center, right.scale(HALF_WIDTH), HALF_HEIGHT, 12, now * 0.15D);
         double inner = level.random.nextDouble() * 0.8D;
         double theta = level.random.nextDouble() * Math.PI * 2.0D;
         Vec3 fill = center.add(right.scale(Math.cos(theta) * HALF_WIDTH * inner)).add(0.0D, Math.sin(theta) * HALF_HEIGHT * inner, 0.0D);
@@ -231,6 +227,16 @@ public final class SpacePortalManager {
         Vec3 right = new Vec3(-normal.z, 0.0D, normal.x);
         Vec3 relative = crossing.subtract(center);
         return Math.abs(relative.dot(right)) <= HALF_WIDTH && Math.abs(relative.y) <= HALF_HEIGHT;
+    }
+
+    public static java.util.List<Opening> openings(UUID owner) {
+        PortalPair pair = PORTAL_PAIRS.get(owner);
+        if (pair == null) return java.util.List.of();
+        return java.util.List.of(new Opening(pair.first().dimension(), pair.first().center()),
+                new Opening(pair.second().dimension(), pair.second().center()));
+    }
+
+    public record Opening(ResourceKey<Level> dimension, Vec3 center) {
     }
 
     private record Endpoint(ResourceKey<Level> dimension, Vec3 center, Vec3 normal, Vec3 arrival, Vec3 facing) {

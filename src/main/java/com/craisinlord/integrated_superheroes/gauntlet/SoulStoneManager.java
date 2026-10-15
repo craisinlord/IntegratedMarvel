@@ -23,8 +23,13 @@ public final class SoulStoneManager {
     private static final Map<UUID, PendingDeath> PENDING_DEATHS = new ConcurrentHashMap<>();
     private static final Map<UUID, Boolean> FINALIZING = new ConcurrentHashMap<>();
     private static final Map<UUID, Boolean> REAPING = new ConcurrentHashMap<>();
+    private static final Map<UUID, StoredDamage> STORED_DAMAGE = new ConcurrentHashMap<>();
 
     private SoulStoneManager() {
+    }
+
+    public static void clearFinalizing(UUID id) {
+        FINALIZING.remove(id);
     }
 
     public static boolean isPending(LivingEntity entity) {
@@ -62,17 +67,20 @@ public final class SoulStoneManager {
             priorNoAi = old.noAi();
             priorInvulnerable = old.invulnerable();
         }
+        GauntletEntityLocks.remember(target);
         if (target instanceof Mob mob) mob.setNoAi(true);
-        target.setInvulnerable(true);
         target.setDeltaMovement(Vec3.ZERO);
         target.addEffect(new net.minecraft.world.effect.MobEffectInstance(ModEffects.soulSevered(), 160, 0, false, false, true));
         SEVERED.put(target.getUUID(), new SeverState(target.level().dimension(), expiry, priorNoAi, priorInvulnerable));
-        wielder.displayClientMessage(Component.literal(target.getDisplayName().getString() + "'s soul is severed for 8 seconds"), true);
+        STORED_DAMAGE.putIfAbsent(target.getUUID(), new StoredDamage(wielder.getUUID(), new float[1]));
+        wielder.displayClientMessage(Component.translatable("message.integrated_superheroes.gauntlet.soul_severed",
+                target.getDisplayName()), true);
     }
 
     public static void fate(ServerPlayer wielder, LivingEntity target) {
         if (isPending(target)) {
             restore(target);
+            if (target instanceof Mob mob && target != wielder) SoulAllyManager.bind(wielder, mob);
             wielder.displayClientMessage(Component.literal(target.getDisplayName().getString() + " is restored"), true);
             return;
         }
@@ -100,7 +108,7 @@ public final class SoulStoneManager {
                         || !InfinityGauntletStones.selectedStone(gauntlet).equals("soul")
                         || GauntletAbilityController.isAbilityOnCooldown(candidate)) continue;
                 double distance = candidate.distanceToSqr(entity);
-                if (InfinityGauntletStones.selectedAbility(gauntlet, "soul") == 2 && distance <= nearest) {
+                if (GauntletAbilities.isSelected(gauntlet, "soul", "reapRestore") && distance <= nearest) {
                     nearest = distance;
                     catcher = candidate;
                 }
@@ -113,6 +121,7 @@ public final class SoulStoneManager {
         long expiry = entity.level().getGameTime() + 100L;
         boolean priorNoAi = entity instanceof Mob mob && mob.isNoAi();
         boolean priorInvulnerable = entity.isInvulnerable();
+        GauntletEntityLocks.remember(entity);
         entity.setHealth(1.0F);
         entity.setInvulnerable(true);
         entity.setDeltaMovement(Vec3.ZERO);
@@ -139,6 +148,7 @@ public final class SoulStoneManager {
                 if (level != null && level.getGameTime() >= state.expiry()) {
                     SEVERED.remove(id);
                     PENDING_DEATHS.remove(id);
+                    STORED_DAMAGE.remove(id);
                 }
                 continue;
             }
@@ -173,6 +183,7 @@ public final class SoulStoneManager {
         }
         SEVERED.clear();
         PENDING_DEATHS.clear();
+        STORED_DAMAGE.clear();
         FINALIZING.clear();
         REAPING.clear();
     }
@@ -189,6 +200,7 @@ public final class SoulStoneManager {
         SeverState state = SEVERED.remove(id);
         PENDING_DEATHS.remove(id);
         entity.removeEffect(ModEffects.soulSevered());
+        GauntletEntityLocks.forget(entity);
         entity.setInvulnerable(state != null && state.invulnerable());
         if (entity instanceof Mob mob && state != null) mob.setNoAi(state.noAi());
         entity.setHealth(Math.max(1.0F, entity.getMaxHealth() * 0.3F));
@@ -198,8 +210,34 @@ public final class SoulStoneManager {
     private static void release(LivingEntity entity, SeverState state) {
         SEVERED.remove(entity.getUUID());
         entity.removeEffect(ModEffects.soulSevered());
+        GauntletEntityLocks.forget(entity);
         entity.setInvulnerable(state.invulnerable());
         if (entity instanceof Mob mob) mob.setNoAi(state.noAi());
+        StoredDamage stored = STORED_DAMAGE.remove(entity.getUUID());
+        if (stored != null && stored.amount()[0] > 0.0F && entity.isAlive()
+                && entity.level() instanceof ServerLevel level) {
+            ServerPlayer wielder = level.getServer().getPlayerList().getPlayer(stored.wielder());
+            entity.invulnerableTime = 0;
+            entity.hurt(wielder != null ? entity.damageSources().playerAttack(wielder) : entity.damageSources().magic(),
+                    stored.amount()[0] * 2.0F);
+            GauntletFx.burst(level, entity.position().add(0.0D, entity.getBbHeight() * 0.5D, 0.0D), "soul", 60,
+                    entity.getBbWidth());
+            GauntletFx.sound(level, entity.position(), net.minecraft.sounds.SoundEvents.SOUL_ESCAPE.value(), 2.0F, 0.5F);
+        }
+    }
+
+    public static void onIncomingDamage(net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent event) {
+        UUID id = event.getEntity().getUUID();
+        StoredDamage stored = STORED_DAMAGE.get(id);
+        if (stored == null || !SEVERED.containsKey(id) || PENDING_DEATHS.containsKey(id)) return;
+        if (event.getSource().is(net.minecraft.tags.DamageTypeTags.BYPASSES_INVULNERABILITY)) return;
+        stored.amount()[0] += event.getAmount();
+        event.setCanceled(true);
+        if (event.getEntity().level() instanceof ServerLevel level) {
+            level.sendParticles(net.minecraft.core.particles.ParticleTypes.SOUL, event.getEntity().getX(),
+                    event.getEntity().getY() + event.getEntity().getBbHeight() * 0.5D, event.getEntity().getZ(), 6,
+                    0.3D, 0.3D, 0.3D, 0.02D);
+        }
     }
 
     private static void finishDeath(LivingEntity entity) {
@@ -209,6 +247,8 @@ public final class SoulStoneManager {
         entity.removeEffect(ModEffects.soulSevered());
         entity.setInvulnerable(false);
         if (entity instanceof Mob mob) mob.setNoAi(false);
+        STORED_DAMAGE.remove(id);
+        GauntletEntityLocks.forget(entity);
         FINALIZING.put(id, true);
         entity.hurt(entity.damageSources().genericKill(), Float.MAX_VALUE);
     }
@@ -220,5 +260,6 @@ public final class SoulStoneManager {
 
     private record SeverState(net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dimension,
                               long expiry, boolean noAi, boolean invulnerable) {}
+    private record StoredDamage(UUID wielder, float[] amount) {}
     private record PendingDeath(net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dimension, long expiry) {}
 }

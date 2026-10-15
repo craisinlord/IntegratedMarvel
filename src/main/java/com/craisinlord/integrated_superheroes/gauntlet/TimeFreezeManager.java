@@ -5,8 +5,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class TimeFreezeManager {
     private static final Map<UUID, ResourceKey<Level>> ACTIVE = new ConcurrentHashMap<>();
     private static final Map<UUID, Anchor> ANCHORS = new ConcurrentHashMap<>();
+    private static final Map<UUID, Integer> TIMED = new ConcurrentHashMap<>();
     private static volatile Map<ResourceKey<Level>, Set<UUID>> byDimension = Map.of();
 
     private TimeFreezeManager() {
@@ -42,17 +43,37 @@ public final class TimeFreezeManager {
         sync(player.server, dimension);
     }
 
+    public static boolean startTimed(ServerPlayer player, int ticks) {
+        if (ACTIVE.containsKey(player.getUUID()) || ticks <= 0) return false;
+        ResourceKey<Level> dimension = player.serverLevel().dimension();
+        TIMED.put(player.getUUID(), player.server.getTickCount() + ticks);
+        ACTIVE.put(player.getUUID(), dimension);
+        rebuild();
+        sync(player.server, dimension);
+        return true;
+    }
+
+    public static boolean isTimed(UUID owner) {
+        return TIMED.containsKey(owner);
+    }
+
+    public static void stopHeld(ServerPlayer player) {
+        if (!TIMED.containsKey(player.getUUID())) stop(player);
+    }
+
     public static void stop(ServerPlayer player) {
         stop(player.getUUID(), player);
     }
 
     public static void stop(UUID owner, ServerPlayer player) {
+        TIMED.remove(owner);
         ResourceKey<Level> dimension = ACTIVE.remove(owner);
         if (dimension == null) return;
         rebuild();
         ANCHORS.values().removeIf(anchor -> !byDimension.containsKey(anchor.dimension()));
         MinecraftServer server = player != null ? player.server : ServerLifecycleHooks.getCurrentServer();
         if (server != null) sync(server, dimension);
+        if (server != null) TimeStone.resolveStrikes(server, owner);
         if (player != null && !player.serverLevel().dimension().equals(dimension)) syncPlayer(player);
     }
 
@@ -60,17 +81,18 @@ public final class TimeFreezeManager {
         if (ACTIVE.isEmpty()) return;
         for (Map.Entry<UUID, ResourceKey<Level>> entry : Set.copyOf(ACTIVE.entrySet())) {
             ServerPlayer player = server.getPlayerList().getPlayer(entry.getKey());
-            if (player == null || !isTimeFreezeHeld(player) || !player.serverLevel().dimension().equals(entry.getValue())) {
+            Integer expires = TIMED.get(entry.getKey());
+            boolean held = expires != null ? server.getTickCount() < expires : player != null && isTimeFreezeHeld(player);
+            if (player == null || !held || !player.serverLevel().dimension().equals(entry.getValue())) {
                 stop(entry.getKey(), player);
             }
         }
         for (ResourceKey<Level> dimension : byDimension.keySet()) {
             ServerLevel level = server.getLevel(dimension);
             if (level == null) continue;
-            for (Entity entity : level.getAllEntities()) {
-                if (entity instanceof LivingEntity living && living.invulnerableTime > 0 && TimeFreezeState.isFrozen(entity)) {
-                    living.invulnerableTime--;
-                }
+            for (LivingEntity living : level.getEntities(EntityTypeTest.forClass(LivingEntity.class),
+                    living -> living.invulnerableTime > 0)) {
+                if (TimeFreezeState.isFrozen(living)) living.invulnerableTime--;
             }
             for (ServerPlayer player : level.players()) {
                 if (!TimeFreezeState.isFrozenPlayer(player)) {
@@ -100,6 +122,7 @@ public final class TimeFreezeManager {
         Set<ResourceKey<Level>> dimensions = Set.copyOf(byDimension.keySet());
         ACTIVE.clear();
         ANCHORS.clear();
+        TIMED.clear();
         rebuild();
         for (ResourceKey<Level> dimension : dimensions) sync(server, dimension);
     }
@@ -128,7 +151,8 @@ public final class TimeFreezeManager {
         return InfinityGauntletStones.isGauntlet(gauntlet)
                 && InfinityGauntletStones.hasStone(gauntlet, "time")
                 && InfinityGauntletStones.selectedStone(gauntlet).equals("time")
-                && InfinityGauntletStones.selectedAbility(gauntlet, "time") == 0;
+                && InfinityGauntletStones.selectedAbility(gauntlet, "time") == 0
+                && GauntletConfig.isEnabled("time", 0);
     }
 
     private record Anchor(ResourceKey<Level> dimension, Vec3 position, float yRot, float xRot) {

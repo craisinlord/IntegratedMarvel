@@ -347,14 +347,14 @@ public final class MarvelBalanceConfig {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
         builder.push("spiderPowersPeterParker");
-        SPIDER_POWERS = new HeroStats(builder, 10.0D, 8.0D, 0.5D, 0.5D, 0.04D, 3.0D, 2,
+        SPIDER_POWERS = new HeroStats(builder, 10.0D, 8.0D, 0.5D, 0.5D, 0.04D, 0.0D, 2,
                 List.of("apothic_attributes:dodge_chance;0.16;ADD_VALUE", "sinew:air_speed;0.02;ADD_VALUE"));
         builder.pop();
 
         builder.push("weaponXLogan");
-        WEAPON_X_LOGAN = new HeroStats(builder, 8.0D, 0.0D, 0.2D, 0.5D, 0.02D, 32.0D, 1,
+        WEAPON_X_LOGAN = new HeroStats(builder, 16.0D, 12.0D, 0.2D, 0.5D, 0.02D, 21.0D, 1,
                 List.of("apothic_attributes:healing_received;0.6;ADD_VALUE", "apothic_attributes:crit_damage;0.4;ADD_VALUE"));
-        LOGAN_CLAW_DAMAGE = builder.defineInRange("clawAttackBaseDamage", 36.0D, 0.0D, 10000.0D);
+        LOGAN_CLAW_DAMAGE = builder.defineInRange("clawAttackBaseDamage", 22.0D, 0.0D, 10000.0D);
         double[] wolverineDowned = {5.0D, 8.0D};
         double[] wolverineHealth = {0.4D, 0.2D};
         for (int i = 0; i < wolverineDowned.length; i++) {
@@ -364,10 +364,10 @@ public final class MarvelBalanceConfig {
         builder.pop();
 
         builder.push("superSoldierSteveRogers");
-        SUPER_SOLDIER = new HeroStats(builder, 30.0D, 12.0D, 0.5D, 0.0D, 0.0D, 66.0D, 1,
+        SUPER_SOLDIER = new HeroStats(builder, 30.0D, 12.0D, 0.5D, 0.0D, 0.0D, 42.0D, 1,
                 List.of("apothic_attributes:healing_received;0.3;ADD_VALUE", "minecraft:generic.knockback_resistance;0.2;ADD_VALUE"));
         SUPER_SOLDIER_JUMP_MULTIPLIER = builder.defineInRange("crouchJumpMultiplier", 3.0D, 1.0D, 20.0D);
-        SHIELD_CHARGE_DAMAGE = builder.defineInRange("shieldChargeDamage", 105.0D, 0.0D, 10000.0D);
+        SHIELD_CHARGE_DAMAGE = builder.defineInRange("shieldChargeDamage", 79.0D, 0.0D, 10000.0D);
         SHIELD_CHARGE_SHIELD_MULTIPLIER = builder.defineInRange("shieldChargeShieldMultiplier", 1.5D, 1.0D, 100.0D);
         SHIELD_CHARGE_SPEED = builder.defineInRange("shieldChargeSpeed", 1.8D, 0.0D, 10.0D);
         SHIELD_CHARGE_COOLDOWN = builder.defineInRange("shieldChargeCooldownSeconds", 8.0D, 0.0D, 600.0D);
@@ -377,11 +377,11 @@ public final class MarvelBalanceConfig {
         builder.pop();
 
         builder.push("heartShapedHerbTchalla");
-        PANTHER = new HeroStats(builder, 30.0D, 12.0D, 0.5D, 0.0D, 0.0D, 67.0D, 2,
+        PANTHER = new HeroStats(builder, 30.0D, 12.0D, 0.5D, 0.0D, 0.0D, 42.0D, 2,
                 List.of("apothic_attributes:crit_chance;0.08;ADD_VALUE", "apothic_attributes:crit_damage;0.3;ADD_VALUE"));
-        POUNCE_DAMAGE = builder.defineInRange("pounceDamage", 111.0D, 0.0D, 10000.0D);
+        POUNCE_DAMAGE = builder.defineInRange("pounceDamage", 83.0D, 0.0D, 10000.0D);
         POUNCE_COOLDOWN = builder.defineInRange("pounceCooldownSeconds", 6.0D, 0.0D, 600.0D);
-        CLAW_SWIPE_DAMAGE = builder.defineInRange("clawSwipeDamage", 148.0D, 0.0D, 10000.0D);
+        CLAW_SWIPE_DAMAGE = builder.defineInRange("clawSwipeDamage", 111.0D, 0.0D, 10000.0D);
         CLAW_SWIPE_COOLDOWN = builder.defineInRange("clawSwipeCooldownSeconds", 4.0D, 0.0D, 600.0D);
         CLAW_BLEED_TICKS = builder.defineInRange("clawSwipeBleedTicks", 100, 0, 1200);
         ANCESTRAL_PLANE_COOLDOWN = builder.defineInRange("ancestralPlaneCooldownSeconds", 600.0D, 0.0D, 36000.0D);
@@ -390,18 +390,18 @@ public final class MarvelBalanceConfig {
         builder.pop();
 
         builder.push("weaponXWadeWilson");
-        DEADPOOL = new HeroStats(builder, 4.0D, 0.0D, 0.3D, 0.0D, 0.0D, 41.0D, 1,
+        DEADPOOL = new HeroStats(builder, 30.0D, 10.0D, 0.3D, 0.0D, 0.0D, 28.0D, 1,
                 List.of("apothic_attributes:healing_received;0.4;ADD_VALUE", "apothic_attributes:crit_damage;0.4;ADD_VALUE"));
         DEADPOOL_REGEN_PERCENT_PER_SECOND = builder.defineInRange("regenPercentOfMaxHealthPerSecond", 0.04D, 0.0D, 1.0D);
         UNLOAD_SHOTS = builder.defineInRange("unloadShots", 8, 1, 64);
-        UNLOAD_DAMAGE = builder.defineInRange("unloadDamagePerShot", 27.0D, 0.0D, 10000.0D);
+        UNLOAD_DAMAGE = builder.defineInRange("unloadDamagePerShot", 20.0D, 0.0D, 10000.0D);
         UNLOAD_RANGE = builder.defineInRange("unloadRange", 24.0D, 1.0D, 128.0D);
         UNLOAD_COOLDOWN = builder.defineInRange("unloadCooldownSeconds", 6.0D, 0.0D, 600.0D);
         DEADPOOL_GUN_BONUS = builder.defineInRange("gunDamageBonus", 0.25D, 0.0D, 10.0D);
-        GRENADE_DAMAGE = builder.defineInRange("grenadeDamage", 90.0D, 0.0D, 10000.0D);
+        GRENADE_DAMAGE = builder.defineInRange("grenadeDamage", 68.0D, 0.0D, 10000.0D);
         GRENADE_RADIUS = builder.defineInRange("grenadeRadius", 3.5D, 0.5D, 16.0D);
         GRENADE_FUMBLE_CHANCE = builder.defineInRange("grenadeFumbleChance", 0.08D, 0.0D, 1.0D);
-        GRENADE_FUMBLE_SELF_DAMAGE = builder.defineInRange("grenadeFumbleSelfDamage", 14.0D, 0.0D, 10000.0D);
+        GRENADE_FUMBLE_SELF_DAMAGE = builder.defineInRange("grenadeFumbleSelfDamage", 10.5D, 0.0D, 10000.0D);
         GRENADE_COOLDOWN = builder.defineInRange("grenadeCooldownSeconds", 8.0D, 0.0D, 600.0D);
         RETCON_SECONDS = builder.defineInRange("retconSeconds", 5, 1, 30);
         RETCON_HEAL_CAP = builder.defineInRange("retconHealCap", 6.0D, 0.0D, 1000.0D);
@@ -411,7 +411,7 @@ public final class MarvelBalanceConfig {
         PAUSE_MENU_SECONDS = builder.defineInRange("pauseMenuSeconds", 3.0D, 0.5D, 60.0D);
         PAUSE_MENU_COOLDOWN = builder.defineInRange("pauseMenuCooldownSeconds", 30.0D, 0.0D, 600.0D);
         RAGE_QUIT_RADIUS = builder.defineInRange("rageQuitRadius", 6.0D, 1.0D, 32.0D);
-        RAGE_QUIT_DAMAGE = builder.defineInRange("rageQuitDamage", 68.0D, 0.0D, 10000.0D);
+        RAGE_QUIT_DAMAGE = builder.defineInRange("rageQuitDamage", 51.0D, 0.0D, 10000.0D);
         RAGE_QUIT_KNOCKBACK = builder.defineInRange("rageQuitKnockback", 2.0D, 0.0D, 10.0D);
         RAGE_QUIT_CRACK_SECONDS = builder.defineInRange("rageQuitCrackSeconds", 4.0D, 0.5D, 30.0D);
         RAGE_QUIT_COOLDOWN = builder.defineInRange("rageQuitCooldownSeconds", 20.0D, 0.0D, 600.0D);
@@ -432,7 +432,7 @@ public final class MarvelBalanceConfig {
         builder.pop();
 
         builder.push("superSpeedPietroMaximoff");
-        QUICKSILVER = new HeroStats(builder, 20.0D, 8.0D, 0.2D, 0.0D, 0.0D, 0.0D, 0,
+        QUICKSILVER = new HeroStats(builder, 20.0D, 8.0D, 0.2D, 0.0D, 0.0D, 14.0D, 0,
                 List.of("apothic_attributes:dodge_chance;0.16;ADD_VALUE"));
         SPEED_FORCE_MAX_RATE = builder.defineInRange("speedForceMaxRate", 10.0D, 1.0D, 20.0D);
         SPEED_FORCE_START_RATE = builder.defineInRange("speedForceStartRate", 2.0D, 1.0D, 20.0D);
@@ -442,24 +442,24 @@ public final class MarvelBalanceConfig {
         BULLET_TIME_RATE = builder.defineInRange("bulletTimeRate", 0.1D, 0.05D, 1.0D);
         BULLET_TIME_DURATION_TICKS = builder.defineInRange("bulletTimeDurationTicks", 240, 20, 12000);
         BULLET_TIME_COOLDOWN = builder.defineInRange("bulletTimeCooldownSeconds", 60.0D, 0.0D, 600.0D);
-        SONIC_BOOM_DAMAGE = builder.defineInRange("sonicBoomDamageAtMinRate", 40.0D, 0.0D, 10000.0D);
+        SONIC_BOOM_DAMAGE = builder.defineInRange("sonicBoomDamageAtMinRate", 30.0D, 0.0D, 10000.0D);
         SONIC_BOOM_RADIUS = builder.defineInRange("sonicBoomRadius", 5.0D, 0.0D, 32.0D);
         SONIC_BOOM_MIN_RATE = builder.defineInRange("sonicBoomMinimumRate", 3.0D, 1.0D, 20.0D);
         SONIC_BOOM_COOLDOWN = builder.defineInRange("sonicBoomCooldownSeconds", 6.0D, 0.0D, 600.0D);
         builder.pop();
 
         builder.push("opticBlastsScottSummers");
-        CYCLOPS = new HeroStats(builder, 20.0D, 8.0D, 0.2D, 0.0D, 0.0D, 0.0D, 0,
+        CYCLOPS = new HeroStats(builder, 20.0D, 8.0D, 0.2D, 0.0D, 0.0D, 2.8D, 0,
                 List.of("apothic_attributes:crit_chance;0.12;ADD_VALUE", "apothic_attributes:armor_pierce;10.0;ADD_VALUE"));
-        OPTIC_BLAST_DAMAGE = builder.defineInRange("opticBlastDamagePerHit", 150.0D, 0.0D, 10000.0D);
+        OPTIC_BLAST_DAMAGE = builder.defineInRange("opticBlastDamagePerHit", 112.0D, 0.0D, 10000.0D);
         OPTIC_BLAST_DURATION_TICKS = builder.defineInRange("opticBlastDurationTicks", 20, 1, 200);
         OPTIC_BLAST_RANGE = builder.defineInRange("opticBlastRange", 64.0D, 1.0D, 256.0D);
         OPTIC_BLAST_COOLDOWN = builder.defineInRange("opticBlastCooldownSeconds", 2.0D, 0.0D, 600.0D);
-        WIDE_BLAST_DAMAGE = builder.defineInRange("wideBlastDamagePerHit", 120.0D, 0.0D, 10000.0D);
+        WIDE_BLAST_DAMAGE = builder.defineInRange("wideBlastDamagePerHit", 90.0D, 0.0D, 10000.0D);
         WIDE_BLAST_RANGE = builder.defineInRange("wideBlastRange", 18.0D, 1.0D, 64.0D);
         WIDE_BLAST_COOLDOWN = builder.defineInRange("wideBlastCooldownSeconds", 4.0D, 0.0D, 600.0D);
         WIDE_BLAST_DURATION_TICKS = builder.defineInRange("wideBlastDurationTicks", 14, 1, 200);
-        UNCONTROLLED_DAMAGE = builder.defineInRange("uncontrolledBeamDamagePerHit", 80.0D, 0.0D, 10000.0D);
+        UNCONTROLLED_DAMAGE = builder.defineInRange("uncontrolledBeamDamagePerHit", 60.0D, 0.0D, 10000.0D);
         UNCONTROLLED_RANGE = builder.defineInRange("uncontrolledBeamRange", 40.0D, 1.0D, 256.0D);
         OPTIC_FIRE_SECONDS = builder.defineInRange("beamFireSeconds", 5, 0, 60);
         OPTIC_TERRAIN_RADIUS = builder.defineInRange("beamTerrainRadius", 1.5D, 0.0D, 8.0D);
@@ -468,42 +468,42 @@ public final class MarvelBalanceConfig {
         builder.pop();
 
         builder.push("binaryCarolDanvers");
-        BINARY = new HeroStats(builder, 60.0D, 20.0D, 3.0D, 0.0D, 0.0D, 475.0D, 2,
+        BINARY = new HeroStats(builder, 60.0D, 20.0D, 3.0D, 0.0D, 0.0D, 126.0D, 2,
                 List.of("apothic_attributes:armor_pierce;32.0;ADD_VALUE", "apothic_attributes:crit_damage;0.6;ADD_VALUE"));
         BINARY_FLY_SPEED = builder.defineInRange("flySpeed", 0.1D, 0.01D, 1.0D);
-        PHOTON_BLAST_DAMAGE = builder.defineInRange("photonBlastDamagePerHit", 300.0D, 0.0D, 10000.0D);
+        PHOTON_BLAST_DAMAGE = builder.defineInRange("photonBlastDamagePerHit", 90.0D, 0.0D, 10000.0D);
         PHOTON_BLAST_RANGE = builder.defineInRange("photonBlastRange", 64.0D, 1.0D, 256.0D);
         PHOTON_BLAST_TERRAIN_RADIUS = builder.defineInRange("photonBlastTerrainRadius", 2.5D, 0.0D, 10.0D);
         PHOTON_BLAST_DURATION_TICKS = builder.defineInRange("photonBlastDurationTicks", 24, 1, 200);
         PHOTON_FIRE_SECONDS = builder.defineInRange("photonBlastFireSeconds", 8, 0, 60);
         PHOTON_BLAST_COOLDOWN = builder.defineInRange("photonBlastCooldownSeconds", 2.0D, 0.0D, 600.0D);
         BINARY_MODE_DURATION_TICKS = builder.defineInRange("binaryModeDurationTicks", 300, 20, 12000);
-        BINARY_MODE_AURA_DAMAGE = builder.defineInRange("binaryModeAuraDamage", 120.0D, 0.0D, 10000.0D);
+        BINARY_MODE_AURA_DAMAGE = builder.defineInRange("binaryModeAuraDamage", 38.0D, 0.0D, 10000.0D);
         BINARY_MODE_AURA_RADIUS = builder.defineInRange("binaryModeAuraRadius", 6.0D, 0.0D, 32.0D);
         BINARY_MODE_COOLDOWN = builder.defineInRange("binaryModeCooldownSeconds", 120.0D, 0.0D, 3600.0D);
         COSMIC_DASH_SPEED = builder.defineInRange("cosmicDashSpeed", 3.0D, 0.0D, 10.0D);
-        COSMIC_DASH_DAMAGE = builder.defineInRange("cosmicDashDamage", 300.0D, 0.0D, 10000.0D);
+        COSMIC_DASH_DAMAGE = builder.defineInRange("cosmicDashDamage", 90.0D, 0.0D, 10000.0D);
         COSMIC_DASH_COOLDOWN = builder.defineInRange("cosmicDashCooldownSeconds", 5.0D, 0.0D, 600.0D);
         builder.pop();
 
         builder.push("gammaMutationBruceBanner");
-        HULK = new HeroStats(builder, 85.0D, 22.0D, 4.0D, 1.0D, 0.0D, 476.0D, 0,
+        HULK = new HeroStats(builder, 85.0D, 22.0D, 4.0D, 1.0D, 0.0D, 115.0D, 0,
                 List.of("minecraft:generic.scale;0.5;ADD_MULTIPLIED_BASE", "minecraft:generic.knockback_resistance;1.0;ADD_VALUE",
                         "apothic_attributes:healing_received;0.5;ADD_VALUE", "minecraft:player.entity_interaction_range;1.0;ADD_VALUE",
                         "minecraft:generic.safe_fall_distance;40.0;ADD_VALUE"));
         HULK_OUT_COOLDOWN = builder.defineInRange("hulkOutCooldownSeconds", 3.0D, 0.0D, 600.0D);
         THUNDERCLAP_RANGE = builder.defineInRange("thunderclapRange", 12.0D, 1.0D, 64.0D);
-        THUNDERCLAP_DAMAGE = builder.defineInRange("thunderclapDamage", 477.0D, 0.0D, 10000.0D);
+        THUNDERCLAP_DAMAGE = builder.defineInRange("thunderclapDamage", 131.0D, 0.0D, 10000.0D);
         THUNDERCLAP_COOLDOWN = builder.defineInRange("thunderclapCooldownSeconds", 10.0D, 0.0D, 600.0D);
         HULK_SMASH_LENGTH = builder.defineInRange("hulkSmashWaveLength", 10, 1, 32);
-        HULK_SMASH_DAMAGE = builder.defineInRange("hulkSmashDamage", 382.0D, 0.0D, 10000.0D);
+        HULK_SMASH_DAMAGE = builder.defineInRange("hulkSmashDamage", 105.0D, 0.0D, 10000.0D);
         HULK_SMASH_COOLDOWN = builder.defineInRange("hulkSmashCooldownSeconds", 4.0D, 0.0D, 600.0D);
         GAMMA_LEAP_HORIZONTAL = builder.defineInRange("gammaLeapHorizontal", 1.8D, 0.0D, 10.0D);
         GAMMA_LEAP_VERTICAL = builder.defineInRange("gammaLeapVertical", 1.6D, 0.0D, 10.0D);
         GAMMA_LEAP_STANDING_VERTICAL = builder.defineInRange("gammaLeapStandingVertical", 2.6D, 0.0D, 10.0D);
         GAMMA_LEAP_COOLDOWN_TICKS = builder.defineInRange("gammaLeapCooldownTicks", 20, 0, 1200);
         GAMMA_LANDING_RADIUS = builder.defineInRange("gammaLandingRadius", 5.0D, 0.0D, 32.0D);
-        GAMMA_LANDING_DAMAGE = builder.defineInRange("gammaLandingBaseDamage", 477.0D, 0.0D, 10000.0D);
+        GAMMA_LANDING_DAMAGE = builder.defineInRange("gammaLandingBaseDamage", 131.0D, 0.0D, 10000.0D);
         GAMMA_LANDING_DAMAGE_MULTIPLIER = builder.defineInRange("gammaLandingMaxDamageMultiplier", 1.5D, 0.0D, 100.0D);
         RAGE_PER_HEART = builder.defineInRange("ragePerHeartLost", 3.0D, 0.0D, 100.0D);
         RAGE_PER_HIT = builder.defineInRange("ragePerMeleeHit", 1.0D, 0.0D, 100.0D);
@@ -521,17 +521,17 @@ public final class MarvelBalanceConfig {
         builder.pop();
 
         builder.push("magnetismErikLehnsherr");
-        MAGNETO = new HeroStats(builder, 40.0D, 16.0D, 0.5D, 0.0D, 0.0D, 0.0D, 0,
+        MAGNETO = new HeroStats(builder, 40.0D, 16.0D, 0.5D, 0.0D, 0.0D, 7.0D, 0,
                 List.of("apothic_attributes:armor_pierce;16.0;ADD_VALUE", "minecraft:generic.knockback_resistance;0.5;ADD_VALUE"));
         MAGNETO_FLY_SPEED = builder.defineInRange("flySpeed", 0.06D, 0.01D, 1.0D);
         GRIP_RANGE = builder.defineInRange("magneticGripMetalRange", 24.0D, 1.0D, 64.0D);
         GRIP_HOLD_TICKS = builder.defineInRange("magneticGripHoldTicks", 120, 1, 1200);
         GRIP_THROW_SPEED = builder.defineInRange("magneticGripThrowSpeed", 2.5D, 0.0D, 10.0D);
-        GRIP_THROW_DAMAGE = builder.defineInRange("magneticGripThrowDamage", 109.0D, 0.0D, 10000.0D);
+        GRIP_THROW_DAMAGE = builder.defineInRange("magneticGripThrowDamage", 82.0D, 0.0D, 10000.0D);
         GRIP_COOLDOWN = builder.defineInRange("magneticGripCooldownSeconds", 6.0D, 0.0D, 600.0D);
         CRUSH_RANGE = builder.defineInRange("magneticCrushRange", 24.0D, 1.0D, 64.0D);
-        CRUSH_BASE_DAMAGE = builder.defineInRange("magneticCrushBaseDamage", 55.0D, 0.0D, 10000.0D);
-        CRUSH_PER_ARMOR_DAMAGE = builder.defineInRange("magneticCrushDamagePerArmorPoint", 11.0D, 0.0D, 10000.0D);
+        CRUSH_BASE_DAMAGE = builder.defineInRange("magneticCrushBaseDamage", 41.0D, 0.0D, 10000.0D);
+        CRUSH_PER_ARMOR_DAMAGE = builder.defineInRange("magneticCrushDamagePerArmorPoint", 8.2D, 0.0D, 10000.0D);
         CRUSH_COOLDOWN = builder.defineInRange("magneticCrushCooldownSeconds", 8.0D, 0.0D, 600.0D);
         SWARM_DURATION_TICKS = builder.defineInRange("weaponSwarmDurationTicks", 400, 20, 12000);
         SWARM_COOLDOWN = builder.defineInRange("weaponSwarmCooldownSeconds", 25.0D, 0.0D, 600.0D);
@@ -544,11 +544,11 @@ public final class MarvelBalanceConfig {
         builder.pop();
 
         builder.push("weatherManipulationOroroMunroe");
-        STORM = new HeroStats(builder, 30.0D, 12.0D, 0.3D, 0.0D, 0.0D, 0.0D, 0,
+        STORM = new HeroStats(builder, 30.0D, 12.0D, 0.3D, 0.0D, 0.0D, 4.2D, 0,
                 List.of("apothic_attributes:dodge_chance;0.08;ADD_VALUE", "minecraft:generic.safe_fall_distance;20.0;ADD_VALUE"));
         STORM_FLY_SPEED = builder.defineInRange("flySpeed", 0.08D, 0.01D, 1.0D);
         LIGHTNING_RANGE = builder.defineInRange("lightningStrikeRange", 48.0D, 1.0D, 128.0D);
-        LIGHTNING_DAMAGE = builder.defineInRange("lightningStrikeDamage", 79.0D, 0.0D, 10000.0D);
+        LIGHTNING_DAMAGE = builder.defineInRange("lightningStrikeDamage", 59.0D, 0.0D, 10000.0D);
         LIGHTNING_RADIUS = builder.defineInRange("lightningStrikeRadius", 3.0D, 0.0D, 16.0D);
         LIGHTNING_CHAIN_TARGETS = builder.defineInRange("lightningStrikeChainTargets", 2, 0, 16);
         LIGHTNING_COOLDOWN = builder.defineInRange("lightningStrikeCooldownSeconds", 6.0D, 0.0D, 600.0D);
@@ -565,15 +565,15 @@ public final class MarvelBalanceConfig {
         builder.pop();
 
         builder.push("cryokinesisBobbyDrake");
-        ICEMAN = new HeroStats(builder, 24.0D, 10.0D, 0.2D, 1.0D, 0.02D, 0.0D, 0,
+        ICEMAN = new HeroStats(builder, 24.0D, 10.0D, 0.2D, 1.0D, 0.02D, 4.2D, 0,
                 List.of("apothic_attributes:crit_damage;0.3;ADD_VALUE", "apothic_attributes:dodge_chance;0.06;ADD_VALUE"));
         FREEZE_RANGE = builder.defineInRange("freezeBlastRange", 14.0D, 1.0D, 64.0D);
-        FREEZE_DAMAGE = builder.defineInRange("freezeBlastDamage", 27.0D, 0.0D, 10000.0D);
+        FREEZE_DAMAGE = builder.defineInRange("freezeBlastDamage", 20.0D, 0.0D, 10000.0D);
         FREEZE_TICKS = builder.defineInRange("freezeBlastFreezeTicks", 80, 1, 1200);
         FREEZE_COOLDOWN = builder.defineInRange("freezeBlastCooldownSeconds", 7.0D, 0.0D, 600.0D);
         SHATTER_MULTIPLIER = builder.defineInRange("shatterDamageMultiplier", 1.5D, 1.0D, 100.0D);
         CRYOGENESIS_RADIUS = builder.defineInRange("cryogenesisRadius", 6.0D, 1.0D, 32.0D);
-        CRYOGENESIS_DAMAGE = builder.defineInRange("cryogenesisDamage", 14.0D, 0.0D, 10000.0D);
+        CRYOGENESIS_DAMAGE = builder.defineInRange("cryogenesisDamage", 10.0D, 0.0D, 10000.0D);
         CRYOGENESIS_TICKS = builder.defineInRange("cryogenesisFreezeTicks", 60, 1, 1200);
         CRYOGENESIS_COOLDOWN = builder.defineInRange("cryogenesisCooldownSeconds", 18.0D, 0.0D, 600.0D);
         ICE_WALL_TICKS = builder.defineInRange("iceWallTicks", 160, 1, 12000);
@@ -583,11 +583,11 @@ public final class MarvelBalanceConfig {
         builder.pop();
 
         builder.push("chaosMagicWandaMaximoff");
-        SCARLET_WITCH = new HeroStats(builder, 30.0D, 10.0D, 0.2D, 0.0D, 0.0D, 0.0D, 0,
+        SCARLET_WITCH = new HeroStats(builder, 30.0D, 10.0D, 0.2D, 0.0D, 0.0D, 3.5D, 0,
                 List.of("minecraft:generic.luck;3.0;ADD_VALUE", "apothic_attributes:dodge_chance;0.12;ADD_VALUE"));
         WANDA_FLY_SPEED = builder.defineInRange("flySpeed", 0.05D, 0.01D, 1.0D);
         HEX_BOLT_RANGE = builder.defineInRange("hexBoltRange", 32.0D, 1.0D, 128.0D);
-        HEX_BOLT_DAMAGE = builder.defineInRange("hexBoltDamage", 36.0D, 0.0D, 10000.0D);
+        HEX_BOLT_DAMAGE = builder.defineInRange("hexBoltDamage", 27.0D, 0.0D, 10000.0D);
         HEX_BOLT_COOLDOWN = builder.defineInRange("hexBoltCooldownSeconds", 1.0D, 0.0D, 600.0D);
         HEX_EFFECTS = builder.comment("Hexes Hex Bolt can roll: jinxed, misfire, turned, pratfall, bad_luck, unravel, dazed.")
                 .defineListAllowEmpty("hexEffects", List.of("jinxed", "misfire", "turned", "pratfall", "bad_luck", "unravel", "dazed"),
@@ -595,7 +595,7 @@ public final class MarvelBalanceConfig {
         TELEKINESIS_RANGE = builder.defineInRange("telekinesisRange", 12.0D, 1.0D, 64.0D);
         TELEKINESIS_COOLDOWN = builder.defineInRange("telekinesisCooldownSeconds", 0.0D, 0.0D, 600.0D);
         TELEKINESIS_THROW_SPEED = builder.defineInRange("telekinesisThrowSpeed", 2.0D, 0.0D, 10.0D);
-        TELEKINESIS_THROW_DAMAGE = builder.defineInRange("telekinesisThrowDamage", 36.0D, 0.0D, 10000.0D);
+        TELEKINESIS_THROW_DAMAGE = builder.defineInRange("telekinesisThrowDamage", 27.0D, 0.0D, 10000.0D);
         TELEKINESIS_MAX_BLOCKS = builder.defineInRange("telekinesisMaxBlocks", 1, 1, 64);
         TELEKINESIS_HOLD_TICKS = builder.defineInRange("telekinesisBlockHoldTicks", 300, 20, 6000);
         REALITY_WARP_RADIUS = builder.defineInRange("realityWarpRadius", 10.0D, 1.0D, 64.0D);
@@ -607,9 +607,9 @@ public final class MarvelBalanceConfig {
         builder.pop();
 
         builder.push("organicSteelPiotrRasputin");
-        PIOTR = new HeroStats(builder, 10.0D, 4.0D, 0.3D, 0.0D, 0.0D, 33.0D, 0);
+        PIOTR = new HeroStats(builder, 10.0D, 4.0D, 0.3D, 0.0D, 0.0D, 21.0D, 0);
         builder.push("steelForm");
-        COLOSSUS = new HeroStats(builder, 60.0D, 20.0D, 2.0D, 0.5D, 0.0D, 236.0D, 0,
+        COLOSSUS = new HeroStats(builder, 60.0D, 20.0D, 2.0D, 0.5D, 0.0D, 80.0D, 0,
                 List.of("minecraft:generic.scale;0.2;ADD_MULTIPLIED_BASE", "minecraft:generic.armor_toughness;12.0;ADD_VALUE",
                         "minecraft:generic.knockback_resistance;1.0;ADD_VALUE", "minecraft:generic.movement_speed;-0.2;ADD_MULTIPLIED_TOTAL",
                         "minecraft:generic.safe_fall_distance;20.0;ADD_VALUE"));
@@ -618,18 +618,18 @@ public final class MarvelBalanceConfig {
         RICOCHET_MULTIPLIER = builder.defineInRange("ricochetDamageMultiplier", 0.25D, 0.0D, 1.0D);
         STEEL_FIRE_MULTIPLIER = builder.defineInRange("steelFireDamageMultiplier", 0.5D, 0.0D, 10.0D);
         FASTBALL_SPEED = builder.defineInRange("fastballSpeed", 2.8D, 0.0D, 10.0D);
-        FASTBALL_THROW_DAMAGE = builder.defineInRange("fastballThrowDamage", 190.0D, 0.0D, 10000.0D);
+        FASTBALL_THROW_DAMAGE = builder.defineInRange("fastballThrowDamage", 75.0D, 0.0D, 10000.0D);
         FASTBALL_DAMAGE_MULTIPLIER = builder.defineInRange("fastballNextHitMultiplier", 2.0D, 1.0D, 100.0D);
         FASTBALL_COOLDOWN = builder.defineInRange("fastballCooldownSeconds", 6.0D, 0.0D, 600.0D);
         STEEL_CHARGE_COOLDOWN = builder.defineInRange("steelChargeCooldownSeconds", 8.0D, 0.0D, 600.0D);
-        STEEL_CHARGE_DAMAGE = builder.defineInRange("steelChargeDamage", 190.0D, 0.0D, 10000.0D);
-        IRON_SLAM_DAMAGE = builder.defineInRange("ironSlamDamage", 332.0D, 0.0D, 10000.0D);
+        STEEL_CHARGE_DAMAGE = builder.defineInRange("steelChargeDamage", 75.0D, 0.0D, 10000.0D);
+        IRON_SLAM_DAMAGE = builder.defineInRange("ironSlamDamage", 131.0D, 0.0D, 10000.0D);
         IRON_SLAM_COOLDOWN = builder.defineInRange("ironSlamCooldownSeconds", 10.0D, 0.0D, 600.0D);
         BULWARK_REDUCTION = builder.defineInRange("bulwarkProjectileMultiplier", 0.5D, 0.0D, 1.0D);
         builder.pop();
 
         builder.push("radarSenseMattMurdock");
-        DAREDEVIL = new HeroStats(builder, 20.0D, 8.0D, 0.3D, 0.0D, 0.0D, 47.0D, 1,
+        DAREDEVIL = new HeroStats(builder, 20.0D, 8.0D, 0.3D, 0.0D, 0.0D, 31.0D, 1,
                 List.of("apothic_attributes:dodge_chance;0.12;ADD_VALUE", "minecraft:generic.safe_fall_distance;8.0;ADD_VALUE"));
         DAREDEVIL_LEAP_MULTIPLIER = builder.defineInRange("crouchJumpMultiplier", 1.9D, 1.0D, 20.0D);
         DAREDEVIL_LEAP_HORIZONTAL = builder.defineInRange("sprintLeapHorizontalMultiplier", 1.4D, 1.0D, 10.0D);
@@ -637,20 +637,20 @@ public final class MarvelBalanceConfig {
         RADAR_RANGE = builder.defineInRange("radarRange", 32.0D, 4.0D, 128.0D);
         RADAR_DARK_RANGE = builder.defineInRange("radarDarkRange", 48.0D, 4.0D, 128.0D);
         DANGER_SENSE_CHANCE = builder.defineInRange("dangerSenseDodgeChance", 0.2D, 0.0D, 1.0D);
-        BILLY_CLUB_DAMAGE = builder.defineInRange("billyClubDamage", 36.0D, 0.0D, 10000.0D);
+        BILLY_CLUB_DAMAGE = builder.defineInRange("billyClubDamage", 27.0D, 0.0D, 10000.0D);
         BILLY_CLUB_BOUNCES = builder.defineInRange("billyClubHits", 3, 1, 16);
         BILLY_CLUB_COOLDOWN = builder.defineInRange("billyClubCooldownSeconds", 3.0D, 0.0D, 600.0D);
         GRAPPLE_RANGE = builder.defineInRange("grappleRange", 32.0D, 4.0D, 128.0D);
         GRAPPLE_COOLDOWN = builder.defineInRange("grappleCooldownSeconds", 4.0D, 0.0D, 600.0D);
-        TAKEDOWN_DAMAGE = builder.defineInRange("takedownDamage", 61.0D, 0.0D, 10000.0D);
+        TAKEDOWN_DAMAGE = builder.defineInRange("takedownDamage", 46.0D, 0.0D, 10000.0D);
         TAKEDOWN_STUN_TICKS = builder.defineInRange("takedownStunTicks", 40, 0, 1200);
         TAKEDOWN_COOLDOWN = builder.defineInRange("takedownCooldownSeconds", 10.0D, 0.0D, 600.0D);
         builder.pop();
 
         builder.push("phasingKittyPryde");
-        KITTY = new HeroStats(builder, 16.0D, 4.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0);
+        KITTY = new HeroStats(builder, 16.0D, 4.0D, 0.0D, 0.0D, 0.0D, 4.2D, 0);
         PHASE_METER_SECONDS = builder.defineInRange("phaseMeterSeconds", 20.0D, 1.0D, 3600.0D);
-        PHASE_STRIKE_DAMAGE = builder.defineInRange("phaseStrikeDamage", 26.0D, 0.0D, 10000.0D);
+        PHASE_STRIKE_DAMAGE = builder.defineInRange("phaseStrikeDamage", 20.0D, 0.0D, 10000.0D);
         PHASE_STRIKE_COOLDOWN = builder.defineInRange("phaseStrikeCooldownSeconds", 5.0D, 0.0D, 600.0D);
         PHASE_SINK_TICKS = builder.defineInRange("phaseSinkTicks", 60, 1, 1200);
         PHASE_SINK_COOLDOWN = builder.defineInRange("phaseSinkCooldownSeconds", 12.0D, 0.0D, 600.0D);
@@ -659,44 +659,44 @@ public final class MarvelBalanceConfig {
         builder.pop();
 
         builder.push("squirrelPowersDoreenGreen");
-        SQUIRREL_GIRL = new HeroStats(builder, 14.0D, 4.0D, 0.2D, 0.5D, 0.0D, 33.0D, 0,
+        SQUIRREL_GIRL = new HeroStats(builder, 14.0D, 4.0D, 0.2D, 0.5D, 0.0D, 21.0D, 0,
                 List.of("apothic_attributes:dodge_chance;0.08;ADD_VALUE", "minecraft:generic.safe_fall_distance;10.0;ADD_VALUE"));
         SWARM_SIZE = builder.defineInRange("swarmSize", 8, 1, 32);
         SWARM_RESPAWN_SECONDS = builder.defineInRange("swarmRespawnSeconds", 4.0D, 0.0D, 600.0D);
         SWARM_SQUIRREL_HEALTH = builder.defineInRange("swarmSquirrelHealth", 30.0D, 1.0D, 10000.0D);
-        SWARM_BITE_DAMAGE = builder.defineInRange("swarmBiteDamage", 4.0D, 0.0D, 10000.0D);
+        SWARM_BITE_DAMAGE = builder.defineInRange("swarmBiteDamage", 3.0D, 0.0D, 10000.0D);
         SWARM_CALL_COOLDOWN = builder.defineInRange("callSwarmCooldownSeconds", 2.0D, 0.0D, 600.0D);
         SWARM_FORAGE_RANGE = builder.defineInRange("forageRange", 16.0D, 2.0D, 64.0D);
         SIC_EM_RANGE = builder.defineInRange("sicEmRange", 32.0D, 4.0D, 128.0D);
         SIC_EM_COOLDOWN = builder.defineInRange("sicEmCooldownSeconds", 1.0D, 0.0D, 600.0D);
         PILE_TICKS = builder.defineInRange("squirrelPileTicks", 60, 1, 1200);
-        PILE_BITE_DAMAGE = builder.defineInRange("squirrelPileBiteDamage", 3.5D, 0.0D, 10000.0D);
+        PILE_BITE_DAMAGE = builder.defineInRange("squirrelPileBiteDamage", 2.6D, 0.0D, 10000.0D);
         PILE_COOLDOWN = builder.defineInRange("squirrelPileCooldownSeconds", 20.0D, 0.0D, 600.0D);
         GNAW_TICKS_PER_HARDNESS = builder.defineInRange("gnawTicksPerHardness", 60.0D, 1.0D, 10000.0D);
         GNAW_MAX_BLOCKS = builder.defineInRange("gnawMaxBlocks", 64, 1, 4096);
         GNAW_DROPS = builder.define("gnawDropsItems", true);
-        TIPPY_BITE_DAMAGE = builder.defineInRange("tippyToeBiteDamage", 8.5D, 0.0D, 10000.0D);
+        TIPPY_BITE_DAMAGE = builder.defineInRange("tippyToeBiteDamage", 6.4D, 0.0D, 10000.0D);
         TIPPY_RESPAWN_SECONDS = builder.defineInRange("tippyToeRespawnSeconds", 60, 1, 3600);
         builder.pop();
 
         builder.push("flameOnJohnnyStorm");
-        TORCH = new HeroStats(builder, 28.0D, 10.0D, 0.3D, 0.0D, 0.0D, 0.0D, 0);
+        TORCH = new HeroStats(builder, 28.0D, 10.0D, 0.3D, 0.0D, 0.0D, 5.6D, 0);
         TORCH_FLY_SPEED = builder.defineInRange("flySpeed", 0.09D, 0.01D, 1.0D);
         FLAME_OUT_COOLDOWN = builder.defineInRange("flameOutCooldownSeconds", 5.0D, 0.0D, 600.0D);
-        FIREBALL_DAMAGE = builder.defineInRange("fireballDamage", 40.0D, 0.0D, 10000.0D);
+        FIREBALL_DAMAGE = builder.defineInRange("fireballDamage", 30.0D, 0.0D, 10000.0D);
         FIREBALL_COOLDOWN = builder.defineInRange("fireballCooldownSeconds", 0.4D, 0.0D, 600.0D);
         FLAME_CAGE_RANGE = builder.defineInRange("flameCageRange", 24.0D, 2.0D, 64.0D);
         FLAME_CAGE_TICKS = builder.defineInRange("flameCageTicks", 80, 1, 1200);
-        FLAME_CAGE_DAMAGE = builder.defineInRange("flameCageDamagePerSecond", 23.0D, 0.0D, 10000.0D);
+        FLAME_CAGE_DAMAGE = builder.defineInRange("flameCageDamagePerSecond", 17.0D, 0.0D, 10000.0D);
         FLAME_CAGE_COOLDOWN = builder.defineInRange("flameCageCooldownSeconds", 12.0D, 0.0D, 600.0D);
         NOVA_RADIUS = builder.defineInRange("novaFlareRadius", 8.0D, 1.0D, 64.0D);
-        NOVA_DAMAGE = builder.defineInRange("novaFlareDamage", 99.0D, 0.0D, 10000.0D);
+        NOVA_DAMAGE = builder.defineInRange("novaFlareDamage", 74.0D, 0.0D, 10000.0D);
         NOVA_COOLDOWN = builder.defineInRange("novaFlareCooldownSeconds", 30.0D, 0.0D, 600.0D);
         NOVA_BURNOUT_SECONDS = builder.defineInRange("novaFlareBurnoutSeconds", 10.0D, 0.0D, 600.0D);
         builder.pop();
 
         builder.push("invisibilitySueStorm");
-        SUE = new HeroStats(builder, 28.0D, 10.0D, 0.2D, 0.0D, 0.0D, 0.0D, 0);
+        SUE = new HeroStats(builder, 28.0D, 10.0D, 0.2D, 0.0D, 0.0D, 3.5D, 0);
         VANISH_COOLDOWN = builder.defineInRange("vanishCooldownSeconds", 3.0D, 0.0D, 600.0D);
         FORCE_FIELD_TICKS = builder.defineInRange("forceFieldTicks", 200, 1, 6000);
         FORCE_FIELD_COOLDOWN = builder.defineInRange("forceFieldCooldownSeconds", 12.0D, 0.0D, 600.0D);
@@ -705,32 +705,32 @@ public final class MarvelBalanceConfig {
         BUBBLE_RADIUS = builder.defineInRange("forceBubbleRadius", 3.5D, 1.0D, 16.0D);
         BUBBLE_DAMAGE_MULTIPLIER = builder.defineInRange("forceBubbleDamageTakenMultiplier", 0.25D, 0.0D, 1.0D);
         FORCE_BLAST_RANGE = builder.defineInRange("forceBlastRange", 12.0D, 2.0D, 64.0D);
-        FORCE_BLAST_DAMAGE = builder.defineInRange("forceBlastDamage", 36.0D, 0.0D, 10000.0D);
+        FORCE_BLAST_DAMAGE = builder.defineInRange("forceBlastDamage", 27.0D, 0.0D, 10000.0D);
         FORCE_BLAST_COOLDOWN = builder.defineInRange("forceBlastCooldownSeconds", 5.0D, 0.0D, 600.0D);
         builder.pop();
 
         builder.push("elasticityReedRichards");
-        REED = new HeroStats(builder, 26.0D, 10.0D, 0.3D, 0.5D, 0.0D, 0.0D, 0,
+        REED = new HeroStats(builder, 26.0D, 10.0D, 0.3D, 0.5D, 0.0D, 35.0D, 0,
                 List.of("minecraft:player.entity_interaction_range;3.0;ADD_VALUE", "minecraft:player.block_interaction_range;3.0;ADD_VALUE"));
         STRETCH_PUNCH_RANGE = builder.defineInRange("stretchPunchRange", 10.0D, 2.0D, 64.0D);
-        STRETCH_PUNCH_DAMAGE = builder.defineInRange("stretchPunchDamage", 66.0D, 0.0D, 10000.0D);
+        STRETCH_PUNCH_DAMAGE = builder.defineInRange("stretchPunchDamage", 50.0D, 0.0D, 10000.0D);
         STRETCH_PUNCH_COOLDOWN = builder.defineInRange("stretchPunchCooldownSeconds", 1.5D, 0.0D, 600.0D);
         STRETCH_HAMMER_RANGE = builder.defineInRange("stretchHammerRange", 6.0D, 2.0D, 32.0D);
         STRETCH_HAMMER_RADIUS = builder.defineInRange("stretchHammerRadius", 3.0D, 0.5D, 16.0D);
-        STRETCH_HAMMER_DAMAGE = builder.defineInRange("stretchHammerDamage", 88.0D, 0.0D, 10000.0D);
+        STRETCH_HAMMER_DAMAGE = builder.defineInRange("stretchHammerDamage", 66.0D, 0.0D, 10000.0D);
         STRETCH_HAMMER_COOLDOWN = builder.defineInRange("stretchHammerCooldownSeconds", 10.0D, 0.0D, 600.0D);
         STRETCH_SWEEP_RADIUS = builder.defineInRange("stretchSweepRadius", 6.0D, 1.0D, 32.0D);
-        STRETCH_SWEEP_DAMAGE = builder.defineInRange("stretchSweepDamage", 50.0D, 0.0D, 10000.0D);
+        STRETCH_SWEEP_DAMAGE = builder.defineInRange("stretchSweepDamage", 38.0D, 0.0D, 10000.0D);
         STRETCH_SWEEP_COOLDOWN = builder.defineInRange("stretchSweepCooldownSeconds", 8.0D, 0.0D, 600.0D);
         BOUNCE_MAX_SPEED = builder.defineInRange("bounceMaxSpeed", 1.4D, 0.0D, 10.0D);
         SHAPE_COOLDOWN = builder.defineInRange("shapeShiftCooldownSeconds", 1.0D, 0.0D, 600.0D);
         SLINGSHOT_COOLDOWN = builder.defineInRange("slingshotCooldownSeconds", 3.0D, 0.0D, 600.0D);
         SLINGSHOT_SPEED = builder.defineInRange("slingshotSpeed", 2.6D, 0.1D, 10.0D);
         BALL_SECONDS = builder.defineInRange("bouncyBallSeconds", 8.0D, 0.5D, 600.0D);
-        BALL_DAMAGE = builder.defineInRange("bouncyBallDamage", 22.0D, 0.0D, 10000.0D);
+        BALL_DAMAGE = builder.defineInRange("bouncyBallDamage", 16.0D, 0.0D, 10000.0D);
         POGO_BOUNCE = builder.defineInRange("pogoBounce", 0.75D, 0.1D, 5.0D);
         POGO_BOOST_BOUNCE = builder.defineInRange("pogoBoostBounce", 1.25D, 0.1D, 5.0D);
-        POGO_STOMP_DAMAGE = builder.defineInRange("pogoStompDamage", 33.0D, 0.0D, 10000.0D);
+        POGO_STOMP_DAMAGE = builder.defineInRange("pogoStompDamage", 25.0D, 0.0D, 10000.0D);
         BRIDGE_LENGTH = builder.defineInRange("bridgeLength", 8, 2, 32);
         BRIDGE_SECONDS = builder.defineInRange("bridgeSeconds", 30.0D, 1.0D, 600.0D);
         STILTS_STEP_HEIGHT = builder.defineInRange("stiltsStepHeight", 1.5D, 0.0D, 5.0D);
@@ -739,20 +739,20 @@ public final class MarvelBalanceConfig {
         builder.pop();
 
         builder.push("rockHideBenGrimm");
-        THING = new HeroStats(builder, 60.0D, 20.0D, 2.0D, 0.5D, 0.0D, 236.0D, 1,
+        THING = new HeroStats(builder, 60.0D, 20.0D, 2.0D, 0.5D, 0.0D, 80.0D, 1,
                 List.of("minecraft:generic.knockback_resistance;1.0;ADD_VALUE", "minecraft:generic.max_absorption;40.0;ADD_VALUE"));
         ROCK_PLATING_MAX = builder.defineInRange("rockPlatingMax", 40.0D, 0.0D, 10000.0D);
         ROCK_PLATING_REGEN = builder.defineInRange("rockPlatingRegenPerSecond", 2.0D, 0.0D, 1000.0D);
         ROCK_PLATING_DELAY_SECONDS = builder.defineInRange("rockPlatingRegenDelaySeconds", 5, 0, 600);
         COMBO_MULTIPLIER = builder.defineInRange("thirdPunchDamageMultiplier", 2.0D, 1.0D, 100.0D);
-        CLOBBER_DAMAGE = builder.defineInRange("clobberDamage", 600.0D, 0.0D, 10000.0D);
-        CRATER_DAMAGE = builder.defineInRange("landingCraterDamage", 96.0D, 0.0D, 10000.0D);
+        CLOBBER_DAMAGE = builder.defineInRange("clobberDamage", 188.0D, 0.0D, 10000.0D);
+        CRATER_DAMAGE = builder.defineInRange("landingCraterDamage", 38.0D, 0.0D, 10000.0D);
         CLOBBER_COOLDOWN = builder.defineInRange("clobberCooldownSeconds", 8.0D, 0.0D, 600.0D);
-        WRESTLE_DAMAGE = builder.defineInRange("wrestleDamage", 480.0D, 0.0D, 10000.0D);
+        WRESTLE_DAMAGE = builder.defineInRange("wrestleDamage", 150.0D, 0.0D, 10000.0D);
         WRESTLE_COOLDOWN = builder.defineInRange("wrestleCooldownSeconds", 10.0D, 0.0D, 600.0D);
         TOSS_MAX_BLOCKS = builder.defineInRange("ripAndTossMaxBlocks", 4, 1, 64);
         TOSS_THROW_SPEED = builder.defineInRange("ripAndTossThrowSpeed", 1.6D, 0.1D, 10.0D);
-        TOSS_DAMAGE = builder.defineInRange("ripAndTossDamage", 360.0D, 0.0D, 10000.0D);
+        TOSS_DAMAGE = builder.defineInRange("ripAndTossDamage", 112.0D, 0.0D, 10000.0D);
         TOSS_COOLDOWN = builder.defineInRange("ripAndTossCooldownSeconds", 6.0D, 0.0D, 600.0D);
         BRACE_DAMAGE_MULTIPLIER = builder.defineInRange("braceDamageTakenMultiplier", 0.3D, 0.0D, 1.0D);
         THING_LEAP_HORIZONTAL = builder.defineInRange("superJumpHorizontal", 1.6D, 0.0D, 10.0D);

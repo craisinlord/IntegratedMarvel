@@ -31,6 +31,7 @@ public final class TimeRateTuningManager {
             state = new TuningState(target, target.level().dimension(), target.isNoGravity(),
                     target instanceof Mob mob && mob.isNoAi());
             TUNING.put(playerId, state);
+            GauntletEntityLocks.remember(target);
             target.setNoGravity(true);
             if (target instanceof Mob mob) mob.setNoAi(true);
         }
@@ -50,7 +51,7 @@ public final class TimeRateTuningManager {
             if (player == null || entity.isRemoved() || entity.level().isClientSide
                     || !entity.level().dimension().equals(state.dimension)
                     || server.overworld().getGameTime() >= state.expiresAt
-                    || !GauntletAbilityController.canAdjustTargetTime(player)) {
+                    || !GauntletAbilities.isSelected(InfinityGauntletStones.equippedGauntlet(player), "time", "temporalDilation")) {
                 restore(state);
                 iterator.remove();
                 continue;
@@ -75,6 +76,7 @@ public final class TimeRateTuningManager {
         if (entity.isRemoved() || !entity.level().dimension().equals(state.dimension)) return;
         entity.setNoGravity(state.noGravity);
         if (entity instanceof Mob mob) mob.setNoAi(state.noAi);
+        GauntletEntityLocks.forget(entity);
         entity.setDeltaMovement(Vec3.ZERO);
         entity.hasImpulse = true;
     }

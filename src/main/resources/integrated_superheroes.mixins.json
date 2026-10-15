@@ -59,6 +59,7 @@
     "Weather2TornadoChunkMixin",
     "WinterSoldierVillainMixin",
     "ServerGamePacketListenerAccessor",
+    "FallingBlockEntityInvoker",
     "TimeFreezeTickRateMixin",
     "TimeFreezeTurnMixin"
   ],
@@ -74,6 +75,7 @@
     "LegacyAbilityKeysMixin",
     "LegacyHeroLandingMixin",
     "LegacyPowerOverlayMixin",
+    "MarvelLegacyCeilingCameraGuardMixin",
     "MarvelLegacyWebNetCameraGuardMixin",
     "MindControlledPlayerInputMixin",
     "PhaseCullingMixin",

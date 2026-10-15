@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
+import com.craisinlord.integrated_superheroes.registry.GauntletContent;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -14,10 +15,6 @@ import java.util.List;
 import java.util.Optional;
 
 public final class InfinityGauntletStones {
-    private static final List<ResourceLocation> GAUNTLET_IDS = List.of(
-            ResourceLocation.parse("integrated_superheroes:infinity_gauntlet"),
-            ResourceLocation.parse("integrated_superheroes:nano_gauntlet")
-    );
     private static final String STONES_TAG = "integrated_superheroes_stones";
     private static final String ABILITIES_TAG = "integrated_superheroes_abilities";
     private static final int[] MODEL_BITS = {16, 2, 8, 4, 1, 32};
@@ -84,21 +81,23 @@ public final class InfinityGauntletStones {
         return ItemStack.EMPTY;
     }
 
+    @SuppressWarnings("deprecation")
+    public static CompoundTag data(ItemStack stack) {
+        return stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).getUnsafe();
+    }
+
     public static boolean hasStone(ItemStack gauntlet, String stoneKey) {
-        CompoundTag data = gauntlet.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-        return data.getCompound(STONES_TAG).getBoolean(stoneKey);
+        return data(gauntlet).getCompound(STONES_TAG).getBoolean(stoneKey);
     }
 
     public static String selectedStone(ItemStack gauntlet) {
-        CompoundTag data = gauntlet.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-        return data.getString("integrated_superheroes_selected_stone");
+        return data(gauntlet).getString("integrated_superheroes_selected_stone");
     }
 
     public static int selectedAbility(ItemStack gauntlet, String stoneKey) {
         int count = abilityCount(stoneKey);
         if (count == 0) return 0;
-        CompoundTag data = gauntlet.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-        return Math.clamp(data.getCompound(ABILITIES_TAG).getInt(stoneKey), 0, count - 1);
+        return Math.clamp(data(gauntlet).getCompound(ABILITIES_TAG).getInt(stoneKey), 0, count - 1);
     }
 
     public static int selectedAbility(ItemStack gauntlet) {
@@ -116,11 +115,7 @@ public final class InfinityGauntletStones {
     }
 
     public static int abilityCount(String stoneKey) {
-        return switch (stoneKey) {
-            case "power", "space", "snap" -> 2;
-            case "reality", "soul", "time", "mind" -> 3;
-            default -> 0;
-        };
+        return GauntletAbilities.count(stoneKey);
     }
 
     public static void setSelectedStone(ItemStack gauntlet, String key) {
@@ -130,12 +125,15 @@ public final class InfinityGauntletStones {
     }
 
     public static boolean hasAllStones(ItemStack gauntlet) {
-        return STONES.stream().allMatch(stone -> hasStone(gauntlet, stone.key()));
+        CompoundTag stones = data(gauntlet).getCompound(STONES_TAG);
+        for (Stone stone : STONES) {
+            if (!stones.getBoolean(stone.key())) return false;
+        }
+        return true;
     }
 
     public static int installedStoneModelIndex(ItemStack gauntlet) {
-        CompoundTag data = gauntlet.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-        CompoundTag stones = data.getCompound(STONES_TAG);
+        CompoundTag stones = data(gauntlet).getCompound(STONES_TAG);
         int modelIndex = 0;
         for (int index = 0; index < STONES.size(); index++) {
             if (stones.getBoolean(STONES.get(index).key())) {
@@ -146,7 +144,8 @@ public final class InfinityGauntletStones {
     }
 
     public static List<String> installedStoneKeys(ItemStack gauntlet) {
-        return STONES.stream().map(Stone::key).filter(key -> hasStone(gauntlet, key)).toList();
+        CompoundTag stones = data(gauntlet).getCompound(STONES_TAG);
+        return STONES.stream().map(Stone::key).filter(stones::getBoolean).toList();
     }
 
     public static boolean isKnownStone(String key) {
@@ -179,6 +178,10 @@ public final class InfinityGauntletStones {
         gauntlet.set(DataComponents.CUSTOM_DATA, CustomData.of(itemData));
         if (hasAllStones(gauntlet)) {
             gauntlet.set(DataComponents.RARITY, Rarity.EPIC);
+            if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(
+                        new com.craisinlord.integrated_superheroes.api.GauntletCompletedEvent(serverPlayer, gauntlet));
+            }
         }
         stoneStack.shrink(1);
         player.displayClientMessage(Component.translatable("message.integrated_superheroes.gauntlet.stone_installed", stone.displayName()), true);
@@ -186,15 +189,11 @@ public final class InfinityGauntletStones {
     }
 
     public static boolean isGauntlet(ItemStack stack) {
-        return stack.getItemHolder().unwrapKey()
-                .map(key -> GAUNTLET_IDS.contains(key.location()))
-                .orElse(false);
+        return stack.is(GauntletContent.INFINITY_GAUNTLET.get()) || stack.is(GauntletContent.NANO_GAUNTLET.get());
     }
 
     public static boolean isFullGauntlet(ItemStack stack) {
-        return stack.getItemHolder().unwrapKey()
-                .map(key -> key.location().equals(ResourceLocation.parse("integrated_superheroes:infinity_gauntlet")))
-                .orElse(false);
+        return stack.is(GauntletContent.INFINITY_GAUNTLET.get());
     }
 
     private static ItemStack findGauntlet(Player player) {

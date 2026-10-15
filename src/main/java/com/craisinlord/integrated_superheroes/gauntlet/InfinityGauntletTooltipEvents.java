@@ -1,7 +1,7 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
-import com.craisinlord.integrated_superheroes.gauntlet.InfinityGauntletStones;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
@@ -10,45 +10,45 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
+import java.util.List;
+
 @EventBusSubscriber(modid = IntegratedSuperheroes.MODID, value = Dist.CLIENT)
 public final class InfinityGauntletTooltipEvents {
-    private static final int[] ABILITY_COLORS = {0x55FFFF, 0xAA55FF, 0xFFAA00};
-
     private InfinityGauntletTooltipEvents() {
     }
 
     @SubscribeEvent
     public static void addTooltips(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack();
+        List<Component> tooltip = event.getToolTip();
         if (InfinityGauntletStones.isGauntlet(stack)) {
-            event.getToolTip().add(Component.translatable("tooltip.integrated_superheroes.gauntlet.install")
+            tooltip.add(Component.translatable("tooltip.integrated_superheroes.gauntlet.install")
                     .withStyle(Style.EMPTY.withColor(0xBBBBBB)));
-            event.getToolTip().add(Component.translatable("tooltip.integrated_superheroes.gauntlet.use")
+            tooltip.add(Component.translatable("tooltip.integrated_superheroes.gauntlet.use")
                     .withStyle(Style.EMPTY.withColor(0xBBBBBB)));
+            if (GauntletAbilities.infinity(stack)) {
+                tooltip.add(Component.translatable("tooltip.integrated_superheroes.gauntlet.infinity_tier")
+                        .withStyle(Style.EMPTY.withColor(0xFFD700).withBold(true)));
+            }
+            if (Minecraft.getInstance().level != null && SnapStone.isScorched(stack, Minecraft.getInstance().level.getGameTime())) {
+                tooltip.add(Component.translatable("tooltip.integrated_superheroes.gauntlet.scorched")
+                        .withStyle(Style.EMPTY.withColor(0x777777).withItalic(true)));
+            }
             return;
         }
         InfinityGauntletStones.stoneKey(stack).ifPresent(stone -> {
-            event.getToolTip().add(Component.translatable("tooltip.integrated_superheroes.gauntlet.installed_stone")
+            tooltip.add(Component.translatable("tooltip.integrated_superheroes.gauntlet.installed_stone")
                     .withStyle(Style.EMPTY.withColor(0x888888)));
-            int abilityCount = stone.equals("power") || stone.equals("space") ? 2 : 3;
-            for (int ability = 1; ability <= abilityCount; ability++) {
-                Component line = Component.literal(roman(ability) + " ")
-                        .withStyle(Style.EMPTY.withColor(ABILITY_COLORS[ability - 1]).withBold(true))
-                        .append(Component.translatable("tooltip.integrated_superheroes.gauntlet.ability." + stone + "." + ability)
+            for (GauntletAbility ability : GauntletAbilities.forStone(stone)) {
+                Component line = Component.literal(GauntletAbilities.numeral(ability.index()) + " ")
+                        .withStyle(Style.EMPTY.withColor(GauntletAbilities.numeralColor(ability.index())).withBold(true))
+                        .append(Component.translatable("tooltip.integrated_superheroes.gauntlet.ability." + ability.translationSuffix())
                                 .withStyle(Style.EMPTY.withColor(0xFFFFFF).withBold(true)))
                         .append(Component.literal(" — ").withStyle(Style.EMPTY.withColor(0x888888)))
-                        .append(Component.translatable("tooltip.integrated_superheroes.gauntlet.description." + stone + "." + ability)
+                        .append(Component.translatable("tooltip.integrated_superheroes.gauntlet.description." + ability.translationSuffix())
                                 .withStyle(Style.EMPTY.withColor(0xBBBBBB)));
-                event.getToolTip().add(line);
+                tooltip.add(line);
             }
         });
-    }
-
-    private static String roman(int ability) {
-        return switch (ability) {
-            case 1 -> "I";
-            case 2 -> "II";
-            default -> "III";
-        };
     }
 }

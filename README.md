@@ -297,20 +297,28 @@ Wearing a **full Iron Man, War Machine or Iron Patriot suit** adds that mark's a
   Gauntlet** in your inventory. The Nano Gauntlet is crafted.
 - **Choosing:** with a gauntlet in either hand, switch stones with **← / →** and abilities with **↑ / ↓**.
 - **Using:** right-click.
-  - **Charged beams:** Power, Mind and Infinity beams charge for up to 2 seconds. Hold, then release; a longer
-    charge goes farther and hits harder.
+  - **Charged beams:** hold, then release. A longer charge goes farther and hits harder.
   - **Crouching:** many abilities do something different when you crouch.
+  - **Shift + scroll:** tunes abilities that have a setting, like a radius, size, speed or paste rotation.
+- **Controls card:** a short card under the gauntlet panel lists the selected ability's controls. Hold **Left Alt** for
+  the full description. The card can be set to full, controls-only or off in the client config.
+- **Infinity Tier:** with all six stones in the full Infinity Gauntlet, cooldowns are halved, power goes up by half and
+  many abilities gain an extra effect.
 
 **Power Stone**
 
-- **Strength Surge:** Strength X for 20 seconds.
-- **Annihilation Beam:** a beam that tears through the terrain.
+- **Overcharge:** soak up every hit for 6 seconds, then release it all as a cratering shockwave. Use it again to
+  detonate early.
+- **Annihilation Beam:** a charged beam that tears through terrain. Crouch for a wide beam.
+- **Moon Toss:** rips up the ground under your target and drops it on them from the sky.
 
 **Space Stone**
 
-- **Space Fold:** teleport next to any block you aim at, up to 320 blocks away.
-- **Dimensional Rift:** opens a two-way portal to your saved destination for a minute. Crouch to go straight there
-  instead.
+- **Space Fold:** teleport to any block you aim at, up to 320 blocks away. Chain up to 3 folds before the cooldown
+  starts. Crouch to swap places with your target.
+- **Dimensional Rift:** opens a two-way portal to your saved destination for 60 seconds. Crouch to go straight there.
+- **Singularity:** a black hole at the aimed point drags everything in for 6 seconds, then detonates.
+- **Banish:** hurls a target thousands of blocks across the world. Crouch to cast it into the void.
 - **Destination screen (O):** pick any dimension and coordinates, or use your current position. The second button
   depends on whether Infinite Dimensions is installed:
   - **With Infinite Dimensions: "Generate new dimension"** makes a brand-new random dimension and saves it.
@@ -318,34 +326,52 @@ Wearing a **full Iron Man, War Machine or Iron Patriot suit** adds that mark's a
 
 **Reality Stone**
 
-- **Reality Rewrite:** turns a block into a different one for 10 seconds.
-- **Gravity Inversion:** flips a target's gravity for 15 seconds.
-- **Size Shift:** **Shift + scroll** on a mob to resize it, from 0.01× to 100×.
+- **Transmute:** rewrites a sphere of blocks into your clipboard block, or new forms, for 10 seconds. Crouch to make
+  it permanent. Aimed mobs turn into animals; crouch to pop them instead. **Shift + scroll** sets the radius.
+- **Gravity Field:** gives every creature around the aimed point the Inverted effect, so effect immunities apply.
+  Crouch to toggle Inverted on yourself.
+- **Size Shift:** **Shift + scroll** to resize a mob, or yourself when you aim at nothing, from 0.01× to 100×. Crouch
+  and use it to reset to 1×.
+- **Reality Clipboard:** crouch-use to copy a block or mob, or crouch-use twice to copy a whole region, contents
+  included. Use to paste on the aimed face. **Shift + scroll** rotates the paste (up) or undoes the last one (down).
 
 **Soul Stone**
 
-- **Soul Exchange:** drain health from a target. Crouch to give your health away instead.
-- **Soul Sever:** freezes a target's soul for 8 seconds.
-- **Reap / Restore:** catches the next soul that dies near you, and you can bring it back. Crouch to reap a living
-  target.
+- **Soul Exchange:** drain a target's life to heal yourself. Crouch to give your life away instead.
+- **Soul Sever:** locks a target for 8 seconds. Every hit it takes lands twice as hard when it wakes.
+- **Reap / Restore:** catches the next soul that dies near you. Restore it as an ally that follows and fights for
+  you. Crouch to reap a living target.
+- **Soul Sight:** sense every soul nearby, and the ores around you, through walls for 15 seconds.
 - **Getting the Soul Stone:** sacrifice a player or one of your pets at the Soul Temple.
 
 **Time Stone**
 
-- **Chronostasis:** freezes time in your dimension while you hold the button.
-- **Temporal Dilation:** **Shift + scroll** at a mob to set its speed between 5% and 300%.
-- **Time Field:** slows everything nearby. Crouch to slow the whole dimension instead.
+- **Chronostasis:** freezes everything in your dimension while you hold the button.
+- **Temporal Dilation:** **Shift + scroll** at a mob to set its speed between 5% and 300%. Crouch to age a mob or
+  grow plants in an instant.
+- **Time Field:** a field at the aimed point that slows or speeds up everything inside. **Shift + scroll** picks the
+  rate. Fast fields also speed up crops and machines. Crouch to slow the whole dimension instead.
+- **Time Surge:** fast-forwards the world for 20 seconds. The sun races across the sky while crops, furnaces and baby
+  animals run many times faster.
+- **Rewind:** mobs, broken blocks and fresh deaths near you scrub back 10 seconds. Crouch to include yourself.
 
 **Mind Stone**
 
 - **Command:** the target copies your movement and attacks for 15 seconds. This works on players too.
-- **Mind Sight:** see a target's stats, or make all life near you glow.
-- **Mind Beam:** a charged beam.
+- **Mind Beam:** a charged beam that turns its victims against each other.
+- **Frenzy:** every mob nearby attacks the closest other mob. Crouch to pacify them instead.
+- **Mind Link:** possess a creature or player for 20 seconds. See through its eyes, move it, jump and attack with it,
+  and press F5 to change view. Use again to return. Your body stays behind, and getting hurt snaps you back.
 
 **All six stones (Infinity Gauntlet only)**
 
-- **Infinity Beam:** a charged beam.
-- **The Snap:** use it twice within 5 seconds to confirm. It wipes out half of all loaded life in every dimension.
+- **Infinity Beam:** a beam carrying every stone. It slows, withers, flips gravity and drains life.
+- **Snaps:** press twice within 5 seconds to confirm. Every snap takes a toll: half your health, a few minutes of
+  Weakness, Mining Fatigue and Slowness, and a scorched gauntlet.
+  - **Life-Halving Snap:** erases half of all loaded life in every dimension.
+  - **Restore Snap:** brings back every mob the last Life-Halving Snap erased.
+  - **Selective Snap:** erases every mob of the aimed type, or every hostile if you aim at nothing. Crouch to erase
+    your clipboard block nearby.
 
 # Villains
 

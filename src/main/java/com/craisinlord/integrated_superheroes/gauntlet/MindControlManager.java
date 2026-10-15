@@ -19,41 +19,56 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class MindControlManager {
     private static final Map<UUID, Session> BY_TARGET = new ConcurrentHashMap<>();
-    private static final Map<UUID, UUID> BY_CONTROLLER = new ConcurrentHashMap<>();
+    private static final Map<UUID, java.util.Set<UUID>> BY_CONTROLLER = new ConcurrentHashMap<>();
     private static final Map<UUID, MindControlInputPayload> INPUTS = new ConcurrentHashMap<>();
     private static final Map<UUID, MindControlInputPayload> LAST_SENT_STATES = new ConcurrentHashMap<>();
     private static final Map<UUID, TargetCache> TARGET_CACHES = new ConcurrentHashMap<>();
+    private static final java.util.Set<UUID> SYNCED_CONTROLLERS = ConcurrentHashMap.newKeySet();
 
     private MindControlManager() {
     }
 
     public static boolean control(ServerPlayer controller, LivingEntity target) {
+        return control(controller, target, 300L, true);
+    }
+
+    public static boolean control(ServerPlayer controller, LivingEntity target, long duration, boolean exclusive) {
         if (target == controller || target.level() != controller.level() || !target.isAlive()) {
             return false;
         }
-        UUID priorTarget = BY_CONTROLLER.remove(controller.getUUID());
-        if (priorTarget != null) {
-            release(priorTarget);
+        if (exclusive) {
+            java.util.Set<UUID> priorTargets = BY_CONTROLLER.remove(controller.getUUID());
+            if (priorTargets != null) {
+                for (UUID prior : java.util.List.copyOf(priorTargets)) release(prior);
+            }
         }
         release(target.getUUID());
         UUID originalMobTarget = target instanceof Mob mob && mob.getTarget() != null
                 ? mob.getTarget().getUUID() : null;
-        long expiry = controller.server.overworld().getGameTime() + 300L;
+        long expiry = controller.server.overworld().getGameTime() + duration;
         BY_TARGET.put(target.getUUID(), new Session(controller.getUUID(), target.level().dimension(), expiry, originalMobTarget));
-        BY_CONTROLLER.put(controller.getUUID(), target.getUUID());
+        BY_CONTROLLER.computeIfAbsent(controller.getUUID(), key -> ConcurrentHashMap.newKeySet()).add(target.getUUID());
         INPUTS.putIfAbsent(controller.getUUID(), neutralInput(controller));
         return true;
     }
 
     public static void acceptInput(ServerPlayer controller, MindControlInputPayload input) {
         ItemStack gauntlet = InfinityGauntletStones.equippedGauntlet(controller);
-        if (BY_CONTROLLER.containsKey(controller.getUUID()) && !gauntlet.isEmpty()
+        if ((BY_CONTROLLER.containsKey(controller.getUUID()) || MindLinkManager.isLinked(controller.getUUID())) && !gauntlet.isEmpty()
                 && InfinityGauntletStones.hasStone(gauntlet, "mind")
                 && Float.isFinite(input.yaw()) && Float.isFinite(input.pitch())) {
             INPUTS.put(controller.getUUID(), new MindControlInputPayload(input.up(), input.down(), input.left(), input.right(),
                     input.jump(), input.sprint(), input.attack(), net.minecraft.util.Mth.wrapDegrees(input.yaw()),
                     net.minecraft.util.Mth.clamp(input.pitch(), -90.0F, 90.0F)));
         }
+    }
+
+    public static void seedInput(ServerPlayer controller) {
+        INPUTS.putIfAbsent(controller.getUUID(), neutralInput(controller));
+    }
+
+    public static MindControlInputPayload input(UUID controller) {
+        return INPUTS.get(controller);
     }
 
     public static boolean isControlled(UUID entityId) {
@@ -98,7 +113,25 @@ public final class MindControlManager {
                 }
             }
         }
-        INPUTS.keySet().removeIf(controller -> !BY_CONTROLLER.containsKey(controller));
+        INPUTS.keySet().removeIf(controller -> !BY_CONTROLLER.containsKey(controller) && !MindLinkManager.isLinked(controller));
+        syncControllers(server);
+    }
+
+    private static void syncControllers(MinecraftServer server) {
+        java.util.Set<UUID> active = new java.util.HashSet<>(BY_CONTROLLER.keySet());
+        active.addAll(INPUTS.keySet());
+        for (UUID id : active) {
+            if (!BY_CONTROLLER.containsKey(id) && !MindLinkManager.isLinked(id)) continue;
+            ServerPlayer player = server.getPlayerList().getPlayer(id);
+            if (player != null && SYNCED_CONTROLLERS.add(id)) PacketDistributor.sendToPlayer(player, new MindControllerPayload(true));
+        }
+        for (var iterator = SYNCED_CONTROLLERS.iterator(); iterator.hasNext();) {
+            UUID id = iterator.next();
+            if (BY_CONTROLLER.containsKey(id) || MindLinkManager.isLinked(id)) continue;
+            iterator.remove();
+            ServerPlayer player = server.getPlayerList().getPlayer(id);
+            if (player != null) PacketDistributor.sendToPlayer(player, new MindControllerPayload(false));
+        }
     }
 
     public static void release(UUID targetId) {
@@ -106,7 +139,10 @@ public final class MindControlManager {
         if (session == null) {
             return;
         }
-        BY_CONTROLLER.remove(session.controller(), targetId);
+        BY_CONTROLLER.computeIfPresent(session.controller(), (key, targets) -> {
+            targets.remove(targetId);
+            return targets.isEmpty() ? null : targets;
+        });
         LAST_SENT_STATES.remove(targetId);
         TARGET_CACHES.remove(targetId);
         MinecraftServer server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
@@ -124,9 +160,9 @@ public final class MindControlManager {
     }
 
     public static void releaseController(UUID controllerId) {
-        UUID target = BY_CONTROLLER.remove(controllerId);
-        if (target != null) {
-            release(target);
+        java.util.Set<UUID> targets = BY_CONTROLLER.remove(controllerId);
+        if (targets != null) {
+            for (UUID target : java.util.List.copyOf(targets)) release(target);
         }
         INPUTS.remove(controllerId);
     }
@@ -140,6 +176,7 @@ public final class MindControlManager {
         INPUTS.clear();
         LAST_SENT_STATES.clear();
         TARGET_CACHES.clear();
+        SYNCED_CONTROLLERS.clear();
     }
 
     private static boolean hasEquippedMindGauntlet(ServerPlayer controller) {

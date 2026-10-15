@@ -40,9 +40,10 @@ public final class GauntletInputClientEvents {
         if (minecraft.screen == null && GauntletKeyMappings.NEXT_ABILITY.consumeClick()) {
             PacketDistributor.sendToServer(new GauntletInputPayload(GauntletAbilityController.NEXT_ABILITY, 0.0D));
         }
+        var gauntlet = InfinityGauntletStones.equippedGauntlet(minecraft.player);
         if (minecraft.screen == null && GauntletKeyMappings.SPACE_DESTINATION.consumeClick()
-                && InfinityGauntletStones.hasStone(InfinityGauntletStones.equippedGauntlet(minecraft.player), "space")
-                && InfinityGauntletStones.selectedStone(InfinityGauntletStones.equippedGauntlet(minecraft.player)).equals("space")) {
+                && InfinityGauntletStones.hasStone(gauntlet, "space")
+                && InfinityGauntletStones.selectedStone(gauntlet).equals("space")) {
             minecraft.setScreen(new SpaceDestinationScreen());
         }
         if (MindControlClientState.state().controlled()) {
@@ -50,8 +51,8 @@ public final class GauntletInputClientEvents {
             minecraft.player.setXRot(MindControlClientState.state().pitch());
             minecraft.player.setSprinting(MindControlClientState.state().sprint());
         }
-        var gauntlet = InfinityGauntletStones.equippedGauntlet(minecraft.player);
-        if (!gauntlet.isEmpty() && InfinityGauntletStones.hasStone(gauntlet, "mind")) {
+        if ((MindControlClientState.controlling() || MindLinkClient.active())
+                && !gauntlet.isEmpty() && InfinityGauntletStones.hasStone(gauntlet, "mind")) {
             MindControlInputPayload input = new MindControlInputPayload(
                     minecraft.screen == null && minecraft.options.keyUp.isDown(),
                     minecraft.screen == null && minecraft.options.keyDown.isDown(),
@@ -73,20 +74,12 @@ public final class GauntletInputClientEvents {
     @SubscribeEvent
     public static void onMouseScroll(InputEvent.MouseScrollingEvent event) {
         Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player == null || minecraft.screen != null || !Screen.hasShiftDown()
-                || !(minecraft.hitResult instanceof EntityHitResult hit)
-                || !(hit.getEntity() instanceof LivingEntity)) {
-            return;
-        }
+        if (minecraft.player == null || minecraft.screen != null || !Screen.hasShiftDown()) return;
+        boolean aimingAtLiving = minecraft.hitResult instanceof EntityHitResult hit && hit.getEntity() instanceof LivingEntity;
+        if (!GauntletAbilityController.canScroll(minecraft.player, aimingAtLiving)) return;
         double delta = Math.clamp(event.getScrollDeltaY(), -1.0D, 1.0D);
-        if (delta != 0.0D) {
-            if (GauntletAbilityController.canAdjustTargetTime(minecraft.player)) {
-                PacketDistributor.sendToServer(new GauntletInputPayload(GauntletAbilityController.TIME_ADJUST, delta));
-                event.setCanceled(true);
-            } else if (GauntletAbilityController.canAdjustTargetSize(minecraft.player)) {
-                PacketDistributor.sendToServer(new GauntletInputPayload(GauntletAbilityController.REALITY_SIZE_ADJUST, delta));
-                event.setCanceled(true);
-            }
-        }
+        if (delta == 0.0D) return;
+        PacketDistributor.sendToServer(new GauntletInputPayload(GauntletAbilityController.ABILITY_SCROLL, delta));
+        event.setCanceled(true);
     }
 }

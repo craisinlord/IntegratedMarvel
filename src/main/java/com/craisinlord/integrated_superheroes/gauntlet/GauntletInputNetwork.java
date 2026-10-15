@@ -35,6 +35,20 @@ public final class GauntletInputNetwork {
                                 GauntletSelectionToast.show(payload.stone(), payload.ability())))
                 .playToClient(GauntletCooldownPayload.TYPE, GauntletCooldownPayload.STREAM_CODEC,
                         (payload, context) -> context.enqueueWork(() -> GauntletCooldownClientState.set(payload)))
+                .playToClient(GauntletHudPayload.TYPE, GauntletHudPayload.STREAM_CODEC,
+                        (payload, context) -> context.enqueueWork(() -> GauntletClientState.setHud(payload)))
+                .playToClient(GauntletConfigSyncPayload.TYPE, GauntletConfigSyncPayload.STREAM_CODEC,
+                        (payload, context) -> context.enqueueWork(() -> GauntletConfig.applySync(payload)))
+                .playToClient(MindLinkPayload.TYPE, MindLinkPayload.STREAM_CODEC,
+                        (payload, context) -> context.enqueueWork(() -> MindLinkClient.set(payload)))
+                .playToClient(MindSightPayload.TYPE, MindSightPayload.STREAM_CODEC,
+                        (payload, context) -> context.enqueueWork(() -> GauntletClientState.setMindSight(payload)))
+                .playToClient(GauntletShapePayload.TYPE, GauntletShapePayload.STREAM_CODEC,
+                        (payload, context) -> context.enqueueWork(() -> GauntletFxClient.spawn(payload)))
+                .playToClient(SnapDustPayload.TYPE, SnapDustPayload.STREAM_CODEC,
+                        (payload, context) -> context.enqueueWork(() -> GauntletFxClient.snapDust(payload)))
+                .playToClient(MindControllerPayload.TYPE, MindControllerPayload.STREAM_CODEC,
+                        (payload, context) -> context.enqueueWork(() -> MindControlClientState.setControlling(payload.active())))
                 .playToClient(TimeFreezePayload.TYPE, TimeFreezePayload.STREAM_CODEC,
                         (payload, context) -> context.enqueueWork(() -> TimeFreezeClientState.set(payload.owners())))
                 .playToServer(SpaceDestinationPayload.TYPE, SpaceDestinationPayload.STREAM_CODEC,

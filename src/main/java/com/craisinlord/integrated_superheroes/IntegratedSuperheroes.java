@@ -8,6 +8,8 @@ import com.craisinlord.integrated_superheroes.hero.IronManEnergy;
 import com.craisinlord.integrated_superheroes.hero.MarvelBalanceConfig;
 import com.craisinlord.integrated_superheroes.hero.MarvelWeaponConfig;
 import com.craisinlord.integrated_superheroes.registry.GauntletContent;
+import com.craisinlord.integrated_superheroes.gauntlet.GauntletConfig;
+import com.craisinlord.integrated_superheroes.gauntlet.GauntletClientConfig;
 import com.craisinlord.integrated_superheroes.registry.HeroEntities;
 import com.craisinlord.integrated_superheroes.registry.ModCreativeTab;
 import com.craisinlord.integrated_superheroes.registry.ModEffects;
@@ -34,6 +36,8 @@ public final class IntegratedSuperheroes {
         modContainer.registerConfig(ModConfig.Type.COMMON, VillainConfig.SPEC, "integrated_superheroes-villains.toml");
         modContainer.registerConfig(ModConfig.Type.COMMON, MarvelWeaponConfig.SPEC, "integrated_superheroes-weapons.toml");
         modContainer.registerConfig(ModConfig.Type.COMMON, CleanupConfig.SPEC, "integrated_superheroes-cleanup.toml");
+        modContainer.registerConfig(ModConfig.Type.COMMON, GauntletConfig.SPEC, "integrated_superheroes-gauntlet.toml");
+        modContainer.registerConfig(ModConfig.Type.CLIENT, GauntletClientConfig.SPEC, "integrated_superheroes-gauntlet-client.toml");
         ModEffects.register(modEventBus);
         ModSounds.register(modEventBus);
         ModCreativeTab.register(modEventBus);
