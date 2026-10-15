@@ -11,5 +11,7 @@ build
 .classpath
 .project
 .claude
+docs
+/docs
 libs/runtime/*.jar
 /anthology_jars/
