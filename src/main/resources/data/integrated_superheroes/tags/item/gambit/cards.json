@@ -1,0 +1,19 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:paper",
+    "minecraft:book",
+    "minecraft:writable_book",
+    "minecraft:map",
+    "minecraft:name_tag",
+    "minecraft:feather",
+    {
+      "id": "#minecraft:wool_carpets",
+      "required": false
+    },
+    {
+      "id": "iceandfire:amphithere_feather",
+      "required": false
+    }
+  ]
+}

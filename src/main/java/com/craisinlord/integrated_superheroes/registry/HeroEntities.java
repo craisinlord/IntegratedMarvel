@@ -2,6 +2,7 @@ package com.craisinlord.integrated_superheroes.registry;
 
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import com.craisinlord.integrated_superheroes.hero.FantasticSeat;
+import com.craisinlord.integrated_superheroes.hero.KineticCharge;
 import com.craisinlord.integrated_superheroes.hero.SwarmSquirrel;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
@@ -26,6 +27,13 @@ public final class HeroEntities {
                     .clientTrackingRange(10)
                     .updateInterval(1)
                     .build("fantastic_seat"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<KineticCharge>> KINETIC_CHARGE = ENTITY_TYPES.register("kinetic_charge",
+            () -> EntityType.Builder.<KineticCharge>of(KineticCharge::new, MobCategory.MISC)
+                    .sized(0.35F, 0.35F)
+                    .clientTrackingRange(8)
+                    .updateInterval(2)
+                    .build("kinetic_charge"));
 
     private HeroEntities() {
     }

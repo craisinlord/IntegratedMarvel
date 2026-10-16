@@ -1,0 +1,70 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:tnt",
+    "minecraft:tnt_minecart",
+    "minecraft:gunpowder",
+    "minecraft:end_crystal",
+    "minecraft:creeper_head",
+    {
+      "id": "scguns:grenade",
+      "required": false
+    },
+    {
+      "id": "scguns:stun_grenade",
+      "required": false
+    },
+    {
+      "id": "scguns:swarm_bomb",
+      "required": false
+    },
+    {
+      "id": "scguns:nail_bomb",
+      "required": false
+    },
+    {
+      "id": "scguns:choke_bomb",
+      "required": false
+    },
+    {
+      "id": "scguns:gas_grenade",
+      "required": false
+    },
+    {
+      "id": "scguns:hellfire_bomb",
+      "required": false
+    },
+    {
+      "id": "scguns:beacon_grenade",
+      "required": false
+    },
+    {
+      "id": "alexscaves:depth_charge",
+      "required": false
+    },
+    {
+      "id": "alexscaves:nuclear_bomb",
+      "required": false
+    },
+    {
+      "id": "alexscaves:uranium",
+      "required": false
+    },
+    {
+      "id": "alexscaves:uranium_shard",
+      "required": false
+    },
+    {
+      "id": "antarchy:uranium_ingot",
+      "required": false
+    },
+    {
+      "id": "antarchy:raw_uranium",
+      "required": false
+    },
+    {
+      "id": "antarchy:uranium_nugget",
+      "required": false
+    }
+  ]
+}

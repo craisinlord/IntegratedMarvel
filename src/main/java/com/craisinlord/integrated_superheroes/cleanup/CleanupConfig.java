@@ -23,7 +23,7 @@ public final class CleanupConfig {
                 .define("infinityGauntletDuplicates", true);
         URU_MATERIALS = builder.comment("Infinity Gauntlet's uru becomes Marvel's uru ingot; raw uru, uru ore, the uru star, the smithing template and the netherite stick are removed.")
                 .define("uruMaterials", true);
-        GAUNTLET_EXTRAS = builder.comment("Infinity Gauntlet's Mjolnir becomes Marvel's; the Cosmi Rods, Sceptre, Stone Tracker and Suit-Case are removed.")
+        GAUNTLET_EXTRAS = builder.comment("Infinity Gauntlet's Mjolnir becomes Marvel's and its Sceptre becomes the Mind Stone; the Cosmi Rods, Stone Tracker and Suit-Case are removed.")
                 .define("infinityGauntletExtras", true);
         TITANIUM = builder.comment("Marvel's titanium becomes Antarchy titanium.")
                 .define("titanium", true);

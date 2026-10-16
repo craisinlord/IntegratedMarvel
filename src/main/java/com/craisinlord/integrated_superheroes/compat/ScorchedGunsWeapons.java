@@ -27,6 +27,10 @@ public final class ScorchedGunsWeapons {
         return entity instanceof ProjectileEntity;
     }
 
+    public static boolean isThrowable(Entity entity) {
+        return entity instanceof top.ribs.scguns.entity.throwable.ThrowableItemEntity;
+    }
+
     public static LivingEntity bulletShooter(Entity entity) {
         return entity instanceof ProjectileEntity bullet ? bullet.getShooter() : null;
     }

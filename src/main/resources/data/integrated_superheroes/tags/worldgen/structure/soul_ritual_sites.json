@@ -1,3 +1,8 @@
 {
-  "values": []
+  "values": [
+    {
+      "id": "infinity_gauntlet:soul_pit",
+      "required": false
+    }
+  ]
 }

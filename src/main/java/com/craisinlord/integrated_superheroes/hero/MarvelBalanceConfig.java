@@ -343,6 +343,88 @@ public final class MarvelBalanceConfig {
     public static final ModConfigSpec.DoubleValue THING_LEAP_STANDING_VERTICAL;
     public static final ModConfigSpec.IntValue THING_LEAP_COOLDOWN_TICKS;
 
+    public static final HeroStats GAMBIT;
+    public static final ModConfigSpec.DoubleValue KINETIC_DAMAGE;
+    public static final ModConfigSpec.DoubleValue KINETIC_RADIUS;
+    public static final ModConfigSpec.DoubleValue KINETIC_IMPACT_DAMAGE;
+    public static final ModConfigSpec.DoubleValue KINETIC_WEAPON_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue KINETIC_THROW_SPEED;
+    public static final ModConfigSpec.DoubleValue KINETIC_THROW_COOLDOWN;
+    public static final ModConfigSpec.DoubleValue PHANTOM_CARD_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue CARD_RADIUS_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue HEAVY_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue EXPLOSIVE_MULTIPLIER;
+    public static final ModConfigSpec.BooleanValue KINETIC_BLOCK_DAMAGE;
+    public static final ModConfigSpec.IntValue RETURN_DURABILITY_COST;
+    public static final ModConfigSpec.IntValue CARD_FAN_COUNT;
+    public static final ModConfigSpec.DoubleValue CARD_FAN_SPREAD;
+    public static final ModConfigSpec.DoubleValue CARD_FAN_COOLDOWN;
+    public static final ModConfigSpec.DoubleValue CHARGE_TOUCH_RANGE;
+    public static final ModConfigSpec.IntValue CHARGE_TOUCH_FUSE_TICKS;
+    public static final ModConfigSpec.DoubleValue CHARGE_TOUCH_DAMAGE;
+    public static final ModConfigSpec.DoubleValue CHARGE_TOUCH_RADIUS;
+    public static final ModConfigSpec.DoubleValue CHARGE_TOUCH_COOLDOWN;
+    public static final ModConfigSpec.DoubleValue VAULT_HORIZONTAL;
+    public static final ModConfigSpec.DoubleValue VAULT_VERTICAL;
+    public static final ModConfigSpec.DoubleValue VAULT_STAFF_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue VAULT_SLAM_DAMAGE;
+    public static final ModConfigSpec.DoubleValue VAULT_COOLDOWN;
+    public static final ModConfigSpec.DoubleValue FULL_HOUSE_RANGE;
+    public static final ModConfigSpec.IntValue FULL_HOUSE_TARGETS;
+    public static final ModConfigSpec.DoubleValue FULL_HOUSE_DAMAGE;
+    public static final ModConfigSpec.DoubleValue FULL_HOUSE_COOLDOWN;
+    public static final ModConfigSpec.DoubleValue CHARGED_AMMO_RADIUS;
+    public static final ModConfigSpec.DoubleValue CHARGED_AMMO_DAMAGE;
+    public static final ModConfigSpec.DoubleValue CHARGED_AMMO_EXHAUSTION;
+    public static final ModConfigSpec.BooleanValue CHARGE_GUN_PROJECTILES;
+    public static final ModConfigSpec.BooleanValue CAJUN_CHARM;
+
+    public static final HeroStats ROGUE;
+    public static final ModConfigSpec.IntValue MEMORY_SLOTS;
+    public static final ModConfigSpec.DoubleValue MEMORY_SECONDS;
+    public static final ModConfigSpec.DoubleValue BOSS_MEMORY_SECONDS;
+    public static final ModConfigSpec.DoubleValue MEMORY_DAMAGE_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue MEMORY_COOLDOWN_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue DRAIN_DAMAGE;
+    public static final ModConfigSpec.DoubleValue DRAIN_HEAL;
+    public static final ModConfigSpec.IntValue DRAIN_WEAKEN_TICKS;
+    public static final ModConfigSpec.DoubleValue INVOLUNTARY_DRAIN_DAMAGE;
+    public static final ModConfigSpec.DoubleValue SIPHON_RANGE;
+    public static final ModConfigSpec.DoubleValue SIPHON_DAMAGE;
+    public static final ModConfigSpec.DoubleValue SIPHON_COOLDOWN;
+    public static final ModConfigSpec.BooleanValue ABSORB_PLAYERS;
+    public static final ModConfigSpec.DoubleValue BORROW_SECONDS;
+    public static final ModConfigSpec.DoubleValue VICTIM_SHUTDOWN_SECONDS;
+    public static final ModConfigSpec.BooleanValue PETRIFY_MOBS;
+
+    public static final HeroStats JUBILEE;
+    public static final ModConfigSpec.DoubleValue PAFF_DAMAGE;
+    public static final ModConfigSpec.DoubleValue PAFF_SPEED;
+    public static final ModConfigSpec.DoubleValue PAFF_COOLDOWN;
+    public static final ModConfigSpec.IntValue VOLLEY_ROCKETS;
+    public static final ModConfigSpec.DoubleValue VOLLEY_DAMAGE;
+    public static final ModConfigSpec.DoubleValue VOLLEY_RANGE;
+    public static final ModConfigSpec.DoubleValue VOLLEY_COOLDOWN;
+    public static final ModConfigSpec.DoubleValue FLASHBANG_RADIUS;
+    public static final ModConfigSpec.IntValue FLASHBANG_TICKS;
+    public static final ModConfigSpec.DoubleValue FLASHBANG_DAMAGE;
+    public static final ModConfigSpec.DoubleValue FLASHBANG_COOLDOWN;
+    public static final ModConfigSpec.DoubleValue PYRO_JUMP_VERTICAL;
+    public static final ModConfigSpec.DoubleValue PYRO_JUMP_HORIZONTAL;
+    public static final ModConfigSpec.IntValue PYRO_JUMP_ELYTRA_FLIGHT;
+    public static final ModConfigSpec.DoubleValue PYRO_JUMP_COOLDOWN;
+    public static final ModConfigSpec.IntValue FINALE_ROCKETS;
+    public static final ModConfigSpec.DoubleValue FINALE_RADIUS;
+    public static final ModConfigSpec.DoubleValue FINALE_DAMAGE;
+    public static final ModConfigSpec.IntValue FINALE_TICKS;
+    public static final ModConfigSpec.DoubleValue FINALE_COOLDOWN;
+    public static final ModConfigSpec.DoubleValue ELYTRA_BOOST_MULTIPLIER;
+    public static final ModConfigSpec.IntValue LIGHT_SHOW_LEVEL;
+
+    public static final ModConfigSpec.DoubleValue X_GENES_HYDRA_BASE_CHANCE;
+    public static final ModConfigSpec.DoubleValue X_GENES_HYDRA_OUTPOST_CHANCE;
+    public static final ModConfigSpec.DoubleValue X_GENES_WITCH_CHANCE;
+
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
@@ -759,6 +841,118 @@ public final class MarvelBalanceConfig {
         THING_LEAP_VERTICAL = builder.defineInRange("superJumpVertical", 1.5D, 0.0D, 10.0D);
         THING_LEAP_STANDING_VERTICAL = builder.defineInRange("superJumpStandingVertical", 2.3D, 0.0D, 10.0D);
         THING_LEAP_COOLDOWN_TICKS = builder.defineInRange("superJumpCooldownTicks", 20, 0, 1200);
+        builder.pop();
+
+        builder.push("kineticChargeRemyLebeau");
+        GAMBIT = new HeroStats(builder, 22.0D, 8.0D, 0.3D, 0.0D, 0.02D, 14.0D, 0,
+                List.of("minecraft:generic.safe_fall_distance;6.0;ADD_VALUE"));
+        KINETIC_DAMAGE = builder.comment("Damage at the center of a kinetic burst from a normal thrown item.")
+                .defineInRange("kineticBurstDamage", 24.0D, 0.0D, 10000.0D);
+        KINETIC_RADIUS = builder.defineInRange("kineticBurstRadius", 2.5D, 0.5D, 16.0D);
+        KINETIC_IMPACT_DAMAGE = builder.defineInRange("kineticImpactDamage", 8.0D, 0.0D, 10000.0D);
+        KINETIC_WEAPON_MULTIPLIER = builder.comment("Thrown weapons add their attack damage times this to the impact.")
+                .defineInRange("thrownWeaponDamageMultiplier", 1.5D, 0.0D, 100.0D);
+        KINETIC_THROW_SPEED = builder.defineInRange("throwSpeed", 2.0D, 0.1D, 10.0D);
+        KINETIC_THROW_COOLDOWN = builder.defineInRange("kineticThrowCooldownSeconds", 0.6D, 0.0D, 600.0D);
+        PHANTOM_CARD_MULTIPLIER = builder.comment("Damage and radius multiplier for the free card thrown with an empty hand.")
+                .defineInRange("phantomCardMultiplier", 0.6D, 0.0D, 10.0D);
+        CARD_RADIUS_MULTIPLIER = builder.defineInRange("cardRadiusMultiplier", 0.7D, 0.0D, 10.0D);
+        HEAVY_MULTIPLIER = builder.defineInRange("heavyItemMultiplier", 1.5D, 0.0D, 10.0D);
+        EXPLOSIVE_MULTIPLIER = builder.defineInRange("explosiveItemMultiplier", 1.8D, 0.0D, 10.0D);
+        KINETIC_BLOCK_DAMAGE = builder.comment("Kinetic bursts break blocks. The superpower griefing game rule must also be on.")
+                .define("kineticBlockDamage", true);
+        RETURN_DURABILITY_COST = builder.comment("Durability a returning item loses each time it is thrown.")
+                .defineInRange("returnDurabilityCost", 4, 0, 1000);
+        CARD_FAN_COUNT = builder.defineInRange("cardFanCount", 5, 1, 16);
+        CARD_FAN_SPREAD = builder.defineInRange("cardFanSpreadDegrees", 30.0D, 0.0D, 180.0D);
+        CARD_FAN_COOLDOWN = builder.defineInRange("cardFanCooldownSeconds", 4.0D, 0.0D, 600.0D);
+        CHARGE_TOUCH_RANGE = builder.defineInRange("chargeTouchRange", 6.0D, 1.0D, 32.0D);
+        CHARGE_TOUCH_FUSE_TICKS = builder.defineInRange("chargeTouchFuseTicks", 50, 1, 1200);
+        CHARGE_TOUCH_DAMAGE = builder.defineInRange("chargeTouchDamage", 40.0D, 0.0D, 10000.0D);
+        CHARGE_TOUCH_RADIUS = builder.defineInRange("chargeTouchRadius", 3.5D, 0.5D, 16.0D);
+        CHARGE_TOUCH_COOLDOWN = builder.defineInRange("chargeTouchCooldownSeconds", 6.0D, 0.0D, 600.0D);
+        VAULT_HORIZONTAL = builder.defineInRange("boVaultHorizontal", 1.4D, 0.0D, 10.0D);
+        VAULT_VERTICAL = builder.defineInRange("boVaultVertical", 0.9D, 0.0D, 10.0D);
+        VAULT_STAFF_MULTIPLIER = builder.comment("Vault boost while holding an item in the gambit/staffs tag.")
+                .defineInRange("boVaultStaffMultiplier", 1.4D, 1.0D, 10.0D);
+        VAULT_SLAM_DAMAGE = builder.defineInRange("boVaultStaffSlamDamage", 20.0D, 0.0D, 10000.0D);
+        VAULT_COOLDOWN = builder.defineInRange("boVaultCooldownSeconds", 5.0D, 0.0D, 600.0D);
+        FULL_HOUSE_RANGE = builder.defineInRange("fullHouseRange", 32.0D, 4.0D, 128.0D);
+        FULL_HOUSE_TARGETS = builder.defineInRange("fullHouseTargets", 5, 1, 16);
+        FULL_HOUSE_DAMAGE = builder.defineInRange("fullHouseDamage", 36.0D, 0.0D, 10000.0D);
+        FULL_HOUSE_COOLDOWN = builder.defineInRange("fullHouseCooldownSeconds", 20.0D, 0.0D, 600.0D);
+        CHARGED_AMMO_RADIUS = builder.defineInRange("chargedAmmoRadius", 2.0D, 0.5D, 16.0D);
+        CHARGED_AMMO_DAMAGE = builder.defineInRange("chargedAmmoDamage", 14.0D, 0.0D, 10000.0D);
+        CHARGED_AMMO_EXHAUSTION = builder.comment("Hunger exhaustion per charged projectile.")
+                .defineInRange("chargedAmmoExhaustion", 0.6D, 0.0D, 40.0D);
+        CHARGE_GUN_PROJECTILES = builder.comment("Charged Ammo also charges Scorched Guns bullets.")
+                .define("chargeGunProjectiles", false);
+        CAJUN_CHARM = builder.comment("Gambit has Hero of the Village while injected.")
+                .define("cajunCharm", true);
+        builder.pop();
+
+        builder.push("absorptionAnnaMarie");
+        ROGUE = new HeroStats(builder, 40.0D, 14.0D, 0.8D, 0.0D, 0.0D, 28.0D, 1);
+        MEMORY_SLOTS = builder.defineInRange("memorySlots", 3, 1, 3);
+        MEMORY_SECONDS = builder.defineInRange("memorySeconds", 180.0D, 1.0D, 36000.0D);
+        BOSS_MEMORY_SECONDS = builder.defineInRange("bossMemorySeconds", 60.0D, 1.0D, 36000.0D);
+        MEMORY_DAMAGE_MULTIPLIER = builder.comment("Scales the damage of every absorbed ability.")
+                .defineInRange("memoryDamageMultiplier", 1.0D, 0.0D, 100.0D);
+        MEMORY_COOLDOWN_MULTIPLIER = builder.comment("Scales the cooldown of every absorbed ability.")
+                .defineInRange("memoryCooldownMultiplier", 1.0D, 0.0D, 100.0D);
+        DRAIN_DAMAGE = builder.defineInRange("drainDamage", 8.0D, 0.0D, 10000.0D);
+        DRAIN_HEAL = builder.defineInRange("drainHeal", 4.0D, 0.0D, 10000.0D);
+        DRAIN_WEAKEN_TICKS = builder.defineInRange("drainWeakenTicks", 100, 0, 6000);
+        INVOLUNTARY_DRAIN_DAMAGE = builder.comment("Damage dealt to mobs that hit Rogue in melee while her gloves are off.")
+                .defineInRange("involuntaryDrainDamage", 3.0D, 0.0D, 10000.0D);
+        SIPHON_RANGE = builder.defineInRange("siphonTouchRange", 4.0D, 1.0D, 16.0D);
+        SIPHON_DAMAGE = builder.defineInRange("siphonTouchDamage", 16.0D, 0.0D, 10000.0D);
+        SIPHON_COOLDOWN = builder.defineInRange("siphonTouchCooldownSeconds", 8.0D, 0.0D, 600.0D);
+        ABSORB_PLAYERS = builder.define("absorbPlayers", true);
+        BORROW_SECONDS = builder.comment("How long Rogue keeps powers borrowed from another player.")
+                .defineInRange("borrowSeconds", 60.0D, 1.0D, 36000.0D);
+        VICTIM_SHUTDOWN_SECONDS = builder.comment("How long an absorbed player's abilities stay on cooldown.")
+                .defineInRange("victimShutdownSeconds", 15.0D, 0.0D, 600.0D);
+        PETRIFY_MOBS = builder.comment("Gorgon and Cockatrice memories turn non-boss mobs to stone (needs Ice and Fire).")
+                .define("petrifyMobs", true);
+        builder.pop();
+
+        builder.push("pyrotechnicsJubilationLee");
+        JUBILEE = new HeroStats(builder, 18.0D, 6.0D, 0.2D, 0.0D, 0.02D, 7.0D, 0,
+                List.of("minecraft:generic.safe_fall_distance;4.0;ADD_VALUE"));
+        PAFF_DAMAGE = builder.defineInRange("paffDamage", 14.0D, 0.0D, 10000.0D);
+        PAFF_SPEED = builder.defineInRange("paffSpeed", 2.2D, 0.1D, 10.0D);
+        PAFF_COOLDOWN = builder.defineInRange("paffCooldownSeconds", 0.5D, 0.0D, 600.0D);
+        VOLLEY_ROCKETS = builder.defineInRange("fireworkVolleyRockets", 5, 1, 32);
+        VOLLEY_DAMAGE = builder.defineInRange("fireworkVolleyDamage", 18.0D, 0.0D, 10000.0D);
+        VOLLEY_RANGE = builder.defineInRange("fireworkVolleyRange", 32.0D, 4.0D, 128.0D);
+        VOLLEY_COOLDOWN = builder.defineInRange("fireworkVolleyCooldownSeconds", 6.0D, 0.0D, 600.0D);
+        FLASHBANG_RADIUS = builder.defineInRange("flashbangRadius", 8.0D, 1.0D, 64.0D);
+        FLASHBANG_TICKS = builder.defineInRange("flashbangTicks", 80, 1, 1200);
+        FLASHBANG_DAMAGE = builder.defineInRange("flashbangDamage", 6.0D, 0.0D, 10000.0D);
+        FLASHBANG_COOLDOWN = builder.defineInRange("flashbangCooldownSeconds", 12.0D, 0.0D, 600.0D);
+        PYRO_JUMP_VERTICAL = builder.defineInRange("pyroJumpVertical", 1.2D, 0.0D, 10.0D);
+        PYRO_JUMP_HORIZONTAL = builder.defineInRange("pyroJumpHorizontal", 1.3D, 0.0D, 10.0D);
+        PYRO_JUMP_ELYTRA_FLIGHT = builder.comment("Flight duration of the rocket Pyro Jump fires while gliding.")
+                .defineInRange("pyroJumpElytraFlight", 3, 1, 10);
+        PYRO_JUMP_COOLDOWN = builder.defineInRange("pyroJumpCooldownSeconds", 4.0D, 0.0D, 600.0D);
+        FINALE_ROCKETS = builder.defineInRange("grandFinaleRockets", 16, 1, 128);
+        FINALE_RADIUS = builder.defineInRange("grandFinaleRadius", 10.0D, 2.0D, 64.0D);
+        FINALE_DAMAGE = builder.defineInRange("grandFinaleDamage", 30.0D, 0.0D, 10000.0D);
+        FINALE_TICKS = builder.defineInRange("grandFinaleTicks", 80, 1, 1200);
+        FINALE_COOLDOWN = builder.defineInRange("grandFinaleCooldownSeconds", 60.0D, 0.0D, 3600.0D);
+        ELYTRA_BOOST_MULTIPLIER = builder.comment("Firework rockets Jubilee boosts an elytra with last this much longer.")
+                .defineInRange("elytraBoostMultiplier", 1.5D, 1.0D, 10.0D);
+        LIGHT_SHOW_LEVEL = builder.defineInRange("lightShowLightLevel", 12, 1, 15);
+        builder.pop();
+
+        builder.push("xGenes");
+        X_GENES_HYDRA_BASE_CHANCE = builder.comment("Chance a Hydra base chest holds X-Genes.")
+                .defineInRange("hydraBaseChestChance", 0.25D, 0.0D, 1.0D);
+        X_GENES_HYDRA_OUTPOST_CHANCE = builder.comment("Chance a Hydra outpost chest holds X-Genes.")
+                .defineInRange("hydraOutpostChestChance", 0.1D, 0.0D, 1.0D);
+        X_GENES_WITCH_CHANCE = builder.comment("Chance a witch killed by a player drops X-Genes.")
+                .defineInRange("witchDropChance", 0.04D, 0.0D, 1.0D);
         builder.pop();
 
         IronManSuits.define(builder);

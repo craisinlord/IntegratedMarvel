@@ -1,0 +1,231 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:swords",
+    "#minecraft:axes",
+    "#minecraft:pickaxes",
+    "#minecraft:shovels",
+    "#minecraft:hoes",
+    "minecraft:trident",
+    "minecraft:mace",
+    "minecraft:shield",
+    "minecraft:bow",
+    "minecraft:crossbow",
+    "minecraft:flint_and_steel",
+    "minecraft:shears",
+    "minecraft:fishing_rod",
+    "minecraft:brush",
+    {
+      "id": "#c:tools",
+      "required": false
+    },
+    {
+      "id": "#c:armors",
+      "required": false
+    },
+    {
+      "id": "marvel:vibranium_shield",
+      "required": false
+    },
+    {
+      "id": "marvel:proto_adamantium_shield",
+      "required": false
+    },
+    {
+      "id": "marvel:mjolnir",
+      "required": false
+    },
+    {
+      "id": "marvel:stormbreaker",
+      "required": false
+    },
+    {
+      "id": "marvel:winter_soldier_knife",
+      "required": false
+    },
+    {
+      "id": "marvel:centurion_blade",
+      "required": false
+    },
+    {
+      "id": "marvel:flamethrower",
+      "required": false
+    },
+    {
+      "id": "mutantmonsters:hulk_hammer",
+      "required": false
+    },
+    {
+      "id": "mutantmonsters:endersoul_hand",
+      "required": false
+    },
+    {
+      "id": "iceandfire:tide_trident",
+      "required": false
+    },
+    {
+      "id": "iceandfire:troll_weapon_axe",
+      "required": false
+    },
+    {
+      "id": "iceandfire:troll_weapon_column",
+      "required": false
+    },
+    {
+      "id": "iceandfire:troll_weapon_column_forest",
+      "required": false
+    },
+    {
+      "id": "iceandfire:troll_weapon_column_frost",
+      "required": false
+    },
+    {
+      "id": "iceandfire:troll_weapon_hammer",
+      "required": false
+    },
+    {
+      "id": "iceandfire:troll_weapon_trunk",
+      "required": false
+    },
+    {
+      "id": "iceandfire:troll_weapon_trunk_frost",
+      "required": false
+    },
+    {
+      "id": "iceandfire:stymphalian_bird_dagger",
+      "required": false
+    },
+    {
+      "id": "iceandfire:cockatrice_scepter",
+      "required": false
+    },
+    {
+      "id": "scguns:anthralite_knife",
+      "required": false
+    },
+    {
+      "id": "scguns:war_axe",
+      "required": false
+    },
+    {
+      "id": "scguns:anthralite_hammer",
+      "required": false
+    },
+    {
+      "id": "scguns:iron_spear",
+      "required": false
+    },
+    {
+      "id": "scguns:bomb_lance",
+      "required": false
+    },
+    {
+      "id": "alexscaves:extinction_spear",
+      "required": false
+    },
+    {
+      "id": "alexscaves:limestone_spear",
+      "required": false
+    },
+    {
+      "id": "alexscaves:frostmint_spear",
+      "required": false
+    },
+    {
+      "id": "alexscaves:desolate_dagger",
+      "required": false
+    },
+    {
+      "id": "alexscaves:sharpened_candy_cane",
+      "required": false
+    },
+    {
+      "id": "alexscaves:sea_staff",
+      "required": false
+    },
+    {
+      "id": "alexscaves:sugar_staff",
+      "required": false
+    },
+    {
+      "id": "alexscaves:resistor_shield",
+      "required": false
+    },
+    {
+      "id": "antarchy:battle_axe",
+      "required": false
+    },
+    {
+      "id": "antarchy:basilisk_dagger",
+      "required": false
+    },
+    {
+      "id": "antarchy:nightmare_sword",
+      "required": false
+    },
+    {
+      "id": "antarchy:blood_crystal_katana",
+      "required": false
+    },
+    {
+      "id": "antarchy:blood_gods_blade",
+      "required": false
+    },
+    {
+      "id": "antarchy:royal_guardian_sword",
+      "required": false
+    },
+    {
+      "id": "antarchy:royal_guardian_shield",
+      "required": false
+    },
+    {
+      "id": "antarchy:royal_assailant_battleaxe",
+      "required": false
+    },
+    {
+      "id": "antarchy:royal_assailant_staff",
+      "required": false
+    },
+    {
+      "id": "antarchy:ultimate_sword",
+      "required": false
+    },
+    {
+      "id": "antarchy:ultimate_pickaxe",
+      "required": false
+    },
+    {
+      "id": "antarchy:ultimate_axe",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:mjolnir_hammer",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:single_uru_sword",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:dual_uru_sword",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:cosmi_rod",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:the_sceptre",
+      "required": false
+    },
+    {
+      "id": "celestisynth:frostbound",
+      "required": false
+    },
+    {
+      "id": "antarchy:big_bertha",
+      "required": false
+    }
+  ]
+}

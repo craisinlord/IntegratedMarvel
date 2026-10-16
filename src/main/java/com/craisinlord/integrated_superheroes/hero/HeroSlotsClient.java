@@ -28,11 +28,11 @@ import java.text.DecimalFormat;
 public final class HeroSlotsClient {
     private static final DecimalFormat COOLDOWN_FORMAT = new DecimalFormat("#.#");
     public static final KeyMapping[] EXTRA_KEYS = {
-            key(6, InputConstants.KEY_R),
+            key(6, InputConstants.KEY_F),
             key(7, InputConstants.KEY_G),
-            key(8, InputConstants.KEY_X),
+            key(8, InputConstants.KEY_V),
             key(9, InputConstants.KEY_C),
-            key(10, InputConstants.KEY_V)
+            key(10, InputConstants.KEY_X)
     };
     private static final boolean[] DOWN = new boolean[EXTRA_KEYS.length];
 

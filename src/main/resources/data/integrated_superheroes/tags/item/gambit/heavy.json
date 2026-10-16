@@ -1,0 +1,59 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:anvil",
+    "minecraft:chipped_anvil",
+    "minecraft:damaged_anvil",
+    "minecraft:obsidian",
+    "minecraft:crying_obsidian",
+    "minecraft:iron_block",
+    "minecraft:gold_block",
+    "minecraft:netherite_block",
+    "minecraft:heavy_core",
+    "minecraft:bell",
+    "minecraft:cauldron",
+    "minecraft:lodestone",
+    "minecraft:diamond_block",
+    "minecraft:mace",
+    {
+      "id": "#c:storage_blocks",
+      "required": false
+    },
+    {
+      "id": "marvel:mjolnir",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:mjolnir_hammer",
+      "required": false
+    },
+    {
+      "id": "mutantmonsters:hulk_hammer",
+      "required": false
+    },
+    {
+      "id": "iceandfire:troll_weapon_hammer",
+      "required": false
+    },
+    {
+      "id": "iceandfire:troll_weapon_column",
+      "required": false
+    },
+    {
+      "id": "iceandfire:troll_weapon_column_forest",
+      "required": false
+    },
+    {
+      "id": "iceandfire:troll_weapon_column_frost",
+      "required": false
+    },
+    {
+      "id": "scguns:anthralite_hammer",
+      "required": false
+    },
+    {
+      "id": "antarchy:big_bertha",
+      "required": false
+    }
+  ]
+}

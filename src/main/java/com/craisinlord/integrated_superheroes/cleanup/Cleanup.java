@@ -53,7 +53,8 @@ public final class Cleanup {
         for (String id : List.of("mjolnir", "mjolnir_hammer", "mjolnir_strike")) {
             extras.replace("infinity_gauntlet:" + id, "marvel:mjolnir");
         }
-        extras.remove("infinity_gauntlet:cosmi_rod", "infinity_gauntlet:the_sceptre", "infinity_gauntlet:infinity_stone_tracker",
+        extras.replace("infinity_gauntlet:the_sceptre", "integrated_superheroes:mind_stone");
+        extras.remove("infinity_gauntlet:cosmi_rod", "infinity_gauntlet:infinity_stone_tracker",
                 "infinity_gauntlet:infinity_stone_case");
         for (String stone : List.of("power", "space", "reality", "soul", "time", "mind")) {
             extras.remove("infinity_gauntlet:cosmi_rod_" + stone);

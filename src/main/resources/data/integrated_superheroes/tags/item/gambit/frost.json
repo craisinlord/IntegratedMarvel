@@ -1,0 +1,35 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:snowball",
+    "minecraft:ice",
+    "minecraft:packed_ice",
+    "minecraft:blue_ice",
+    "minecraft:powder_snow_bucket",
+    "minecraft:snow_block",
+    {
+      "id": "iceandfire:ice_dragon_blood",
+      "required": false
+    },
+    {
+      "id": "iceandfire:ice_dragon_heart",
+      "required": false
+    },
+    {
+      "id": "iceandfire:dragonsteel_ice_sword",
+      "required": false
+    },
+    {
+      "id": "iceandfire:dragonbone_sword_ice",
+      "required": false
+    },
+    {
+      "id": "celestisynth:frostbound",
+      "required": false
+    },
+    {
+      "id": "alexscaves:frostmint_spear",
+      "required": false
+    }
+  ]
+}

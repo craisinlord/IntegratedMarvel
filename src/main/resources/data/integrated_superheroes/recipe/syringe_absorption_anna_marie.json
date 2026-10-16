@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "marvellegacy:syringe_empty"
+    },
+    {
+      "item": "marvel:x_genes"
+    },
+    {
+      "item": "minecraft:leather"
+    },
+    {
+      "item": "minecraft:echo_shard"
+    }
+  ],
+  "result": {
+    "id": "integrated_superheroes:syringe_absorption_anna_marie",
+    "count": 1
+  }
+}

@@ -1,6 +1,7 @@
 package com.craisinlord.integrated_superheroes.cleanup;
 
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
+import com.craisinlord.integrated_superheroes.hero.XGenesLootModifier;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -37,6 +38,7 @@ public final class CleanupEvents {
 
     static {
         LOOT_MODIFIERS.register("cleanup", () -> CleanupLootModifier.CODEC);
+        LOOT_MODIFIERS.register("x_genes", () -> XGenesLootModifier.CODEC);
         BIOME_MODIFIERS.register("cleanup", () -> CleanupBiomeModifier.CODEC);
     }
 

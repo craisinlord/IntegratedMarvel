@@ -22,6 +22,8 @@ Most heroes come from a **serum**. Each serum is a shapeless recipe:
 
 - **Blood samples:** right-click an adult villager or wandering trader with an empty syringe. It gets 2 minutes of
   Nausea and can't be drawn from again until that wears off.
+- **X-Genes:** mutant serums need these instead of blood. Find them in Hydra base and outpost chests, or as a rare
+  drop from witches you kill. The chances are in the `xGenes` section of the heroes config.
 - **Injecting:** hold right-click with the serum in your main hand for a second, then let go. You can only have
   one serum power at a time.
 - **Swapping powers:** hold right-click with an empty syringe for a second. Your power comes back out as its
@@ -236,6 +238,80 @@ deaths, and claw damage scaling.
 - **Magnetic Crush:** damage that scales with the target's armor.
 - **Weapon Swarm:** launches the metal weapons on your hotbar.
 
+### Gambit
+
+- **Passives:** agility, Speed and Jump, less fall damage, and **Cajun Charm** (Hero of the Village).
+- **Kinetic charge:** everything Gambit throws spins through the air glowing purple and explodes in a purple
+  kinetic burst instead of a TNT blast. He's immune to his own bursts.
+- **What he can throw:** almost anything. How it behaves depends on its item tag, under
+  `integrated_superheroes:gambit/`:
+  - `cards` (paper, books, maps): fly fast and straight, with a smaller burst.
+  - `heavy` (anvils, storage blocks, hammers): lob in an arc, with a bigger burst.
+  - `explosive` (TNT, gunpowder, end crystals, grenades, uranium): a much bigger burst.
+  - `incendiary`, `frost`, `shock`: the burst sets things on fire, freezes them, or calls down lightning.
+  - `teleport` (ender pearls, chorus fruit): you teleport to the burst.
+  - `potions`: the burst leaves a cloud of that potion.
+  - `fireworks`: the burst also sets off a firework show.
+  - `returns` (weapons, tools, shields, armor): the item drops where it lands after the burst, losing a little
+    durability. Thrown weapons also add their attack damage to the hit.
+  - `unthrowable`: never thrown (gauntlets, stones, serums, shulker boxes, nether stars).
+  - Everything else is used up.
+- **Kinetic Throw:** throws one of whatever you're holding. With an empty hand you throw a free phantom card.
+- **Card Fan:** five cards (or five of the held stack) in a fan.
+- **Charge Touch:** charges the mob or block you're looking at. It crackles purple and blows up after a moment,
+  or right away if you punch it.
+- **Bo Vault:** a kinetic pole-vault leap. Holding a staff (`gambit/staffs`: sticks, bamboo, blaze and breeze
+  rods, staffs and rods from other mods) vaults further and slams on landing.
+- **Full House:** marks up to five enemies in view, then throws a homing card at each.
+- **Charged Ammo** (toggle): every projectile you fire gets charged and bursts on impact, including arrows,
+  tridents, snowballs, potions and Mjolnir, Stormbreaker or the shield (which still come back). Each one costs a
+  little hunger.
+
+### Rogue
+
+- **Passives:** agility, Strength and extra toughness.
+- **Gloves** (toggle, on by default): take them off to use her power. While they're off:
+  - Punching a mob bare-handed drains it (bonus damage, Weakness and Slowness, and you heal) and **absorbs** a
+    memory of it.
+  - Anything that hits you in melee gets drained a little.
+- **Memories:** three slots, each showing what it holds and how long is left. A memory gives an active ability,
+  a passive, or both, and fades after 3 minutes (1 minute for bosses, which also make you dizzy). Absorbing a
+  fourth replaces the one closest to fading. Mobs without their own memory give **Stolen Vigor**.
+- **Memory I / II / III:** use that memory's active ability.
+- **Siphon Touch:** lunge at the nearest enemy in front of you and absorb it, gloves or not.
+- **Absorbing players:** you borrow their hero abilities for 60 seconds, and their abilities go on a
+  15-second cooldown. Absorbing Wolverine gives his healing factor, Spider-Man his wall-crawling, and another Rogue
+  her current memories.
+- **Memories include:**
+  - **Vanilla:** Creeper (Detonate), Charged Creeper, Skeleton, Stray and Bogged volleys, Spider web shots and
+    wall-climbing, Enderman Blink, Blaze Volley, Ghast Fireball, Slime and Magma Cube slams, Witch Hex Brew,
+    Evoker Fang Line, Vindicator, Pillager, Illusioner, Ravager Roar, Vex, Shulker bullets, Guardian lasers, Warden
+    Sonic Boom, Breeze Wind Charge, Iron Golem Toss, Drowned tridents, Ender Dragon breath, Wither skulls, and
+    passives from most animals.
+  - **Marvel:** Hydra agents, Baron Zemo, the Winter Soldier, Red Skull and Iron Man sentries.
+  - **Antarchy:** the Queen's Black Hole, the King's Royal Volley, the Prince's Royal Bolts, the Princess's Ice
+    Spikes, Basilisk gaze, Lucid bolts, Nightmare Dread Howl, Kraken Slam, Toreterror Seismic Leap, Molevore Spin
+    Drill, Hercules Beetle Launch, Brutalfly orbs, Vortex winds, Octopus Bombs, mantis scythes, scorpion and
+    manticore stings, and more.
+  - **Alex's Caves:** Tremorzilla's Atomic Breath, the Nucleeper's Mini Nuke, Luxtructosaurus tephra, Deep One
+    Mage waves, Licowitch Sugar Hex, Forsaken Sonic Roar, magnet pulls, dinosaur charges and stomps, gumballs,
+    and a memory for every other mob.
+  - **Mutant Monsters:** Mutated Blast, Seismic Slam, Mutant Arrows, Mutant Scream, Ice Barrage.
+  - **Ice and Fire:** dragon charges and elemental immunity, Gorgon petrification, Cockatrice gaze, hydra,
+    siren, troll, cyclops, stymphalian, dread and pixie memories.
+
+### Jubilee
+
+- **Passives:** agility, and her own fireworks never hurt her. Firework rockets she boosts an elytra with last
+  longer.
+- **Paff:** a fast firework bolt that pops on impact.
+- **Firework Volley:** five rockets that home in on nearby enemies.
+- **Flashbang:** a blinding burst. Nearby enemies are blinded, slowed, briefly stunned and lose track of you.
+- **Pyro Jump:** a firework-powered leap with no fall damage. While gliding, it fires a long elytra boost.
+- **Grand Finale:** fireworks go up around you, then rain down on enemies in the area for four seconds.
+- **Palette (wheel):** Rainbow, X-Men Blue & Gold, Classic Jubilee, Red, White & Blue, or Gambit Purple.
+- **Light Show** (toggle): your hands sparkle and you light up the area around you.
+
 # Iron Man suits
 
 Wearing a **full Iron Man, War Machine or Iron Patriot suit** adds that mark's abilities to your slots.
@@ -294,7 +370,19 @@ Wearing a **full Iron Man, War Machine or Iron Patriot suit** adds that mark's a
 # The Infinity Gauntlet
 
 - **Installing stones:** right-click with an Infinity Stone while you have the **Infinity Gauntlet** or **Nano
-  Gauntlet** in your inventory. The Nano Gauntlet is crafted.
+  Gauntlet** in your inventory.
+- **Getting a gauntlet:** the Nano Gauntlet is crafted. Upgrade it into the Infinity Gauntlet at a smithing table with
+  an **Uru Block** and a **Nether Star**. Any stones already installed carry over.
+- **Finding the stones:**
+
+| Stone | Where | How |
+| --- | --- | --- |
+| Power | Power Temple (ocean floor) or the Milano (End) | Mine the Orb and put it through a stonecutter |
+| Space | Odin's Vault (lush and dripstone caves) or Red Skull's room in a Hydra base | Stonecut Odin's Tesseract, or craft Red Skull's Tesseract into the stone |
+| Reality | The Collector's Vault (deserts, savannas and badlands) | Mine the Reality Aether and stonecut it |
+| Soul | The Soul Pit (snowy plains) | Sacrifice a player or one of your pets there |
+| Time | Ancient city centres | Right-click the Eye of Agamotto, then stonecut the Eye you get |
+| Mind | Hydra Bunker (lush caves) | Right-click the Sceptre stand |
 - **Choosing:** with a gauntlet in either hand, switch stones with **← / →** and abilities with **↑ / ↓**.
 - **Using:** right-click.
   - **Charged beams:** hold, then release. A longer charge goes farther and hits harder.
@@ -342,7 +430,8 @@ Wearing a **full Iron Man, War Machine or Iron Patriot suit** adds that mark's a
 - **Reap / Restore:** catches the next soul that dies near you. Restore it as an ally that follows and fights for
   you. Crouch to reap a living target.
 - **Soul Sight:** sense every soul nearby, and the ores around you, through walls for 15 seconds.
-- **Getting the Soul Stone:** sacrifice a player or one of your pets at the Soul Temple.
+- **Getting the Soul Stone:** sacrifice a player or one of your pets at the Soul Pit. Packs can add more sites to
+  the `integrated_superheroes:soul_ritual_sites` structure tag.
 
 **Time Stone**
 
@@ -431,14 +520,14 @@ it can't be killed in one burst.
 
 | Mod | Adds |
 | --- | --- |
-| **Antarchy** | Ant-Man and Wasp colonies, Antarchy-themed effects for Storm's gusts, Space rifts and size changes, titanium merging, and Antarchy ingredients in some recipes |
+| **Antarchy** | Ant-Man and Wasp colonies, Antarchy-themed effects for Storm's gusts, Space rifts and size changes, titanium merging, Antarchy ingredients in some recipes, and Rogue memories for every Antarchy mob and boss |
 | **Infinite Dimensions** | "Generate new dimension" for the Space Stone |
-| **Alex's Caves** | Magneto, magnetic block physics for Telekinesis and Rip and Toss, the real nuke and depth charge |
+| **Alex's Caves** | Magneto, magnetic block physics for Telekinesis and Rip and Toss, the real nuke and depth charge, Rogue memories for every Alex's Caves mob, extra purple magic on Gambit's bursts, and a rainbow trail for Jubilee |
 | **Weather2** | Extra weather for Storm |
-| **Scorched Guns** | Guns for Deadpool and Hydra, plus real grenades and flashbangs |
-| **Ice and Fire** | Real freezing, dragon charges, gorgon and siren protection |
-| **Mutant Monsters** | Better shockwaves |
-| **Better Combat**, **Celestisynth** | Extra animations |
+| **Scorched Guns** | Guns for Deadpool and Hydra, real grenades and flashbangs, and grenades Gambit can charge and throw |
+| **Ice and Fire** | Real freezing, dragon charges, gorgon and siren protection, Rogue memories for its creatures, and dragon items that give Gambit's bursts fire, frost or lightning |
+| **Mutant Monsters** | Better shockwaves, and Rogue memories for the mutants |
+| **Better Combat**, **Celestisynth** | Extra animations, plus extra firework sparkle for Gambit and Jubilee with Celestisynth |
 
 Everything without its optional mod still works, using a vanilla stand-in.
 
@@ -469,6 +558,16 @@ Everything without its optional mod still works, using a vanilla stand-in.
     fill it.
   - `integrated_superheroes:phase_blocking`: blocks Kitty Pryde can't phase through.
 - **`Villains.ECHO_TAGS`:** entity scoreboard tags that mark summoned copies, which villains treat as echoes.
+- **`api.RogueAbsorption`:** give Rogue a memory for any mob. Build one with
+  `RogueMemory.builder(id, "Name").active("Ability", player -> cooldownSeconds).passive(...)`, then call
+  `RogueAbsorption.register(entityType, memory)` during common setup. Use the factory overload to pick a memory
+  per mob instance, or `registerMatcher` to match many mobs at once. Your registrations win over the built-in
+  ones. `RogueAbsorption.grant` gives a Rogue player a memory directly.
+- **`api.RogueAbsorbEvent`:** posted on the NeoForge event bus when Rogue absorbs a mob. Cancel it, or swap the
+  memory or its duration.
+- **Item tags `integrated_superheroes:gambit/*`:** `cards`, `heavy`, `explosive`, `incendiary`, `frost`, `shock`,
+  `teleport`, `potions`, `fireworks`, `returns`, `staffs` and `unthrowable` decide how Gambit's thrown items
+  behave. Add your own items to them.
 
 ## Advancements
 

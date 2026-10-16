@@ -1,6 +1,7 @@
 {
   "replace": false,
   "entries": [
-    "integrated_superheroes:cleanup"
+    "integrated_superheroes:cleanup",
+    "integrated_superheroes:x_genes"
   ]
 }

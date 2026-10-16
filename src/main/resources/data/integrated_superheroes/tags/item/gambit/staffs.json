@@ -1,0 +1,61 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:stick",
+    "minecraft:bamboo",
+    "minecraft:blaze_rod",
+    "minecraft:breeze_rod",
+    {
+      "id": "alexscaves:sea_staff",
+      "required": false
+    },
+    {
+      "id": "alexscaves:sugar_staff",
+      "required": false
+    },
+    {
+      "id": "antarchy:royal_assailant_staff",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:cosmi_rod",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:cosmi_rod_power",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:cosmi_rod_mind",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:cosmi_rod_reality",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:cosmi_rod_soul",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:cosmi_rod_space",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:cosmi_rod_time",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:netherite_stick",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:the_sceptre",
+      "required": false
+    },
+    {
+      "id": "iceandfire:cockatrice_scepter",
+      "required": false
+    }
+  ]
+}

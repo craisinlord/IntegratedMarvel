@@ -1,0 +1,83 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:nether_star",
+    "minecraft:dragon_egg",
+    "minecraft:bundle",
+    "minecraft:elytra",
+    "minecraft:totem_of_undying",
+    "minecraft:enchanted_golden_apple",
+    "integrated_superheroes:infinity_gauntlet",
+    "integrated_superheroes:nano_gauntlet",
+    "integrated_superheroes:mind_stone",
+    "integrated_superheroes:power_stone",
+    "integrated_superheroes:reality_stone",
+    "integrated_superheroes:soul_stone",
+    "integrated_superheroes:space_stone",
+    "integrated_superheroes:time_stone",
+    "integrated_superheroes:red_book",
+    "integrated_superheroes:netherite_arc_reactor",
+    "marvellegacy:syringe_empty",
+    "marvel:x_genes",
+    {
+      "id": "#c:shulker_boxes",
+      "required": false
+    },
+    {
+      "id": "marvellegacy:syringe_spider_powers_peter_parker",
+      "required": false
+    },
+    {
+      "id": "marvellegacy:syringe_weapon_x_logan",
+      "required": false
+    },
+    {
+      "id": "marvel:space_stone",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:infinity_gauntlet_item",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:nano_gauntlet_item",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:power",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:mind",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:reality",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:soul",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:space",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:time",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:infinity_stone_case",
+      "required": false
+    },
+    {
+      "id": "iceandfire:gorgon_head",
+      "required": false
+    },
+    {
+      "id": "iceandfire:bestiary",
+      "required": false
+    }
+  ]
+}

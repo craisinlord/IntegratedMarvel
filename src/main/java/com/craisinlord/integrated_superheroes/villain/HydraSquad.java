@@ -49,14 +49,16 @@ public final class HydraSquad {
     }
 
     public enum Role {
-        RIFLEMAN("scguns:m3_carabine", "minecraft:crossbow", 22, 2),
-        ASSAULT("scguns:greaser_smg", "minecraft:iron_sword", 16, 2),
+        // Mob guns fire once per gun "rate" ticks, so these are copper/blackpowder picks chosen on damage per second.
+        RIFLEMAN("scguns:makeshift_rifle", "minecraft:crossbow", 22, 2),
+        ASSAULT("scguns:rusty_gnat", "minecraft:iron_sword", 16, 2),
+        // Every lower-tier shotgun fires about twice as fast, so the combat shotgun is still the gentlest one.
         BREACHER("scguns:combat_shotgun", "minecraft:iron_axe", 12, 2),
-        SNIPER("scguns:iron_spear", "minecraft:crossbow", 10, 3),
-        GRENADIER("scguns:defender_pistol", "minecraft:iron_sword", 12, 2),
+        SNIPER("scguns:llr_director", "minecraft:crossbow", 10, 3),
+        GRENADIER("scguns:umax_pistol", "minecraft:iron_sword", 12, 2),
         TROOPER("scguns:laser_musket", "minecraft:crossbow", 10, 2),
         CROSSBOWMAN("marvel:tesseract_crossbow", "marvel:tesseract_crossbow", 10, 2),
-        OFFICER("scguns:krauser", "minecraft:crossbow", 8, 3);
+        OFFICER("scguns:flintlock_pistol", "minecraft:crossbow", 8, 3);
 
         final String gun;
         final String fallback;

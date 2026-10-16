@@ -2,6 +2,7 @@ package com.craisinlord.integrated_superheroes.gauntlet;
 
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -14,8 +15,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 
@@ -24,9 +28,9 @@ import java.util.Map;
 import java.util.UUID;
 
 public final class SoulRitualManager {
-    /** Structures where a death can earn the Stone. Empty here; a pack or add-on fills it in. */
     public static final TagKey<Structure> RITUAL_SITES = TagKey.create(Registries.STRUCTURE,
             ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "soul_ritual_sites"));
+    private static final int SITE_REACH = 16;
     /** A fall at least this long that ends inside a ritual site always kills, whatever softens it. */
     private static final float PIT_FALL_DISTANCE = 30.0F;
     private static final ResourceLocation SOUL_STONE_ITEM_ID = ResourceLocation.parse("integrated_superheroes:soul_stone");
@@ -40,7 +44,20 @@ public final class SoulRitualManager {
     }
 
     public static boolean isInsideTemple(ServerLevel level, BlockPos position) {
-        return level.structureManager().getStructureWithPieceAt(position, RITUAL_SITES).isValid();
+        StructureManager structures = level.structureManager();
+        if (structures.getStructureWithPieceAt(position, RITUAL_SITES).isValid()) return true;
+        Registry<Structure> registry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
+        ChunkPos center = new ChunkPos(position);
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                if (!level.hasChunk(center.x + dx, center.z + dz)) continue;
+                for (StructureStart start : structures.startsForStructure(new ChunkPos(center.x + dx, center.z + dz),
+                        structure -> registry.wrapAsHolder(structure).is(RITUAL_SITES))) {
+                    if (start.getBoundingBox().inflatedBy(SITE_REACH).isInside(position)) return true;
+                }
+            }
+        }
+        return false;
     }
 
     /** Jumping into a ritual site's pit is the sacrifice, so Feather Falling and armour can't turn it into a bruise. */
@@ -50,6 +67,7 @@ public final class SoulRitualManager {
     }
 
     public static void tick(MinecraftServer server) {
+        if (server.getTickCount() % 10 != 0) return;
         long now = server.overworld().getGameTime();
         for (ServerLevel level : server.getAllLevels()) {
             for (ServerPlayer player : level.players()) {

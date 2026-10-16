@@ -1,0 +1,35 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:fire_charge",
+    "minecraft:blaze_powder",
+    "minecraft:magma_cream",
+    "minecraft:lava_bucket",
+    "minecraft:flint_and_steel",
+    "minecraft:magma_block",
+    {
+      "id": "iceandfire:fire_dragon_blood",
+      "required": false
+    },
+    {
+      "id": "iceandfire:fire_dragon_heart",
+      "required": false
+    },
+    {
+      "id": "iceandfire:dragonsteel_fire_sword",
+      "required": false
+    },
+    {
+      "id": "iceandfire:dragonbone_sword_fire",
+      "required": false
+    },
+    {
+      "id": "marvel:flamethrower",
+      "required": false
+    },
+    {
+      "id": "scguns:hellfire_bomb",
+      "required": false
+    }
+  ]
+}

@@ -57,6 +57,9 @@ public final class HeroAdvancements {
         branch("x_men/kitty_pryde", KittyPower.ID);
         branch("x_men/wolverine", "weapon_x_logan");
         branch("x_men/magneto", MagnetoPower.ID);
+        branch("x_men/gambit", GambitPower.ID);
+        branch("x_men/rogue", RoguePower.ID);
+        branch("x_men/jubilee", JubileePower.ID);
         branch("fantastic_four/mr_fantastic", MrFantasticPower.ID);
         branch("fantastic_four/invisible_woman", InvisibleWomanPower.ID);
         branch("fantastic_four/human_torch", HumanTorchPower.ID);

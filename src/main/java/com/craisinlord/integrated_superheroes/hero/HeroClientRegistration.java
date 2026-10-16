@@ -17,5 +17,6 @@ public final class HeroClientRegistration {
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(HeroEntities.SWARM_SQUIRREL.get(), SwarmSquirrelRenderer::new);
         event.registerEntityRenderer(HeroEntities.FANTASTIC_SEAT.get(), NoopRenderer::new);
+        event.registerEntityRenderer(HeroEntities.KINETIC_CHARGE.get(), KineticChargeRenderer::new);
     }
 }

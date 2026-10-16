@@ -60,10 +60,14 @@ public final class HeroContent {
     public static final DeferredItem<Item> SUE_SYRINGE = syringe("syringe_invisibility_sue_storm", InvisibleWomanPower.ID);
     public static final DeferredItem<Item> REED_SYRINGE = syringe("syringe_elasticity_reed_richards", MrFantasticPower.ID);
     public static final DeferredItem<Item> THING_SYRINGE = syringe("syringe_rock_hide_ben_grimm", ThingPower.ID);
+    public static final DeferredItem<Item> GAMBIT_SYRINGE = syringe("syringe_kinetic_charge_remy_lebeau", GambitPower.ID);
+    public static final DeferredItem<Item> ROGUE_SYRINGE = syringe("syringe_absorption_anna_marie", RoguePower.ID);
+    public static final DeferredItem<Item> JUBILEE_SYRINGE = syringe("syringe_pyrotechnics_jubilation_lee", JubileePower.ID);
     private static final List<DeferredItem<Item>> SYRINGES = java.util.stream.Stream.of(
             SUPER_SOLDIER_SYRINGE, PANTHER_SYRINGE, DEADPOOL_SYRINGE, QUICKSILVER_SYRINGE, CYCLOPS_SYRINGE, BINARY_SYRINGE,
             HULK_SYRINGE, MAGNETO_SYRINGE, STORM_SYRINGE, ICEMAN_SYRINGE, SCARLET_WITCH_SYRINGE, COLOSSUS_SYRINGE,
-            DAREDEVIL_SYRINGE, KITTY_SYRINGE, SQUIRREL_GIRL_SYRINGE, TORCH_SYRINGE, SUE_SYRINGE, REED_SYRINGE, THING_SYRINGE).filter(java.util.Objects::nonNull).toList();
+            DAREDEVIL_SYRINGE, KITTY_SYRINGE, SQUIRREL_GIRL_SYRINGE, TORCH_SYRINGE, SUE_SYRINGE, REED_SYRINGE, THING_SYRINGE,
+            GAMBIT_SYRINGE, ROGUE_SYRINGE, JUBILEE_SYRINGE).filter(java.util.Objects::nonNull).toList();
 
     private HeroContent() {
     }
@@ -96,6 +100,9 @@ public final class HeroContent {
         HeroPowers.register(InvisibleWomanPower.create(SUE_SYRINGE));
         HeroPowers.register(MrFantasticPower.create(REED_SYRINGE));
         HeroPowers.register(ThingPower.create(THING_SYRINGE));
+        HeroPowers.register(GambitPower.create(GAMBIT_SYRINGE));
+        HeroPowers.register(RoguePower.create(ROGUE_SYRINGE));
+        HeroPowers.register(JubileePower.create(JUBILEE_SYRINGE));
 
         LEGACY_ITEMS.register(modEventBus);
         modEventBus.addListener(HeroContent::commonSetup);
@@ -124,6 +131,9 @@ public final class HeroContent {
         NeoForge.EVENT_BUS.addListener(KittyPower::onProjectile);
         NeoForge.EVENT_BUS.addListener(HumanTorchPower::onImpact);
         NeoForge.EVENT_BUS.addListener(IcemanPower::onProjectile);
+        NeoForge.EVENT_BUS.addListener(GambitPower::onImpact);
+        NeoForge.EVENT_BUS.addListener(GambitPower::onLeave);
+        RoguePower.registerEvents();
         HeroAdvancements.register();
         NeoForge.EVENT_BUS.addListener(InvisibleWomanPower::onAttack);
         NeoForge.EVENT_BUS.addListener(InvisibleWomanPower::onTarget);
@@ -137,6 +147,7 @@ public final class HeroContent {
     private static void commonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(HeroPowers::registerLegacyPowerEntries);
         event.enqueueWork(SuitAbilities::registerLegacyPowerEntries);
+        event.enqueueWork(RogueMemories::registerAll);
         try {
             TimeDilationApi.addHorizontalOnlyMovement(entity -> entity instanceof Player player
                     && player.hasData(AttachmentsRegistry.PLAYER_DATA.get())
@@ -191,6 +202,9 @@ public final class HeroContent {
 
     private static void onServerTick(ServerTickEvent.Post event) {
         HeroShockwaves.tick();
+        JubileePower.tickServer(event.getServer());
+        GambitPower.tickServer(event.getServer());
+        RoguePower.tickServer(event.getServer());
     }
 
     private static void onLevelTick(LevelTickEvent.Post event) {
@@ -226,6 +240,9 @@ public final class HeroContent {
             HeroBlockLift.drop(player);
             HeroGrapple.clear(player);
             DaredevilPower.dropClub(player);
+            GambitPower.clear(player);
+            JubileePower.clear(player);
+            RogueKit.clear(player);
         }
     }
 
@@ -239,6 +256,10 @@ public final class HeroContent {
     private static void onIncomingDamage(LivingIncomingDamageEvent event) {
         if (HealingFactor.blocksDamage(event)) {
             event.setCanceled(true);
+            return;
+        }
+        JubileePower.onAnyDamage(event);
+        if (event.isCanceled()) {
             return;
         }
         ScarletWitchPower.onAnyDamage(event);
@@ -284,6 +305,8 @@ public final class HeroContent {
     private static void onJoinLevel(EntityJoinLevelEvent event) {
         HeroStun.onJoin(event);
         DaredevilPower.onJoin(event);
+        JubileePower.onJoin(event);
+        GambitPower.onJoin(event);
     }
 
     private static void onJump(LivingEvent.LivingJumpEvent event) {

@@ -1,0 +1,38 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:lightning_rod",
+    {
+      "id": "iceandfire:lightning_dragon_blood",
+      "required": false
+    },
+    {
+      "id": "iceandfire:lightning_dragon_heart",
+      "required": false
+    },
+    {
+      "id": "iceandfire:dragonsteel_lightning_sword",
+      "required": false
+    },
+    {
+      "id": "iceandfire:dragonbone_sword_lightning",
+      "required": false
+    },
+    {
+      "id": "marvel:mjolnir",
+      "required": false
+    },
+    {
+      "id": "marvel:stormbreaker",
+      "required": false
+    },
+    {
+      "id": "infinity_gauntlet:mjolnir_hammer",
+      "required": false
+    },
+    {
+      "id": "scguns:charged_amethyst_shard",
+      "required": false
+    }
+  ]
+}

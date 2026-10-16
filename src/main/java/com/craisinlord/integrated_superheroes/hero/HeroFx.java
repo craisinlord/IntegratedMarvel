@@ -25,6 +25,10 @@ public final class HeroFx {
         return sound == null ? fallback : sound;
     }
 
+    public static net.minecraft.core.particles.ParticleOptions particle(String id, net.minecraft.core.particles.ParticleOptions fallback) {
+        return BuiltInRegistries.PARTICLE_TYPE.get(ResourceLocation.parse(id)) instanceof net.minecraft.core.particles.SimpleParticleType type ? type : fallback;
+    }
+
     public static Item item(String id) {
         Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(id));
         return item == null ? Items.BARRIER : item;

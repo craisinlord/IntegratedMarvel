@@ -15,6 +15,7 @@
     "DeadpoolCostumeMixin",
     "DisplayAccessor",
     "FantasticEntityMixin",
+    "FireworkRocketAccessor",
     "IceAndFireGorgonSuitMixin",
     "InfinityGauntletBaseUiMixin",
     "InfinityGauntletMindInfectionMixin",
