@@ -12,6 +12,7 @@ public final class ModCompat {
     public static final boolean CELESTISYNTH = ModList.get().isLoaded("celestisynth");
     public static final boolean ANTARCHY = ModList.get().isLoaded("antarchy");
     public static final boolean INFINITE_DIMENSIONS = ModList.get().isLoaded("infinity");
+    public static final boolean VILTRUMITE = ModList.get().isLoaded("viltrumitecore");
 
     private ModCompat() {
     }

@@ -4,6 +4,8 @@ import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import com.craisinlord.integrated_superheroes.api.RogueAbsorbEvent;
 import com.craisinlord.integrated_superheroes.api.RogueAbsorption;
 import com.craisinlord.integrated_superheroes.api.RogueMemory;
+import com.craisinlord.integrated_superheroes.compat.ModCompat;
+import com.craisinlord.integrated_superheroes.compat.ViltrumiteBridge;
 import com.stxllarplanes.marvellegacy.data.PlayerData;
 import com.stxllarplanes.marvellegacy.init.AttachmentsRegistry;
 import com.stxllarplanes.marvellegacy.power.Power;
@@ -282,7 +284,7 @@ public final class RoguePower {
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, MarvelBalanceConfig.DRAIN_WEAKEN_TICKS.get(), 0), player);
         }
         player.heal(MarvelBalanceConfig.DRAIN_HEAL.get().floatValue());
-        if (target instanceof ServerPlayer victim) {
+        if (target instanceof ServerPlayer victim && !(ModCompat.VILTRUMITE && ViltrumiteBridge.isNpc(victim))) {
             absorbPlayer(player, victim);
             return;
         }
@@ -293,7 +295,7 @@ public final class RoguePower {
         if (event.isCanceled() || event.getMemory() == null) {
             return;
         }
-        String source = target.getType().getDescription().getString();
+        String source = target instanceof Player ? target.getName().getString() : target.getType().getDescription().getString();
         grant(player, event.getMemory(), source, event.getSeconds());
         if (boss) {
             player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 80, 0), player);
@@ -356,6 +358,11 @@ public final class RoguePower {
             return list;
         }
         String primary = HeroPowers.data(victim).getPrimaryPower();
+        RogueMemory legacy = RogueMemories.legacy(primary);
+        if (legacy != null) {
+            list.add(legacy);
+            return list;
+        }
         HeroPower hero = HeroPowers.get(primary);
         if (hero != null) {
             for (HeroPower.Ability ability : hero.abilities()) {
@@ -365,10 +372,6 @@ public final class RoguePower {
                 }
             }
             return list;
-        }
-        RogueMemory legacy = RogueMemories.legacy(primary);
-        if (legacy != null) {
-            list.add(legacy);
         }
         return list;
     }

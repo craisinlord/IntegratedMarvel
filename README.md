@@ -112,14 +112,27 @@ deaths, and claw damage scaling.
 
 - **Two forms:**
   - **Banner:** weak.
-  - **Hulk:** huge, strong and fast, with no fall damage.
+  - **Hulk:** huge, strong and fast, with no fall damage. He's built like the Hulk the moment he
+    transforms: wide chest, massive arms, short thick legs, a small head and a forward hunch.
 - **Rage meter:** fills as you deal and take damage. It boosts damage and cuts cooldowns. At full rage you
-  Hulk out whether you want to or not.
+  Hulk out whether you want to or not. Rage also makes the Hulk a little bigger and a brighter green, and
+  at high rage gamma particles drift off him.
 - **Last stand:** a hit that would kill Banner turns him into the Hulk instead.
 - **Hulk Out:** switches forms.
 - **Thunderclap:** a cone shockwave (Hulk form).
 - **Hulk Smash:** a ring shockwave (Hulk form).
 - **Gamma Leap:** a steerable crouch-jump that damages everything where you land.
+- **Rampage:** the Hulk smashes through terrain, and each broken block flashes gamma green. The angrier he is,
+  the harder the blocks he can break and the wider the path:
+  - **Calm:** dirt, sand, leaves, glass, fences and doors.
+  - **Angry (25 rage):** stone, wood and ores.
+  - **Furious (60 rage):** metal blocks, deepslate and most modded blocks.
+  - **Unstoppable (full rage):** everything short of obsidian and bedrock.
+
+  He breaks through walls when he sprints or walks into them, and through walls and ceilings during a Gamma
+  Leap. Landings leave craters. Hulk Smash digs trenches and Thunderclap throws the ground at enemies, both
+  from Furious rage. Rampage follows the `superPowerGriefing` gamerule and claim protection, and never
+  breaks containers or other block entities. It has its own toggle and config settings.
 
 ### Storm
 
@@ -311,6 +324,36 @@ deaths, and claw damage scaling.
 - **Grand Finale:** fireworks go up around you, then rain down on enemies in the area for four seconds.
 - **Palette (wheel):** Rainbow, X-Men Blue & Gold, Classic Jubilee, Red, White & Blue, or Gambit Purple.
 - **Light Show** (toggle): your hands sparkle and you light up the area around you.
+
+### Viltrumite *(needs Viltrumite)*
+
+- **Serum:** an empty syringe, two Viltrumite Blood Samples and a Nether Star. Blood comes from Viltrumites:
+  Conquest and the Lucan, Vidor and Thula squad drop samples when they die.
+- **Powers:** the full Viltrumite kit from the Viltrumite mod, on its own keys (ability keys, ability menu and
+  dashboard). That includes flight, Dash, Sonic Punch, Sky Breaker, Barrage, Thunderclap, Grab & Carry, Block,
+  Lethal Chop and Super Speed.
+- **Balance:** damage, damage reduction, healing and flight speed come from this mod's config instead of the
+  Viltrumite mod's own settings. Damage reduction defaults to 55% instead of 97%.
+- **Suit:** you wear an Omni-Man skin and cape while the power is injected. Both can be changed or turned off in the
+  config.
+- **Scourge Virus:** dying with it burns the power out for good. The serum is used up.
+- **Serum only:** the Viltrumite race prompt and default race are turned off, so the serum is the only way to
+  become a Viltrumite. This can be switched off in the config.
+- **Rogue:** absorbing a Viltrumite grants the Viltrumite kit for the memory's duration (with weaker stats) and a
+  Viltrumite Rush dash.
+- **Animations:** some hero moves borrow Viltrumite's arm and body animations. Hulk's Thunderclap plays the
+  thunderclap, Hulk punches through walls while he rampages, Thing's Clobberin' Time plays the Sonic Punch and Black Panther's Claw Swipe plays the Lethal Chop.
+  Their sounds play too, for you and for anyone nearby. They only change how the moves look and sound, not what
+  they do. They can be turned off in the config, and without Viltrumite the moves keep their usual animations.
+- **Viltrumite flight:** only Viltrumites and Captain Marvel can double-tap jump into Viltrumite flight, with its speed
+  and block-breaking takeoff. Captain Marvel's can be turned off in the config. Other flying heroes like Magneto,
+  Storm, Scarlet Witch and the Human Torch keep their own flight, and creative mode flight works as normal for
+  anyone who isn't a Viltrumite. While Captain Marvel is in Viltrumite flight, she
+  uses Viltrumite's flight animations instead of her usual flight pose.
+- **Non-Viltrumites:** Viltrumite's always-visible empty left hand only shows for Viltrumites, and only Viltrumites
+  bleed when hurt. Human blood is off by default (`humansBleed` in the config), since Human Blood Samples have no use.
+- **Invader fix:** Conquest and the squad no longer crash the game with mods that sync data to every player, like
+  AppleSkin.
 
 # Iron Man suits
 
@@ -527,6 +570,7 @@ it can't be killed in one burst.
 | **Scorched Guns** | Guns for Deadpool and Hydra, real grenades and flashbangs, and grenades Gambit can charge and throw |
 | **Ice and Fire** | Real freezing, dragon charges, gorgon and siren protection, Rogue memories for its creatures, and dragon items that give Gambit's bursts fire, frost or lightning |
 | **Mutant Monsters** | Better shockwaves, and Rogue memories for the mutants |
+| **Viltrumite** (ViltrumiteCore + ViltrumiteFlight) | The Viltrumite serum, balanced Viltrumite stats, weaker Viltrumite NPCs that drop blood, a Rogue memory, a Viltrumite advancement tab and Viltrumite animations for some hero moves |
 | **Better Combat**, **Celestisynth** | Extra animations, plus extra firework sparkle for Gambit and Jubilee with Celestisynth |
 
 Everything without its optional mod still works, using a vanilla stand-in.
@@ -542,8 +586,10 @@ Everything without its optional mod still works, using a vanilla stand-in.
 - **Antarchy content** (rift, wind vortex, size ray, ants) is only reached through `compat.Antarchy*` classes.
 - **Recipes:** the ones that need Antarchy items carry a `neoforge:mod_loaded` condition, with vanilla fallback
   recipes beside them.
+- **Viltrumite content** is only reached through `compat.ViltrumiteBridge`, `compat.ViltrumiteCompat` and
+  `compat.ViltrumiteAnimationsClient`.
 - **Mixin names:** mixins for an optional mod are prefixed with its name (`Weather2`, `ScorchedGuns`, `IceAndFire`,
-  `MutantMonsters`, `BetterCombat`, `Celestisynth`).
+  `MutantMonsters`, `BetterCombat`, `Celestisynth`, `Viltrumite`).
 - **Mixin plugin:** `IntegratedSuperheroesMixinPlugin` skips those mixins when their mod is missing, and skips any
   mixin whose target class doesn't exist.
 
@@ -579,6 +625,7 @@ Nearly all of them are awarded from code through `hero/HeroAdvancements`.
 - **Later ticks:** dashes, beams and shockwaves carry their cast forward.
 - **Long-running totals:** kept in the player's persisted NBT.
 - **Magneto's branch:** only loads with Alex's Caves.
+- **Viltrumite tab:** only loads with Viltrumite.
 - **Villain advancements:** hidden, and awarded from code.
 
 ## Configs

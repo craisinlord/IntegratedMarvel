@@ -1,5 +1,7 @@
 package com.craisinlord.integrated_superheroes.hero;
 
+import com.craisinlord.integrated_superheroes.compat.ModCompat;
+import com.craisinlord.integrated_superheroes.compat.ViltrumiteBridge;
 import com.stxllarplanes.marvellegacy.data.PlayerData;
 import com.stxllarplanes.marvellegacy.init.AttachmentsRegistry;
 import net.minecraft.world.entity.LivingEntity;
@@ -10,7 +12,8 @@ public final class BinaryFlight {
     }
 
     public static boolean isFlying(LivingEntity living) {
-        if (!(living instanceof Player player) || !player.hasData(AttachmentsRegistry.PLAYER_DATA.get())) {
+        if (!(living instanceof Player player) || !player.hasData(AttachmentsRegistry.PLAYER_DATA.get())
+                || ModCompat.VILTRUMITE && ViltrumiteBridge.inFlight(player)) {
             return false;
         }
         PlayerData data = player.getData(AttachmentsRegistry.PLAYER_DATA.get());

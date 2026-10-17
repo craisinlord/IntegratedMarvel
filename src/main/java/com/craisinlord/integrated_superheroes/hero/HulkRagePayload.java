@@ -10,9 +10,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
-public record HulkRagePayload(int rage) implements CustomPacketPayload {
+public record HulkRagePayload(int entityId, int rage) implements CustomPacketPayload {
     public static final Type<HulkRagePayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "hulk_rage"));
     public static final StreamCodec<ByteBuf, HulkRagePayload> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, HulkRagePayload::entityId,
             ByteBufCodecs.VAR_INT, HulkRagePayload::rage,
             HulkRagePayload::new
     );
@@ -30,7 +31,7 @@ public record HulkRagePayload(int rage) implements CustomPacketPayload {
         @SubscribeEvent
         public static void register(RegisterPayloadHandlersEvent event) {
             event.registrar("1").playToClient(TYPE, STREAM_CODEC, (payload, context) -> context.enqueueWork(
-                    () -> HulkClient.setRage(payload.rage())));
+                    () -> HulkClient.receiveRage(payload.entityId(), payload.rage())));
         }
     }
 }

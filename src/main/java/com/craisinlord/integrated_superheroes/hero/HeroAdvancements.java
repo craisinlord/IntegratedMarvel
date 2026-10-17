@@ -73,6 +73,7 @@ public final class HeroAdvancements {
         branch("street_level/spider_man", "spider_powers_peter_parker");
         branch("street_level/daredevil", DaredevilPower.ID);
         branch("street_level/squirrel_girl", SquirrelGirlPower.ID);
+        branch("viltrumite/viltrumite", ViltrumitePower.ID);
     }
 
     private HeroAdvancements() {

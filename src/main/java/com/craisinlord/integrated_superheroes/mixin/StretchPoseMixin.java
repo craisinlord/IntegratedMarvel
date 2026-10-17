@@ -1,6 +1,7 @@
 package com.craisinlord.integrated_superheroes.mixin;
 
 import com.craisinlord.integrated_superheroes.hero.FantasticClient;
+import com.craisinlord.integrated_superheroes.hero.HulkProportions;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -26,6 +27,7 @@ public abstract class StretchPoseMixin {
     private void integratedSuperheroes$stretch(EntityModel<?> model, PoseStack pose, VertexConsumer consumer, int light, int overlay, int color,
                                       Operation<Void> original, @Local(argsOnly = true) LivingEntity entity, @Local(argsOnly = true, ordinal = 1) float partialTick) {
         if (entity instanceof Player player && model instanceof PlayerModel<?> playerModel) {
+            HulkProportions.pose(player, playerModel, partialTick, pose);
             FantasticClient.pose(player, playerModel, partialTick, pose);
             original.call(model, pose, consumer, light, overlay, color);
             FantasticClient.renderNeck(player, playerModel, pose, consumer, light, overlay, color);
@@ -41,6 +43,7 @@ public abstract class StretchPoseMixin {
     private void integratedSuperheroes$unstretch(LivingEntity entity, float yaw, float partialTick, PoseStack pose, MultiBufferSource buffers, int light,
                                         CallbackInfo ci) {
         if (entity instanceof Player && ((LivingEntityRenderer<?, ?>) (Object) this).getModel() instanceof PlayerModel<?> model) {
+            HulkProportions.reset(model);
             FantasticClient.reset(model);
         }
     }

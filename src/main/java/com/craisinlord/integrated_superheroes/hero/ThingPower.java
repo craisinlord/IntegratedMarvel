@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.hero;
 
+import com.craisinlord.integrated_superheroes.compat.ViltrumiteAnimations;
 import com.stxllarplanes.marvellegacy.data.PlayerData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -301,7 +302,9 @@ public final class ThingPower {
         HeroFx.shake(player.serverLevel(), target.position(), 12.0D, 0.7F, 10);
         HeroFx.play(player, SoundEvents.GENERIC_EXPLODE.value(), 0.7F, 1.2F);
         HeroFx.play(player, SoundEvents.PLAYER_ATTACK_CRIT, 1.2F, 0.6F);
-        HeroAnimations.play(player, "uppercut");
+        if (!ViltrumiteAnimations.play(player, ViltrumiteAnimations.PUNCH)) {
+            HeroAnimations.play(player, "uppercut");
+        }
         player.displayClientMessage(Component.literal("§6It's clobberin' time!"), true);
         return MarvelBalanceConfig.CLOBBER_COOLDOWN.get();
     }

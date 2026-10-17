@@ -1,6 +1,7 @@
 package com.craisinlord.integrated_superheroes.hero;
 
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
+import com.craisinlord.integrated_superheroes.compat.ViltrumiteCompat;
 import com.craisinlord.anthology.time.TimeDilationApi;
 import com.craisinlord.integrated_superheroes.suit.PymAbilities;
 import com.craisinlord.integrated_superheroes.suit.PymColony;
@@ -63,11 +64,12 @@ public final class HeroContent {
     public static final DeferredItem<Item> GAMBIT_SYRINGE = syringe("syringe_kinetic_charge_remy_lebeau", GambitPower.ID);
     public static final DeferredItem<Item> ROGUE_SYRINGE = syringe("syringe_absorption_anna_marie", RoguePower.ID);
     public static final DeferredItem<Item> JUBILEE_SYRINGE = syringe("syringe_pyrotechnics_jubilation_lee", JubileePower.ID);
+    public static final DeferredItem<Item> VILTRUMITE_SYRINGE = ModCompat.VILTRUMITE ? syringe("syringe_viltrumite_blood_omni_man", ViltrumitePower.ID) : null;
     private static final List<DeferredItem<Item>> SYRINGES = java.util.stream.Stream.of(
             SUPER_SOLDIER_SYRINGE, PANTHER_SYRINGE, DEADPOOL_SYRINGE, QUICKSILVER_SYRINGE, CYCLOPS_SYRINGE, BINARY_SYRINGE,
             HULK_SYRINGE, MAGNETO_SYRINGE, STORM_SYRINGE, ICEMAN_SYRINGE, SCARLET_WITCH_SYRINGE, COLOSSUS_SYRINGE,
             DAREDEVIL_SYRINGE, KITTY_SYRINGE, SQUIRREL_GIRL_SYRINGE, TORCH_SYRINGE, SUE_SYRINGE, REED_SYRINGE, THING_SYRINGE,
-            GAMBIT_SYRINGE, ROGUE_SYRINGE, JUBILEE_SYRINGE).filter(java.util.Objects::nonNull).toList();
+            GAMBIT_SYRINGE, ROGUE_SYRINGE, JUBILEE_SYRINGE, VILTRUMITE_SYRINGE).filter(java.util.Objects::nonNull).toList();
 
     private HeroContent() {
     }
@@ -103,6 +105,10 @@ public final class HeroContent {
         HeroPowers.register(GambitPower.create(GAMBIT_SYRINGE));
         HeroPowers.register(RoguePower.create(ROGUE_SYRINGE));
         HeroPowers.register(JubileePower.create(JUBILEE_SYRINGE));
+        if (ModCompat.VILTRUMITE) {
+            HeroPowers.register(ViltrumitePower.create(VILTRUMITE_SYRINGE));
+            ViltrumiteCompat.register();
+        }
 
         LEGACY_ITEMS.register(modEventBus);
         modEventBus.addListener(HeroContent::commonSetup);
@@ -148,6 +154,9 @@ public final class HeroContent {
         event.enqueueWork(HeroPowers::registerLegacyPowerEntries);
         event.enqueueWork(SuitAbilities::registerLegacyPowerEntries);
         event.enqueueWork(RogueMemories::registerAll);
+        if (ModCompat.VILTRUMITE) {
+            event.enqueueWork(ViltrumiteCompat::configure);
+        }
         try {
             TimeDilationApi.addHorizontalOnlyMovement(entity -> entity instanceof Player player
                     && player.hasData(AttachmentsRegistry.PLAYER_DATA.get())
@@ -202,6 +211,7 @@ public final class HeroContent {
 
     private static void onServerTick(ServerTickEvent.Post event) {
         HeroShockwaves.tick();
+        HulkRampage.tickServer();
         JubileePower.tickServer(event.getServer());
         GambitPower.tickServer(event.getServer());
         RoguePower.tickServer(event.getServer());

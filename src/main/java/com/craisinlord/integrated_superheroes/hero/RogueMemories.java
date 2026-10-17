@@ -7,6 +7,7 @@ import com.craisinlord.integrated_superheroes.compat.RogueAlexsCavesMemories;
 import com.craisinlord.integrated_superheroes.compat.RogueAntarchyMemories;
 import com.craisinlord.integrated_superheroes.compat.RogueIceAndFireMemories;
 import com.craisinlord.integrated_superheroes.compat.RogueMutantMonstersMemories;
+import com.craisinlord.integrated_superheroes.compat.ViltrumiteCompat;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
@@ -88,6 +89,9 @@ public final class RogueMemories {
         if (ModCompat.ICE_AND_FIRE) {
             RogueIceAndFireMemories.register();
         }
+        if (ModCompat.VILTRUMITE) {
+            ViltrumiteCompat.registerRogue();
+        }
     }
 
     public static RogueMemory vigor() {
@@ -100,6 +104,9 @@ public final class RogueMemories {
         }
         if ("spider_powers_peter_parker".equals(primary)) {
             return spiderPowers;
+        }
+        if (ViltrumitePower.ID.equals(primary)) {
+            return ViltrumiteCompat.memory();
         }
         return null;
     }

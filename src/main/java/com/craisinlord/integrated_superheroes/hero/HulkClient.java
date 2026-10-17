@@ -48,6 +48,14 @@ public final class HulkClient {
         HulkPower.setClientRage(rage);
     }
 
+    public static void receiveRage(int entityId, int value) {
+        HulkPower.setClientRage(entityId, Mth.clamp(value, 0, 100));
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null && player.getId() == entityId) {
+            setRage(value);
+        }
+    }
+
     public static void shake(float intensity, int ticks) {
         float remaining = shakeTotal <= 0 ? 0.0F : shakeIntensity * shakeTicks / (float) shakeTotal;
         if (intensity >= remaining) {
@@ -164,6 +172,7 @@ public final class HulkClient {
         reset(Minecraft.getInstance());
         StormZones.clearClient();
         shakeTicks = 0;
+        HulkPower.clearClientRage();
     }
 
     private static boolean showsMeter() {

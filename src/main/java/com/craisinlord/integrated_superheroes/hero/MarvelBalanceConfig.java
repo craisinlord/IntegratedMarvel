@@ -139,6 +139,18 @@ public final class MarvelBalanceConfig {
     public static final ModConfigSpec.BooleanValue RAGE_FORCES_HULK_OUT;
     public static final ModConfigSpec.IntValue RAGE_MAX_STRENGTH_LEVEL;
     public static final ModConfigSpec.DoubleValue RAGE_COOLDOWN_REDUCTION;
+    public static final ModConfigSpec.DoubleValue HULK_RAGE_GROWTH;
+    public static final ModConfigSpec.BooleanValue HULK_RAMPAGE;
+    public static final ModConfigSpec.DoubleValue HULK_RAMPAGE_CALM_HARDNESS;
+    public static final ModConfigSpec.DoubleValue HULK_RAMPAGE_ANGRY_HARDNESS;
+    public static final ModConfigSpec.DoubleValue HULK_RAMPAGE_FURIOUS_HARDNESS;
+    public static final ModConfigSpec.DoubleValue HULK_RAMPAGE_UNSTOPPABLE_HARDNESS;
+    public static final ModConfigSpec.IntValue HULK_RAMPAGE_ANGRY_RAGE;
+    public static final ModConfigSpec.IntValue HULK_RAMPAGE_FURIOUS_RAGE;
+    public static final ModConfigSpec.IntValue HULK_RAMPAGE_BLOCKS_PER_TICK;
+    public static final ModConfigSpec.DoubleValue HULK_RAMPAGE_DROP_CHANCE;
+    public static final ModConfigSpec.DoubleValue HULK_CRATER_MAX_RADIUS;
+    public static final ModConfigSpec.IntValue HULK_THUNDERCLAP_FLUNG_BLOCKS;
     public static final ModConfigSpec.DoubleValue LAST_STAND_COOLDOWN;
 
     public static final HeroStats MAGNETO;
@@ -421,6 +433,30 @@ public final class MarvelBalanceConfig {
     public static final ModConfigSpec.DoubleValue ELYTRA_BOOST_MULTIPLIER;
     public static final ModConfigSpec.IntValue LIGHT_SHOW_LEVEL;
 
+    public static final HeroStats VILTRUMITE;
+    public static final ModConfigSpec.DoubleValue VILTRUMITE_BASE_DAMAGE;
+    public static final ModConfigSpec.DoubleValue VILTRUMITE_DAMAGE_REDUCTION;
+    public static final ModConfigSpec.DoubleValue VILTRUMITE_DAMAGE_IGNORE;
+    public static final ModConfigSpec.DoubleValue VILTRUMITE_HEAL_FACTOR;
+    public static final ModConfigSpec.DoubleValue VILTRUMITE_MAX_FLIGHT_SPEED;
+    public static final ModConfigSpec.DoubleValue VILTRUMITE_THROTTLE;
+    public static final ModConfigSpec.BooleanValue VILTRUMITE_SYRINGE_ONLY;
+    public static final ModConfigSpec.BooleanValue VILTRUMITE_TAKEOFF_BREAKS_BLOCKS;
+    public static final ModConfigSpec.BooleanValue VILTRUMITE_HUMANS_BLEED;
+    public static final ModConfigSpec.DoubleValue VILTRUMITE_NPC_MAX_REDUCTION;
+    public static final ModConfigSpec.IntValue VILTRUMITE_NPC_BLOOD_DROPS;
+    public static final ModConfigSpec.DoubleValue VILTRUMITE_NPC_DAMAGE_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue VILTRUMITE_NPC_PER_HIT_CAP;
+    public static final ModConfigSpec.BooleanValue VILTRUMITE_SUIT;
+    public static final ModConfigSpec.ConfigValue<String> VILTRUMITE_SUIT_SKIN;
+    public static final ModConfigSpec.ConfigValue<String> VILTRUMITE_SUIT_CAPE;
+    public static final ModConfigSpec.BooleanValue VILTRUMITE_ANIMATIONS;
+    public static final ModConfigSpec.BooleanValue VILTRUMITE_CAPTAIN_MARVEL_FLIGHT;
+    public static final ModConfigSpec.DoubleValue VILTRUMITE_ROGUE_BASE_DAMAGE;
+    public static final ModConfigSpec.DoubleValue VILTRUMITE_ROGUE_DAMAGE_REDUCTION;
+    public static final ModConfigSpec.DoubleValue VILTRUMITE_ROGUE_DASH_DAMAGE;
+    public static final ModConfigSpec.DoubleValue VILTRUMITE_ROGUE_DASH_COOLDOWN;
+
     public static final ModConfigSpec.DoubleValue X_GENES_HYDRA_BASE_CHANCE;
     public static final ModConfigSpec.DoubleValue X_GENES_HYDRA_OUTPOST_CHANCE;
     public static final ModConfigSpec.DoubleValue X_GENES_WITCH_CHANCE;
@@ -596,6 +632,18 @@ public final class MarvelBalanceConfig {
         RAGE_FORCES_HULK_OUT = builder.define("fullRageForcesHulkOut", true);
         RAGE_MAX_STRENGTH_LEVEL = builder.defineInRange("rageMaxStrengthLevel", 4, 0, 10);
         RAGE_COOLDOWN_REDUCTION = builder.defineInRange("rageMaxCooldownReduction", 0.5D, 0.0D, 0.95D);
+        HULK_RAGE_GROWTH = builder.defineInRange("rageMaxExtraScale", 0.2D, 0.0D, 2.0D);
+        HULK_RAMPAGE = builder.define("rampageBreaksTerrain", true);
+        HULK_RAMPAGE_CALM_HARDNESS = builder.defineInRange("rampageCalmMaxHardness", 0.6D, 0.0D, 100.0D);
+        HULK_RAMPAGE_ANGRY_HARDNESS = builder.defineInRange("rampageAngryMaxHardness", 3.0D, 0.0D, 100.0D);
+        HULK_RAMPAGE_FURIOUS_HARDNESS = builder.defineInRange("rampageFuriousMaxHardness", 10.0D, 0.0D, 100.0D);
+        HULK_RAMPAGE_UNSTOPPABLE_HARDNESS = builder.defineInRange("rampageUnstoppableMaxHardness", 49.0D, 0.0D, 100.0D);
+        HULK_RAMPAGE_ANGRY_RAGE = builder.defineInRange("rampageAngryRage", 25, 0, 100);
+        HULK_RAMPAGE_FURIOUS_RAGE = builder.defineInRange("rampageFuriousRage", 60, 0, 100);
+        HULK_RAMPAGE_BLOCKS_PER_TICK = builder.defineInRange("rampageMaxBlocksPerTick", 200, 1, 2000);
+        HULK_RAMPAGE_DROP_CHANCE = builder.defineInRange("rampageBlockDropChance", 0.15D, 0.0D, 1.0D);
+        HULK_CRATER_MAX_RADIUS = builder.defineInRange("rampageCraterMaxRadius", 6.0D, 0.0D, 16.0D);
+        HULK_THUNDERCLAP_FLUNG_BLOCKS = builder.defineInRange("rampageThunderclapFlungBlocks", 24, 0, 128);
         LAST_STAND_COOLDOWN = builder.defineInRange("lastStandHulkOutCooldownSeconds", 180.0D, 0.0D, 36000.0D);
         builder.push("banner");
         BANNER = new HeroStats(builder, 4.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0);
@@ -944,6 +992,47 @@ public final class MarvelBalanceConfig {
         ELYTRA_BOOST_MULTIPLIER = builder.comment("Firework rockets Jubilee boosts an elytra with last this much longer.")
                 .defineInRange("elytraBoostMultiplier", 1.5D, 1.0D, 10.0D);
         LIGHT_SHOW_LEVEL = builder.defineInRange("lightShowLightLevel", 12, 1, 15);
+        builder.pop();
+
+        builder.comment("Only used when the Viltrumite mod is installed.").push("viltrumite");
+        VILTRUMITE = new HeroStats(builder, 50.0D, 16.0D, 2.0D, 0.5D, 0.0D, 0.0D, 1,
+                List.of("minecraft:generic.knockback_resistance;0.8;ADD_VALUE", "minecraft:generic.safe_fall_distance;100.0;ADD_VALUE"));
+        VILTRUMITE_BASE_DAMAGE = builder.comment("Viltrumite base damage. Their abilities deal a multiple of it (Sonic Punch 200-500%, Sky Breaker 300-800%).")
+                .defineInRange("baseDamage", 45.0D, 0.0D, 10000.0D);
+        VILTRUMITE_DAMAGE_REDUCTION = builder.comment("Percent of incoming damage ignored. The Viltrumite mod defaults to 97.")
+                .defineInRange("damageReductionPercent", 55.0D, 0.0D, 100.0D);
+        VILTRUMITE_DAMAGE_IGNORE = builder.comment("Hits that deal less than this after reduction are ignored completely.")
+                .defineInRange("damageIgnoreThreshold", 2.0D, 0.0D, 10000.0D);
+        VILTRUMITE_HEAL_FACTOR = builder.comment("Health healed every 2 seconds while hurt.")
+                .defineInRange("healFactor", 2.0D, 0.0D, 10000.0D);
+        VILTRUMITE_MAX_FLIGHT_SPEED = builder.defineInRange("maxFlightSpeed", 6.0D, 0.5D, 50.0D);
+        VILTRUMITE_THROTTLE = builder.defineInRange("flightThrottleAcceleration", 0.012D, 0.001D, 1.0D);
+        VILTRUMITE_SYRINGE_ONLY = builder.comment("Turns off the Viltrumite race prompt and default race so the serum is the only way to become a Viltrumite.")
+                .define("serumOnly", true);
+        VILTRUMITE_TAKEOFF_BREAKS_BLOCKS = builder.define("takeoffBreaksBlocks", true);
+        VILTRUMITE_HUMANS_BLEED = builder.comment("Lets players who aren't Viltrumites spill human blood when hurt. Viltrumites always bleed Viltrumite blood.")
+                .define("humansBleed", false);
+        VILTRUMITE_NPC_MAX_REDUCTION = builder.comment("Caps the damage reduction of Viltrumite NPCs like Conquest (98.5 by default in their mod) so heroes can hurt them.")
+                .defineInRange("npcMaxDamageReductionPercent", 85.0D, 0.0D, 100.0D);
+        VILTRUMITE_NPC_BLOOD_DROPS = builder.defineInRange("npcBloodSampleDrops", 3, 0, 64);
+        VILTRUMITE_NPC_DAMAGE_MULTIPLIER = builder.comment("Scales the base damage of Viltrumite NPCs. Conquest has 32 by default in their mod and his abilities deal up to 8 times that.")
+                .defineInRange("npcBaseDamageMultiplier", 0.35D, 0.0D, 10.0D);
+        VILTRUMITE_NPC_PER_HIT_CAP = builder.comment("Most damage one hit from a Viltrumite NPC can deal, like the per-hit cap on Hydra villains.")
+                .defineInRange("npcPerHitCap", 35.0D, 1.0D, 100000.0D);
+        VILTRUMITE_SUIT = builder.comment("Gives serum Viltrumites a Viltrumite suit skin and cape while the power is injected.")
+                .define("suitCosmetics", true);
+        VILTRUMITE_SUIT_SKIN = builder.define("suitSkin", "skin_omniman_1");
+        VILTRUMITE_SUIT_CAPE = builder.define("suitCape", "red");
+        VILTRUMITE_ANIMATIONS = builder.comment("Plays Viltrumite arm and body animations for Hulk's Thunderclap, Thing's Clobberin' Time and Black Panther's Claw Swipe. Purely cosmetic.")
+                .define("heroAnimations", true);
+        VILTRUMITE_CAPTAIN_MARVEL_FLIGHT = builder.comment("Lets Captain Marvel double-tap jump into Viltrumite flight, with its speed and block-breaking takeoff. Other flying heroes never can.")
+                .define("captainMarvelViltrumiteFlight", true);
+        builder.push("rogue");
+        VILTRUMITE_ROGUE_BASE_DAMAGE = builder.defineInRange("borrowedBaseDamage", 25.0D, 0.0D, 10000.0D);
+        VILTRUMITE_ROGUE_DAMAGE_REDUCTION = builder.defineInRange("borrowedDamageReductionPercent", 35.0D, 0.0D, 100.0D);
+        VILTRUMITE_ROGUE_DASH_DAMAGE = builder.defineInRange("viltrumiteRushDamage", 60.0D, 0.0D, 10000.0D);
+        VILTRUMITE_ROGUE_DASH_COOLDOWN = builder.defineInRange("viltrumiteRushCooldownSeconds", 6.0D, 0.0D, 600.0D);
+        builder.pop();
         builder.pop();
 
         builder.push("xGenes");

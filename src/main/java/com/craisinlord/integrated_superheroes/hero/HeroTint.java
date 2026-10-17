@@ -17,9 +17,20 @@ public final class HeroTint {
             return -1;
         }
         if (HulkPower.isHulk(player)) {
-            return HULK;
+            return hulk(HulkPower.clientRage(player) / 100.0F);
         }
         return -1;
+    }
+
+    private static int hulk(float rage) {
+        if (rage <= 0.0F) {
+            return HULK;
+        }
+        float t = Math.min(1.0F, rage);
+        int red = (int) (0x73 + (0x52 - 0x73) * t);
+        int green = (int) (0xD9 + (0xFF - 0xD9) * t);
+        int blue = (int) (0x59 + (0x38 - 0x59) * t);
+        return 0xFF000000 | red << 16 | green << 8 | blue;
     }
 
     public static int tint(LivingEntity entity, int color) {

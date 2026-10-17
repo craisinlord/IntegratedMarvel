@@ -1,6 +1,8 @@
 package com.craisinlord.integrated_superheroes.hero;
 
+import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
+import com.craisinlord.integrated_superheroes.compat.ViltrumiteAnimations;
 import com.stxllarplanes.marvellegacy.data.PlayerData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -8,6 +10,7 @@ import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -17,6 +20,9 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -31,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 public final class HulkPower {
@@ -39,6 +46,9 @@ public final class HulkPower {
     private static final String HULK_OUT = "hulk_out";
     public static final HeroPower.Toggle GAMMA_LEAP = new HeroPower.Toggle("integrated_superheroes_off_jump", "Gamma Leap",
             () -> ModCompat.MUTANT_MONSTERS ? HeroFx.item("mutantmonsters:hulk_hammer") : Items.MACE);
+    public static final HeroPower.Toggle RAMPAGE = new HeroPower.Toggle("integrated_superheroes_off_rampage", "Rampage", () -> Items.CRACKED_STONE_BRICKS);
+    private static final ResourceLocation RAGE_GROWTH = IntegratedSuperheroes.id("hulk_rage_growth");
+    private static final Map<Integer, Integer> CLIENT_RAGE = new ConcurrentHashMap<>();
     private static final Map<Holder<MobEffect>, Integer> HULK_EFFECTS = Map.of(MobEffects.FIRE_RESISTANCE, 0, MobEffects.MOVEMENT_SPEED, 0);
     private static final Map<Holder<MobEffect>, HeroPower.Toggle> EFFECT_TOGGLES = Map.of(MobEffects.MOVEMENT_SPEED, HeroToggles.SPEED);
     private static final Map<UUID, Rage> RAGE = new HashMap<>();
@@ -75,7 +85,7 @@ public final class HulkPower {
                         new HeroPower.Ability("hulk_smash", "Hulk Smash", HulkPower::hulkSmash),
                         HeroToggles.WHEEL
                 ),
-                List.of(GAMMA_LEAP, HeroToggles.SPEED),
+                List.of(GAMMA_LEAP, RAMPAGE, HeroToggles.SPEED),
                 new HeroPower.Hooks() {
                     @Override
                     public MarvelBalanceConfig.HeroStats stats(Player player) {
@@ -94,6 +104,7 @@ public final class HulkPower {
                         }
                         if (isHulk(player)) {
                             tickFootsteps(player);
+                            HulkRampage.tickCharge(player);
                         }
                     }
 
@@ -105,7 +116,8 @@ public final class HulkPower {
                         RAGE.remove(player.getUUID());
                         SERVER_LEAPS.remove(player.getUUID());
                         HeroStride.clear(player);
-                        PacketDistributor.sendToPlayer(player, new HulkRagePayload(0));
+                        removeGrowth(player);
+                        PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, new HulkRagePayload(player.getId(), 0));
                     }
 
                     @Override
@@ -135,7 +147,8 @@ public final class HulkPower {
                             return;
                         }
                         RAGE.remove(player.getUUID());
-                        PacketDistributor.sendToPlayer(player, new HulkRagePayload(0));
+                        removeGrowth(player);
+                        PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, new HulkRagePayload(player.getId(), 0));
                     }
 
                     @Override
@@ -162,6 +175,78 @@ public final class HulkPower {
 
     public static void setClientRage(int rage) {
         clientRage = rage;
+    }
+
+    public static void setClientRage(int entityId, int rage) {
+        if (rage <= 0) {
+            CLIENT_RAGE.remove(entityId);
+        } else {
+            CLIENT_RAGE.put(entityId, rage);
+        }
+    }
+
+    public static void clearClientRage() {
+        CLIENT_RAGE.clear();
+    }
+
+    public static int clientRage(Player player) {
+        return CLIENT_RAGE.getOrDefault(player.getId(), 0);
+    }
+
+    public static float rage(ServerPlayer player) {
+        Rage state = RAGE.get(player.getUUID());
+        return state == null ? 0.0F : state.value;
+    }
+
+    public static boolean unstoppable(ServerPlayer player) {
+        Rage state = RAGE.get(player.getUUID());
+        return state != null && state.unstoppable;
+    }
+
+    public static void syncRageTo(ServerPlayer tracker, ServerPlayer target) {
+        Rage state = RAGE.get(target.getUUID());
+        if (state != null && state.sent > 0) {
+            PacketDistributor.sendToPlayer(tracker, new HulkRagePayload(target.getId(), state.sent));
+        }
+    }
+
+    private static void updateGrowth(ServerPlayer player, float rage) {
+        AttributeInstance scale = player.getAttribute(Attributes.SCALE);
+        if (scale == null) {
+            return;
+        }
+        double target = isHulk(player) ? Math.round(rage / 10.0F) / 10.0D * MarvelBalanceConfig.HULK_RAGE_GROWTH.get() : 0.0D;
+        AttributeModifier current = scale.getModifier(RAGE_GROWTH);
+        double applied = current == null ? 0.0D : current.amount();
+        if (Math.abs(applied - target) < 1.0E-4D) {
+            return;
+        }
+        if (target > applied && !roomToGrow(player, scale.getValue(), scale.getValue() + (target - applied) * scale.getBaseValue())) {
+            return;
+        }
+        scale.removeModifier(RAGE_GROWTH);
+        if (target > 0.0D) {
+            scale.addTransientModifier(new AttributeModifier(RAGE_GROWTH, target, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+        }
+    }
+
+    private static void removeGrowth(ServerPlayer player) {
+        AttributeInstance scale = player.getAttribute(Attributes.SCALE);
+        if (scale != null && scale.getModifier(RAGE_GROWTH) != null) {
+            scale.removeModifier(RAGE_GROWTH);
+        }
+    }
+
+    private static boolean roomToGrow(ServerPlayer player, double from, double to) {
+        if (from <= 0.0D) {
+            return true;
+        }
+        double ratio = to / from;
+        double width = player.getBbWidth() * ratio;
+        double height = player.getBbHeight() * ratio;
+        AABB grown = new AABB(player.getX() - width / 2.0D, player.getY(), player.getZ() - width / 2.0D,
+                player.getX() + width / 2.0D, player.getY() + height, player.getZ() + width / 2.0D);
+        return player.level().noCollision(player, grown);
     }
 
     private static double rageCooldown(Player player, double cooldown) {
@@ -230,10 +315,13 @@ public final class HulkPower {
         if (strength > 0 && isHulk(player) && player.tickCount % 10 == 0) {
             player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 25, strength - 1, true, true, true));
         }
+        if (player.tickCount % 10 == 0) {
+            updateGrowth(player, rage.value);
+        }
         int rounded = Math.round(rage.value);
         if (rounded != rage.sent) {
             rage.sent = rounded;
-            PacketDistributor.sendToPlayer(player, new HulkRagePayload(rounded));
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, new HulkRagePayload(player.getId(), rounded));
         }
     }
 
@@ -285,6 +373,7 @@ public final class HulkPower {
         HeroPowers.data(player).removeState(HULK_STATE);
         PlayerData.sync(player);
         HeroAttributes.apply(player, MarvelBalanceConfig.BANNER);
+        removeGrowth(player);
         if (player.getHealth() > player.getMaxHealth()) {
             player.setHealth(player.getMaxHealth());
         }
@@ -327,8 +416,11 @@ public final class HulkPower {
         level.sendParticles(ParticleTypes.GUST_EMITTER_LARGE, front.x, front.y - 0.3D, front.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
         HeroAbilities.particleLine(level, front, front.add(look.scale(range * 0.8D)), ParticleTypes.SONIC_BOOM, 2.5D);
         HeroFx.play(player, SoundEvents.WARDEN_SONIC_BOOM, 2.0F, 0.6F);
-        HeroAnimations.play(player, "bettercombat:two_handed_slam");
+        if (!ViltrumiteAnimations.play(player, ViltrumiteAnimations.THUNDERCLAP)) {
+            HeroAnimations.play(player, "bettercombat:two_handed_slam");
+        }
         HeroFx.shake(level, player.position(), 24.0D, 0.7F, 10);
+        HulkRampage.fling(player, range);
         addRage(player, MarvelBalanceConfig.RAGE_PER_IMPACT.get().floatValue());
         return rageCooldown(player, MarvelBalanceConfig.THUNDERCLAP_COOLDOWN.get());
     }
@@ -347,6 +439,7 @@ public final class HulkPower {
         HeroFx.play(player, HeroFx.sound("mutantmonsters:entity.mutant_zombie.attack", SoundEvents.RAVAGER_ATTACK), 1.5F, 0.8F);
         HeroAnimations.play(player, "celestisynth:cs_keres_smash");
         HeroFx.shake(level, player.position(), 32.0D, 1.0F, 16);
+        HulkRampage.trenches(player, 8, MarvelBalanceConfig.HULK_SMASH_LENGTH.get());
         addRage(player, MarvelBalanceConfig.RAGE_PER_IMPACT.get().floatValue());
         return rageCooldown(player, MarvelBalanceConfig.HULK_SMASH_COOLDOWN.get());
     }
@@ -437,6 +530,9 @@ public final class HulkPower {
             return;
         }
         SERVER_LEAPS.put(player.getUUID(), new Leap(leap.horizontal(), leap.age() + 1, peak));
+        if (leap.age() > 1) {
+            HulkRampage.tickLeap(serverPlayer);
+        }
     }
 
     private static void land(ServerPlayer player, double drop) {
@@ -453,6 +549,7 @@ public final class HulkPower {
             target.hurtMarked = true;
         }
         HeroShockwaves.ring(player, 12, (int) Math.ceil(radius), damage * 0.3F);
+        HulkRampage.crater(player, drop);
         ServerLevel level = player.serverLevel();
         level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, player.getX(), player.getY(), player.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
         HeroFx.play(player, SoundEvents.GENERIC_EXPLODE.value(), 2.0F, 0.5F);

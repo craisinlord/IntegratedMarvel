@@ -1,6 +1,7 @@
 package com.craisinlord.integrated_superheroes.mixin;
 
 import com.craisinlord.integrated_superheroes.hero.FantasticClient;
+import com.craisinlord.integrated_superheroes.hero.HulkProportions;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -19,5 +20,26 @@ public abstract class StretchHandMixin {
         if (FantasticClient.hidesHand(player, arm == ((PlayerRenderer) (Object) this).getModel().rightArm)) {
             ci.cancel();
         }
+    }
+
+    @Inject(method = "renderHand", at = @At("HEAD"))
+    private void integratedSuperheroes$hulkFist(PoseStack pose, MultiBufferSource buffers, int light, AbstractClientPlayer player, ModelPart arm,
+                                                ModelPart sleeve, CallbackInfo ci) {
+        float width = HulkProportions.handWidth(player);
+        if (width != 1.0F) {
+            arm.xScale = width;
+            arm.zScale = width;
+            sleeve.xScale = width;
+            sleeve.zScale = width;
+        }
+    }
+
+    @Inject(method = "renderHand", at = @At("RETURN"))
+    private void integratedSuperheroes$resetFist(PoseStack pose, MultiBufferSource buffers, int light, AbstractClientPlayer player, ModelPart arm,
+                                                 ModelPart sleeve, CallbackInfo ci) {
+        arm.xScale = 1.0F;
+        arm.zScale = 1.0F;
+        sleeve.xScale = 1.0F;
+        sleeve.zScale = 1.0F;
     }
 }

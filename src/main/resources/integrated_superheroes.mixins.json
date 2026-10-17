@@ -57,6 +57,11 @@
     "Weather2PrecipitationHeightMixin",
     "Weather2StormRiderMixin",
     "Weather2StormTopBlockMixin",
+    "ViltrumiteHeroFlightMixin",
+    "ViltrumiteGrabPhysicsMixin",
+    "ViltrumiteFlightTakeoffMixin",
+    "ViltrumiteVanillaFlightMixin",
+    "ViltrumiteNpcChannelMixin",
     "Weather2TornadoChunkMixin",
     "WinterSoldierVillainMixin",
     "ServerGamePacketListenerAccessor",
@@ -70,6 +75,7 @@
     "HeroGhostHandMixin",
     "HeroHandTintMixin",
     "HeroTintMixin",
+    "HulkArmorScaleMixin",
     "HulkPortalOverlayMixin",
     "InvisibleRenderMixin",
     "JeiMarvelModNameMixin",
@@ -88,7 +94,13 @@
     "HeroSkinMixin",
     "TimeFreezeAmbientMixin",
     "TimeFreezeEntityRenderMixin",
-    "TimeFreezeParticleMixin"
+    "TimeFreezeParticleMixin",
+    "ViltrumiteFlightInputMixin",
+    "ViltrumiteGrabDispatchMixin",
+    "ViltrumiteGrabLivingRenderMixin",
+    "ViltrumiteGrabEntityRenderMixin",
+    "ViltrumiteGrabGeckoRenderMixin",
+    "ViltrumiteOffhandMixin"
   ],
   "injectors": {
     "defaultRequire": 1

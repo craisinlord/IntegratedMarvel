@@ -1,0 +1,29 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "viltrumitecore"
+    }
+  ],
+  "parent": "integrated_superheroes:viltrumite/root",
+  "display": {
+    "icon": {
+      "id": "minecraft:netherite_sword"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.viltrumite.conquest.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.viltrumite.conquest.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

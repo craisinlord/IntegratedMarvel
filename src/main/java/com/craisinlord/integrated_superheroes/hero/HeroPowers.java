@@ -103,6 +103,14 @@ public final class HeroPowers {
     }
 
     public static void extract(ServerPlayer player, HeroPower hero) {
+        extract(player, hero, true);
+    }
+
+    public static void strip(ServerPlayer player, HeroPower hero) {
+        extract(player, hero, false);
+    }
+
+    private static void extract(ServerPlayer player, HeroPower hero, boolean refill) {
         PlayerData data = data(player);
         HeroAttributes.clear(player);
         hero.passives().forEach(data::removePassivePower);
@@ -114,7 +122,9 @@ public final class HeroPowers {
         data.setPrimaryPower(null);
         HeroSlots.arrange(data);
         hero.hooks().extract(player);
-        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(hero.syringe().get()));
+        if (refill) {
+            player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(hero.syringe().get()));
+        }
         pruneStale(player);
         PlayerData.sync(player);
     }

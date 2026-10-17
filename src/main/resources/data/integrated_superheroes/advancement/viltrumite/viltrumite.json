@@ -1,0 +1,29 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "viltrumitecore"
+    }
+  ],
+  "parent": "integrated_superheroes:viltrumite/root",
+  "display": {
+    "icon": {
+      "id": "integrated_superheroes:syringe_viltrumite_blood_omni_man"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.viltrumite.viltrumite.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.viltrumite.viltrumite.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

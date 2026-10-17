@@ -649,5 +649,20 @@
   "tooltip.integrated_superheroes.gauntlet.description.mind.4": "Take over a creature or player for 20 seconds: see through its eyes, move it and attack with it. Your body stays behind, and getting hurt snaps you back.",
   "message.integrated_superheroes.gauntlet.mind_link": "You are inside %s's mind",
   "message.integrated_superheroes.gauntlet.mind_link_end": "You return to your body",
-  "message.integrated_superheroes.gauntlet.mind_link_lost": "The Mind Link snaps"
+  "message.integrated_superheroes.gauntlet.mind_link_lost": "The Mind Link snaps",
+  "item.integrated_superheroes.syringe_viltrumite_blood_omni_man": "Viltrumite Serum",
+  "tooltip.integrated_superheroes.syringe_viltrumite_blood_omni_man": "Viltrumite Blood (Omni-Man)",
+  "integrated_superheroes.viltrumite.scourged": "The Scourge Virus burned the Viltrumite blood out of you.",
+  "advancements.integrated_superheroes.viltrumite.root.title": "Viltrum",
+  "advancements.integrated_superheroes.viltrumite.root.description": "Encounter the Viltrumite Empire",
+  "advancements.integrated_superheroes.viltrumite.viltrumite.title": "Think, Mark!",
+  "advancements.integrated_superheroes.viltrumite.viltrumite.description": "Become a Viltrumite",
+  "advancements.integrated_superheroes.viltrumite.conquest.title": "Conquered Conquest",
+  "advancements.integrated_superheroes.viltrumite.conquest.description": "Defeat Conquest",
+  "advancements.integrated_superheroes.viltrumite.squad.title": "Squad Wipe",
+  "advancements.integrated_superheroes.viltrumite.squad.description": "Defeat Lucan, Vidor or Thula",
+  "advancements.integrated_superheroes.viltrumite.scourge.title": "Patient Zero",
+  "advancements.integrated_superheroes.viltrumite.scourge.description": "Kill a Viltrumite infected with the Scourge Virus",
+  "advancements.integrated_superheroes.viltrumite.borrowed_blood.title": "Borrowed Blood",
+  "advancements.integrated_superheroes.viltrumite.borrowed_blood.description": "As Rogue, absorb a Viltrumite's powers"
 }

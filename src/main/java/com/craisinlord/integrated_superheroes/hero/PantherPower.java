@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.hero;
 
+import com.craisinlord.integrated_superheroes.compat.ViltrumiteAnimations;
 import com.stxllarplanes.marvellegacy.init.EffectRegistry;
 import com.stxllarplanes.marvellegacy.power.Power;
 import net.minecraft.core.Holder;
@@ -137,6 +138,7 @@ public final class PantherPower {
             level.sendParticles(ParticleTypes.SWEEP_ATTACK, front.x, front.y - 0.4D, front.z, 3, 0.6D, 0.2D, 0.6D, 0.0D);
         }
         player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.0F, 1.2F);
+        ViltrumiteAnimations.play(player, ViltrumiteAnimations.CHOP);
         return MarvelBalanceConfig.CLAW_SWIPE_COOLDOWN.get();
     }
 
