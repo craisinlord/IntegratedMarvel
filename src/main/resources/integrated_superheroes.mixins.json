@@ -62,6 +62,7 @@
     "ViltrumiteFlightTakeoffMixin",
     "ViltrumiteVanillaFlightMixin",
     "ViltrumiteNpcChannelMixin",
+    "ViltrumiteShieldBlockMixin",
     "Weather2TornadoChunkMixin",
     "WinterSoldierVillainMixin",
     "ServerGamePacketListenerAccessor",

@@ -71,6 +71,7 @@ public final class Villains {
         NeoForge.EVENT_BUS.addListener(Villains::onTarget);
         NeoForge.EVENT_BUS.addListener(Villains::onLevelTick);
         NeoForge.EVENT_BUS.addListener(Villains::onPlayerTick);
+        HydraCover.register();
     }
 
     public static boolean managed(Entity entity) {
@@ -181,6 +182,9 @@ public final class Villains {
         if (victim instanceof RedSkull && attacker instanceof LivingEntity living && Loadout.superSoldier(living)) {
             event.setAmount(event.getAmount() * 1.15F);
         }
+        if (attacker instanceof Player player && isVillainSide(victim)) {
+            HydraCover.blow(player);
+        }
         VillainBrain attackerBrain = attacker == null ? null : BRAINS.get(attacker);
         if (attackerBrain instanceof WinterSoldierBrain soldier && soldier.ally() && victim instanceof Player) {
             event.setCanceled(true);
@@ -273,6 +277,10 @@ public final class Villains {
     }
 
     private static void onTarget(LivingChangeTargetEvent event) {
+        if (event.getEntity() instanceof HydraAgent && HydraCover.covered(event.getNewAboutToBeSetTarget())) {
+            event.setCanceled(true);
+            return;
+        }
         if (BRAINS.get(event.getEntity()) instanceof WinterSoldierBrain soldier && soldier.ally()) {
             LivingEntity next = event.getNewAboutToBeSetTarget();
             if (next != null && !soldier.allowedAllyTarget(next)) {

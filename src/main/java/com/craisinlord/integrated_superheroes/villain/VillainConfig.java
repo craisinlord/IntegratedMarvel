@@ -18,6 +18,9 @@ public final class VillainConfig {
     public static final ModConfigSpec.DoubleValue ALARM_RADIUS;
     public static final ModConfigSpec.IntValue REINFORCEMENTS_PER_ALARM;
     public static final ModConfigSpec.DoubleValue GUN_DROP_CHANCE;
+    public static final ModConfigSpec.BooleanValue HAIL_HYDRA_ENABLED;
+    public static final ModConfigSpec.IntValue HAIL_HYDRA_SECONDS;
+    public static final ModConfigSpec.IntValue HAIL_HYDRA_COOLDOWN_SECONDS;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -53,6 +56,12 @@ public final class VillainConfig {
                 .defineInRange("reinforcementsPerAlarm", 6, 0, 64);
         GUN_DROP_CHANCE = builder.comment("Chance an armed agent drops its weapon.")
                 .defineInRange("gunDropChance", 0.03D, 0.0D, 1.0D);
+        HAIL_HYDRA_ENABLED = builder.comment("Saying \"Hail Hydra\" in chat makes Hydra agents ignore you for a while. Bosses aren't fooled.")
+                .define("hailHydra", true);
+        HAIL_HYDRA_SECONDS = builder.comment("How long Hydra agents ignore you after you say it. Attacking a Hydra fighter ends it early.")
+                .defineInRange("hailHydraSeconds", 300, 1, 86400);
+        HAIL_HYDRA_COOLDOWN_SECONDS = builder.comment("Seconds after saying it before it works again.")
+                .defineInRange("hailHydraCooldownSeconds", 900, 0, 86400);
         builder.pop();
         SPEC = builder.build();
     }
