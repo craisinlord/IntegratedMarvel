@@ -116,7 +116,7 @@ public final class RedBook {
         WinterSoldierBrain best = null;
         double bestDot = Math.cos(Math.toRadians(25.0D));
         for (VillainBrain brain : Villains.brains()) {
-            if (!(brain instanceof WinterSoldierBrain soldier) || brain.mob.level() != player.level() || brain.echo || soldier.ally()) {
+            if (!(brain instanceof WinterSoldierBrain soldier) || brain.mob.level() != player.level() || soldier.ally()) {
                 continue;
             }
             Vec3 to = brain.mob.position().add(0.0D, brain.mob.getBbHeight() * 0.5D, 0.0D).subtract(eye);

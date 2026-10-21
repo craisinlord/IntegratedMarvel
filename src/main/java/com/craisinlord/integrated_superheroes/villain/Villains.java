@@ -49,7 +49,6 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 public final class Villains {
-    public static final java.util.Set<String> ECHO_TAGS = java.util.concurrent.ConcurrentHashMap.newKeySet();
     public static final String COSMETIC_TAG = "integrated_superheroes_villain_cosmetic";
     public static final String DART_TAG = "integrated_superheroes_zemo_dart";
     public static final String PORTAL_TAG = "integrated_superheroes_tesseract_portal";
@@ -64,7 +63,7 @@ public final class Villains {
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, Villains::onJoin);
         NeoForge.EVENT_BUS.addListener(Villains::onIncoming);
         NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, Villains::onDamage);
-        NeoForge.EVENT_BUS.addListener(Villains::onDeath);
+        NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, Villains::onDeath);
         NeoForge.EVENT_BUS.addListener(Villains::onImpact);
         NeoForge.EVENT_BUS.addListener(Villains::onRightClickItem);
         NeoForge.EVENT_BUS.addListener(Villains::onAttack);
@@ -124,21 +123,23 @@ public final class Villains {
         if (!(entity instanceof PathfinderMob mob) || BRAINS.containsKey(entity)) {
             return;
         }
-        boolean echo = entity.getTags().stream().anyMatch(ECHO_TAGS::contains);
         VillainBrain brain = null;
         if (entity instanceof BaronZemo && VillainConfig.ZEMO.enabled.get()) {
             mark(mob);
-            brain = new ZemoBrain(mob, echo);
+            brain = new ZemoBrain(mob);
         } else if (entity instanceof WinterSoldier && VillainConfig.WINTER_SOLDIER.enabled.get()) {
             mark(mob);
-            brain = new WinterSoldierBrain(mob, echo);
+            brain = new WinterSoldierBrain(mob);
         } else if (entity instanceof RedSkull && VillainConfig.RED_SKULL.enabled.get()) {
             mark(mob);
-            brain = new RedSkullBrain(mob, echo);
+            brain = new RedSkullBrain(mob);
         }
         if (brain == null) {
             return;
         }
+        mob.setInvisible(false);
+        mob.setGlowingTag(false);
+        mob.setNoGravity(false);
         stripCombatGoals(mob, true);
         mob.goalSelector.addGoal(1, brain);
         BRAINS.put(entity, brain);
@@ -225,7 +226,7 @@ public final class Villains {
         }
         LivingEntity entity = event.getEntity();
         VillainBrain brain = BRAINS.get(entity);
-        if (brain != null && !brain.echo) {
+        if (brain != null) {
             brain.onKilled(level, event.getSource());
         }
         if (entity instanceof HydraAgent agent && managed(agent)) {
@@ -298,6 +299,12 @@ public final class Villains {
     private static void onLevelTick(LevelTickEvent.Post event) {
         if (!(event.getLevel() instanceof ServerLevel level) || !VillainConfig.enabled()) {
             return;
+        }
+        BRAINS.keySet().removeIf(Entity::isRemoved);
+        for (VillainBrain brain : brains()) {
+            if (brain.mob.level() == level) {
+                brain.serverTick(level);
+            }
         }
         VillainWorld.tick(level);
         HydraAlarm.tick(level);

@@ -52,6 +52,16 @@ public final class HeroStun {
         stunned.put(target.getUUID(), new Stun(level.getGameTime() + ticks, rise));
     }
 
+    public static void clear(LivingEntity target) {
+        if (target.level() instanceof ServerLevel level) {
+            Map<UUID, Stun> stunned = STUNNED.get(level.dimension());
+            if (stunned != null) {
+                stunned.remove(target.getUUID());
+            }
+        }
+        release(target, Double.NaN);
+    }
+
     public static void tick(ServerLevel level) {
         Map<UUID, Stun> stunned = STUNNED.get(level.dimension());
         if (stunned == null || stunned.isEmpty()) {

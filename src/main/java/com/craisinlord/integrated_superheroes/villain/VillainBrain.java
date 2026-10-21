@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.villain;
 
+import com.craisinlord.integrated_superheroes.gauntlet.GauntletEntityLocks;
 import com.craisinlord.integrated_superheroes.hero.HeroFx;
 import com.craisinlord.integrated_superheroes.hero.HeroStun;
 import net.minecraft.ChatFormatting;
@@ -49,10 +50,13 @@ public abstract class VillainBrain extends Goal {
     private static final String KEY_PHASE = "integrated_superheroes_villain_phase";
     private static final String KEY_SCALE = "integrated_superheroes_villain_scale";
     private static final String KEY_ANCHOR = "integrated_superheroes_villain_anchor";
+    private static final String KEY_DEATH_AT = "integrated_superheroes_villain_death_at";
+    private static final String KEY_TRANSITION_AT = "integrated_superheroes_villain_transition_at";
+    private static final List<String> FIGHT_PREFIXES = List.of("integrated_superheroes_villain_", "integrated_superheroes_zemo_",
+            "integrated_superheroes_skull_", "integrated_superheroes_ws_ally");
 
     protected final PathfinderMob mob;
     protected final VillainConfig.Boss config;
-    protected final boolean echo;
     protected final RandomSource random;
     protected final Map<String, Long> readyAt = new HashMap<>();
     private final Deque<Long> damageTimes = new ArrayDeque<>();
@@ -67,8 +71,9 @@ public abstract class VillainBrain extends Goal {
     protected int windupLeft;
     protected int recoveryLeft;
     protected int transitionLeft;
+    protected long transitionEndsAt;
     protected boolean dying;
-    protected int dyingLeft;
+    protected long deathAt;
     protected long staggerUntil;
     protected long staggerImmuneUntil;
     protected long openUntil;
@@ -79,20 +84,17 @@ public abstract class VillainBrain extends Goal {
     protected int pathTimer;
     protected UUID lastPlayer;
     protected boolean finishing;
+    private boolean finished;
+    private int finishAttempts;
     protected Vec3 lockedSpot;
     protected boolean alarmed;
 
-    protected VillainBrain(PathfinderMob mob, VillainConfig.Boss config, boolean echo) {
+    protected VillainBrain(PathfinderMob mob, VillainConfig.Boss config) {
         this.mob = mob;
         this.config = config;
-        this.echo = echo;
         this.random = mob.getRandom();
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
         CompoundTag data = mob.getPersistentData();
-        if (echo) {
-            this.engaged = true;
-            return;
-        }
         if (!data.getBoolean(KEY_INIT)) {
             data.putBoolean(KEY_INIT, true);
             setBase(Attributes.MAX_HEALTH, config.health.get());
@@ -106,6 +108,32 @@ public abstract class VillainBrain extends Goal {
         if (data.contains(KEY_ANCHOR)) {
             CompoundTag a = data.getCompound(KEY_ANCHOR);
             this.anchor = new Vec3(a.getDouble("x"), a.getDouble("y"), a.getDouble("z"));
+        }
+        long now = mob.level().getGameTime();
+        if (data.contains(KEY_DEATH_AT)) {
+            this.dying = true;
+            this.deathAt = Math.min(data.getLong(KEY_DEATH_AT), now + deathTicks());
+        } else if (data.contains(KEY_TRANSITION_AT)) {
+            this.transitionEndsAt = Math.min(data.getLong(KEY_TRANSITION_AT), now + 50L);
+            this.transitionLeft = (int) Math.max(1L, transitionEndsAt - now);
+        }
+    }
+
+    public static void resetFight(CompoundTag entityTag) {
+        if (!entityTag.contains("NeoForgeData")) {
+            return;
+        }
+        CompoundTag data = entityTag.getCompound("NeoForgeData");
+        for (String key : List.copyOf(data.getAllKeys())) {
+            if (key.equals(MANAGED) || key.equals(KEY_INIT)) {
+                continue;
+            }
+            for (String prefix : FIGHT_PREFIXES) {
+                if (key.startsWith(prefix)) {
+                    data.remove(key);
+                    break;
+                }
+            }
         }
     }
 
@@ -202,7 +230,7 @@ public abstract class VillainBrain extends Goal {
     }
 
     public boolean incoming(LivingIncomingDamageEvent event) {
-        if (finishing || echo || bypassPipeline()) {
+        if (finishing || bypassPipeline()) {
             return false;
         }
         return dying || transitionLeft > 0;
@@ -226,16 +254,58 @@ public abstract class VillainBrain extends Goal {
         return true;
     }
 
+    protected void alwaysTick(ServerLevel level, long now) {
+    }
+
+    public void serverTick(ServerLevel level) {
+        if (finished || !mob.isAlive()) {
+            return;
+        }
+        long now = level.getGameTime();
+        alwaysTick(level, now);
+        if (!mob.isAlive()) {
+            return;
+        }
+        if (mob.tickCount % 5 == 0) {
+            VillainFx.bossBarProgress(mob, mob.getHealth() / mob.getMaxHealth());
+        }
+        if (!dying && engaged && !bypassPipeline() && phase >= thresholds().length && mob.getHealth() <= 1.0F) {
+            beginDeath(level);
+        }
+        if (dying) {
+            mob.getNavigation().stop();
+            if (finishing) {
+                finish(level);
+                return;
+            }
+            int left = (int) Math.max(0L, deathAt - now);
+            if (left > 0) {
+                deathTick(level, left);
+            } else {
+                finish(level);
+            }
+            return;
+        }
+        if (transitionEndsAt > 0L) {
+            mob.getNavigation().stop();
+            transitionLeft = (int) Math.max(0L, transitionEndsAt - now);
+            if (transitionLeft > 0) {
+                transitionTick(level, transitionLeft);
+            } else {
+                transitionEndsAt = 0L;
+                save();
+                onPhaseStart(level, phase);
+                resetCooldowns(now);
+            }
+        }
+    }
+
     @Override
     public void tick() {
         ServerLevel level = (ServerLevel) mob.level();
         long now = level.getGameTime();
-        if (dying) {
+        if (dying || transitionLeft > 0) {
             mob.getNavigation().stop();
-            deathTick(level, dyingLeft);
-            if (--dyingLeft <= 0) {
-                finish(level);
-            }
             return;
         }
         if (!engaged) {
@@ -248,15 +318,6 @@ public abstract class VillainBrain extends Goal {
             }
             return;
         }
-        if (transitionLeft > 0) {
-            mob.getNavigation().stop();
-            transitionTick(level, transitionLeft);
-            if (--transitionLeft == 0) {
-                onPhaseStart(level, phase);
-                resetCooldowns(now);
-            }
-            return;
-        }
         LivingEntity t = pickTarget(level);
         target = t;
         if (t == null) {
@@ -264,7 +325,7 @@ public abstract class VillainBrain extends Goal {
             returnToAnchor(level);
             return;
         }
-        if (!echo && anchor != null && mob.position().distanceTo(anchor) > VillainConfig.LEASH_RADIUS.get()) {
+        if (anchor != null && mob.position().distanceTo(anchor) > VillainConfig.LEASH_RADIUS.get()) {
             current = null;
             returnToAnchor(level);
             if (now % 20L == 0L) {
@@ -316,6 +377,9 @@ public abstract class VillainBrain extends Goal {
     }
 
     protected void force(String id, LivingEntity t) {
+        if (dying || transitionLeft > 0 || !mob.isAlive()) {
+            return;
+        }
         for (Move move : moves()) {
             if (move.id().equals(id)) {
                 start(move, mob.level().getGameTime(), t);
@@ -438,20 +502,16 @@ public abstract class VillainBrain extends Goal {
         if (anchor == null) {
             anchor = mob.position();
         }
-        if (!echo) {
-            int players = Math.max(1, VillainFx.near(level, mob.position(), 32.0D).size());
-            healthScale = 1.0D + (players - 1) * VillainConfig.HEALTH_PER_EXTRA_PLAYER.get();
-            setBase(Attributes.MAX_HEALTH, config.health.get() * healthScale);
-            mob.setHealth(mob.getMaxHealth());
-            save();
-        }
+        int players = Math.max(1, VillainFx.near(level, mob.position(), 32.0D).size());
+        healthScale = 1.0D + (players - 1) * VillainConfig.HEALTH_PER_EXTRA_PLAYER.get();
+        setBase(Attributes.MAX_HEALTH, config.health.get() * healthScale);
+        mob.setHealth(mob.getMaxHealth());
+        save();
         mob.setTarget(t);
         setMarvelActivated(true);
         resetCooldowns(level.getGameTime());
         updateBar();
-        if (!echo) {
-            onEngage(level, t);
-        }
+        onEngage(level, t);
     }
 
     protected void save() {
@@ -465,6 +525,16 @@ public abstract class VillainBrain extends Goal {
             a.putDouble("y", anchor.y);
             a.putDouble("z", anchor.z);
             data.put(KEY_ANCHOR, a);
+        }
+        if (dying) {
+            data.putLong(KEY_DEATH_AT, deathAt);
+        } else {
+            data.remove(KEY_DEATH_AT);
+        }
+        if (transitionEndsAt > 0L) {
+            data.putLong(KEY_TRANSITION_AT, transitionEndsAt);
+        } else {
+            data.remove(KEY_TRANSITION_AT);
         }
     }
 
@@ -485,7 +555,7 @@ public abstract class VillainBrain extends Goal {
     }
 
     public float process(DamageSource source, float amount) {
-        if (finishing || echo || bypassPipeline()) {
+        if (finishing || bypassPipeline()) {
             return amount;
         }
         if (dying || transitionLeft > 0) {
@@ -592,6 +662,7 @@ public abstract class VillainBrain extends Goal {
     private void beginTransition(ServerLevel level) {
         phase++;
         transitionLeft = 50;
+        transitionEndsAt = level.getGameTime() + 50L;
         current = null;
         recoveryLeft = 0;
         poise = 0.0F;
@@ -603,13 +674,29 @@ public abstract class VillainBrain extends Goal {
 
     private void beginDeath(ServerLevel level) {
         dying = true;
-        dyingLeft = deathTicks();
+        deathAt = level.getGameTime() + deathTicks();
+        transitionLeft = 0;
+        transitionEndsAt = 0L;
         current = null;
+        recoveryLeft = 0;
+        poise = 0.0F;
+        releaseHolds();
+        mob.getNavigation().stop();
+        save();
         onDeathStart(level);
+    }
+
+    private void releaseHolds() {
+        HeroStun.clear(mob);
+        GauntletEntityLocks.forget(mob);
+        mob.setNoAi(false);
+        mob.setInvulnerable(false);
     }
 
     private void finish(ServerLevel level) {
         finishing = true;
+        finishAttempts++;
+        releaseHolds();
         DamageSource source = mob.damageSources().genericKill();
         if (lastPlayer != null) {
             ServerPlayer player = level.getServer().getPlayerList().getPlayer(lastPlayer);
@@ -621,9 +708,20 @@ public abstract class VillainBrain extends Goal {
         mob.invulnerableTime = 0;
         mob.hurt(source, Float.MAX_VALUE);
         if (mob.isAlive()) {
+            mob.invulnerableTime = 0;
             mob.kill();
         }
-        onFinished(level);
+        if (mob.isAlive()) {
+            mob.setHealth(0.0F);
+            mob.die(source);
+        }
+        if (mob.isAlive() && finishAttempts > 40) {
+            mob.remove(Entity.RemovalReason.KILLED);
+        }
+        if (!mob.isAlive()) {
+            finished = true;
+            onFinished(level);
+        }
     }
 
     protected void setBase(net.minecraft.core.Holder<net.minecraft.world.entity.ai.attributes.Attribute> attribute, double value) {

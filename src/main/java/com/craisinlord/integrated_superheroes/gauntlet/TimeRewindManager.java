@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
+import com.craisinlord.integrated_superheroes.villain.VillainBrain;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -172,6 +173,7 @@ public final class TimeRewindManager {
         }
         tag.putFloat("Health", entity.getMaxHealth());
         tag.remove("DeathTime");
+        VillainBrain.resetFight(tag);
         FrameBuffer frames = FRAMES.get(entity.getUUID());
         Vec3 position = frames == null || frames.isEmpty() ? entity.position() : frames.first().position();
         synchronized (DEATHS) {

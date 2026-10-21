@@ -2,6 +2,7 @@ package com.craisinlord.integrated_superheroes.hero;
 
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import com.craisinlord.integrated_superheroes.compat.ViltrumiteCompat;
+import com.craisinlord.integrated_superheroes.compat.ViltrumiteInvasions;
 import com.craisinlord.anthology.time.TimeDilationApi;
 import com.craisinlord.integrated_superheroes.suit.PymAbilities;
 import com.craisinlord.integrated_superheroes.suit.PymColony;
@@ -108,6 +109,7 @@ public final class HeroContent {
         if (ModCompat.VILTRUMITE) {
             HeroPowers.register(ViltrumitePower.create(VILTRUMITE_SYRINGE));
             ViltrumiteCompat.register();
+            ViltrumiteInvasions.register();
         }
 
         LEGACY_ITEMS.register(modEventBus);

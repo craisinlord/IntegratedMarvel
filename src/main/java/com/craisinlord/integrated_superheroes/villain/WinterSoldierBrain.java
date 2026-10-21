@@ -3,7 +3,6 @@ package com.craisinlord.integrated_superheroes.villain;
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import com.craisinlord.integrated_superheroes.hero.HeroFx;
-import com.craisinlord.integrated_superheroes.hero.HeroStun;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -47,7 +46,6 @@ public final class WinterSoldierBrain extends VillainBrain {
     private final List<Move> mission;
     private final List<Move> arm;
     private final List<Move> comply;
-    private final List<Move> echoMoves;
     private final Set<UUID> hesitated = new HashSet<>();
     private int bootLeft;
     private int swapLeft;
@@ -65,8 +63,8 @@ public final class WinterSoldierBrain extends VillainBrain {
     private long lastHydraSeen;
     private int leaving;
 
-    public WinterSoldierBrain(PathfinderMob mob, boolean echo) {
-        super(mob, VillainConfig.WINTER_SOLDIER, echo);
+    public WinterSoldierBrain(PathfinderMob mob) {
+        super(mob, VillainConfig.WINTER_SOLDIER);
         Move combo = big("combo", 100, 12, 0, t -> holding(KNIFE) && mob.distanceTo(t) < 4.5D, this::beginCombo, this::glint, this::fireCombo);
         Move sniper = big("sniper", 120, 24, 10, t -> holding(SNIPER) && mob.hasLineOfSight(t) && (mob.distanceTo(t) >= 6.0D || unreachable()),
                 NONE, this::gunTelegraph, this::fireSniper);
@@ -78,7 +76,6 @@ public final class WinterSoldierBrain extends VillainBrain {
         this.mission = List.of(combo, sniper, launcher);
         this.arm = List.of(reach, combo, sniper, launcher, grab, slam);
         this.comply = List.of(reach, combo, vanish, slam);
-        this.echoMoves = List.of(big("combo", 60, 12, 0, t -> mob.distanceTo(t) < 4.5D, this::beginCombo, this::glint, this::fireCombo));
         CompoundTag data = mob.getPersistentData();
         if (data.hasUUID(KEY_ALLY)) {
             this.allyOwner = data.getUUID(KEY_ALLY);
@@ -97,14 +94,11 @@ public final class WinterSoldierBrain extends VillainBrain {
 
     @Override
     protected float[] thresholds() {
-        return echo ? new float[0] : new float[]{0.6F, 0.25F};
+        return new float[]{0.6F, 0.25F};
     }
 
     @Override
     protected List<Move> moves() {
-        if (echo) {
-            return echoMoves;
-        }
         return phase == 0 ? mission : phase == 1 ? arm : comply;
     }
 
@@ -217,7 +211,7 @@ public final class WinterSoldierBrain extends VillainBrain {
     }
 
     private String desiredWeapon(LivingEntity t, long now) {
-        if (phase >= 2 || echo) {
+        if (phase >= 2) {
             return KNIFE;
         }
         double distance = mob.distanceTo(t);
@@ -442,7 +436,7 @@ public final class WinterSoldierBrain extends VillainBrain {
         if (super.incoming(event)) {
             return true;
         }
-        if (echo) {
+        if (finishing || dying) {
             return false;
         }
         ServerLevel level = level();
@@ -474,7 +468,7 @@ public final class WinterSoldierBrain extends VillainBrain {
     }
 
     boolean catchShield(ServerLevel level, ThrownVibraniumShield shield) {
-        if (echo || ally() || dying || staggered() || !inFront(shield, 75.0D)) {
+        if (ally() || dying || finishing || staggered() || !inFront(shield, 75.0D)) {
             return false;
         }
         Entity owner = shield.getOwner();
@@ -557,9 +551,15 @@ public final class WinterSoldierBrain extends VillainBrain {
 
     @Override
     protected void onDeathStart(ServerLevel level) {
+        comboLeft = 0;
+        swapLeft = 0;
+        swapTo = null;
+        blockUntil = 0L;
+        bootLeft = 0;
+        vanished = false;
         say("death");
-        HeroStun.stun(mob, 40);
         mob.setInvisible(false);
+        mob.setGlowingTag(false);
     }
 
     @Override
@@ -606,15 +606,19 @@ public final class WinterSoldierBrain extends VillainBrain {
                 && (next instanceof Enemy || Villains.isVillainSide(next));
     }
 
+    @Override
+    protected void alwaysTick(ServerLevel level, long now) {
+        if (leaving > 0 && --leaving == 0) {
+            VillainFx.smoke(level, mob.position(), 2.0D);
+            mob.discard();
+        }
+    }
+
     private void allyTick(ServerLevel level) {
         long now = level.getGameTime();
         setMarvelActivated(false);
         VillainFx.bossBarVisible(mob, false);
         if (leaving > 0) {
-            if (--leaving == 0) {
-                VillainFx.smoke(level, mob.position(), 2.0D);
-                mob.discard();
-            }
             return;
         }
         ServerPlayer owner = level.getServer().getPlayerList().getPlayer(allyOwner);

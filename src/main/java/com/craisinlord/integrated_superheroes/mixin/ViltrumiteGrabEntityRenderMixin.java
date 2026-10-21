@@ -2,6 +2,7 @@ package com.craisinlord.integrated_superheroes.mixin;
 
 import com.bawnorton.mixinsquared.TargetHandler;
 import com.craisinlord.integrated_superheroes.compat.ViltrumiteCompat;
+import com.craisinlord.integrated_superheroes.compat.ViltrumiteGuards;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -20,7 +21,7 @@ public abstract class ViltrumiteGrabEntityRenderMixin {
     @Inject(method = "@MixinSquared:Handler", at = @At("HEAD"), cancellable = true, remap = false, require = 0)
     private void integratedSuperheroes$idleCulling(Entity entity, Frustum frustum, double x, double y, double z, CallbackInfoReturnable<Boolean> original,
                                                   CallbackInfo ci) {
-        if (!ViltrumiteCompat.active()) {
+        if (!ViltrumiteCompat.active() || !ViltrumiteGuards.mayBeGrabbed(entity)) {
             ci.cancel();
         }
     }
@@ -29,7 +30,7 @@ public abstract class ViltrumiteGrabEntityRenderMixin {
     @Inject(method = "@MixinSquared:Handler", at = @At("HEAD"), cancellable = true, remap = false, require = 0)
     private void integratedSuperheroes$idleNametag(Entity entity, Component name, PoseStack pose, MultiBufferSource buffers, int light, float partialTick,
                                                   CallbackInfo original, CallbackInfo ci) {
-        if (!ViltrumiteCompat.active()) {
+        if (!ViltrumiteCompat.active() || !ViltrumiteGuards.mayBeGrabbed(entity)) {
             ci.cancel();
         }
     }

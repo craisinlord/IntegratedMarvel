@@ -447,6 +447,13 @@ public final class MarvelBalanceConfig {
     public static final ModConfigSpec.IntValue VILTRUMITE_NPC_BLOOD_DROPS;
     public static final ModConfigSpec.DoubleValue VILTRUMITE_NPC_DAMAGE_MULTIPLIER;
     public static final ModConfigSpec.DoubleValue VILTRUMITE_NPC_PER_HIT_CAP;
+    public static final ModConfigSpec.DoubleValue VILTRUMITE_NPC_SQUAD_HEALTH;
+    public static final ModConfigSpec.DoubleValue VILTRUMITE_NPC_CONQUEST_HEALTH;
+    public static final ModConfigSpec.BooleanValue VILTRUMITE_NPC_ONLY_PLAYER_DAMAGE;
+    public static final ModConfigSpec.BooleanValue VILTRUMITE_NPC_PICKUP;
+    public static final ModConfigSpec.BooleanValue VILTRUMITE_NPC_BREAK_BLOCK_ENTITIES;
+    public static final ModConfigSpec.BooleanValue VILTRUMITE_INVASION_NEEDS_DRAGON;
+    public static final ModConfigSpec.ConfigValue<String> VILTRUMITE_INVASION_ADVANCEMENT;
     public static final ModConfigSpec.BooleanValue VILTRUMITE_SUIT;
     public static final ModConfigSpec.ConfigValue<String> VILTRUMITE_SUIT_SKIN;
     public static final ModConfigSpec.ConfigValue<String> VILTRUMITE_SUIT_CAPE;
@@ -456,6 +463,12 @@ public final class MarvelBalanceConfig {
     public static final ModConfigSpec.DoubleValue VILTRUMITE_ROGUE_DAMAGE_REDUCTION;
     public static final ModConfigSpec.DoubleValue VILTRUMITE_ROGUE_DASH_DAMAGE;
     public static final ModConfigSpec.DoubleValue VILTRUMITE_ROGUE_DASH_COOLDOWN;
+    public static final ModConfigSpec.BooleanValue VILTRUMITE_GUARD_FLIGHT;
+    public static final ModConfigSpec.BooleanValue VILTRUMITE_GUARD_TELEPORTS;
+    public static final ModConfigSpec.BooleanValue VILTRUMITE_GUARD_DAMAGE;
+    public static final ModConfigSpec.BooleanValue VILTRUMITE_GUARD_EFFECTS;
+    public static final ModConfigSpec.BooleanValue VILTRUMITE_GUARD_VISUALS;
+    public static final ModConfigSpec.BooleanValue VILTRUMITE_GUARD_PERFORMANCE;
 
     public static final ModConfigSpec.DoubleValue X_GENES_HYDRA_BASE_CHANCE;
     public static final ModConfigSpec.DoubleValue X_GENES_HYDRA_OUTPOST_CHANCE;
@@ -1019,6 +1032,20 @@ public final class MarvelBalanceConfig {
                 .defineInRange("npcBaseDamageMultiplier", 0.35D, 0.0D, 10.0D);
         VILTRUMITE_NPC_PER_HIT_CAP = builder.comment("Most damage one hit from a Viltrumite NPC can deal, like the per-hit cap on Hydra villains.")
                 .defineInRange("npcPerHitCap", 35.0D, 1.0D, 100000.0D);
+        VILTRUMITE_NPC_SQUAD_HEALTH = builder.comment("Max health of Lucan, Vidor and Thula. Their mod leaves them at 20 like a normal player. 0 keeps that.")
+                .defineInRange("npcSquadHealth", 300.0D, 0.0D, 100000.0D);
+        VILTRUMITE_NPC_CONQUEST_HEALTH = builder.comment("Max health of Conquest. 0 keeps the default 20.")
+                .defineInRange("npcConquestHealth", 600.0D, 0.0D, 100000.0D);
+        VILTRUMITE_NPC_ONLY_PLAYER_DAMAGE = builder.comment("Viltrumite NPCs only take damage from players, their projectiles and their pets. Mobs, falls, fire and drowning can't hurt them.")
+                .define("npcOnlyPlayerDamage", true);
+        VILTRUMITE_NPC_PICKUP = builder.comment("Lets Viltrumite NPCs pick up dropped items. Anything they pick up is gone when they leave.")
+                .define("npcItemPickup", false);
+        VILTRUMITE_NPC_BREAK_BLOCK_ENTITIES = builder.comment("Lets Viltrumite NPC attacks break blocks with block entities, like chests, graves and machines.")
+                .define("npcBreakBlockEntities", false);
+        VILTRUMITE_INVASION_NEEDS_DRAGON = builder.comment("Random Viltrumite invasions only start once the Ender Dragon has been killed. Rituals and commands still work.")
+                .define("randomInvasionsNeedDragon", true);
+        VILTRUMITE_INVASION_ADVANCEMENT = builder.comment("Random Viltrumite invasions only target players with this advancement. Leave empty for any player.")
+                .define("randomInvasionsNeedAdvancement", "");
         VILTRUMITE_SUIT = builder.comment("Gives serum Viltrumites a Viltrumite suit skin and cape while the power is injected.")
                 .define("suitCosmetics", true);
         VILTRUMITE_SUIT_SKIN = builder.define("suitSkin", "skin_omniman_1");
@@ -1032,6 +1059,20 @@ public final class MarvelBalanceConfig {
         VILTRUMITE_ROGUE_DAMAGE_REDUCTION = builder.defineInRange("borrowedDamageReductionPercent", 35.0D, 0.0D, 100.0D);
         VILTRUMITE_ROGUE_DASH_DAMAGE = builder.defineInRange("viltrumiteRushDamage", 60.0D, 0.0D, 10000.0D);
         VILTRUMITE_ROGUE_DASH_COOLDOWN = builder.defineInRange("viltrumiteRushCooldownSeconds", 6.0D, 0.0D, 600.0D);
+        builder.pop();
+        builder.comment("Keeps the Viltrumite mod from interfering with other mods.").push("safeguards");
+        VILTRUMITE_GUARD_FLIGHT = builder.comment("Only takes away flight the Viltrumite mod gave. Without this, their mod removes flight from every player who isn't a Viltrumite, every tick, breaking flight from other mods. Grabbed players get their own flight back when released.")
+                .define("protectOtherFlight", true);
+        VILTRUMITE_GUARD_TELEPORTS = builder.comment("Stops the Viltrumite mod from cancelling teleports from commands and other mods during Super Speed and dashes, and limits its anti-cheat bypass to movement checks.")
+                .define("protectTeleports", true);
+        VILTRUMITE_GUARD_DAMAGE = builder.comment("Damage tagged to bypass invulnerability or resistance ignores Viltrumite damage reduction and blocking.")
+                .define("respectBypassDamage", true);
+        VILTRUMITE_GUARD_EFFECTS = builder.comment("Effects in the integrated_superheroes:viltrumite_bypass tag can still be given to Viltrumites, who otherwise reject every harmful effect.")
+                .define("allowBypassEffects", true);
+        VILTRUMITE_GUARD_VISUALS = builder.comment("Limits Viltrumite pose, hand, FOV and screen shader changes to Viltrumites and fliers so they don't override other mods' animations and effects.")
+                .define("limitVisuals", true);
+        VILTRUMITE_GUARD_PERFORMANCE = builder.comment("Runs Viltrumite punch, chop and Thunderclap physics once per tick instead of once per player, skips their grab checks for entities nobody is holding, and sends grab hand positions once per tick instead of every frame.")
+                .define("performanceFixes", true);
         builder.pop();
         builder.pop();
 

@@ -142,6 +142,13 @@ public final class VillainFx {
         }
     }
 
+    public static void bossBarProgress(Entity mob, float progress) {
+        ServerBossEvent event = bossEvent(mob);
+        if (event != null) {
+            event.setProgress(net.minecraft.util.Mth.clamp(progress, 0.0F, 1.0F));
+        }
+    }
+
     public static boolean hasBossBar(Entity mob) {
         return bossEvent(mob) != null;
     }

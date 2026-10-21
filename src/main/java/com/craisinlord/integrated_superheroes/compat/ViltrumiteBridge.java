@@ -64,7 +64,8 @@ public final class ViltrumiteBridge {
             flight.stopFlight();
         }
         core.setViltrumite(false);
-        if (!player.isCreative() && !player.isSpectator()) {
+        boolean owned = ViltrumiteGuards.takeOwnedFlight(player);
+        if (!player.isCreative() && !player.isSpectator() && (owned || !ViltrumiteGuards.flight())) {
             player.getAbilities().mayfly = false;
             player.getAbilities().flying = false;
             player.onUpdateAbilities();

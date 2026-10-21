@@ -37,7 +37,6 @@ public final class RedSkullBrain extends VillainBrain {
     private final List<Move> commander;
     private final List<Move> cube;
     private final List<Move> overload;
-    private final List<Move> echoMoves;
     private final List<Vec3> pillarSpots = new ArrayList<>();
     private boolean blinkPending;
     private long blinkReady;
@@ -46,8 +45,8 @@ public final class RedSkullBrain extends VillainBrain {
     private boolean saluted;
     private int portalsOpen;
 
-    public RedSkullBrain(PathfinderMob mob, boolean echo) {
-        super(mob, VillainConfig.RED_SKULL, echo);
+    public RedSkullBrain(PathfinderMob mob) {
+        super(mob, VillainConfig.RED_SKULL);
         Move haymaker = big("haymaker", 100, 16, 14, t -> mob.distanceTo(t) < 3.5D, NONE, this::glint, this::fireHaymaker);
         Move volley = big("volley", 120, 20, 10, t -> mob.hasLineOfSight(t) && mob.distanceTo(t) > 3.0D, NONE, this::chargeTelegraph, this::fireVolley);
         Move blink = priority("blink", 0, 10, 0, t -> blinkPending, this::beginBlink, QUIET, this::fireBlink);
@@ -64,9 +63,7 @@ public final class RedSkullBrain extends VillainBrain {
         Move fastSwap = big("swap", 190, 20, 0, swap.ready(), this::beginSwap, this::swapTelegraph, this::fireSwap);
         this.commander = List.of(blink, salute, haymaker, volley);
         this.cube = List.of(blink, reach, strike, haymaker, volley, swap, portals, channel);
-        this.overload = List.of(blink, reach, strike, fastHaymaker, fastVolley, fastSwap, pillars, dust);
-        this.echoMoves = List.of(big("volley", 60, 20, 10, t -> mob.hasLineOfSight(t), NONE, this::chargeTelegraph, this::fireVolley));
-        this.saluted = mob.getPersistentData().getBoolean("integrated_superheroes_skull_saluted");
+        this.overload = List.of(blink, reach, strike, fastHaymaker, fastVolley, fastSwap, pillars, dust);        this.saluted = mob.getPersistentData().getBoolean("integrated_superheroes_skull_saluted");
     }
 
     @Override
@@ -78,14 +75,11 @@ public final class RedSkullBrain extends VillainBrain {
 
     @Override
     protected float[] thresholds() {
-        return echo ? new float[0] : new float[]{0.65F, 0.3F};
+        return new float[]{0.65F, 0.3F};
     }
 
     @Override
     protected List<Move> moves() {
-        if (echo) {
-            return echoMoves;
-        }
         return phase == 0 ? commander : phase == 1 ? cube : overload;
     }
 
@@ -380,7 +374,7 @@ public final class RedSkullBrain extends VillainBrain {
         if (super.incoming(event)) {
             return true;
         }
-        if (echo) {
+        if (finishing || dying) {
             return false;
         }
         DamageSource source = event.getSource();
@@ -523,6 +517,9 @@ public final class RedSkullBrain extends VillainBrain {
 
     @Override
     protected void onDeathStart(ServerLevel level) {
+        channelUntil = 0L;
+        blinkPending = false;
+        pillarSpots.clear();
         say("death");
         mob.setNoGravity(true);
         HeroFx.shake(level, mob.position(), 24.0D, 0.8F, 40);
@@ -531,6 +528,7 @@ public final class RedSkullBrain extends VillainBrain {
 
     @Override
     protected void deathTick(ServerLevel level, int left) {
+        mob.setNoGravity(true);
         if (left > 20) {
             mob.setDeltaMovement(0.0D, 0.06D, 0.0D);
             mob.hurtMarked = true;

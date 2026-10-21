@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    {"id": "iceandfire:frozen", "required": false},
+    {"id": "alexscaves:magnetizing", "required": false},
+    {"id": "alexscaves:stunned", "required": false}
+  ]
+}

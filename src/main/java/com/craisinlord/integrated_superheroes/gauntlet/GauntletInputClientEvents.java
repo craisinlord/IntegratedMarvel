@@ -23,7 +23,6 @@ public final class GauntletInputClientEvents {
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft minecraft = Minecraft.getInstance();
-        LegacyGauntletControls.unbindLegacyMappings(minecraft);
         if (minecraft.player == null) {
             lastMindInput = null;
             return;

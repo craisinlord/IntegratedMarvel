@@ -2,6 +2,7 @@ package com.craisinlord.integrated_superheroes.mixin;
 
 import com.bawnorton.mixinsquared.TargetHandler;
 import com.craisinlord.integrated_superheroes.compat.ViltrumiteCompat;
+import com.craisinlord.integrated_superheroes.compat.ViltrumiteGuards;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
@@ -18,7 +19,7 @@ public abstract class ViltrumiteGrabDispatchMixin {
     @Inject(method = "@MixinSquared:Handler", at = @At("HEAD"), cancellable = true, remap = false, require = 0)
     private static void integratedSuperheroes$idleShadow(PoseStack pose, MultiBufferSource buffers, Entity entity, float opacity, float partialTick,
                                                         LevelReader level, float size, CallbackInfo original, CallbackInfo ci) {
-        if (!ViltrumiteCompat.active()) {
+        if (!ViltrumiteCompat.active() || !ViltrumiteGuards.mayBeGrabbed(entity)) {
             ci.cancel();
         }
     }
@@ -27,7 +28,7 @@ public abstract class ViltrumiteGrabDispatchMixin {
     @Inject(method = "@MixinSquared:Handler", at = @At("HEAD"), cancellable = true, remap = false, require = 0)
     private void integratedSuperheroes$idlePosition(Entity entity, double x, double y, double z, float yaw, float partialTick, PoseStack pose,
                                                    MultiBufferSource buffers, int light, CallbackInfo original, CallbackInfo ci) {
-        if (!ViltrumiteCompat.active()) {
+        if (!ViltrumiteCompat.active() || !ViltrumiteGuards.mayBeGrabbed(entity)) {
             ci.cancel();
         }
     }

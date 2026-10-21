@@ -2,7 +2,6 @@ package com.craisinlord.integrated_superheroes.villain;
 
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import com.craisinlord.integrated_superheroes.hero.HeroFx;
-import com.craisinlord.integrated_superheroes.hero.HeroStun;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -36,7 +35,6 @@ public final class ZemoBrain extends VillainBrain {
     private final List<Move> duel;
     private final List<Move> dirty;
     private final List<Move> secondWind;
-    private final List<Move> echoMoves;
     private final Set<UUID> lungeHits = new HashSet<>();
     private long guardUntil;
     private int lungeTicks;
@@ -48,8 +46,8 @@ public final class ZemoBrain extends VillainBrain {
     private boolean pendingChain;
     private boolean followUp;
 
-    public ZemoBrain(PathfinderMob mob, boolean echo) {
-        super(mob, VillainConfig.ZEMO, echo);
+    public ZemoBrain(PathfinderMob mob) {
+        super(mob, VillainConfig.ZEMO);
         Move guard = big("guard", 180, 0, 0, t -> true, NONE, QUIET, t -> startGuard());
         Move lunge = big("lunge", 120, 16, 24, t -> mob.distanceTo(t) < 9.0D && mob.hasLineOfSight(t), this::beginLunge, this::glintTelegraph, this::fireLunge);
         Move dart = big("dart", 240, 16, 6, t -> Loadout.kind(t) == Loadout.Kind.SERUM && mob.hasLineOfSight(t) && mob.distanceTo(t) > 3.0D,
@@ -69,7 +67,6 @@ public final class ZemoBrain extends VillainBrain {
         this.duel = List.of(whistle, grapple, guard, lunge, dart, emp);
         this.dirty = List.of(grapple, pistol, adhesive, slowGuard, slowLunge, fastDart, fastEmp);
         this.secondWind = List.of(grapple, fastGuard, fastLunge);
-        this.echoMoves = List.of(big("lunge", 80, 16, 24, t -> mob.distanceTo(t) < 9.0D, this::beginLunge, this::glintTelegraph, this::fireLunge));
         this.honest = mob.getPersistentData().getBoolean("integrated_superheroes_zemo_honest");
         this.whistled = mob.getPersistentData().getBoolean("integrated_superheroes_zemo_whistled");
     }
@@ -89,14 +86,11 @@ public final class ZemoBrain extends VillainBrain {
 
     @Override
     protected float[] thresholds() {
-        return echo ? new float[0] : new float[]{0.5F};
+        return new float[]{0.5F};
     }
 
     @Override
     protected List<Move> moves() {
-        if (echo) {
-            return echoMoves;
-        }
         if (phase == 0) {
             return duel;
         }
@@ -167,7 +161,7 @@ public final class ZemoBrain extends VillainBrain {
         if (super.incoming(event)) {
             return true;
         }
-        if (echo || !guarding()) {
+        if (finishing || dying || !guarding()) {
             return false;
         }
         DamageSource source = event.getSource();
@@ -215,7 +209,7 @@ public final class ZemoBrain extends VillainBrain {
 
     private void beginLunge(LivingEntity t) {
         lungeCount++;
-        feint = !echo && lungeCount % 3 == 0;
+        feint = lungeCount % 3 == 0;
         Vec3 delta = t.position().subtract(mob.position()).multiply(1.0D, 0.0D, 1.0D);
         lungeDirection = delta.lengthSqr() < 1.0E-4D ? mob.getLookAngle() : delta.normalize();
     }
@@ -450,8 +444,12 @@ public final class ZemoBrain extends VillainBrain {
 
     @Override
     protected void onDeathStart(ServerLevel level) {
+        guardUntil = 0L;
+        lungeTicks = 0;
+        pendingChain = false;
+        followUp = false;
+        feint = false;
         say("death");
-        HeroStun.stun(mob, 40);
         VillainFx.smoke(level, mob.position(), 3.0D);
     }
 

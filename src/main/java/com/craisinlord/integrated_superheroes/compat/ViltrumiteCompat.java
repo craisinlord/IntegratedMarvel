@@ -12,6 +12,12 @@ import com.craisinlord.integrated_superheroes.hero.RoguePower;
 import com.craisinlord.integrated_superheroes.hero.ViltrumitePower;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.OwnableEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
@@ -48,6 +54,7 @@ public final class ViltrumiteCompat {
         NeoForge.EVENT_BUS.addListener(ViltrumiteCompat::onAnyPlayerTick);
         NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, LivingIncomingDamageEvent.class, ViltrumiteCompat::onIncomingDamage);
         NeoForge.EVENT_BUS.addListener(ViltrumiteCompat::onDeath);
+        ViltrumiteGuards.register();
     }
 
     public static boolean mayUseFlight(Player player) {
@@ -141,8 +148,32 @@ public final class ViltrumiteCompat {
                 player.addTag(SCALED_TAG);
                 ViltrumiteBridge.scaleBaseDamage(player, MarvelBalanceConfig.VILTRUMITE_NPC_DAMAGE_MULTIPLIER.get().floatValue());
                 ViltrumiteBridge.capReduction(player, MarvelBalanceConfig.VILTRUMITE_NPC_MAX_REDUCTION.get().floatValue());
+                applyNpcHealth(player);
             }
         }
+    }
+
+    private static void applyNpcHealth(Player npc) {
+        String name = npc.getGameProfile().getName();
+        double health = "Conquest".equals(name) ? MarvelBalanceConfig.VILTRUMITE_NPC_CONQUEST_HEALTH.get()
+                : SQUAD.contains(name) ? MarvelBalanceConfig.VILTRUMITE_NPC_SQUAD_HEALTH.get() : 0.0D;
+        AttributeInstance maxHealth = npc.getAttribute(Attributes.MAX_HEALTH);
+        if (health <= 0.0D || maxHealth == null) {
+            return;
+        }
+        maxHealth.setBaseValue(health);
+        npc.setHealth(npc.getMaxHealth());
+    }
+
+    private static boolean playerCaused(DamageSource source) {
+        if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+            return true;
+        }
+        Entity attacker = source.getEntity();
+        if (attacker instanceof OwnableEntity pet && pet.getOwner() != null) {
+            attacker = pet.getOwner();
+        }
+        return attacker instanceof Player && !ViltrumiteBridge.isNpc(attacker);
     }
 
     private static void onPlayerTick(PlayerTickEvent.Post event) {
@@ -159,6 +190,10 @@ public final class ViltrumiteCompat {
 
     private static void onIncomingDamage(LivingIncomingDamageEvent event) {
         if (ViltrumiteBridge.isNpc(event.getEntity())) {
+            if (MarvelBalanceConfig.VILTRUMITE_NPC_ONLY_PLAYER_DAMAGE.get() && !playerCaused(event.getSource())) {
+                event.setCanceled(true);
+                return;
+            }
             ViltrumiteBridge.capReduction(event.getEntity(), MarvelBalanceConfig.VILTRUMITE_NPC_MAX_REDUCTION.get().floatValue());
         }
         if (ViltrumiteBridge.isNpc(event.getSource().getEntity())) {
