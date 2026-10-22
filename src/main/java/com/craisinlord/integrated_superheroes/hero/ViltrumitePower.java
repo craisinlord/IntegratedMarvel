@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 
 public final class ViltrumitePower {
     public static final String ID = "viltrumite_blood_omni_man";
+    private static final String SUIT_GIVEN_TAG = "integrated_superheroes.viltrumite_suit_given";
 
     private ViltrumitePower() {
     }
@@ -28,7 +29,8 @@ public final class ViltrumitePower {
                     @Override
                     public void tick(ServerPlayer player) {
                         ViltrumiteBridge.grant(player);
-                        if (player.tickCount % 20 == 0 && MarvelBalanceConfig.VILTRUMITE_SUIT.get()) {
+                        // Suit goes on once per injection; after that /viltrumite skin|cape belong to the player.
+                        if (player.tickCount % 20 == 0 && MarvelBalanceConfig.VILTRUMITE_SUIT.get() && player.addTag(SUIT_GIVEN_TAG)) {
                             ViltrumiteBridge.setSuit(player, MarvelBalanceConfig.VILTRUMITE_SUIT_SKIN.get(), MarvelBalanceConfig.VILTRUMITE_SUIT_CAPE.get());
                         }
                     }
@@ -36,6 +38,7 @@ public final class ViltrumitePower {
                     @Override
                     public void extract(ServerPlayer player) {
                         ViltrumiteBridge.revoke(player);
+                        player.removeTag(SUIT_GIVEN_TAG);
                         if (ViltrumiteBridge.wearsSuit(player, MarvelBalanceConfig.VILTRUMITE_SUIT_SKIN.get())) {
                             ViltrumiteBridge.setSuit(player, ViltrumiteBridge.SUIT_OFF, ViltrumiteBridge.SUIT_OFF);
                         }

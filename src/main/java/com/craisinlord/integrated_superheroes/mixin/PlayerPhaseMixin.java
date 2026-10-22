@@ -17,4 +17,14 @@ public abstract class PlayerPhaseMixin {
             self.noPhysics = true;
         }
     }
+
+    // Create Cybernetics' NeoSync compat clears noPhysics in PlayerTickEvent.Post, and the server handles
+    // move packets between ticks, so put it back after Post or every step into a wall gets snapped back.
+    @Inject(method = "tick", at = @At("TAIL"))
+    private void integratedSuperheroes$keepPhase(CallbackInfo ci) {
+        Player self = (Player) (Object) this;
+        if (KittyPower.isPhasing(self)) {
+            self.noPhysics = true;
+        }
+    }
 }

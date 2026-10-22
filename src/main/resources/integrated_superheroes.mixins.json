@@ -27,6 +27,7 @@
     "IronManRepulsorCooldownMixin",
     "IronManRepulsorDamageMixin",
     "IronManSuitEnergyMixin",
+    "MarvelSuitPowerItemSlotMixin",
     "IronManUnibeamMixin",
     "ItemDisplayAccessor",
     "ItemNameCleanupMixin",
