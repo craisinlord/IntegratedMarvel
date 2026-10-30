@@ -5,6 +5,12 @@ import java.util.List;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public final class MarvelBalanceConfig {
+    public enum NpcBlockBreaking {
+        NONE,
+        TAGGED,
+        ALL
+    }
+
     public static final List<HeroStats> ALL_HERO_STATS = new ArrayList<>();
     public static final ModConfigSpec SPEC;
     public static final HeroStats SPIDER_POWERS;
@@ -452,6 +458,7 @@ public final class MarvelBalanceConfig {
     public static final ModConfigSpec.BooleanValue VILTRUMITE_NPC_ONLY_PLAYER_DAMAGE;
     public static final ModConfigSpec.BooleanValue VILTRUMITE_NPC_PICKUP;
     public static final ModConfigSpec.BooleanValue VILTRUMITE_NPC_BREAK_BLOCK_ENTITIES;
+    public static final ModConfigSpec.EnumValue<NpcBlockBreaking> VILTRUMITE_NPC_BLOCK_BREAKING;
     public static final ModConfigSpec.BooleanValue VILTRUMITE_INVASION_NEEDS_DRAGON;
     public static final ModConfigSpec.ConfigValue<String> VILTRUMITE_INVASION_ADVANCEMENT;
     public static final ModConfigSpec.BooleanValue VILTRUMITE_SUIT;
@@ -1042,6 +1049,8 @@ public final class MarvelBalanceConfig {
                 .define("npcItemPickup", false);
         VILTRUMITE_NPC_BREAK_BLOCK_ENTITIES = builder.comment("Lets Viltrumite NPC attacks break blocks with block entities, like chests, graves and machines.")
                 .define("npcBreakBlockEntities", false);
+        VILTRUMITE_NPC_BLOCK_BREAKING = builder.comment("Which blocks Viltrumite NPC attacks, flight and launched victims can break. TAGGED only breaks blocks in the integrated_superheroes:viltrumite_npc_breakable tag (natural terrain), NONE breaks nothing and ALL breaks anything their mod allows. Blocks with block entities also need npcBreakBlockEntities. With the mobGriefing game rule off they break nothing.")
+                .defineEnum("npcBlockBreaking", NpcBlockBreaking.TAGGED);
         VILTRUMITE_INVASION_NEEDS_DRAGON = builder.comment("Random Viltrumite invasions only start once the Ender Dragon has been killed. Rituals and commands still work.")
                 .define("randomInvasionsNeedDragon", true);
         VILTRUMITE_INVASION_ADVANCEMENT = builder.comment("Random Viltrumite invasions only target players with this advancement. Leave empty for any player.")

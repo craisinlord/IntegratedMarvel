@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ViltrumiteProtectedBlockMixin {
     @Inject(method = "getDestroySpeed", at = @At("HEAD"), cancellable = true)
     private void integratedSuperheroes$unbreakableToNpcs(BlockGetter level, BlockPos pos, CallbackInfoReturnable<Float> cir) {
-        if (ViltrumiteInvasions.protects((BlockBehaviour.BlockStateBase) (Object) this)) {
+        if (ViltrumiteInvasions.protects((BlockBehaviour.BlockStateBase) (Object) this, level)) {
             cir.setReturnValue(-1.0F);
         }
     }

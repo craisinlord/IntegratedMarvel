@@ -2,6 +2,8 @@ package com.craisinlord.integrated_superheroes.hero;
 
 import com.craisinlord.anthology.beam.BeamSettings;
 import com.craisinlord.anthology.beam.BeamTerrainMode;
+import com.stxllarplanes.marvellegacy.data.PlayerData;
+import com.stxllarplanes.marvellegacy.power.Power;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -17,6 +19,8 @@ import java.util.function.Supplier;
 
 public final class CyclopsPower {
     public static final String ID = "optic_blasts_scott_summers";
+    private static final String CLOSE_EYES = "close_eyes";
+    private static final String EYES_CLOSED = "integrated_superheroes_cyclops_eyes_closed";
     private static final TagKey<Item> VISOR = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("marvel", "cyclops_helmet"));
     private static final int UNCONTROLLED = 0;
     private static final int NARROW = 1;
@@ -35,16 +39,31 @@ public final class CyclopsPower {
                 List.of(),
                 List.of(
                         new HeroPower.Ability("optic_blast", "Optic Blast", CyclopsPower::opticBlast),
-                        new HeroPower.Ability("wide_blast", "Wide Blast", CyclopsPower::wideBlast)
+                        new HeroPower.Ability("wide_blast", "Wide Blast", CyclopsPower::wideBlast),
+                        new HeroPower.Ability(CLOSE_EYES, "Close / Open Eyes", CyclopsPower::toggleEyes)
                 ),
                 List.of(),
                 new HeroPower.Hooks() {
                     @Override
                     public void tick(ServerPlayer player) {
+                        PlayerData data = HeroPowers.data(player);
+                        if (!data.hasActivePower(CLOSE_EYES) && !data.hasAvailablePower(CLOSE_EYES)) {
+                            data.addActivePowers(new Power(CLOSE_EYES, "Close / Open Eyes", 2, 0.0D, false, false));
+                            HeroSlots.arrange(data);
+                            PlayerData.sync(player);
+                        }
                         if (hasVisor(player)) {
+                            if (data.hasState(EYES_CLOSED)) {
+                                data.removeState(EYES_CLOSED);
+                                PlayerData.sync(player);
+                            }
                             if (HeroBeams.isFiring(player, UNCONTROLLED)) {
                                 HeroBeams.stop(player, UNCONTROLLED);
                             }
+                            return;
+                        }
+                        if (data.hasState(EYES_CLOSED)) {
+                            HeroBeams.stopAll(player);
                             return;
                         }
                         if (!HeroBeams.isFiring(player, UNCONTROLLED)) {
@@ -55,6 +74,7 @@ public final class CyclopsPower {
 
                     @Override
                     public void extract(ServerPlayer player) {
+                        HeroPowers.data(player).removeState(EYES_CLOSED);
                         HeroBeams.stopAll(player);
                     }
                 }
@@ -63,6 +83,24 @@ public final class CyclopsPower {
 
     private static boolean hasVisor(ServerPlayer player) {
         return player.getItemBySlot(EquipmentSlot.HEAD).is(VISOR);
+    }
+
+    private static double toggleEyes(ServerPlayer player, int slot) {
+        if (hasVisor(player)) {
+            player.displayClientMessage(Component.literal("You can only close your eyes without your visor."), true);
+            return 0.0D;
+        }
+        PlayerData data = HeroPowers.data(player);
+        if (data.hasState(EYES_CLOSED)) {
+            data.removeState(EYES_CLOSED);
+            player.displayClientMessage(Component.literal("Eyes open."), true);
+        } else {
+            data.addState(EYES_CLOSED);
+            HeroBeams.stopAll(player);
+            player.displayClientMessage(Component.literal("Eyes closed."), true);
+        }
+        PlayerData.sync(player);
+        return 0.25D;
     }
 
     private static double opticBlast(ServerPlayer player, int slot) {

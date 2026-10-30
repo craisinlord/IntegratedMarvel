@@ -583,7 +583,7 @@ public class SwarmSquirrel extends TamableAnimal implements GeoEntity {
 
     @Override
     public boolean isPushable() {
-        return !this.isOnShoulder() && super.isPushable();
+        return !this.isOnShoulder() && !this.isClimbingToShoulder() && super.isPushable();
     }
 
     @Override
@@ -591,6 +591,22 @@ public class SwarmSquirrel extends TamableAnimal implements GeoEntity {
         if (!this.isOnShoulder()) {
             super.push(entity);
         }
+    }
+
+    @Override
+    protected void pushEntities() {
+        if (this.isOnShoulder() || this.isClimbingToShoulder()) {
+            return;
+        }
+        super.pushEntities();
+    }
+
+    @Override
+    protected void doPush(Entity entity) {
+        if (entity instanceof Player player && player.getUUID().equals(this.getOwnerUUID())) {
+            return;
+        }
+        super.doPush(entity);
     }
 
     @Override

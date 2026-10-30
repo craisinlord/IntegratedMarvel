@@ -48,6 +48,8 @@ public final class IronManEnergy {
     public static ModConfigSpec.IntValue LARGE_CHARGER_BUFFER;
     public static ModConfigSpec.IntValue LARGE_CHARGER_MAX_INPUT;
     public static ModConfigSpec.IntValue VERONICA_FE_PER_TICK;
+    public static ModConfigSpec.DoubleValue REACTOR_PAUSE_SECONDS;
+    public static ModConfigSpec.DoubleValue REACTOR_IDLE_MULTIPLIER;
 
     private IronManEnergy() {
     }
@@ -61,7 +63,8 @@ public final class IronManEnergy {
         builder.comment("Suit energy in FE. Every Marvel energy cost is a percent of baseCapacity, so a suit with a",
                         "bigger battery pays the same FE per shot but a smaller share of its bar.",
                         "Suits charge in Marvel's Suit Charger / Large Suit Charger (fed FE by cables), the",
-                        "Oritech Charger or any FE item charger, and slowly from Veronica.")
+                        "Oritech Charger or any FE item charger, and slowly from Veronica. A worn suit's arc reactor",
+                        "refills it up to that mark's reactorCap, and only drains passively while flying.")
                 .push("energy");
         BASE_CAPACITY = builder.comment("FE that Marvel's 100% means for costs (one Mk1-sized battery). A unibeam costs 7.5% of this.")
                 .defineInRange("baseCapacity", 250_000, 1, Integer.MAX_VALUE);
@@ -77,6 +80,10 @@ public final class IronManEnergy {
                 .defineInRange("largeChargerMaxInput", 250_000, 1, Integer.MAX_VALUE);
         VERONICA_FE_PER_TICK = builder.comment("FE per tick Veronica adds to each piece of every suit she stores.")
                 .defineInRange("veronicaFePerTick", 100, 0, Integer.MAX_VALUE);
+        REACTOR_PAUSE_SECONDS = builder.comment("Seconds the arc reactor stops recharging after the suit spends power on a weapon or ability.")
+                .defineInRange("reactorPauseSeconds", 3.0D, 0.0D, 600.0D);
+        REACTOR_IDLE_MULTIPLIER = builder.comment("Reactor output multiplier while standing still on the ground.")
+                .defineInRange("reactorIdleMultiplier", 2.0D, 0.0D, 100.0D);
 
         builder.comment("FE capacity per armor piece, per suit. Suits not listed use baseCapacity.").push("capacity");
         capacity(builder, "iron_man_mark_2", 290_000);

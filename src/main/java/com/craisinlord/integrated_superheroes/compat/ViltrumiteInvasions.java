@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.compat;
 
+import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import com.craisinlord.integrated_superheroes.hero.MarvelBalanceConfig;
 import dev.baranhan.viltrumitecore.config.ViltrumiteCoreConfig;
 import dev.baranhan.viltrumitecore.util.PunchImpactManager;
@@ -8,17 +9,23 @@ import dev.baranhan.viltrumitecore.worldevent.WorldEventManager;
 import dev.baranhan.viltrumitecore.worldevent.WorldEventType;
 import dev.baranhan.viltrumitecore.worldevent.WorldEvents;
 import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.TagKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
+import net.neoforged.neoforge.event.level.ExplosionEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +35,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 public final class ViltrumiteInvasions {
+    public static final TagKey<Block> NPC_BREAKABLE = TagKey.create(Registries.BLOCK, IntegratedSuperheroes.id("viltrumite_npc_breakable"));
     private static final Set<Entity> NPC_LAUNCHED = Collections.newSetFromMap(new WeakHashMap<>());
     private static Thread guardThread;
     private static int guardDepth;
@@ -37,12 +45,35 @@ public final class ViltrumiteInvasions {
 
     public static void register() {
         NeoForge.EVENT_BUS.addListener(ViltrumiteInvasions::onPickup);
+        NeoForge.EVENT_BUS.addListener(ViltrumiteInvasions::onExplosion);
     }
 
     private static void onPickup(ItemEntityPickupEvent.Pre event) {
         if (ViltrumiteBridge.isNpc(event.getPlayer()) && !MarvelBalanceConfig.VILTRUMITE_NPC_PICKUP.get()) {
             event.setCanPickup(TriState.FALSE);
         }
+    }
+
+    // Meteor impacts call level.explode(victim, ..., BLOCK), which ignores destroy speed, so the
+    // same protection rule has to be applied to the blast's block list here. Entity damage stays.
+    private static void onExplosion(ExplosionEvent.Detonate event) {
+        if (!npcExplosion(event.getExplosion().getDirectSourceEntity())) {
+            return;
+        }
+        Level level = event.getLevel();
+        event.getAffectedBlocks().removeIf(pos -> blocked(level.getBlockState(pos), level));
+    }
+
+    private static boolean npcExplosion(Entity source) {
+        if (source != null) {
+            if (NPC_LAUNCHED.contains(source) || ViltrumiteBridge.isNpc(source)) {
+                return true;
+            }
+            if (PunchImpactManager.LAUNCHED_ENTITIES.containsKey(source)) {
+                return false;
+            }
+        }
+        return inGuard();
     }
 
     public static boolean gated() {
@@ -116,7 +147,7 @@ public final class ViltrumiteInvasions {
     }
 
     public static boolean enterGuard(boolean npc) {
-        if (!npc || MarvelBalanceConfig.VILTRUMITE_NPC_BREAK_BLOCK_ENTITIES.get()) {
+        if (!npc) {
             return false;
         }
         guardThread = Thread.currentThread();
@@ -130,8 +161,31 @@ public final class ViltrumiteInvasions {
         }
     }
 
-    public static boolean protects(BlockBehaviour.BlockStateBase state) {
-        return guardDepth > 0 && Thread.currentThread() == guardThread && state.hasBlockEntity();
+    private static boolean inGuard() {
+        return guardDepth > 0 && Thread.currentThread() == guardThread;
+    }
+
+    public static boolean protects(BlockBehaviour.BlockStateBase state, BlockGetter getter) {
+        return inGuard() && blocked(state, getter);
+    }
+
+    // Protected blocks report -1 hardness. Their drill reads that as an impending crash and turns
+    // noclip off, so a flying NPC bumps into protected blocks instead of passing through them.
+    private static boolean blocked(BlockBehaviour.BlockStateBase state, BlockGetter getter) {
+        if (state.isAir()) {
+            return false;
+        }
+        if (getter instanceof Level level && !level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
+            return true;
+        }
+        if (state.hasBlockEntity() && !MarvelBalanceConfig.VILTRUMITE_NPC_BREAK_BLOCK_ENTITIES.get()) {
+            return true;
+        }
+        return switch (MarvelBalanceConfig.VILTRUMITE_NPC_BLOCK_BREAKING.get()) {
+            case NONE -> true;
+            case TAGGED -> !state.is(NPC_BREAKABLE);
+            case ALL -> false;
+        };
     }
 
     public static Set<Entity> launchedSnapshot() {

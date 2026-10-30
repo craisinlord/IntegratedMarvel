@@ -1,9 +1,12 @@
 package com.craisinlord.integrated_superheroes.mixin;
 
 import com.craisinlord.integrated_superheroes.hero.IronManEnergy;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -21,6 +24,12 @@ public abstract class IronManSuitEnergyMixin {
     private static void integratedSuperheroes$drainFE(ItemStack stack, float power, CallbackInfo ci) {
         IronManEnergy.drainPercent(stack, power);
         ci.cancel();
+    }
+
+    @WrapWithCondition(method = "fullSuitTick", at = @At(value = "INVOKE",
+            target = "Lnet/tintankgames/marvel/world/item/EnergySuitItem;removeEnergy(Lnet/minecraft/world/item/ItemStack;F)V"), remap = false)
+    private boolean integratedSuperheroes$drainOnlyWhileFlying(ItemStack stack, float power, @Local(argsOnly = true) Player player) {
+        return player.getAbilities().flying;
     }
 
     @Inject(method = "addEnergy", at = @At("HEAD"), cancellable = true, remap = false)
