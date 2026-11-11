@@ -197,7 +197,7 @@ public final class HeroContent {
         HeroPower hero = HeroPowers.activeHero(player);
         if (hero != null) {
             if (player.tickCount % 20 == 0) {
-                HeroToggles.ensureWheel(player, hero);
+                HeroToggles.ensureAbilities(player, hero);
             }
             hero.hooks().tick(player);
         }

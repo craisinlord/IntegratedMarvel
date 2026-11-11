@@ -1,0 +1,116 @@
+{
+  "values": [
+    {
+      "id": "marvel:iron_man_mark_1_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_2_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_3_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_5_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_6_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_7_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_11_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_15_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_17_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_19_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_20_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_21_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_22_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_23_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_24_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_25_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_28_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_30_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_33_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_35_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_37_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_38_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_39_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_42_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_43_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:war_machine_mark_1_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:war_machine_mark_2_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_patriot_chestplate",
+      "required": false
+    }
+  ]
+}

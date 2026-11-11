@@ -1,0 +1,116 @@
+{
+  "values": [
+    {
+      "id": "marvel:iron_man_mark_1_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_2_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_3_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_5_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_6_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_7_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_11_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_15_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_17_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_19_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_20_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_21_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_22_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_23_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_24_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_25_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_28_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_30_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_33_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_35_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_37_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_38_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_39_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_42_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_43_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:war_machine_mark_1_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:war_machine_mark_2_leggings",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_patriot_leggings",
+      "required": false
+    }
+  ]
+}

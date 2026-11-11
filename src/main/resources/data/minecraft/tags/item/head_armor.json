@@ -1,0 +1,116 @@
+{
+  "values": [
+    {
+      "id": "marvel:iron_man_mark_1_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_2_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_3_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_5_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_6_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_7_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_11_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_15_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_17_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_19_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_20_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_21_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_22_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_23_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_24_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_25_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_28_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_30_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_33_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_35_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_37_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_38_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_39_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_42_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_man_mark_43_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:war_machine_mark_1_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:war_machine_mark_2_helmet",
+      "required": false
+    },
+    {
+      "id": "marvel:iron_patriot_helmet",
+      "required": false
+    }
+  ]
+}

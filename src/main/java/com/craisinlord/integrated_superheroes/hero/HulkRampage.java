@@ -156,10 +156,18 @@ public final class HulkRampage {
         }
     }
 
-    private static void sweep(Pass pass, AABB box, int floor) {
-        int minY = Math.max(Mth.floor(box.minY), floor);
+    /** Smashes blocks in the box, never the floor the Hulk is standing on (above him when his gravity is flipped). */
+    private static void sweep(Pass pass, AABB box) {
+        double feet = pass.player.getY();
+        int minY = Mth.floor(box.minY);
+        int maxY = Mth.floor(box.maxY - 1.0E-4D);
+        if (HeroGravity.inverted(pass.player)) {
+            maxY = Math.min(maxY, Mth.floor(feet - 0.01D));
+        } else {
+            minY = Math.max(minY, Mth.floor(feet + 0.01D));
+        }
         BlockPos min = new BlockPos(Mth.floor(box.minX), minY, Mth.floor(box.minZ));
-        BlockPos max = new BlockPos(Mth.floor(box.maxX - 1.0E-4D), Mth.floor(box.maxY - 1.0E-4D), Mth.floor(box.maxZ - 1.0E-4D));
+        BlockPos max = new BlockPos(Mth.floor(box.maxX - 1.0E-4D), maxY, Mth.floor(box.maxZ - 1.0E-4D));
         if (max.getY() < min.getY()) {
             return;
         }
@@ -185,9 +193,9 @@ public final class HulkRampage {
         int tier = tier(player);
         double side = TUBE[tier];
         AABB box = player.getBoundingBox().expandTowards(direction.scale(charging ? 1.4D : 0.6D))
-                .inflate(side, 0.0D, side).expandTowards(0.0D, side, 0.0D);
+                .inflate(side, 0.0D, side).expandTowards(0.0D, side * HeroGravity.up(player), 0.0D);
         Pass pass = new Pass(player.serverLevel(), player, tier, true);
-        sweep(pass, box, Mth.floor(player.getY() + 0.01D));
+        sweep(pass, box);
         if (pass.broken.isEmpty()) {
             return;
         }
@@ -227,7 +235,7 @@ public final class HulkRampage {
         int tier = impactTier(player);
         AABB box = player.getBoundingBox().expandTowards(motion.scale(1.5D)).inflate(TUBE[tier] * 0.5D);
         Pass pass = new Pass(player.serverLevel(), player, tier, true);
-        sweep(pass, box, Mth.floor(player.getY() + 0.01D));
+        sweep(pass, box);
         if (pass.broken.isEmpty()) {
             return;
         }
@@ -245,7 +253,8 @@ public final class HulkRampage {
             return;
         }
         ServerLevel level = player.serverLevel();
-        BlockPos center = BlockPos.containing(player.getX(), player.getY() - 0.5D, player.getZ());
+        BlockPos center = HeroGravity.floorPos(player);
+        int up = HeroGravity.up(player);
         int reach = Mth.ceil(radius);
         for (int dx = -reach; dx <= reach; dx++) {
             for (int dz = -reach; dz <= reach; dz++) {
@@ -255,7 +264,7 @@ public final class HulkRampage {
                 }
                 int depth = Math.max(1, (int) Math.round((1.0D - distance * distance / (radius * radius)) * radius * 0.6D));
                 for (int dy = 0; dy < depth; dy++) {
-                    queue(level, player, center.offset(dx, -dy, dz), (long) distance, tier);
+                    queue(level, player, center.offset(dx, -dy * up, dz), (long) distance, tier);
                 }
             }
         }
@@ -270,6 +279,7 @@ public final class HulkRampage {
             return;
         }
         int tier = impactTier(player);
+        int up = HeroGravity.up(player);
         int depth = base >= UNSTOPPABLE ? 2 : 1;
         int width = base >= UNSTOPPABLE ? 1 : 0;
         ServerLevel level = player.serverLevel();
@@ -281,12 +291,12 @@ public final class HulkRampage {
                 double x = player.getX() + dx * step;
                 double z = player.getZ() + dz * step;
                 for (int w = -width; w <= width; w++) {
-                    BlockPos ground = surface(level, BlockPos.containing(x - dz * w, player.getY(), z + dx * w));
+                    BlockPos ground = surface(level, BlockPos.containing(x - dz * w, player.getY(), z + dx * w), up);
                     if (ground == null) {
                         continue;
                     }
                     for (int d = 0; d < depth; d++) {
-                        queue(level, player, ground.below(d), step, tier);
+                        queue(level, player, ground.above(-d * up), step, tier);
                     }
                 }
             }
@@ -309,6 +319,7 @@ public final class HulkRampage {
         double reach = range * 0.6D;
         int span = Mth.ceil(reach);
         BlockPos origin = player.blockPosition();
+        int up = HeroGravity.up(player);
         List<BlockPos> candidates = new ArrayList<>();
         for (int dx = -span; dx <= span; dx++) {
             for (int dz = -span; dz <= span; dz++) {
@@ -317,7 +328,7 @@ public final class HulkRampage {
                 if (distance < 1.5D || distance > reach || offset.scale(1.0D / distance).dot(forward) < 0.64D) {
                     continue;
                 }
-                BlockPos ground = surface(level, origin.offset(dx, 0, dz));
+                BlockPos ground = surface(level, origin.offset(dx, 0, dz), up);
                 if (ground != null) {
                     candidates.add(ground);
                 }
@@ -339,7 +350,7 @@ public final class HulkRampage {
             falling.dropItem = false;
             falling.setHurtsEntities(2.0F, 20);
             double push = 0.5D + level.random.nextDouble() * 0.5D;
-            falling.setDeltaMovement(forward.x * push, 0.55D + level.random.nextDouble() * 0.4D, forward.z * push);
+            falling.setDeltaMovement(forward.x * push, (0.55D + level.random.nextDouble() * 0.4D) * up, forward.z * push);
             falling.hurtMarked = true;
             level.addFreshEntity(falling);
             pass.broken.add(pos);
@@ -347,11 +358,14 @@ public final class HulkRampage {
         finish(pass);
     }
 
-    private static BlockPos surface(ServerLevel level, BlockPos column) {
+    /** Finds the walkable top of a column near the Hulk's feet; {@code up} is -1 when his gravity is flipped. */
+    private static BlockPos surface(ServerLevel level, BlockPos column, int up) {
+        BlockPos base = up < 0 ? column.below() : column;
         for (int dy = 1; dy >= -3; dy--) {
-            BlockPos pos = column.offset(0, dy - 1, 0);
+            BlockPos pos = base.offset(0, (dy - 1) * up, 0);
+            BlockPos open = pos.above(up);
             BlockState state = level.getBlockState(pos);
-            if (!state.getCollisionShape(level, pos).isEmpty() && level.getBlockState(pos.above()).getCollisionShape(level, pos.above()).isEmpty()) {
+            if (!state.getCollisionShape(level, pos).isEmpty() && level.getBlockState(open).getCollisionShape(level, open).isEmpty()) {
                 return pos;
             }
         }

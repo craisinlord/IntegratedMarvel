@@ -22,7 +22,10 @@ public record HeroPower(
     public record Ability(String name, String displayName, Handler handler) {
     }
 
-    public record Toggle(String flag, String label, Supplier<Item> icon) {
+    public record Toggle(String flag, String label, Supplier<Item> icon, boolean defaultOn) {
+        public Toggle(String flag, String label, Supplier<Item> icon) {
+            this(flag, label, icon, true);
+        }
     }
 
     @FunctionalInterface

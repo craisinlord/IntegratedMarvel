@@ -5,6 +5,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.ArrayList;
@@ -194,6 +195,22 @@ public final class Cleanup {
         }
         Optional<Item> item = BuiltInRegistries.ITEM.getOptional(target);
         return item.map(value -> new ItemStack(value, stack.getCount())).orElse(stack);
+    }
+
+    public static boolean repairsAs(Ingredient ingredient, ItemStack repair) {
+        if (repair.isEmpty()) {
+            return false;
+        }
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(repair.getItem());
+        for (Map.Entry<ResourceLocation, ResourceLocation> entry : active().replacements.entrySet()) {
+            if (entry.getValue().equals(id)) {
+                Optional<Item> original = BuiltInRegistries.ITEM.getOptional(entry.getKey());
+                if (original.isPresent() && ingredient.test(new ItemStack(original.get()))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static boolean needsConversion(ItemStack stack) {

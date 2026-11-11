@@ -42,6 +42,11 @@ public final class IcemanPower {
     private static final Set<UUID> SLIDING = new HashSet<>();
     private static final Set<UUID> ICE_FORMED = new HashSet<>();
     private static final Map<UUID, Wall> WALLS = new java.util.HashMap<>();
+    private static final String ICE_BEAM = "ice_beam";
+    private static final Map<UUID, Channel> BEAMS = new java.util.HashMap<>();
+
+    private record Channel(int ticksLeft, Map<UUID, Integer> hits) {
+    }
 
     private record Wall(net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dimension, Set<BlockPos> blocks, long until) {
     }
@@ -60,6 +65,7 @@ public final class IcemanPower {
                         new HeroPower.Ability("freeze_blast", "Freeze Blast", IcemanPower::freezeBlast),
                         new HeroPower.Ability("cryogenesis", "Cryogenesis", IcemanPower::cryogenesis),
                         new HeroPower.Ability("ice_wall", "Ice Wall", IcemanPower::iceWall),
+                        new HeroPower.Ability(ICE_BEAM, "Ice Beam", IcemanPower::iceBeam),
                         HeroToggles.WHEEL
                 ),
                 List.of(ICE_SLIDE, ICE_FORM),
@@ -82,12 +88,14 @@ public final class IcemanPower {
                             ICE_FORMED.remove(player.getUUID());
                         }
                         tickSlide(player);
+                        tickBeam(player);
                     }
 
                     @Override
                     public void extract(ServerPlayer player) {
                         SLIDING.remove(player.getUUID());
                         ICE_FORMED.remove(player.getUUID());
+                        BEAMS.remove(player.getUUID());
                         FORM_EFFECTS.keySet().forEach(player::removeEffect);
                     }
 
@@ -159,6 +167,118 @@ public final class IcemanPower {
         HeroFx.play(player, SoundEvents.PLAYER_HURT_FREEZE, 0.8F, 1.2F);
         HeroAnimations.play(player, "web_shoot_both");
         return MarvelBalanceConfig.FREEZE_COOLDOWN.get();
+    }
+
+    private static double iceBeam(ServerPlayer player, int slot) {
+        BEAMS.put(player.getUUID(), new Channel(MarvelBalanceConfig.ICE_BEAM_DURATION_TICKS.get(), new java.util.HashMap<>()));
+        HeroAbilities.setActive(player, ICE_BEAM, true);
+        HeroFx.play(player, SoundEvents.POWDER_SNOW_BREAK, 1.2F, 0.5F);
+        HeroAnimations.play(player, "web_shoot_both");
+        return MarvelBalanceConfig.ICE_BEAM_COOLDOWN.get();
+    }
+
+    private static void tickBeam(ServerPlayer player) {
+        Channel channel = BEAMS.get(player.getUUID());
+        if (channel == null) {
+            return;
+        }
+        if (!player.isAlive() || player.isSpectator() || HealingFactor.isDowned(player) || channel.ticksLeft() <= 0) {
+            BEAMS.remove(player.getUUID());
+            HeroAbilities.setActive(player, ICE_BEAM, false);
+            return;
+        }
+        ServerLevel level = player.serverLevel();
+        double range = MarvelBalanceConfig.ICE_BEAM_RANGE.get();
+        Vec3 look = player.getLookAngle();
+        HeroAbilities.Beam beam = HeroAbilities.beam(player, look, range, 1);
+        Vec3 from = beam.start().add(look.scale(0.8D)).subtract(0.0D, 0.25D, 0.0D);
+        Vec3 to = beam.end();
+        beamParticles(level, from, to, look, player.tickCount);
+        int elapsed = MarvelBalanceConfig.ICE_BEAM_DURATION_TICKS.get() - channel.ticksLeft();
+        if (elapsed % 10 == 0) {
+            HeroFx.play(player, HeroFx.sound("iceandfire:icedragon_breath", SoundEvents.POWDER_SNOW_STEP), 0.9F, 1.4F);
+        }
+        if (elapsed % MarvelBalanceConfig.ICE_BEAM_HIT_INTERVAL_TICKS.get() == 0) {
+            for (LivingEntity target : beam.targets()) {
+                pulse(player, level, target, channel);
+            }
+            freezeWater(player, level, beam.start(), to);
+            level.sendParticles(ParticleTypes.SNOWFLAKE, to.x, to.y, to.z, 8, 0.3D, 0.3D, 0.3D, 0.05D);
+        }
+        BEAMS.put(player.getUUID(), new Channel(channel.ticksLeft() - 1, channel.hits()));
+    }
+
+    private static void beamParticles(ServerLevel level, Vec3 from, Vec3 to, Vec3 look, int tick) {
+        double length = from.distanceTo(to);
+        if (length < 0.1D) {
+            return;
+        }
+        Vec3 step = to.subtract(from).normalize();
+        double offset = (tick % 2) * 0.45D;
+        boolean frost = com.craisinlord.integrated_superheroes.compat.ModCompat.ICE_AND_FIRE;
+        for (double d = offset; d < length; d += 0.9D) {
+            Vec3 point = from.add(step.scale(d));
+            if (frost) {
+                float scale = (float) (1.0D + d / length);
+                level.sendParticles(com.craisinlord.integrated_superheroes.compat.IceAndFireCharges.frost(scale), point.x, point.y, point.z, 0,
+                        look.x, look.y, look.z, 0.04D);
+            } else {
+                level.sendParticles(ParticleTypes.SNOWFLAKE, point.x, point.y, point.z, 0, look.x, look.y, look.z, 0.03D);
+            }
+        }
+        if (frost) {
+            HeroAbilities.particleLine(level, from, to, ParticleTypes.SNOWFLAKE, 2.5D);
+        }
+    }
+
+    private static void pulse(ServerPlayer player, ServerLevel level, LivingEntity target, Channel channel) {
+        int hits = channel.hits().merge(target.getUUID(), 1, Integer::sum);
+        target.clearFire();
+        target.setTicksFrozen(Math.min(target.getTicksRequiredToFreeze() + 40, target.getTicksFrozen() + 20));
+        Vec3 center = target.getBoundingBox().getCenter();
+        Optional<Holder.Reference<MobEffect>> frozen = HeroFx.effect("iceandfire:frozen");
+        boolean encased = frozen.isPresent() && target.hasEffect(frozen.get());
+        int encase = MarvelBalanceConfig.ICE_BEAM_HITS_TO_ENCASE.get();
+        if (encased) {
+            freeze(target, MarvelBalanceConfig.ICE_BEAM_ENCASE_TICKS.get());
+            return;
+        }
+        target.hurt(player.damageSources().mobAttack(player), MarvelBalanceConfig.ICE_BEAM_DAMAGE.get().floatValue());
+        if (hits >= encase) {
+            freeze(target, MarvelBalanceConfig.ICE_BEAM_ENCASE_TICKS.get());
+            if (HeroAbilities.canControl(target)) {
+                level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.PACKED_ICE.defaultBlockState()), center.x, center.y, center.z,
+                        25, target.getBbWidth() * 0.5D, target.getBbHeight() * 0.5D, target.getBbWidth() * 0.5D, 0.1D);
+                HeroFx.play(target, SoundEvents.GLASS_PLACE, 1.0F, 0.8F);
+            }
+        } else if (HeroAbilities.canControl(target)) {
+            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, Math.min(3, hits)));
+        }
+        level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SNOWBALL)), center.x, center.y, center.z,
+                6, 0.3D, 0.4D, 0.3D, 0.05D);
+    }
+
+    private static void freezeWater(ServerPlayer player, ServerLevel level, Vec3 start, Vec3 end) {
+        if (!player.mayBuild() || !level.getGameRules().getBoolean(net.tintankgames.marvel.world.level.MarvelGameRules.RULE_SUPERPOWERGRIEFING)) {
+            return;
+        }
+        var hit = level.clip(new net.minecraft.world.level.ClipContext(start, end, net.minecraft.world.level.ClipContext.Block.COLLIDER,
+                net.minecraft.world.level.ClipContext.Fluid.SOURCE_ONLY, player));
+        if (hit.getType() != net.minecraft.world.phys.HitResult.Type.BLOCK) {
+            return;
+        }
+        BlockPos center = hit.getBlockPos();
+        if (!level.getFluidState(center).is(Fluids.WATER)) {
+            return;
+        }
+        int ticks = MarvelBalanceConfig.ICE_BEAM_WATER_TICKS.get();
+        for (BlockPos pos : BlockPos.betweenClosed(center.offset(-1, 0, -1), center.offset(1, 0, 1))) {
+            var state = level.getBlockState(pos);
+            if (state.is(Blocks.WATER) && state.getFluidState().isSource()
+                    && com.craisinlord.integrated_superheroes.gauntlet.GauntletGrief.canEdit(player, level, pos)) {
+                TempBlocks.place(level, player, pos, ticks + level.random.nextInt(60));
+            }
+        }
     }
 
     private static double cryogenesis(ServerPlayer player, int slot) {

@@ -182,7 +182,7 @@ public final class HeroPowers {
         return stats == null ? 0.0D : stats.unarmedDamage.get();
     }
 
-    private static Power newPower(HeroPower.Ability ability) {
+    static Power newPower(HeroPower.Ability ability) {
         return new Power(ability.name(), ability.displayName(), 2, 0.0D, false, false);
     }
 }

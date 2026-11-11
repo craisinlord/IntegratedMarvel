@@ -22,7 +22,8 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 public final class ViltrumiteGuards {
     public static final String GRAB_TAG = "ViltrumiteGrabbed";
-    public static final String SONIC_BOOM_SHADER = "viltrumiteflight:shaders/post/sonic_boom.json";
+    public static final ResourceLocation SONIC_BOOM_ID = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "shaders/post/sonic_boom.json");
+    public static final String SONIC_BOOM_SHADER = SONIC_BOOM_ID.toString();
     public static final TagKey<MobEffect> BYPASS_EFFECTS = TagKey.create(Registries.MOB_EFFECT,
             ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "viltrumite_bypass"));
     public static final int METEORS = 0;

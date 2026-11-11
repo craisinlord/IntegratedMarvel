@@ -161,7 +161,7 @@ public final class DeadpoolPower {
                         if (player.getHealth() < player.getMaxHealth() && !HealingFactor.regenPaused(player)) {
                             player.heal((float) (player.getMaxHealth() * MarvelBalanceConfig.DEADPOOL_REGEN_PERCENT_PER_SECOND.get()));
                         }
-                        player.removeEffectsCuredBy(DEADPOOL_CURE);
+                        EffectCleanse.cure(player, DEADPOOL_CURE);
                         tickAmbient(player);
                     }
 

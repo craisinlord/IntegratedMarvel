@@ -36,7 +36,7 @@ public final class GauntletBeamEvents {
         SpacePortalManager.tick(server);
         SpaceDestinationManager.tick(server);
         RealityStone.tick(server);
-        RealityClipboard.tick(server.overworld().getGameTime());
+        RealityClipboard.tick(server);
         MindControlManager.tick(server);
         MindStone.tick(server);
         MindLinkManager.tick(server);

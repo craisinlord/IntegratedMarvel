@@ -1,6 +1,8 @@
 package com.craisinlord.integrated_superheroes.hero;
 
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
+import com.craisinlord.integrated_superheroes.compat.ScorchedGunsHud;
+import com.craisinlord.integrated_superheroes.gauntlet.InfinityGauntletStones;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.stxllarplanes.marvellegacy.Config;
 import com.stxllarplanes.marvellegacy.data.PlayerData;
@@ -23,6 +25,8 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 @EventBusSubscriber(modid = IntegratedSuperheroes.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public final class HeroSlotsClient {
@@ -94,17 +98,62 @@ public final class HeroSlotsClient {
         graphics.pose().scale(scale, scale, 1.0F);
         PlayerData data = HeroPowers.data(minecraft.player);
         KeyMapping[] keys = allKeys();
-        int row = 0;
-        for (int slot = keys.length - 1; slot >= 0; slot--) {
+        List<String> lines = new ArrayList<>();
+        int textWidth = 0;
+        for (int slot = 0; slot < keys.length; slot++) {
             Power power = data.getActivePower(slot);
             if (power == null || "none".equals(power.getName())) {
                 continue;
             }
             String text = line(power, keys[slot]);
-            graphics.drawString(font, text, width - font.width(text) - padding, height - 9 - padding - row * 11, 0xFFFFFF, true);
-            row++;
+            lines.add(text);
+            textWidth = Math.max(textWidth, font.width(text));
+        }
+        if (lines.isEmpty()) {
+            graphics.pose().popPose();
+            return;
+        }
+        int blockHeight = lines.size() * 11 - 2;
+        HeroHudClientConfig.Corner corner = HeroHudClientConfig.corner();
+        boolean rightSide = corner == HeroHudClientConfig.Corner.BOTTOM_RIGHT || corner == HeroHudClientConfig.Corner.TOP_RIGHT;
+        boolean bottom = corner == HeroHudClientConfig.Corner.BOTTOM_RIGHT || corner == HeroHudClientConfig.Corner.BOTTOM_LEFT;
+        int right = (rightSide ? width - padding : padding + textWidth) + HeroHudClientConfig.offsetX();
+        int top = (bottom ? height - padding - blockHeight : padding) + HeroHudClientConfig.offsetY();
+        if (corner == HeroHudClientConfig.Corner.BOTTOM_RIGHT && HeroHudClientConfig.avoidAmmoHud()
+                && ScorchedGunsHud.showsAmmo(minecraft.player)) {
+            int ammoLeft = (int) ((graphics.guiWidth() * 0.88D - 24) / scale);
+            int ammoTop = (int) ((graphics.guiHeight() * 0.8D - 13) / scale);
+            int ammoBottom = (int) ((graphics.guiHeight() * 0.8D + 19) / scale);
+            if (overlaps(right - textWidth, top, right, top + blockHeight, ammoLeft, ammoTop, width, ammoBottom)) {
+                int above = ammoTop - blockHeight;
+                if (above >= padding && !overlapsGauntlet(minecraft, graphics, scale, right - textWidth, above, right, ammoTop)) {
+                    top = above;
+                } else {
+                    right = ammoLeft;
+                }
+            }
+        }
+        for (int i = 0; i < lines.size(); i++) {
+            String text = lines.get(i);
+            int x = rightSide ? right - font.width(text) : right - textWidth;
+            graphics.drawString(font, text, x, top + i * 11, 0xFFFFFF, true);
         }
         graphics.pose().popPose();
+    }
+
+    private static boolean overlaps(int left, int top, int right, int bottom, int otherLeft, int otherTop, int otherRight, int otherBottom) {
+        return left < otherRight && right > otherLeft && top < otherBottom && bottom > otherTop;
+    }
+
+    private static boolean overlapsGauntlet(Minecraft minecraft, GuiGraphics graphics, float scale, int left, int top, int right, int bottom) {
+        if (InfinityGauntletStones.equippedGauntlet(minecraft.player).isEmpty()) {
+            return false;
+        }
+        int panelLeft = (int) ((graphics.guiWidth() / 2 + 162) / scale);
+        int panelTop = (int) ((graphics.guiHeight() / 2 + 59) / scale);
+        int panelRight = (int) ((graphics.guiWidth() / 2 + 207) / scale);
+        int panelBottom = (int) ((graphics.guiHeight() / 2 + 111) / scale);
+        return overlaps(left, top, right, bottom, panelLeft, panelTop, panelRight, panelBottom);
     }
 
     private static String line(Power power, KeyMapping key) {

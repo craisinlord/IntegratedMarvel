@@ -12,6 +12,6 @@ public abstract class ViltrumiteVanillaFlightMixin {
     @TargetHandler(mixin = "dev.baranhan.viltrumiteflight.mixin.PlayerEntityMixin", name = "onTick")
     @WrapWithCondition(method = "@MixinSquared:Handler", at = @At(value = "INVOKE", target = "stopFlight()V", ordinal = 0), remap = false)
     private boolean integratedSuperheroes$keepVanillaFlight(Player player) {
-        return player.getAbilities().flying && ViltrumiteBridge.isViltrumite(player);
+        return player.level().isClientSide() || player.getAbilities().flying && ViltrumiteBridge.isViltrumite(player);
     }
 }

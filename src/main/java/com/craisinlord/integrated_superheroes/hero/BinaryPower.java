@@ -2,6 +2,8 @@ package com.craisinlord.integrated_superheroes.hero;
 
 import com.craisinlord.anthology.beam.BeamSettings;
 import com.craisinlord.anthology.beam.BeamTerrainMode;
+import com.craisinlord.integrated_superheroes.compat.ModCompat;
+import com.craisinlord.integrated_superheroes.compat.ViltrumiteBridge;
 import com.stxllarplanes.marvellegacy.data.PlayerData;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
@@ -56,15 +58,13 @@ public final class BinaryPower {
                         new HeroPower.Ability("cosmic_dash", "Cosmic Dash", BinaryPower::cosmicDash),
                         HeroToggles.WHEEL
                 ),
-                List.of(HeroToggles.FLIGHT),
+                List.of(HeroToggles.FLIGHT, HeroToggles.SUPERSONIC),
                 new HeroPower.Hooks() {
                     @Override
                     public void tick(ServerPlayer player) {
                         AttributeInstance flight = player.getAttribute(NeoForgeMod.CREATIVE_FLIGHT);
-                        if (HeroToggles.isOn(player, HeroToggles.FLIGHT)) {
-                            if (flight != null && !flight.hasModifier(FLIGHT_ID)) {
-                                flight.addTransientModifier(new AttributeModifier(FLIGHT_ID, 1.0D, AttributeModifier.Operation.ADD_VALUE));
-                            }
+                        if (HeroToggles.isOn(player, HeroToggles.FLIGHT) && (!viltrumiteFlight() || ViltrumiteBridge.inFlight(player))) {
+                            grantFlight(player);
                             float flySpeed = MarvelBalanceConfig.BINARY_FLY_SPEED.get().floatValue();
                             if (player.getAbilities().getFlyingSpeed() != flySpeed) {
                                 player.getAbilities().setFlyingSpeed(flySpeed);
@@ -113,6 +113,17 @@ public final class BinaryPower {
                     }
                 }
         );
+    }
+
+    private static boolean viltrumiteFlight() {
+        return ModCompat.VILTRUMITE && MarvelBalanceConfig.VILTRUMITE_CAPTAIN_MARVEL_FLIGHT.get();
+    }
+
+    public static void grantFlight(ServerPlayer player) {
+        AttributeInstance flight = player.getAttribute(NeoForgeMod.CREATIVE_FLIGHT);
+        if (flight != null && !flight.hasModifier(FLIGHT_ID)) {
+            flight.addTransientModifier(new AttributeModifier(FLIGHT_ID, 1.0D, AttributeModifier.Operation.ADD_VALUE));
+        }
     }
 
     private static void removeFlight(ServerPlayer player) {

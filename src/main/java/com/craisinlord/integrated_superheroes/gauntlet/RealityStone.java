@@ -23,6 +23,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -44,11 +46,12 @@ public final class RealityStone {
     private static final double MAX_SCALE = 100.0D;
     private static final int MAX_TEMPORARY_BLOCKS = 65536;
     private static final ResourceLocation REACH_ID = IntegratedSuperheroes.id("reality_reach");
+    /** Cheap blocks only, so neither mode turns the world into loot. Bedrock is skipped by permanent rewrites. */
     private static final List<BlockState> CYCLE = List.of(Blocks.STONE.defaultBlockState(),
-            Blocks.AMETHYST_BLOCK.defaultBlockState(), Blocks.GOLD_BLOCK.defaultBlockState(),
-            Blocks.DIAMOND_BLOCK.defaultBlockState(), Blocks.EMERALD_BLOCK.defaultBlockState(),
-            Blocks.OBSIDIAN.defaultBlockState(), Blocks.CRYING_OBSIDIAN.defaultBlockState(),
-            Blocks.REDSTONE_BLOCK.defaultBlockState(), Blocks.SLIME_BLOCK.defaultBlockState(),
+            Blocks.CALCITE.defaultBlockState(), Blocks.TUFF.defaultBlockState(),
+            Blocks.DRIPSTONE_BLOCK.defaultBlockState(), Blocks.MOSS_BLOCK.defaultBlockState(),
+            Blocks.MUD.defaultBlockState(), Blocks.PACKED_ICE.defaultBlockState(),
+            Blocks.SMOOTH_BASALT.defaultBlockState(), Blocks.OBSIDIAN.defaultBlockState(),
             Blocks.BEDROCK.defaultBlockState());
     private static final List<EntityType<?>> CREATURES = List.of(EntityType.CHICKEN, EntityType.RABBIT, EntityType.FROG,
             EntityType.PIG, EntityType.SHEEP, EntityType.PARROT, EntityType.AXOLOTL, EntityType.ALLAY, EntityType.BAT);
@@ -85,14 +88,22 @@ public final class RealityStone {
         ServerLevel level = cast.level();
         BlockPos center = hit.getBlockPos().immutable();
         int radius = radius(player.getUUID());
-        BlockState clipboard = RealityClipboard.singleBlock(player.getUUID());
         boolean permanent = cast.crouching();
+        boolean free = RealityCost.free(cast);
+        // Without every stone, the clipboard block is only written permanently, and paid for block by block.
+        // A free temporary copy could be mined, pushed or drilled out before it reverts.
+        BlockState clipboard = free || permanent ? RealityClipboard.singleBlock(player.getUUID()) : null;
+        boolean paying = clipboard != null && !free;
+        if (paying && !RealityCost.placeable(clipboard)) {
+            cast.message("reality_paste_blocked");
+            return;
+        }
         List<BlockEditQueue.Edit> edits = new ArrayList<>();
         for (BlockPos pos : BlockPos.betweenClosed(center.offset(-radius, -radius, -radius), center.offset(radius, radius, radius))) {
             if (pos.distSqr(center) > radius * radius + 0.5D) continue;
             BlockState current = level.getBlockState(pos);
             if (current.isAir() || current.hasBlockEntity()) continue;
-            BlockState replacement = clipboard != null ? clipboard : nextInCycle(level, pos, current);
+            BlockState replacement = clipboard != null ? clipboard : nextInCycle(current, permanent);
             if (replacement == current) continue;
             edits.add(new BlockEditQueue.Edit(pos.immutable(), replacement, null));
         }
@@ -104,8 +115,19 @@ public final class RealityStone {
             cast.message("reality_too_many");
             return;
         }
+        Map<Item, Integer> bill = paying ? RealityCost.bill(edits.stream().map(BlockEditQueue.Edit::state).toList()) : Map.of();
+        if (!bill.isEmpty()) {
+            Map<Item, Integer> missing = RealityCost.missing(player, bill);
+            if (!missing.isEmpty()) {
+                cast.message("reality_paste_missing", RealityCost.describe(missing));
+                return;
+            }
+            RealityCost.take(player, bill);
+        }
+        List<BlockState> placed = new ArrayList<>();
         long expiry = level.getGameTime() + 200L;
         BlockEditQueue.submit(level, edits, "reality", 3).withoutUndo().guardedBy(player).onEdit((editLevel, pos, previous, replacement) -> {
+            if (paying) placed.add(replacement);
             TemporaryBlockKey key = new TemporaryBlockKey(editLevel.dimension(), pos.immutable());
             TemporaryBlock existing = TEMPORARY_BLOCKS.get(key);
             BlockState original = existing != null && previous == existing.replacement() ? existing.original() : previous;
@@ -116,6 +138,12 @@ public final class RealityStone {
                 EXPIRIES.add(new Expiry(key, expiry));
             }
         }).onComplete(job -> {
+            if (paying && placed.size() < edits.size()) {
+                Map<Item, Integer> unused = new HashMap<>(bill);
+                RealityCost.bill(placed).forEach((item, used) -> unused.merge(item, -used, Integer::sum));
+                unused.values().removeIf(amount -> amount <= 0);
+                RealityCost.refund(player, unused);
+            }
             if (job.denied() == 0) return;
             if (job.applied() == 0) {
                 cast.message("reality_protected");
@@ -129,8 +157,24 @@ public final class RealityStone {
         cast.cooldown();
     }
 
-    private static BlockState nextInCycle(ServerLevel level, BlockPos pos, BlockState current) {
-        return CYCLE.get((CYCLE.indexOf(current) + 1) % CYCLE.size());
+    /**
+     * Mining a temporary rewrite, or blowing it up, gives nothing: the original block comes straight back.
+     * Returns true when the position held a live temporary block.
+     */
+    public static boolean dissolveTemporary(LevelAccessor accessor, BlockPos pos) {
+        if (!(accessor instanceof ServerLevel level) || TEMPORARY_BLOCKS.isEmpty()) return false;
+        TemporaryBlock temporary = TEMPORARY_BLOCKS.remove(new TemporaryBlockKey(level.dimension(), pos.immutable()));
+        if (temporary == null) return false;
+        if (level.getBlockState(pos) != temporary.replacement()) return false;
+        level.setBlock(pos, temporary.original(), 3);
+        GauntletFx.burst(level, Vec3.atCenterOf(pos), "reality", 6, 0.3D);
+        return true;
+    }
+
+    private static BlockState nextInCycle(BlockState current, boolean permanent) {
+        BlockState next = CYCLE.get((CYCLE.indexOf(current) + 1) % CYCLE.size());
+        if (permanent && next.is(Blocks.BEDROCK)) next = CYCLE.getFirst();
+        return next;
     }
 
     private static void transmuteEntity(GauntletCast cast, LivingEntity target) {

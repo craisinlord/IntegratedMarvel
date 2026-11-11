@@ -100,7 +100,7 @@ public final class PantherPower {
                         }
                         event.setCanceled(true);
                         player.setHealth(player.getMaxHealth() * 0.5F);
-                        player.removeAllEffects();
+                        EffectCleanse.removeAll(player);
                         player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 1));
                         player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 60, 3));
                         if (player.level() instanceof ServerLevel level) {

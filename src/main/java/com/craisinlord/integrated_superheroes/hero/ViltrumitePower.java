@@ -23,8 +23,8 @@ public final class ViltrumitePower {
                 syringe,
                 MarvelBalanceConfig.VILTRUMITE,
                 List.of(),
-                List.of(),
-                List.of(),
+                List.of(HeroToggles.WHEEL),
+                List.of(HeroToggles.SUPERSONIC),
                 new HeroPower.Hooks() {
                     @Override
                     public void tick(ServerPlayer player) {

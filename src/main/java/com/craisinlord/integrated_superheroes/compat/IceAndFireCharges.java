@@ -3,9 +3,11 @@ package com.craisinlord.integrated_superheroes.compat;
 import com.iafenvoy.iceandfire.entity.FireDragonChargeEntity;
 import com.iafenvoy.iceandfire.entity.IceDragonChargeEntity;
 import com.iafenvoy.iceandfire.entity.LightningDragonChargeEntity;
+import com.iafenvoy.iceandfire.particle.DragonFrostParticleType;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafMobEffects;
 import net.minecraft.core.Holder;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.level.Level;
@@ -28,6 +30,10 @@ public final class IceAndFireCharges {
 
     public static Holder<MobEffect> frozen() {
         return IafMobEffects.FROZEN;
+    }
+
+    public static ParticleOptions frost(float scale) {
+        return new DragonFrostParticleType(scale);
     }
 
     public static Holder<MobEffect> sirenCharm() {

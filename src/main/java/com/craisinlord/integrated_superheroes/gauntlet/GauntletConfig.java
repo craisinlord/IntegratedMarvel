@@ -15,7 +15,7 @@ public final class GauntletConfig {
     public static final ModConfigSpec.BooleanValue INFINITY_TIER;
     public static final ModConfigSpec.BooleanValue TERRAIN_GRIEFING;
     public static final ModConfigSpec.BooleanValue WORLD_WIDE_EFFECTS;
-    public static final ModConfigSpec.BooleanValue REALITY_BLOCK_ENTITY_CONTENTS;
+    public static final ModConfigSpec.IntValue REALITY_ECHO_TICKS;
     public static final ModConfigSpec.IntValue REALITY_MAX_REGION_VOLUME;
     public static final ModConfigSpec.IntValue BLOCK_EDITS_PER_TICK;
     public static final ModConfigSpec.IntValue SOUL_ALLY_CAP;
@@ -26,6 +26,10 @@ public final class GauntletConfig {
     public static final ModConfigSpec.IntValue TIME_SURGE_CHUNK_RADIUS;
     public static final ModConfigSpec.IntValue TIME_SURGE_DAY_SPEED;
     public static final ModConfigSpec.IntValue TIME_SURGE_BLOCK_ENTITY_TICKS;
+    public static final ModConfigSpec.BooleanValue SNAP_SPARE_OWNED;
+    public static final ModConfigSpec.BooleanValue SNAP_SPARE_NAMED;
+    public static final ModConfigSpec.BooleanValue SNAP_SPARE_VILLAGERS;
+    public static final ModConfigSpec.BooleanValue SNAP_SPARE_PLAYERS;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -59,8 +63,10 @@ public final class GauntletConfig {
         BLOCK_EDITS_PER_TICK = builder.defineInRange("blockEditsPerTick", 1024, 16, 65536);
         builder.pop();
         builder.push("reality");
-        REALITY_BLOCK_ENTITY_CONTENTS = builder.define("copyBlockEntityContents", true);
-        REALITY_MAX_REGION_VOLUME = builder.defineInRange("maxRegionVolume", 32768, 1, 1048576);
+        REALITY_MAX_REGION_VOLUME = builder.comment("Largest region the clipboard copies; doubled with every stone in the Gauntlet")
+                .defineInRange("maxRegionVolume", 16384, 1, 1048576);
+        REALITY_ECHO_TICKS = builder.comment("How long a pasted mob lasts before it fades, in ticks")
+                .defineInRange("echoLifetimeTicks", 1200, 20, 72000);
         builder.pop();
         builder.push("space");
         BANISH_DISTANCE = builder.defineInRange("banishDistance", 5000, 64, 1000000);
@@ -77,6 +83,12 @@ public final class GauntletConfig {
         TIME_SURGE_CHUNK_RADIUS = builder.defineInRange("chunkRadius", 4, 1, 8);
         TIME_SURGE_DAY_SPEED = builder.defineInRange("daySpeed", 20, 0, 200);
         TIME_SURGE_BLOCK_ENTITY_TICKS = builder.defineInRange("blockEntityTicks", 8, 0, 64);
+        builder.pop();
+        builder.push("snap");
+        SNAP_SPARE_OWNED = builder.define("spareOwned", true);
+        SNAP_SPARE_NAMED = builder.define("spareNamed", true);
+        SNAP_SPARE_VILLAGERS = builder.define("spareVillagers", true);
+        SNAP_SPARE_PLAYERS = builder.define("sparePlayers", false);
         builder.pop();
         SPEC = builder.build();
     }

@@ -6,6 +6,7 @@ import com.craisinlord.integrated_superheroes.hero.BinaryPower;
 import com.craisinlord.integrated_superheroes.hero.HeroAdvancements;
 import com.craisinlord.integrated_superheroes.hero.HeroPower;
 import com.craisinlord.integrated_superheroes.hero.HeroPowers;
+import com.craisinlord.integrated_superheroes.hero.HeroToggles;
 import com.craisinlord.integrated_superheroes.hero.MarvelBalanceConfig;
 import com.craisinlord.integrated_superheroes.hero.RogueKit;
 import com.craisinlord.integrated_superheroes.hero.RoguePower;
@@ -40,6 +41,7 @@ public final class ViltrumiteCompat {
     private static final Set<UUID> BORROWED = new HashSet<>();
     private static final long ACTIVE_WINDOW_MILLIS = 2000L;
     private static final String SCALED_TAG = "integrated_superheroes_viltrumite_scaled";
+    private static final float SUBSONIC_THROTTLE = 0.59F;
     private static volatile long activeUntil;
     private static RogueMemory memory;
 
@@ -64,7 +66,20 @@ public final class ViltrumiteCompat {
         if (ViltrumiteBridge.isViltrumite(player) || ViltrumiteBridge.inFlight(player)) {
             return true;
         }
-        return MarvelBalanceConfig.VILTRUMITE_CAPTAIN_MARVEL_FLIGHT.get() && BinaryPower.ID.equals(HeroPowers.data(player).getPrimaryPower());
+        return binaryFlight(player);
+    }
+
+    public static boolean binaryFlight(Player player) {
+        return MarvelBalanceConfig.VILTRUMITE_CAPTAIN_MARVEL_FLIGHT.get() && BinaryPower.ID.equals(HeroPowers.data(player).getPrimaryPower())
+                && HeroToggles.isOn(player, HeroToggles.FLIGHT);
+    }
+
+    public static float capThrottle(Player player, float throttle) {
+        if (throttle <= SUBSONIC_THROTTLE || !HeroToggles.mayToggle(player, HeroToggles.SUPERSONIC.flag())
+                || HeroToggles.isOn(player, HeroToggles.SUPERSONIC)) {
+            return throttle;
+        }
+        return SUBSONIC_THROTTLE;
     }
 
     public static RogueMemory memory() {

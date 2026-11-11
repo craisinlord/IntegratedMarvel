@@ -1,8 +1,11 @@
 package com.craisinlord.integrated_superheroes.mixin;
 
+import com.craisinlord.integrated_superheroes.compat.ViltrumiteBridge;
 import com.craisinlord.integrated_superheroes.compat.ViltrumiteCompat;
+import com.craisinlord.integrated_superheroes.hero.BinaryPower;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import dev.baranhan.viltrumiteflight.network.packet.FlightToggleC2SPacket;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,6 +19,10 @@ public abstract class ViltrumiteFlightTakeoffMixin {
     private static void integratedSuperheroes$onlyViltrumiteTakeoff(FlightToggleC2SPacket packet, IPayloadContext context, CallbackInfo ci) {
         if (!ViltrumiteCompat.mayUseFlight(context.player())) {
             ci.cancel();
+            return;
+        }
+        if (context.player() instanceof ServerPlayer player && !ViltrumiteBridge.inFlight(player) && ViltrumiteCompat.binaryFlight(player)) {
+            BinaryPower.grantFlight(player);
         }
     }
 

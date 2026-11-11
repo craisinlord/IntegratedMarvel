@@ -242,10 +242,7 @@ public final class HulkPower {
             return true;
         }
         double ratio = to / from;
-        double width = player.getBbWidth() * ratio;
-        double height = player.getBbHeight() * ratio;
-        AABB grown = new AABB(player.getX() - width / 2.0D, player.getY(), player.getZ() - width / 2.0D,
-                player.getX() + width / 2.0D, player.getY() + height, player.getZ() + width / 2.0D);
+        AABB grown = HeroGravity.standingBox(player, player.getBbWidth() * ratio, player.getBbHeight() * ratio);
         return player.level().noCollision(player, grown);
     }
 
@@ -277,7 +274,7 @@ public final class HulkPower {
         rage.value = 100.0F;
         rage.lastCombat = now;
         player.setHealth(player.getMaxHealth() * 0.5F);
-        player.removeAllEffects();
+        EffectCleanse.removeAll(player);
         player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 60, 3));
         player.displayClientMessage(Component.literal("\u00a72HULK SMASH."), true);
         return true;
@@ -344,10 +341,7 @@ public final class HulkPower {
             }
             return false;
         }
-        double width = player.getBbWidth() * 1.5D;
-        double height = player.getBbHeight() * 1.5D;
-        AABB grown = new AABB(player.getX() - width / 2.0D, player.getY(), player.getZ() - width / 2.0D,
-                player.getX() + width / 2.0D, player.getY() + height, player.getZ() + width / 2.0D);
+        AABB grown = HeroGravity.standingBox(player, player.getBbWidth() * 1.5D, player.getBbHeight() * 1.5D);
         if (!player.level().noCollision(player, grown)) {
             if (!forced) {
                 player.displayClientMessage(Component.literal("§cNot enough room to Hulk out."), true);
@@ -477,10 +471,10 @@ public final class HulkPower {
             }
             return;
         }
-        SERVER_LEAPS.put(player.getUUID(), new Leap(horizontal, 0, player.getY()));
+        SERVER_LEAPS.put(player.getUUID(), new Leap(horizontal, 0, player.getY() * HeroGravity.up(player)));
         if (player instanceof ServerPlayer serverPlayer) {
             ServerLevel level = serverPlayer.serverLevel();
-            BlockState ground = level.getBlockState(serverPlayer.blockPosition().below());
+            BlockState ground = level.getBlockState(HeroGravity.floorPos(serverPlayer));
             if (!ground.isAir()) {
                 level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, ground), player.getX(), player.getY() + 0.1D, player.getZ(),
                         40, 1.0D, 0.1D, 1.0D, 0.3D);
@@ -519,10 +513,11 @@ public final class HulkPower {
         if (leap == null) {
             return;
         }
-        double peak = Math.max(leap.peakY(), player.getY());
+        double height = player.getY() * HeroGravity.up(player);
+        double peak = Math.max(leap.peakY(), height);
         if (leap.age() > 4 && player.onGround() || player.isInWater()) {
             SERVER_LEAPS.remove(player.getUUID());
-            land(serverPlayer, peak - player.getY());
+            land(serverPlayer, peak - height);
             return;
         }
         if (leap.age() > 400) {

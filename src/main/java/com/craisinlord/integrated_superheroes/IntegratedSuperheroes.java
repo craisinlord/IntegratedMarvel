@@ -2,8 +2,10 @@ package com.craisinlord.integrated_superheroes;
 
 import com.craisinlord.integrated_superheroes.cleanup.CleanupConfig;
 import com.craisinlord.integrated_superheroes.cleanup.CleanupEvents;
+import com.craisinlord.integrated_superheroes.compat.FlightClientConfig;
 import com.craisinlord.integrated_superheroes.compat.InfinityGauntletTestEntityBlocker;
 import com.craisinlord.integrated_superheroes.hero.HeroContent;
+import com.craisinlord.integrated_superheroes.hero.HeroHudClientConfig;
 import com.craisinlord.integrated_superheroes.hero.IronManEnergy;
 import com.craisinlord.integrated_superheroes.hero.MarvelBalanceConfig;
 import com.craisinlord.integrated_superheroes.hero.MarvelWeaponConfig;
@@ -38,6 +40,8 @@ public final class IntegratedSuperheroes {
         modContainer.registerConfig(ModConfig.Type.COMMON, CleanupConfig.SPEC, "integrated_superheroes-cleanup.toml");
         modContainer.registerConfig(ModConfig.Type.COMMON, GauntletConfig.SPEC, "integrated_superheroes-gauntlet.toml");
         modContainer.registerConfig(ModConfig.Type.CLIENT, GauntletClientConfig.SPEC, "integrated_superheroes-gauntlet-client.toml");
+        modContainer.registerConfig(ModConfig.Type.CLIENT, FlightClientConfig.SPEC, "integrated_superheroes-flight-client.toml");
+        modContainer.registerConfig(ModConfig.Type.CLIENT, HeroHudClientConfig.SPEC, "integrated_superheroes-hud-client.toml");
         ModEffects.register(modEventBus);
         ModSounds.register(modEventBus);
         ModCreativeTab.register(modEventBus);

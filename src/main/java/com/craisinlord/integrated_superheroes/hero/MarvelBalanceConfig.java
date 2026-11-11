@@ -211,6 +211,14 @@ public final class MarvelBalanceConfig {
     public static final ModConfigSpec.DoubleValue ICE_WALL_COOLDOWN;
     public static final ModConfigSpec.IntValue ICE_SLIDE_TICKS;
     public static final ModConfigSpec.DoubleValue ICE_FORM_FIRE_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue ICE_BEAM_RANGE;
+    public static final ModConfigSpec.DoubleValue ICE_BEAM_DAMAGE;
+    public static final ModConfigSpec.IntValue ICE_BEAM_DURATION_TICKS;
+    public static final ModConfigSpec.IntValue ICE_BEAM_HIT_INTERVAL_TICKS;
+    public static final ModConfigSpec.IntValue ICE_BEAM_HITS_TO_ENCASE;
+    public static final ModConfigSpec.IntValue ICE_BEAM_ENCASE_TICKS;
+    public static final ModConfigSpec.IntValue ICE_BEAM_WATER_TICKS;
+    public static final ModConfigSpec.DoubleValue ICE_BEAM_COOLDOWN;
 
     public static final HeroStats SCARLET_WITCH;
     public static final ModConfigSpec.DoubleValue WANDA_FLY_SPEED;
@@ -730,6 +738,17 @@ public final class MarvelBalanceConfig {
         ICE_WALL_COOLDOWN = builder.defineInRange("iceWallCooldownSeconds", 10.0D, 0.0D, 600.0D);
         ICE_SLIDE_TICKS = builder.defineInRange("iceSlideTicks", 100, 1, 12000);
         ICE_FORM_FIRE_MULTIPLIER = builder.defineInRange("iceFormFireDamageMultiplier", 1.5D, 1.0D, 10.0D);
+        ICE_BEAM_RANGE = builder.defineInRange("iceBeamRange", 24.0D, 1.0D, 64.0D);
+        ICE_BEAM_DAMAGE = builder.comment("Damage per beam pulse. Encased targets stop taking beam damage until they thaw or get shattered.")
+                .defineInRange("iceBeamDamagePerHit", 9.0D, 0.0D, 10000.0D);
+        ICE_BEAM_DURATION_TICKS = builder.defineInRange("iceBeamDurationTicks", 50, 1, 400);
+        ICE_BEAM_HIT_INTERVAL_TICKS = builder.defineInRange("iceBeamHitIntervalTicks", 5, 1, 40);
+        ICE_BEAM_HITS_TO_ENCASE = builder.defineInRange("iceBeamHitsToEncase", 4, 1, 100);
+        ICE_BEAM_ENCASE_TICKS = builder.defineInRange("iceBeamEncaseTicks", 60, 1, 1200);
+        ICE_BEAM_WATER_TICKS = builder.comment("How long water the beam freezes stays ice. Needs the superpowerGriefing game rule.")
+                .defineInRange("iceBeamWaterIceTicks", 200, 1, 12000);
+        ICE_BEAM_COOLDOWN = builder.comment("Starts when the beam starts, so the real downtime is this minus the beam duration.")
+                .defineInRange("iceBeamCooldownSeconds", 9.0D, 0.0D, 600.0D);
         builder.pop();
 
         builder.push("chaosMagicWandaMaximoff");

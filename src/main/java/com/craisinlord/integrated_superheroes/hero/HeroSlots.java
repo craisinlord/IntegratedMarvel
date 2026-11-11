@@ -10,6 +10,7 @@ import java.util.List;
 
 public final class HeroSlots {
     public static final int SLOTS = 10;
+    private static final int VILTRUMITE_OFFSET = 4;
 
     private HeroSlots() {
     }
@@ -18,6 +19,26 @@ public final class HeroSlots {
         while (powers.size() < SLOTS) {
             powers.add(new Power());
         }
+    }
+
+    public static boolean makeRoom(PlayerData data) {
+        if (data.findFirstEmpty() >= 0) {
+            return true;
+        }
+        data.retainActivePowerSize();
+        if (data.findFirstEmpty() >= 0) {
+            return true;
+        }
+        List<Power> active = data.getActivePowers();
+        for (int i = active.size() - 1; i >= 0; i--) {
+            Power power = active.get(i);
+            if (SuitAbilities.isSuitAbility(power.getName())) {
+                data.addAvailablePowers(power);
+                active.set(i, new Power());
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean arrange(PlayerData data) {
@@ -39,6 +60,11 @@ public final class HeroSlots {
             }
         }
         layout.addAll(suit);
+        if (ViltrumitePower.ID.equals(data.getPrimaryPower())) {
+            for (int i = 0; i < VILTRUMITE_OFFSET; i++) {
+                layout.add(0, new Power());
+            }
+        }
         while (layout.size() > SLOTS) {
             data.addAvailablePowers(layout.remove(layout.size() - 1));
         }

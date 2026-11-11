@@ -151,6 +151,7 @@ deaths, and claw damage scaling.
 - **Freeze Blast:** a freezing cone.
 - **Cryogenesis:** a freezing burst that puts out fires and freezes water.
 - **Ice Wall:** a temporary wall of ice.
+- **Ice Beam:** a few seconds of frost that follows your aim. It slows what it hits, freezes targets solid if you hold it on them, and turns water to ice when superpower griefing is on.
 
 ### Scarlet Witch
 

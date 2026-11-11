@@ -26,4 +26,14 @@ public abstract class LegacyTenSlotsMixin {
     private void integratedSuperheroes$tenSlots(CallbackInfo ci) {
         HeroSlots.pad(this.activePowers);
     }
+
+    // Legacy indexes by findFirstEmpty() unchecked, so a full bar would throw on -1.
+    @Inject(method = "addActivePowers(Lcom/stxllarplanes/marvellegacy/power/Power;)V", at = @At("HEAD"), cancellable = true)
+    private void integratedSuperheroes$neverOverflow(Power power, CallbackInfo ci) {
+        PlayerData data = (PlayerData) (Object) this;
+        if (power.getPriority() == 2 && !HeroSlots.makeRoom(data)) {
+            data.addAvailablePowers(power);
+            ci.cancel();
+        }
+    }
 }

@@ -1,7 +1,6 @@
 package com.craisinlord.integrated_superheroes.hero;
 
 import com.stxllarplanes.marvellegacy.data.PlayerData;
-import com.stxllarplanes.marvellegacy.power.Power;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
@@ -21,6 +20,7 @@ public final class HeroToggles {
     public static final HeroPower.Toggle SUPER_LEAP = new HeroPower.Toggle("integrated_superheroes_off_jump", "Super Leap", () -> Items.RABBIT_FOOT);
     public static final HeroPower.Toggle SENSES = new HeroPower.Toggle("integrated_superheroes_off_senses", "Heightened Senses", () -> Items.ENDER_EYE);
     public static final HeroPower.Toggle FLIGHT = new HeroPower.Toggle("integrated_superheroes_off_flight", "Flight", () -> Items.ELYTRA);
+    public static final HeroPower.Toggle SUPERSONIC = new HeroPower.Toggle("integrated_superheroes_on_supersonic", "Supersonic", () -> Items.FIREWORK_ROCKET, false);
 
     private static final String SPIDER_ID = "spider_powers_peter_parker";
     private static final Set<String> SPIDER_TOGGLES = Set.of("wall_crawling", "super_jump", "spider_sense");
@@ -29,7 +29,7 @@ public final class HeroToggles {
     }
 
     public static boolean isOn(Player player, HeroPower.Toggle toggle) {
-        return !HeroPowers.data(player).hasPassivePower(toggle.flag());
+        return HeroPowers.data(player).hasPassivePower(toggle.flag()) != toggle.defaultOn();
     }
 
     public static boolean mayToggle(Player player, String flag) {
@@ -55,13 +55,17 @@ public final class HeroToggles {
         });
     }
 
-    public static void ensureWheel(ServerPlayer player, HeroPower hero) {
-        if (!hero.abilities().contains(WHEEL)) {
-            return;
-        }
+    public static void ensureAbilities(ServerPlayer player, HeroPower hero) {
         PlayerData data = HeroPowers.data(player);
-        if (!data.hasActivePower(WHEEL_ABILITY) && !data.hasAvailablePower(WHEEL_ABILITY)) {
-            data.addActivePowers(new Power(WHEEL.name(), WHEEL.displayName(), 2, 0.0D, false, false));
+        boolean changed = false;
+        for (HeroPower.Ability ability : hero.abilities()) {
+            if (!data.hasActivePower(ability.name()) && !data.hasAvailablePower(ability.name())) {
+                data.addActivePowers(HeroPowers.newPower(ability));
+                changed = true;
+            }
+        }
+        if (changed) {
+            HeroSlots.arrange(data);
             PlayerData.sync(player);
         }
     }

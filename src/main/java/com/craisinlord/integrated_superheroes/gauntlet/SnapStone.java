@@ -19,6 +19,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.OwnableEntity;
+import net.minecraft.world.entity.npc.Npc;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -56,6 +59,8 @@ public final class SnapStone {
     private static final int WAVE_TICKS = 40;
     private static final int WAVE_MIN_PER_TICK = 64;
     private static final int DUST_PER_PACKET = 1024;
+    private static final TagKey<EntityType<?>> SNAP_IMMUNE = TagKey.create(Registries.ENTITY_TYPE,
+            ResourceLocation.fromNamespaceAndPath("integrated_superheroes", "snap_immune"));
 
     private SnapStone() {
     }
@@ -81,7 +86,8 @@ public final class SnapStone {
         for (ServerLevel level : player.server.getAllLevels()) {
             for (Entity entity : level.getAllEntities()) {
                 if (entity instanceof LivingEntity living && living.isAlive() && living != player
-                        && !living.hasIndirectPassenger(player)) {
+                        && !living.hasIndirectPassenger(player) && !spared(living)
+                        && !(living instanceof Player && GauntletConfig.SNAP_SPARE_PLAYERS.get())) {
                     loaded.add(living);
                 }
             }
@@ -95,6 +101,16 @@ public final class SnapStone {
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new com.craisinlord.integrated_superheroes.api.GauntletSnapEvent(player, victims));
         toll(cast);
         cast.cooldown();
+    }
+
+    private static boolean spared(LivingEntity living) {
+        if (GauntletConfig.SNAP_SPARE_OWNED.get() && living instanceof OwnableEntity ownable && ownable.getOwnerUUID() != null) {
+            return true;
+        }
+        if (GauntletConfig.SNAP_SPARE_NAMED.get() && !(living instanceof Player) && living.hasCustomName()) {
+            return true;
+        }
+        return GauntletConfig.SNAP_SPARE_VILLAGERS.get() && (living instanceof Npc || living.getType().is(SNAP_IMMUNE));
     }
 
     private static List<LivingEntity> nearestFirst(ServerPlayer player, List<LivingEntity> victims) {
@@ -177,7 +193,8 @@ public final class SnapStone {
         List<LivingEntity> matches = new ArrayList<>();
         for (ServerLevel level : player.server.getAllLevels()) {
             for (Entity entity : level.getAllEntities()) {
-                if (entity instanceof LivingEntity living && !(living instanceof Player) && living.isAlive() && filter.test(living)) {
+                if (entity instanceof LivingEntity living && !(living instanceof Player) && living.isAlive() && !spared(living)
+                        && filter.test(living)) {
                     matches.add(living);
                 }
             }

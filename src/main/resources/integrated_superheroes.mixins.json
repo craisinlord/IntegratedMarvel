@@ -12,6 +12,7 @@
     "AntarchyAntRideMixin",
     "BinaryFlightWalkMixin",
     "CaptainMarvelCostumeMixin",
+    "CleanupRepairMixin",
     "DeadpoolCostumeMixin",
     "DisplayAccessor",
     "FantasticEntityMixin",
@@ -57,6 +58,7 @@
     "ThrownStormbreakerDamageMixin",
     "ThrownVibraniumShieldDamageMixin",
     "VeronicaSuitChargeMixin",
+    "VeronicaSuitPartsCopyMixin",
     "WarMachineTurretFxMixin",
     "Weather2PrecipitationHeightMixin",
     "Weather2StormRiderMixin",
@@ -70,6 +72,8 @@
     "ViltrumiteGrabPhysicsMixin",
     "ViltrumiteFlightTakeoffMixin",
     "ViltrumiteVanillaFlightMixin",
+    "ViltrumiteSupersonicMixin",
+    "ViltrumiteHitboxMixin",
     "ViltrumiteNpcChannelMixin",
     "ViltrumiteShieldBlockMixin",
     "ViltrumiteInvasionGateMixin",
@@ -81,6 +85,10 @@
     "WinterSoldierVillainMixin",
     "ServerGamePacketListenerAccessor",
     "FallingBlockEntityInvoker",
+    "LivingEntityEffectInvoker",
+    "MarvelLegacyWebGravityMixin",
+    "MarvelLegacySwingGravityMixin",
+    "ViltrumiteTakeoffGriefMixin",
     "TimeFreezeTickRateMixin",
     "TimeFreezeTurnMixin"
   ],
@@ -98,7 +106,9 @@
     "LegacyHeroLandingMixin",
     "LegacyPowerOverlayMixin",
     "MarvelLegacyCeilingCameraGuardMixin",
+    "MarvelLegacySpiderGravityMixin",
     "MarvelLegacyWebNetCameraGuardMixin",
+    "MarvelLegacyWolverineGravityMixin",
     "MindControlledPlayerInputMixin",
     "PhaseCullingMixin",
     "RadarGlowMixin",
@@ -119,7 +129,10 @@
     "ViltrumiteHandGuardMixin",
     "ViltrumiteHandSyncMixin",
     "ViltrumitePoseGuardMixin",
-    "ViltrumiteScreenGuardMixin"
+    "ViltrumiteScreenGuardMixin",
+    "ViltrumitePostChainAccessor",
+    "ViltrumiteFovMixin",
+    "ViltrumiteInfinityGunArmGuardMixin"
   ],
   "injectors": {
     "defaultRequire": 1
