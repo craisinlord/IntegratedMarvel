@@ -1,0 +1,8 @@
+{
+  "name": "Doom Ascendant",
+  "category": "thematic:ability",
+  "icon": "minecraft:nether_star",
+  "pages": [
+    "Overcharge the armor for eight seconds. Green lightning strikes up to eight visible enemies within sixteen blocks each second, applies Weakness II, and causes no fires or terrain damage. Gauntlet beams deal 1.75 times their usual damage and the armor grants Resistance II. Flight and the other abilities remain usable. Base cooldown: 120 seconds after overcharge ends. The complete suit also supplies breathing, poison cleansing, and slow health recovery outside combat. Four active controls total; no ability wheel or additional utility key."
+  ]
+}

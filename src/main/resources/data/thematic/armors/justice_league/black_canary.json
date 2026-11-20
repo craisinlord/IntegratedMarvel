@@ -1,0 +1,9 @@
+{
+  "wip": false,
+  "tier": 7,
+  "fighting_type": [
+    "BRAWLER",
+    "UTILITY"
+  ],
+  "suit-recipe": "thematic:black_canary"
+}

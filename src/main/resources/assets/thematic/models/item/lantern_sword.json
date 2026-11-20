@@ -1,0 +1,98 @@
+{
+  "texture_size": [
+    8,
+    8
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "translation": [
+        -0.75,
+        -7,
+        0.5
+      ],
+      "scale": [
+        1.48,
+        1.48,
+        1.48
+      ]
+    },
+    "thirdperson_lefthand": {
+      "translation": [
+        1,
+        -7,
+        0.5
+      ],
+      "scale": [
+        1.48,
+        1.48,
+        1.48
+      ]
+    },
+    "firstperson_righthand": {
+      "translation": [
+        -1,
+        -6,
+        1.75
+      ],
+      "scale": [
+        1.43,
+        1.43,
+        1.43
+      ]
+    },
+    "firstperson_lefthand": {
+      "translation": [
+        -0.25,
+        -6,
+        1.75
+      ],
+      "scale": [
+        1.43,
+        1.43,
+        1.43
+      ]
+    },
+    "ground": {
+      "scale": [
+        1.62,
+        1.62,
+        1.62
+      ]
+    },
+    "gui": {
+      "rotation": [
+        -90.72,
+        -46.24,
+        -90.54
+      ],
+      "translation": [
+        -7.5,
+        -8.5,
+        4
+      ],
+      "scale": [
+        1.29,
+        1.29,
+        1.29
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "translation": [
+        -1,
+        -11.5,
+        -0.25
+      ],
+      "scale": [
+        1.43,
+        1.43,
+        1.43
+      ]
+    }
+  },
+  "parent": "builtin/entity"
+}

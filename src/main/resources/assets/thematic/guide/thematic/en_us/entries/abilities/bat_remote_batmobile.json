@@ -1,0 +1,8 @@
+{
+    "name":  "Remote Batmobile",
+    "category":  "thematic:ability",
+    "icon":  "thematic:bat_signal",
+    "pages":  [
+                  "Call the Batmobile and it drives over to you. With an enemy in your sights, it goes after them instead, firing as it comes and ramming straight through before heading back to you."
+              ]
+}

@@ -1,0 +1,8 @@
+{
+    "name": "Saberstaff Whirl",
+    "category": "thematic:ability",
+    "icon": "minecraft:blaze_rod",
+    "pages": [
+        "Spin the saberstaff around you for a few seconds, cutting anything close and knocking shots away. The staff has to be in your hand."
+    ]
+}

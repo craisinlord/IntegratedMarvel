@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:vision",
+      "required": false
+    },
+    {
+      "id": "thematic:vision_mcu",
+      "required": false
+    },
+    {
+      "id": "thematic:vision_uncanny",
+      "required": false
+    }
+  ]
+}

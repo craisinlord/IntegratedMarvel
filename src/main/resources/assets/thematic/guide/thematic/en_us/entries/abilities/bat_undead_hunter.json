@@ -1,0 +1,8 @@
+{
+    "name":  "Undead Hunter",
+    "category":  "thematic:ability",
+    "icon":  "minecraft:zombie_head",
+    "pages":  [
+                  "Years of fighting the dead have taught you where to hit. Your attacks deal 30% more damage to undead."
+              ]
+}

@@ -1,0 +1,35 @@
+{
+  "type": "thematic:mob",
+  "size": [
+    0.6,
+    1.95
+  ],
+  "scale": 1.0,
+  "spawn_group": "monster",
+  "track_range": 10,
+  "boss": false,
+  "attributes": {
+    "minecraft:generic.max_health": 60.0,
+    "minecraft:generic.armor": 6.0,
+    "minecraft:generic.movement_speed": 0.3,
+    "minecraft:generic.follow_range": 40.0,
+    "minecraft:generic.attack_damage": 6.0
+  },
+  "render": {
+    "kind": "worn_suit",
+    "model": "thematic:criminal"
+  },
+  "persistent": false,
+  "morale": {
+    "break_chance": 0
+  },
+  "brain": {
+    "idle": [
+      {
+        "id": "thematic:random_walk",
+        "radius": 16,
+        "height": 6
+      }
+    ]
+  }
+}

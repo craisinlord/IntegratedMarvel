@@ -1,0 +1,408 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:green_arrow_bd"
+    }
+  ],
+  "type": "marvel:suit_variant",
+  "suit": {
+    "type": "neoforge:compound",
+    "children": [
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:arrow_bn"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:arrow_dtctg"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:arsenal"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:arsenal52"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:arsenal_cw"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:arsenal_dawn"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:arsenal_futures_end"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:arsenal_outsiders"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:artemis"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:connor_hawke"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:emiko_queen"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow1"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow40s"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow52"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow_2024"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow_absolute"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow_arctic"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow_bd"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow_castaway"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow_cw"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow_dawn"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow_dawn2"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow_dceased"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow_injustice"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow_injustice1"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow_jlu"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow_kc"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow_lh"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow_showcase"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow_starro"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow_tomorrowverse"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow_vampires"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:green_arrow_yj"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:hawke_absolute"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:hawke_dawn"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:hawke_lazarus"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:merlyn"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:mia_dearden"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:netherite_green_arrow"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:oliver_queen"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:red_arrow"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:red_arrow1"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:shado"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:speedy"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:speedy40s"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:speedy_dcau"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:speedy_judas"
+        },
+        "strict": false
+      }
+    ]
+  },
+  "results": {
+    "id": "integrated_superheroes:suit_leggings",
+    "components": {
+      "integrated_superheroes:suit": "thematic:green_arrow_bd"
+    }
+  }
+}

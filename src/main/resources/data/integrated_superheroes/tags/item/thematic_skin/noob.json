@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:noob",
+      "required": false
+    },
+    {
+      "id": "thematic:noob1",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "Tectonic Leap",
+  "category": "thematic:ability",
+  "icon": "minecraft:heavy_core",
+  "pages": [
+    "Launch forward from the ground, or dive while airborne. Landing within five seconds releases a seven-block shockwave that damages, slows, and throws back up to ten visible enemies without breaking terrain. Fall damage is suppressed only during this landing window. Ten-second base cooldown. Survival of the Fittest increases the shockwave's damage and radius. Requires the complete matching Apocalypse suit."
+  ]
+}

@@ -153,11 +153,14 @@ public final class HealingFactor {
             player.setHealth(1.0F);
             return true;
         }
-        if (sticks || state.stacks >= maxRevives(player)) {
+        if (sticks || state.stacks >= maxRevives(player) || state.stacks == 0 && !CheatDeath.ready(player)) {
             realDeath(player, source);
             return false;
         }
         event.setCanceled(true);
+        if (state.stacks == 0) {
+            CheatDeath.use(player);
+        }
         state.stacks++;
         state.lastStackChange = now;
         enterDowned(player, state, snap, source, now);

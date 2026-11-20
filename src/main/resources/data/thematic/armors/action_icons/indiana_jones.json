@@ -1,0 +1,10 @@
+{
+  "priority": 10,
+  "stats": [
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 20,
+      "maximum": 25
+    }
+  ]
+}

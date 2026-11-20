@@ -1,0 +1,103 @@
+{
+  "tier": 7,
+  "abilities": [
+    {
+      "identifier": "acrobatics",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "double_shot",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "martial_arts",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "widows_bite",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "assassins_strike",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "widows_mark",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "widow_grapple",
+      "keybind": "key.thematic.ability_4"
+    },
+    {
+      "identifier": "deploy_taser",
+      "keybind": "key.thematic.ability_5"
+    },
+    {
+      "identifier": "cloaking_device",
+      "keybind": "key.thematic.utility"
+    },
+    {
+      "identifier": "equip",
+      "keybind": "key.thematic.equip_item",
+      "options": {
+        "fields": {
+          "label": "equip_black_widow",
+          "items": [
+            {
+              "item": "thematic:dual_widow_guns",
+              "count": 1
+            },
+            {
+              "item": "thematic:grapplegun",
+              "count": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "identifier": "red_room_protocol",
+      "keybind": "key.thematic.ultimate"
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 0.98
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 60,
+      "maximum": 80
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 50,
+      "maximum": 60
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 50,
+      "maximum": 75
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 40,
+      "maximum": 60
+    }
+  ],
+  "fighting_type": [],
+  "cape": {
+    "partCount": 16,
+    "height": 1.3,
+    "width": 0.4,
+    "thickness": 0.001,
+    "texture": "thematic:textures/cape/huntress_cape.png",
+    "simulation": {
+      "type": "cape"
+    }
+  }
+}

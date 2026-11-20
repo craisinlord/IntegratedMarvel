@@ -308,8 +308,12 @@ public final class ZemoBrain extends VillainBrain {
             return;
         }
         ServerLevel level = level();
-        VillainFx.sparks(level, lockedSpot.add(0.0D, 0.5D, 0.0D), 60);
-        level.sendParticles(ParticleTypes.FLASH, lockedSpot.x, lockedSpot.y + 0.5D, lockedSpot.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        if (HeroFx.vfx(level, lockedSpot, "fork_burst", 0, 4.0F)) {
+            HeroFx.vfx(level, lockedSpot.add(0.0D, 0.3D, 0.0D), "circle_ring", 0xFF40D8FF, 6.0F);
+        } else {
+            VillainFx.sparks(level, lockedSpot.add(0.0D, 0.5D, 0.0D), 60);
+            level.sendParticles(ParticleTypes.FLASH, lockedSpot.x, lockedSpot.y + 0.5D, lockedSpot.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        }
         VillainFx.sound(level, lockedSpot, SoundEvents.BEACON_DEACTIVATE, 1.5F, 0.6F);
         for (LivingEntity victim : VillainWorld.victims(level, lockedSpot, 4.0D, 6.0D, e -> !friendly(e))) {
             if (Loadout.suit(victim)) {

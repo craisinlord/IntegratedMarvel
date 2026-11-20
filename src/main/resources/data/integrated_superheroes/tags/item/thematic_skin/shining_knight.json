@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:shining_knight",
+      "required": false
+    }
+  ]
+}

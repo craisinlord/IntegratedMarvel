@@ -1,0 +1,49 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:lantern_blade",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_scythe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_spear",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_trident",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_chainsaw",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_butcher_knife",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_battle_axe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_crowbar",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_fear_parasite",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_spider_swarm",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_hook_chain",
+      "required": false
+    }
+  ]
+}

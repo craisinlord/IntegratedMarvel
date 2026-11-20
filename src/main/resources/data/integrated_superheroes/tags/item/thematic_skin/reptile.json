@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:reptile",
+      "required": false
+    },
+    {
+      "id": "thematic:reptile1",
+      "required": false
+    }
+  ]
+}

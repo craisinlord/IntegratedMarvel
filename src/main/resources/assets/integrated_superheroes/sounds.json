@@ -74,5 +74,33 @@
         "name": "minecraft:mob/fox/death2"
       }
     ]
+  },
+  "ambient.void.wind": {
+    "sounds": [
+      {
+        "name": "minecraft:item/elytra/elytra_loop",
+        "volume": 0.35,
+        "pitch": 0.55
+      }
+    ]
+  },
+  "ambient.void.thunder": {
+    "sounds": [
+      {
+        "name": "minecraft:ambient/weather/thunder1",
+        "volume": 0.35,
+        "pitch": 0.7
+      },
+      {
+        "name": "minecraft:ambient/weather/thunder2",
+        "volume": 0.35,
+        "pitch": 0.7
+      },
+      {
+        "name": "minecraft:ambient/weather/thunder3",
+        "volume": 0.35,
+        "pitch": 0.7
+      }
+    ]
   }
 }

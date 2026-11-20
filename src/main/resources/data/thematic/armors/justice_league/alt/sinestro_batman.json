@@ -1,0 +1,113 @@
+{
+  "tier": 8,
+  "abilities": [
+    {
+      "identifier": "toggle_brood",
+      "remove": true
+    },
+    {
+      "identifier": "acrobatics",
+      "remove": true
+    },
+    {
+      "identifier": "stealth",
+      "remove": true
+    },
+    {
+      "identifier": "gliding",
+      "remove": true
+    },
+    {
+      "identifier": "bat_gadget_batman",
+      "remove": true
+    },
+    {
+      "identifier": "bat_belt_batman",
+      "remove": true
+    },
+    {
+      "identifier": "bat_detective_mode",
+      "remove": true
+    },
+    {
+      "identifier": "crowd_control",
+      "remove": true
+    },
+    {
+      "identifier": "bat_swarm",
+      "remove": true
+    },
+    {
+      "identifier": "double_kick",
+      "remove": true
+    },
+    {
+      "identifier": "fear_charge",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "level": "9",
+          "constructs": "#yellow_constructs"
+        }
+      }
+    },
+    {
+      "identifier": "flight",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "night_vision",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "glow",
+      "keybind": "key.thematic.cosmetic",
+      "options": {
+        "fields": {
+          "color": "#FFDD00"
+        }
+      }
+    },
+    {
+      "identifier": "fear_beam",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "construct_wheel",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "fear_shield",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "fear_spawn_entity_cave_spider",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "embrace_fear",
+      "keybind": "key.thematic.ultimate"
+    }
+  ],
+  "tags": [
+    "lantern"
+  ],
+  "fighting_type": [
+    "UTILITY",
+    "BRAWLER",
+    "DUELIST"
+  ],
+  "flight_type": "ONE_HAND_LEFT",
+  "cape": {
+    "partCount": 16,
+    "height": 1.3,
+    "width": 0.5,
+    "thickness": 0.001,
+    "texture": "thematic:textures/cape/batman_cape.png",
+    "shinyTexture": null,
+    "simulation": {
+      "type": "cape"
+    }
+  },
+  "parent": "thematic:batman"
+}

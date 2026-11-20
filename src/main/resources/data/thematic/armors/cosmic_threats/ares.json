@@ -1,0 +1,104 @@
+{
+  "priority": 10,
+  "tier": 10,
+  "abilities": [
+    {
+      "identifier": "battle_charge",
+      "keybind": "key.thematic.ability_0",
+      "options": {
+        "fields": {
+          "damage": "170"
+        }
+      }
+    },
+    {
+      "identifier": "cripple",
+      "keybind": "key.thematic.ability_1",
+      "options": {
+        "fields": {
+          "damage": "150"
+        }
+      }
+    },
+    {
+      "identifier": "ground_pound_no_jump",
+      "keybind": "key.thematic.ability_2",
+      "options": {
+        "fields": {
+          "damage": "200",
+          "name": "integrated_superheroes.ability.war_stomp"
+        }
+      }
+    },
+    {
+      "identifier": "taunt_no_target",
+      "keybind": "key.thematic.utility",
+      "options": {
+        "fields": {
+          "name": "integrated_superheroes.ability.call_to_war"
+        }
+      }
+    },
+    {
+      "identifier": "berserker",
+      "keybind": "key.thematic.ultimate",
+      "options": {
+        "fields": {
+          "name": "integrated_superheroes.ability.war_fury"
+        }
+      }
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 1.1
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 55,
+      "maximum": 65
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 50,
+      "maximum": 60
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 70,
+      "maximum": 75
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 50,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 80,
+      "maximum": 98
+    }
+  ],
+  "fighting_type": [
+    "DUELIST"
+  ],
+  "cape": {
+    "partCount": 16,
+    "height": 1.3,
+    "width": 0.4,
+    "thickness": 0.001,
+    "texture": "thematic:textures/cape/ares_cape.png",
+    "shinyTexture": "thematic:textures/cape/ares_cape_shiny.png",
+    "simulation": {
+      "type": "cape"
+    }
+  }
+}

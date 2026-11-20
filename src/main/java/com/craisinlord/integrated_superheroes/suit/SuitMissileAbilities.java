@@ -132,7 +132,11 @@ public final class SuitMissileAbilities {
     }
 
     private static void playLaunch(ServerPlayer player) {
-        SuitFx.burst(player.serverLevel(), SuitFx.MUZZLE_FLASH, ParticleTypes.FLAME, shoulders(player), 1, 0.0D, 0.0D);
-        SuitFx.sound(player.level(), player.position(), SuitFx.ROCKET_FIRE, SoundEvents.FIREWORK_ROCKET_LAUNCH, 1.0F, 1.0F);
+        if (HeroFx.vfx(player.serverLevel(), shoulders(player), "ember_flare", 0, 0.6F)) {
+            HeroFx.cue(player, "thematic:ultron.deathray_shot", 1.0F, 1.0F);
+        } else {
+            SuitFx.burst(player.serverLevel(), SuitFx.MUZZLE_FLASH, ParticleTypes.FLAME, shoulders(player), 1, 0.0D, 0.0D);
+            SuitFx.sound(player.level(), player.position(), SuitFx.ROCKET_FIRE, SoundEvents.FIREWORK_ROCKET_LAUNCH, 1.0F, 1.0F);
+        }
     }
 }

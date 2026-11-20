@@ -1,0 +1,137 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:atomic_green_lantern",
+      "required": false
+    },
+    {
+      "id": "thematic:green_lantern2011",
+      "required": false
+    },
+    {
+      "id": "thematic:green_lantern3000",
+      "required": false
+    },
+    {
+      "id": "thematic:green_lantern_arcane",
+      "required": false
+    },
+    {
+      "id": "thematic:green_lantern_inj2",
+      "required": false
+    },
+    {
+      "id": "thematic:green_lantern_redson",
+      "required": false
+    },
+    {
+      "id": "thematic:guy_gardner",
+      "required": false
+    },
+    {
+      "id": "thematic:guy_gardner_dcu",
+      "required": false
+    },
+    {
+      "id": "thematic:guy_gardner_red",
+      "required": false
+    },
+    {
+      "id": "thematic:guy_gardner_vampires",
+      "required": false
+    },
+    {
+      "id": "thematic:guy_gardner_yj",
+      "required": false
+    },
+    {
+      "id": "thematic:hal_jordan",
+      "required": false
+    },
+    {
+      "id": "thematic:hal_jordan1",
+      "required": false
+    },
+    {
+      "id": "thematic:hal_jordan52",
+      "required": false
+    },
+    {
+      "id": "thematic:hal_jordan_1stflight",
+      "required": false
+    },
+    {
+      "id": "thematic:hal_jordan_casual",
+      "required": false
+    },
+    {
+      "id": "thematic:hal_jordan_dcamu",
+      "required": false
+    },
+    {
+      "id": "thematic:hal_jordan_dcu",
+      "required": false
+    },
+    {
+      "id": "thematic:hal_jordan_e1",
+      "required": false
+    },
+    {
+      "id": "thematic:hal_jordan_renegade",
+      "required": false
+    },
+    {
+      "id": "thematic:hal_jordan_starro",
+      "required": false
+    },
+    {
+      "id": "thematic:jessica_cruz",
+      "required": false
+    },
+    {
+      "id": "thematic:joe_gardner",
+      "required": false
+    },
+    {
+      "id": "thematic:john_stewart",
+      "required": false
+    },
+    {
+      "id": "thematic:john_stewart_jl",
+      "required": false
+    },
+    {
+      "id": "thematic:john_stewart_jlu",
+      "required": false
+    },
+    {
+      "id": "thematic:john_stewart_ssktjl",
+      "required": false
+    },
+    {
+      "id": "thematic:kilowog",
+      "required": false
+    },
+    {
+      "id": "thematic:kyle_rayner",
+      "required": false
+    },
+    {
+      "id": "thematic:kyle_rayner1",
+      "required": false
+    },
+    {
+      "id": "thematic:power_ring",
+      "required": false
+    },
+    {
+      "id": "thematic:simon_baz",
+      "required": false
+    },
+    {
+      "id": "thematic:tomar_re",
+      "required": false
+    }
+  ]
+}

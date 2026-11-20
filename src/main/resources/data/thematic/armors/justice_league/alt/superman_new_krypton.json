@@ -1,0 +1,7 @@
+{
+  "parent": "thematic:superman",
+  "suit-recipe": "thematic:alt_superman_new_krypton",
+  "cape": {
+    "remove": true
+  }
+}

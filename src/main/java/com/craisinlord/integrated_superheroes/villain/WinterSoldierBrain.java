@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -132,7 +133,23 @@ public final class WinterSoldierBrain extends VillainBrain {
     }
 
     public boolean readable() {
-        return !ally() && !dying && engaged && (mob.getHealth() <= mob.getMaxHealth() * 0.25F || staggered());
+        return !ally() && !finishing && engaged && (phase >= 2 || staggered());
+    }
+
+    @Override
+    protected boolean holdAtDeath() {
+        if (ally()) {
+            return false;
+        }
+        if (RedBook.isBeingRead(mob.getUUID())) {
+            return true;
+        }
+        for (ServerPlayer player : VillainFx.near(level(), mob.position(), 32.0D)) {
+            if (RedBook.holds(player)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean holding(String id) {
@@ -439,9 +456,12 @@ public final class WinterSoldierBrain extends VillainBrain {
         if (finishing || dying) {
             return false;
         }
+        DamageSource source = event.getSource();
+        if (RedBook.isBeingRead(mob.getUUID()) && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+            return true;
+        }
         ServerLevel level = level();
         long now = level.getGameTime();
-        DamageSource source = event.getSource();
         Entity attacker = source.getEntity();
         Entity direct = source.getDirectEntity();
         if (blinded()) {
@@ -468,7 +488,7 @@ public final class WinterSoldierBrain extends VillainBrain {
     }
 
     boolean catchShield(ServerLevel level, ThrownVibraniumShield shield) {
-        if (ally() || dying || finishing || staggered() || !inFront(shield, 75.0D)) {
+        if (ally() || dying || finishing || staggered() || RedBook.isBeingRead(mob.getUUID()) || !inFront(shield, 75.0D)) {
             return false;
         }
         Entity owner = shield.getOwner();

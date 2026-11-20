@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:jason_manhattan",
+      "required": false
+    },
+    {
+      "id": "thematic:jason_pt2",
+      "required": false
+    },
+    {
+      "id": "thematic:jason_voorhees",
+      "required": false
+    },
+    {
+      "id": "thematic:jason_x",
+      "required": false
+    }
+  ]
+}

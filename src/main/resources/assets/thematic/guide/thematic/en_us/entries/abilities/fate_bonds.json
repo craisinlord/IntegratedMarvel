@@ -1,0 +1,8 @@
+{
+  "name": "Bonds of Nabu",
+  "category": "thematic:ability",
+  "icon": "minecraft:gold_ingot",
+  "pages": [
+    "Place a six-block seal at your aim point, up to twenty-eight blocks away. Up to eight visible enemies take an opening magic hit, followed by six seconds of magic damage, Weakness, and binding pressure. Ordinary enemies are slowed and drawn toward the seal. Bosses and players receive soft debuffs without being pulled or hard-frozen. One seal per wearer. Sixteen-second base cooldown. Requires the complete set."
+  ]
+}

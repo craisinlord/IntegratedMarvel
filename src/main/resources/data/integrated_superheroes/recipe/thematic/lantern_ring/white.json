@@ -1,0 +1,47 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "F": {
+      "item": "thematic:fear_shard"
+    },
+    "R": {
+      "item": "thematic:rage_shard"
+    },
+    "H": {
+      "item": "thematic:hope_shard"
+    },
+    "G": {
+      "item": "thematic:greed_shard"
+    },
+    "X": {
+      "item": "thematic:greenlanternring"
+    },
+    "C": {
+      "item": "thematic:compassion_shard"
+    },
+    "V": {
+      "item": "thematic:love_shard"
+    },
+    "D": {
+      "item": "thematic:death_shard"
+    },
+    "L": {
+      "item": "thematic:life_shard"
+    }
+  },
+  "pattern": [
+    "FRH",
+    "GXC",
+    "VDL"
+  ],
+  "result": {
+    "id": "thematic:white_ring"
+  }
+}

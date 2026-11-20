@@ -1,0 +1,8 @@
+{
+  "name": "Ankh of Judgment",
+  "category": "thematic:ability",
+  "icon": "minecraft:gold_ingot",
+  "pages": [
+    "Focus an ankh on the enemy in your crosshair within forty blocks, dealing magic damage and marking them for six seconds. Repeated judgment of the same marked target deals forty percent more damage. The attack requires a visible target and does not penetrate walls. Three-second base cooldown. Requires the complete Doctor Fate set."
+  ]
+}

@@ -22,4 +22,8 @@ public final class AntarchyDimensionalTear {
     public static SoundEvent idleSound() {
         return AntarchySoundEvents.DIMENSIONAL_TEAR_IDLE.get();
     }
+
+    public static SoundEvent emergeSound() {
+        return AntarchySoundEvents.DIMENSIONAL_TEAR_CREATURE_LEAVES.get();
+    }
 }

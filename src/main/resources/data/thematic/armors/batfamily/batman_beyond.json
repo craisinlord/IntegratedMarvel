@@ -1,0 +1,94 @@
+{
+  "tier": 10,
+  "abilities": [
+    {
+      "identifier": "acrobatics",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "level": "1"
+        }
+      }
+    },
+    {
+      "identifier": "flight",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "stealth",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "night_vision",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "bat_gadget_beyond",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "bat_belt_beyond",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "bat_detective_mode",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "dodge",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "bat_suit_overdrive",
+      "keybind": "key.thematic.ability_4"
+    },
+    {
+      "identifier": "invisibility",
+      "keybind": "key.thematic.ability_5"
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 0.99
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 80,
+      "maximum": 88
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 65,
+      "maximum": 75
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 92,
+      "maximum": 99
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 72,
+      "maximum": 80
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 56,
+      "maximum": 66
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 88,
+      "maximum": 98
+    }
+  ],
+  "fighting_type": [
+    "UTILITY",
+    "BRAWLER"
+  ],
+  "flight_type": "ONE_HAND_LEFT",
+  "priority": 10
+}

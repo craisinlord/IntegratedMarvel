@@ -10,7 +10,7 @@ import java.util.List;
 
 public final class HeroSlots {
     public static final int SLOTS = 10;
-    private static final int VILTRUMITE_OFFSET = 4;
+    public static final int VILTRUMITE_OFFSET = 4;
 
     private HeroSlots() {
     }

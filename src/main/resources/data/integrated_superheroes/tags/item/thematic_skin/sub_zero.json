@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:frost",
+      "required": false
+    },
+    {
+      "id": "thematic:sub_zero",
+      "required": false
+    },
+    {
+      "id": "thematic:sub_zero1",
+      "required": false
+    },
+    {
+      "id": "thematic:sub_zero_mk1",
+      "required": false
+    }
+  ]
+}

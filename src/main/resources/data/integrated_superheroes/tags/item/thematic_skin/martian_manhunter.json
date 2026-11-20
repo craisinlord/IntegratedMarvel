@@ -1,0 +1,65 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:john_jones",
+      "required": false
+    },
+    {
+      "id": "thematic:martian_manhunter",
+      "required": false
+    },
+    {
+      "id": "thematic:martian_manhunter_bd",
+      "required": false
+    },
+    {
+      "id": "thematic:martian_manhunter_beyond",
+      "required": false
+    },
+    {
+      "id": "thematic:martian_manhunter_jlu",
+      "required": false
+    },
+    {
+      "id": "thematic:martian_manhunter_starro",
+      "required": false
+    },
+    {
+      "id": "thematic:martian_manhunterdceu",
+      "required": false
+    },
+    {
+      "id": "thematic:martianmanhunter1",
+      "required": false
+    },
+    {
+      "id": "thematic:martianmanhunter_jl",
+      "required": false
+    },
+    {
+      "id": "thematic:mmh52",
+      "required": false
+    },
+    {
+      "id": "thematic:mmh_bn",
+      "required": false
+    },
+    {
+      "id": "thematic:mmh_cw",
+      "required": false
+    },
+    {
+      "id": "thematic:mmh_natural",
+      "required": false
+    },
+    {
+      "id": "thematic:mmh_tomorrowverse",
+      "required": false
+    },
+    {
+      "id": "thematic:mmh_yj",
+      "required": false
+    }
+  ]
+}

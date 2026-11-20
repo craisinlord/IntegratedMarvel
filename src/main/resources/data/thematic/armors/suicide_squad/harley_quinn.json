@@ -1,0 +1,83 @@
+{
+  "tier": 7,
+  "abilities": [
+    {
+      "identifier": "joker_utility",
+      "keybind": "key.thematic.utility"
+    },
+    {
+      "identifier": "flower_spray",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "fire_spray",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "buzzer_parry",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "crowbar_blitz",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "snake_pellets",
+      "keybind": "key.thematic.ability_4"
+    },
+    {
+      "identifier": "boxing_glove",
+      "keybind": "key.thematic.ability_5"
+    },
+    {
+      "identifier": "equip",
+      "keybind": "key.thematic.equip_item",
+      "options": {
+        "fields": {
+          "label": "equip_joker",
+          "items": [
+            {
+              "item": "thematic:joker_revolver",
+              "count": 1
+            },
+            {
+              "item": "thematic:crowbar",
+              "count": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "identifier": "laughing_gas",
+      "keybind": "key.thematic.ultimate"
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 0.98
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 40,
+      "maximum": 60
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 50,
+      "maximum": 60
+    },
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 50,
+      "maximum": 60
+    }
+  ],
+  "fighting_type": [
+    "DUELIST",
+    "BRAWLER"
+  ]
+}

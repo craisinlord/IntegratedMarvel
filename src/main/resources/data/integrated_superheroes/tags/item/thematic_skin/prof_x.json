@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:emma_frost",
+      "required": false
+    },
+    {
+      "id": "thematic:prof_x",
+      "required": false
+    }
+  ]
+}

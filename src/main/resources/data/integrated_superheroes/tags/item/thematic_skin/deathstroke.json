@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:deathstroke",
+      "required": false
+    },
+    {
+      "id": "thematic:deathstroke_cw",
+      "required": false
+    }
+  ]
+}

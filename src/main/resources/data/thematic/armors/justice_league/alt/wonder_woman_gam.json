@@ -1,0 +1,7 @@
+{
+  "fighting_type": [
+    "DUELIST"
+  ],
+  "suit-recipe": "thematic:alt_wonder_woman_gam",
+  "parent": "thematic:wonder_woman"
+}

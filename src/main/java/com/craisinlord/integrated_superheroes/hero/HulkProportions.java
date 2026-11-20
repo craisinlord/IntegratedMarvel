@@ -64,7 +64,8 @@ public final class HulkProportions {
             blend.rageO = blend.rage;
             blend.hulk = Mth.approach(blend.hulk, hulk ? 1.0F : 0.0F, 0.34F);
             float rage = hulk ? HulkPower.clientRage(player) / 100.0F : 0.0F;
-            blend.rage += (rage - blend.rage) * 0.12F;
+            float growth = com.craisinlord.integrated_superheroes.hero.skin.RedHulkHeat.active(player) ? 0.0F : rage;
+            blend.rage += (growth - blend.rage) * 0.12F;
             if (!hulk && blend.hulk <= 0.0F && blend.rage < 0.01F) {
                 BLENDS.remove(player.getUUID());
                 continue;
@@ -87,9 +88,10 @@ public final class HulkProportions {
         float chance = (rage - 0.6F) / 0.4F * 0.8F + 0.2F;
         int count = random.nextFloat() < chance ? 1 + (rage >= 1.0F ? 1 : 0) : 0;
         double radius = player.getBbWidth() * 0.6D;
+        DustParticleOptions gamma = com.craisinlord.integrated_superheroes.hero.skin.SkinColors.secondaryDust(player, GAMMA);
         for (int i = 0; i < count; i++) {
             double angle = random.nextDouble() * Math.PI * 2.0D;
-            level.addParticle(GAMMA, player.getX() + Math.cos(angle) * radius, player.getY() + random.nextDouble() * player.getBbHeight(),
+            level.addParticle(gamma, player.getX() + Math.cos(angle) * radius, player.getY() + random.nextDouble() * player.getBbHeight(),
                     player.getZ() + Math.sin(angle) * radius, 0.0D, 0.02D, 0.0D);
         }
     }

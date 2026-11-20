@@ -1,0 +1,16 @@
+{
+  "suit-recipe": "thematic:alt_batman_lkoe",
+  "cape": {
+    "remove": true
+  },
+  "glider": {
+    "remove": true
+  },
+  "parent": "thematic:batman",
+  "abilities": [
+    {
+      "identifier": "toggle_brood",
+      "remove": true
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:scarecrow",
+      "required": false
+    },
+    {
+      "id": "thematic:scarecrow_tnba",
+      "required": false
+    }
+  ]
+}

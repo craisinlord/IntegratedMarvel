@@ -1,0 +1,26 @@
+{
+  "name": "item.thematic.maul_saberstaff",
+  "look": "item",
+  "render": { "scale": 1.4, "spin": { "speed": 50, "axis": "y" }, "lit": true },
+  "size": {"tuned": "thrown_size"},
+  "velocity": {"tuned": "thrown_velocity"},
+  "gravity": 0,
+  "drag": 0.99,
+  "discard_on_entity_hit": false,
+  "on_block": "bounce",
+  "bounce": 0.7,
+  "max_bounces": 3,
+  "on_refused_hit": "pass",
+  "thrown_item": { "pickup": "owner" },
+  "chain": { "targets": 3, "range": 12, "recoil_ticks": 0, "speed": 1.4, "steer": 0, "min_speed": 0, "max_speed": 1.4, "from_blocks": true },
+  "return": { "mode": "direct", "after_ticks": 20, "speed": {"tuned": "return_speed"}, "catch_distance": 1.6, "sound": "none" },
+  "catch": { "pickup": true, "on_catch": [ { "type": "thematic:sound", "sound": "opposing_force:laser_blade_catch" } ] },
+  "trail": { "particle": "minecraft:crimson_spore", "count": 2, "spread": 0.1 },
+  "on_entity_hit": [
+    { "type": "thematic:projectile_damage" },
+    { "type": "thematic:sound", "sound": "opposing_force:laser_blade_impact", "at": "impact" }
+  ],
+  "on_block_hit": [
+    { "type": "thematic:sound", "sound": "opposing_force:laser_blade_impact", "at": "impact" }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:rogue_ultron_sentinel",
+      "required": false
+    },
+    {
+      "id": "thematic:ultron",
+      "required": false
+    },
+    {
+      "id": "thematic:ultron_emh",
+      "required": false
+    },
+    {
+      "id": "thematic:ultron_rivals",
+      "required": false
+    }
+  ]
+}

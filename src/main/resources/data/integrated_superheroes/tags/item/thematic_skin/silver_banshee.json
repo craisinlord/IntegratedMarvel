@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:silver_banshee",
+      "required": false
+    }
+  ]
+}

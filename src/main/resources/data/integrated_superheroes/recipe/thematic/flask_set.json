@@ -1,0 +1,16 @@
+{
+  "neoforge:conditions": [ { "type": "neoforge:mod_loaded", "modid": "thematic" } ],
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": { "item": "minecraft:spruce_planks" },
+    "!": { "item": "thematic:electrolytic_solution" },
+    "@": { "item": "minecraft:fermented_spider_eye" }
+  },
+  "pattern": [
+    "@@@",
+    "###",
+    "!!!"
+  ],
+  "result": { "count": 1, "id": "thematic:flask_set" }
+}

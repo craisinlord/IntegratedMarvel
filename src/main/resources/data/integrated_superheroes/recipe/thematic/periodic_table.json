@@ -1,0 +1,16 @@
+{
+  "neoforge:conditions": [ { "type": "neoforge:mod_loaded", "modid": "thematic" } ],
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": { "item": "thematic:blue_fabric" },
+    "!": { "item": "minecraft:fermented_spider_eye" },
+    "@": { "item": "thematic:fabric" }
+  },
+  "pattern": [
+    "@@@",
+    "#!#",
+    "@@@"
+  ],
+  "result": { "count": 1, "id": "thematic:periodic_table" }
+}

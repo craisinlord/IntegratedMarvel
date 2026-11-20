@@ -33,6 +33,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public final class ThingPower {
+    private static final int ROCK_ORANGE = 0xFFFFB060;
     public static final String ID = "rock_hide_ben_grimm";
     public static final String BRACE_STATE = "integrated_superheroes_brace";
     private static final BlockState ROCK = Blocks.TERRACOTTA.defaultBlockState();
@@ -267,7 +268,9 @@ public final class ThingPower {
     private static void crater(ServerPlayer player, float amount) {
         ServerLevel level = player.serverLevel();
         BlockState below = level.getBlockState(player.blockPosition().below());
-        if (!below.isAir()) {
+        if (HeroFx.vfx(level, player.position(), "slam_fracture", 0, 2.5F)) {
+            HeroFx.vfx(level, player.position(), "slam_dust", 0, 2.5F);
+        } else if (!below.isAir()) {
             level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, below), player.getX(), player.getY() + 0.1D, player.getZ(),
                     40, 1.2D, 0.1D, 1.2D, 0.2D);
         }
@@ -283,7 +286,11 @@ public final class ThingPower {
         target.setDeltaMovement(flat.x * horizontal, vertical, flat.z * horizontal);
         target.hurtMarked = true;
         Vec3 at = target.position().add(0.0D, target.getBbHeight() * 0.5D, 0.0D);
-        player.serverLevel().sendParticles(ParticleTypes.EXPLOSION, at.x, at.y, at.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        if (HeroFx.vfx(player.serverLevel(), at, "impact_starburst", ROCK_ORANGE)) {
+            HeroFx.vfx(player.serverLevel(), at, "punch_pressure_wave", 0);
+        } else {
+            player.serverLevel().sendParticles(ParticleTypes.EXPLOSION, at.x, at.y, at.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        }
     }
 
     private static LivingEntity reach(ServerPlayer player, double range) {

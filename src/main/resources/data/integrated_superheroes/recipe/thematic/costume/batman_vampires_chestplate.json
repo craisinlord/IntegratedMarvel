@@ -1,0 +1,34 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:batman_vampires"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "M M",
+    "ABA",
+    "MMM"
+  ],
+  "key": {
+    "M": {
+      "item": "minecraft:diamond"
+    },
+    "A": {
+      "item": "minecraft:glowstone_dust"
+    },
+    "B": {
+      "item": "thematic:gold_cross"
+    }
+  },
+  "result": {
+    "id": "thematic:batman_vampires",
+    "count": 1
+  }
+}

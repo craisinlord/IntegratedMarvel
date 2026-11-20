@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:flat_cache",
+  "argument": {
+    "type": "minecraft:min",
+    "argument1": {
+      "type": "minecraft:add",
+      "argument1": "integrated_superheroes:void/surface",
+      "argument2": -8.0
+    },
+    "argument2": {
+      "type": "minecraft:add",
+      "argument1": 60.0,
+      "argument2": {
+        "type": "minecraft:add",
+        "argument1": {
+          "type": "minecraft:mul",
+          "argument1": 4.0,
+          "argument2": {
+            "type": "minecraft:noise",
+            "noise": "integrated_superheroes:void_crust",
+            "xz_scale": 1.0,
+            "y_scale": 0.0
+          }
+        },
+        "argument2": {
+          "type": "minecraft:mul",
+          "argument1": -0.6,
+          "argument2": "integrated_superheroes:void/ridges"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,401 @@
+{
+  "Version": 2,
+  "Id": "village_two_face",
+  "Display": "Two-Face",
+  "Area": "",
+  "Boss": {
+    "Entity": "thematic:twoface_boss",
+    "Suit": "two_face",
+    "BarColor": "BLUE",
+    "DarkenSky": true
+  },
+  "SpawnPoints": [],
+  "Objectives": [],
+  "Phases": [
+    {
+      "Type": "OBJECTIVE",
+      "Name": "Cut the charges",
+      "Entries": [
+        {
+          "entity": {
+            "id": "thematic:twoface_criminal_knife"
+          },
+          "Count": 3,
+          "SpawnPoints": []
+        },
+        {
+          "entity": {
+            "id": "thematic:twoface_criminal_smg"
+          },
+          "Count": 2,
+          "SpawnPoints": []
+        }
+      ],
+      "Transition": {
+        "Kind": "OBJECTIVES_COMPLETE",
+        "Seconds": 90,
+        "HpFraction": 0.0,
+        "ObjectivesRequired": 4,
+        "TimeoutSeconds": 90,
+        "OnTimeout": "ESCALATE"
+      },
+      "HealthMultiplier": 1.0,
+      "DamageMultiplier": 1.0,
+      "BossPresent": false,
+      "BossInvulnerable": false,
+      "BossAbilities": [],
+      "Escalation": {
+        "Entries": [
+          {
+            "entity": {
+              "id": "thematic:twoface_criminal_shotgun"
+            },
+            "Count": 2,
+            "SpawnPoints": []
+          }
+        ],
+        "MaxTimes": 2
+      },
+      "Announce": "Charges are wired around the site. Cut them!",
+      "BossHpThreshold": 0.0,
+      "GenerateCharges": 4,
+      "Dialogue": {
+        "PHASE_START": [
+          {
+            "Speaker": "Two-Face",
+            "Text": "You're early. The boys haven't finished loading.",
+            "Delay": 0,
+            "Style": "CHAT",
+            "Target": "PARTY"
+          },
+          {
+            "Speaker": "Two-Face",
+            "Text": "Cut them if you like. You won't get them all.",
+            "Delay": 50,
+            "Style": "CHAT",
+            "Target": "PARTY"
+          }
+        ],
+        "OBJECTIVE_DONE": [
+          {
+            "Speaker": "Two-Face",
+            "Text": "That's one. Congratulations.",
+            "Delay": 0,
+            "Style": "CHAT",
+            "Target": "PARTY"
+          }
+        ],
+        "ESCALATION": [
+          {
+            "Speaker": "Two-Face",
+            "Text": "Too slow. Bring up the rest of them.",
+            "Delay": 0,
+            "Style": "CHAT",
+            "Target": "PARTY"
+          }
+        ]
+      },
+      "DisguiseAs": "thematic:twoface_criminal"
+    },
+    {
+      "Type": "COMBAT",
+      "Name": "The crew",
+      "Entries": [
+        {
+          "entity": {
+            "id": "thematic:twoface_criminal"
+          },
+          "Count": 3,
+          "SpawnPoints": []
+        },
+        {
+          "entity": {
+            "id": "thematic:twoface_criminal_rifle"
+          },
+          "Count": 3,
+          "SpawnPoints": []
+        },
+        {
+          "entity": {
+            "id": "thematic:twoface_criminal_shotgun"
+          },
+          "Count": 2,
+          "SpawnPoints": []
+        }
+      ],
+      "Transition": {
+        "Kind": "ALL_MOBS_DEAD",
+        "Seconds": 0,
+        "HpFraction": 0.0,
+        "ObjectivesRequired": 0,
+        "TimeoutSeconds": 300,
+        "OnTimeout": "ADVANCE"
+      },
+      "HealthMultiplier": 1.0,
+      "DamageMultiplier": 1.0,
+      "BossPresent": false,
+      "BossInvulnerable": false,
+      "BossAbilities": [],
+      "Escalation": {
+        "Entries": [],
+        "MaxTimes": 2
+      },
+      "Announce": "The whole crew is on you.",
+      "BossHpThreshold": 0.0,
+      "GenerateCharges": 0,
+      "Dialogue": {}
+    },
+    {
+      "Type": "CINEMATIC",
+      "Name": "He's here",
+      "Entries": [],
+      "Transition": {
+        "Kind": "TIMER",
+        "Seconds": 6,
+        "HpFraction": 0.0,
+        "ObjectivesRequired": 0,
+        "TimeoutSeconds": 300,
+        "OnTimeout": "ADVANCE"
+      },
+      "HealthMultiplier": 1.0,
+      "DamageMultiplier": 1.0,
+      "BossPresent": false,
+      "BossInvulnerable": false,
+      "BossAbilities": [],
+      "Escalation": {
+        "Entries": [],
+        "MaxTimes": 2
+      },
+      "Announce": "Two-Face has arrived.",
+      "BossHpThreshold": 0.0,
+      "GenerateCharges": 0,
+      "Dialogue": {
+        "PHASE_START": [
+          {
+            "Speaker": "",
+            "Text": "Two-Face",
+            "Delay": 0,
+            "Style": "TITLE",
+            "Target": "PARTY"
+          },
+          {
+            "Speaker": "Two-Face",
+            "Text": "Enough. If you want it done properly...",
+            "Delay": 40,
+            "Style": "CHAT",
+            "Target": "PARTY",
+            "Sound": "minecraft:entity.wither.spawn"
+          }
+        ]
+      }
+    },
+    {
+      "Type": "BOSS",
+      "Name": "Two-Face",
+      "Entries": [
+        {
+          "entity": {
+            "id": "thematic:twoface_boss"
+          },
+          "Count": 1,
+          "SpawnPoints": []
+        }
+      ],
+      "Transition": {
+        "Kind": "BOSS_HP_BELOW",
+        "Seconds": 0,
+        "HpFraction": 0.5,
+        "ObjectivesRequired": 0,
+        "TimeoutSeconds": 300,
+        "OnTimeout": "ADVANCE"
+      },
+      "HealthMultiplier": 0.7,
+      "DamageMultiplier": 1.0,
+      "BossPresent": true,
+      "BossInvulnerable": false,
+      "BossAbilities": [
+        "chattering_teeth"
+      ],
+      "Escalation": {
+        "Entries": [],
+        "MaxTimes": 2
+      },
+      "Announce": "",
+      "BossHpThreshold": 0.75,
+      "GenerateCharges": 0,
+      "Dialogue": {
+        "BOSS_HP": [
+          {
+            "Speaker": "Two-Face",
+            "Text": "You're better than the last one they sent.",
+            "Delay": 0,
+            "Style": "CHAT",
+            "Target": "PARTY"
+          }
+        ]
+      }
+    },
+    {
+      "Type": "RETREAT",
+      "Name": "He's running",
+      "Entries": [
+        {
+          "entity": {
+            "id": "thematic:twoface_heavy"
+          },
+          "Count": 2,
+          "SpawnPoints": []
+        },
+        {
+          "entity": {
+            "id": "thematic:twoface_heavy_shotgun"
+          },
+          "Count": 2,
+          "SpawnPoints": []
+        },
+        {
+          "entity": {
+            "id": "thematic:twoface_heavy_lmg"
+          },
+          "Count": 1,
+          "SpawnPoints": []
+        },
+        {
+          "entity": {
+            "id": "thematic:twoface_criminal_sniper"
+          },
+          "Count": 1,
+          "SpawnPoints": []
+        }
+      ],
+      "Transition": {
+        "Kind": "ALL_MOBS_DEAD",
+        "Seconds": 0,
+        "HpFraction": 0.0,
+        "ObjectivesRequired": 0,
+        "TimeoutSeconds": 300,
+        "OnTimeout": "ADVANCE"
+      },
+      "HealthMultiplier": 1.0,
+      "DamageMultiplier": 1.0,
+      "BossPresent": false,
+      "BossInvulnerable": false,
+      "BossAbilities": [],
+      "Escalation": {
+        "Entries": [],
+        "MaxTimes": 2
+      },
+      "Announce": "Two-Face is falling back. Stop his men!",
+      "BossHpThreshold": 0.0,
+      "GenerateCharges": 0,
+      "Dialogue": {
+        "PHASE_START": [
+          {
+            "Speaker": "Two-Face",
+            "Text": "Hold them here. I have business upstairs.",
+            "Delay": 0,
+            "Style": "CHAT",
+            "Target": "PARTY"
+          }
+        ]
+      }
+    },
+    {
+      "Type": "BOSS",
+      "Name": "Two-Face returns",
+      "Entries": [
+        {
+          "entity": {
+            "id": "thematic:twoface_boss"
+          },
+          "Count": 1,
+          "SpawnPoints": []
+        },
+        {
+          "entity": {
+            "id": "thematic:twoface_criminal_rocket_launcher"
+          },
+          "Count": 2,
+          "SpawnPoints": []
+        }
+      ],
+      "Transition": {
+        "Kind": "ALL_MOBS_DEAD",
+        "Seconds": 0,
+        "HpFraction": 0.0,
+        "ObjectivesRequired": 0,
+        "TimeoutSeconds": 300,
+        "OnTimeout": "ADVANCE"
+      },
+      "HealthMultiplier": 1.6,
+      "DamageMultiplier": 1.4,
+      "BossPresent": true,
+      "BossInvulnerable": false,
+      "BossAbilities": [
+        "chattering_teeth",
+        "crowd_control"
+      ],
+      "Escalation": {
+        "Entries": [],
+        "MaxTimes": 2
+      },
+      "Announce": "Two-Face is back. And he brought the artillery.",
+      "BossHpThreshold": 0.0,
+      "GenerateCharges": 0,
+      "Dialogue": {
+        "PHASE_START": [
+          {
+            "Speaker": "Two-Face",
+            "Text": "No more games.",
+            "Delay": 0,
+            "Style": "TITLE",
+            "Target": "PARTY"
+          },
+          {
+            "Speaker": "Two-Face",
+            "Text": "You should have taken the boat.",
+            "Delay": 45,
+            "Style": "CHAT",
+            "Target": "PARTY"
+          }
+        ]
+      }
+    }
+  ],
+  "Return": {
+    "World": "",
+    "Pos": {
+      "X": 0.0,
+      "Y": 0.0,
+      "Z": 0.0
+    },
+    "Yaw": 0.0
+  },
+  "Limits": {
+    "MaxConcurrentMobs": 24,
+    "MaxPartySize": 4,
+    "MinPlayers": 1,
+    "MaxSessionMinutes": 30
+  },
+  "Arena": {},
+  "Briefing": [
+    {
+      "Speaker": "Police radio",
+      "Text": "Two-Face's crew has been seen near the village tonight.",
+      "Delay": 0,
+      "Style": "CHAT",
+      "Target": "PARTY"
+    },
+    {
+      "Speaker": "Police radio",
+      "Text": "Watch the heavies. He sends them in when things go wrong for him.",
+      "Delay": 50,
+      "Style": "CHAT",
+      "Target": "PARTY"
+    }
+  ],
+  "Cooldown": {
+    "Seconds": 7200,
+    "PerPlayer": true
+  }
+}

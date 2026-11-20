@@ -59,6 +59,10 @@ public final class SoulStoneManager {
 
     public static void sever(ServerPlayer wielder, LivingEntity target) {
         if (target == wielder || !target.isAlive() || isPending(target)) return;
+        if (com.craisinlord.integrated_superheroes.hero.HeroAbilities.isBoss(target)) {
+            wielder.displayClientMessage(Component.translatable("message.integrated_superheroes.gauntlet.boss_resists", target.getDisplayName()), true);
+            return;
+        }
         long expiry = target.level().getGameTime() + 160L;
         SeverState old = SEVERED.get(target.getUUID());
         boolean priorNoAi = target instanceof Mob mob && mob.isNoAi();
@@ -99,6 +103,7 @@ public final class SoulStoneManager {
         LivingEntity entity = event.getEntity();
         UUID id = entity.getUUID();
         if (FINALIZING.remove(id) != null || REAPING.remove(id) != null) return;
+        if (com.craisinlord.integrated_superheroes.hero.HeroAbilities.isBoss(entity)) return;
         ServerPlayer catcher = null;
         double nearest = 32.0D * 32.0D;
         if (entity.level() instanceof ServerLevel level) {

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:poison_ivy",
+      "required": false
+    }
+  ]
+}

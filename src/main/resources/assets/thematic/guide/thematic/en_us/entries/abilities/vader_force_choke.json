@@ -1,0 +1,8 @@
+{
+    "name": "Force Choke",
+    "category": "thematic:ability",
+    "icon": "minecraft:wither_rose",
+    "pages": [
+        "Lift the enemy you're looking at and crush their throat for a few seconds. Take a hard hit and you lose your grip. Bosses are too heavy to lift, but they still choke and slow down, and players can only be held for a moment."
+    ]
+}

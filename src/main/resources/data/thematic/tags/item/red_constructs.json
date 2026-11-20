@@ -1,0 +1,29 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:lantern_battle_axe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_mace",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_blade",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_chainsaw",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_blood_axe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_rage_gauntlet",
+      "required": false
+    }
+  ]
+}

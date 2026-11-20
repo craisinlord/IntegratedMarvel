@@ -1,0 +1,98 @@
+{
+  "wip": false,
+  "tier": 10,
+  "abilities": [
+    {
+      "identifier": "willpower_charge",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "level": "9",
+          "constructs": "#green_constructs"
+        }
+      }
+    },
+    {
+      "identifier": "flight",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "night_vision",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "glow",
+      "keybind": "key.thematic.cosmetic",
+      "options": {
+        "fields": {
+          "color": "#00CC33"
+        }
+      }
+    },
+    {
+      "identifier": "willpower_beam",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "construct_wheel",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "willpower_shield",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "willpower_airstrike",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "cut_the_sky_open",
+      "keybind": "key.thematic.ultimate"
+    }
+  ],
+  "tags": [
+    "lantern"
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 0.8
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 75,
+      "maximum": 98
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 75,
+      "maximum": 80
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 20,
+      "maximum": 30
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 70,
+      "maximum": 75
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 50,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 80,
+      "maximum": 85
+    }
+  ],
+  "fighting_type": [
+    "DUELIST"
+  ],
+  "flight_type": "ONE_HAND_LEFT"
+}

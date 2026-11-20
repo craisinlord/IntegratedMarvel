@@ -136,11 +136,20 @@ public final class StormArcRenderer {
             }
             Vec3 base = entity.getPosition(partialTick).subtract(camera);
             float fade = Math.min(1.0F, arc.life / 2.0F);
+            Player owner = entity instanceof Player player ? player : null;
+            int glow = com.craisinlord.integrated_superheroes.hero.skin.SerumSkins.primary(owner, 0x598CFF);
+            int core = com.craisinlord.integrated_superheroes.hero.skin.SerumSkins.secondary(owner, 0xE6F2FF);
+            float glowRed = com.craisinlord.integrated_superheroes.hero.skin.SkinColors.red(glow);
+            float glowGreen = com.craisinlord.integrated_superheroes.hero.skin.SkinColors.green(glow);
+            float glowBlue = com.craisinlord.integrated_superheroes.hero.skin.SkinColors.blue(glow);
+            float coreRed = com.craisinlord.integrated_superheroes.hero.skin.SkinColors.red(core);
+            float coreGreen = com.craisinlord.integrated_superheroes.hero.skin.SkinColors.green(core);
+            float coreBlue = com.craisinlord.integrated_superheroes.hero.skin.SkinColors.blue(core);
             for (int i = 0; i < arc.points.length - 1; i++) {
                 Vec3 from = base.add(arc.points[i]);
                 Vec3 to = base.add(arc.points[i + 1]);
-                ribbon(vertices, pose, from, to, 0.07F, 0.35F, 0.55F, 1.0F, 0.32F * fade);
-                ribbon(vertices, pose, from, to, 0.022F, 0.9F, 0.95F, 1.0F, 0.95F * fade);
+                ribbon(vertices, pose, from, to, 0.07F, glowRed, glowGreen, glowBlue, 0.32F * fade);
+                ribbon(vertices, pose, from, to, 0.022F, coreRed, coreGreen, coreBlue, 0.95F * fade);
             }
         }
         buffers.endBatch(RenderType.lightning());

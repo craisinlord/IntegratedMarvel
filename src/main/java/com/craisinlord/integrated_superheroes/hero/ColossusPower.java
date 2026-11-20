@@ -30,6 +30,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public final class ColossusPower {
+    private static final int STEEL_WHITE = 0xFFE0E8F0;
     public static final String ID = "organic_steel_piotr_rasputin";
     public static final String STEEL_STATE = "integrated_superheroes_steel";
     private static final String STEEL_FORM = "steel_form";
@@ -138,7 +139,9 @@ public final class ColossusPower {
                 if (attacker.level().getGameTime() <= until) {
                     event.setAmount(event.getAmount() * MarvelBalanceConfig.FASTBALL_DAMAGE_MULTIPLIER.get().floatValue());
                     Vec3 center = target.getBoundingBox().getCenter();
-                    attacker.serverLevel().sendParticles(ParticleTypes.EXPLOSION, center.x, center.y, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+                    if (!HeroFx.vfx(attacker.serverLevel(), center, "impact_starburst", STEEL_WHITE)) {
+                        attacker.serverLevel().sendParticles(ParticleTypes.EXPLOSION, center.x, center.y, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+                    }
                     HeroFx.play(target, SoundEvents.ANVIL_LAND, 1.0F, 0.6F);
                 }
             }
@@ -260,7 +263,7 @@ public final class ColossusPower {
                 }
                 if (state.is(BlockTags.LEAVES) || state.is(Tags.Blocks.GLASS_BLOCKS) || state.is(Tags.Blocks.GLASS_PANES)
                         || state.canBeReplaced() && state.getFluidState().isEmpty()) {
-                    level.destroyBlock(pos, true, player);
+                    HeroGrief.tryBreak(player, level, pos, true);
                 }
             }
         }
@@ -285,7 +288,9 @@ public final class ColossusPower {
         target.hurtMarked = true;
         ServerLevel level = player.serverLevel();
         BlockState ground = level.getBlockState(target.blockPosition().below());
-        if (!ground.isAir()) {
+        if (HeroFx.vfx(level, target.position(), "slam_fracture", 0, 2.0F)) {
+            HeroFx.vfx(level, target.position().add(0.0D, target.getBbHeight() * 0.5D, 0.0D), "impact_starburst", STEEL_WHITE);
+        } else if (!ground.isAir()) {
             level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, ground), target.getX(), target.getY(), target.getZ(),
                     40, 1.0D, 0.1D, 1.0D, 0.3D);
         }

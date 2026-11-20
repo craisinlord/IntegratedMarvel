@@ -17,6 +17,11 @@ public final class HeroTint {
             return -1;
         }
         if (HulkPower.isHulk(player)) {
+            var skin = com.craisinlord.integrated_superheroes.hero.skin.SerumSkins.current(player);
+            if (skin.isPresent()) {
+                return 0xFF000000 | com.craisinlord.integrated_superheroes.hero.skin.SkinColors.lerp(skin.get().primary(), skin.get().secondary(),
+                        HulkPower.clientRage(player) / 100.0F);
+            }
             return hulk(HulkPower.clientRage(player) / 100.0F);
         }
         return -1;

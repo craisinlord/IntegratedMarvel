@@ -13,6 +13,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -43,7 +45,7 @@ public class KineticCharge extends ThrowableItemProjectile {
 
     public static KineticCharge create(ServerPlayer owner, ItemStack stack, GambitItems.Profile profile, float impactDamage, boolean dropBack) {
         KineticCharge charge = new KineticCharge(owner.serverLevel(), owner);
-        charge.setItem(stack.isEmpty() ? new ItemStack(Items.PAPER) : stack);
+        charge.setItem(stack.isEmpty() ? new ItemStack(defaultCard()) : stack);
         charge.entityData.set(KINDS, profile.kinds());
         charge.damage = profile.damage();
         charge.radius = profile.radius();
@@ -74,7 +76,11 @@ public class KineticCharge extends ThrowableItemProjectile {
 
     @Override
     protected Item getDefaultItem() {
-        return Items.PAPER;
+        return defaultCard();
+    }
+
+    private static Item defaultCard() {
+        return BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("thematic", "kinetic_card")).orElse(Items.PAPER);
     }
 
     @Override

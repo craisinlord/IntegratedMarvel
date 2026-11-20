@@ -6,6 +6,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.material.FluidState;
 import net.tintankgames.marvel.world.item.MarvelItems;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,7 +28,9 @@ public abstract class MarvelArmorCheckMixin {
     @TargetHandler(mixin = "net.tintankgames.marvel.mixin.LivingEntityMixin", name = "jesusMoment")
     @Inject(method = "@MixinSquared:Handler", at = @At("HEAD"), cancellable = true, remap = false)
     private void integratedSuperheroes$skipWithoutQuicksilverChest(FluidState fluid, CallbackInfoReturnable<Boolean> cir, CallbackInfo ci) {
-        if (!((LivingEntity) (Object) this).getItemBySlot(EquipmentSlot.CHEST).is(MarvelItems.Tags.QUICKSILVER_ARMOR)) {
+        // canStandOnFluid runs for every liquid block in every entity's collision checks, so bail
+        // on the type check before touching equipment. Only players can wear the Quicksilver suit.
+        if (!((Object) this instanceof Player player) || !player.getItemBySlot(EquipmentSlot.CHEST).is(MarvelItems.Tags.QUICKSILVER_ARMOR)) {
             ci.cancel();
         }
     }

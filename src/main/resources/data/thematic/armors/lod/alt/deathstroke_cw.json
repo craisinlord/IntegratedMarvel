@@ -1,0 +1,7 @@
+{
+  "parent": "thematic:deathstroke",
+  "fighting_type": [
+    "UTILITY",
+    "BRAWLER"
+  ]
+}

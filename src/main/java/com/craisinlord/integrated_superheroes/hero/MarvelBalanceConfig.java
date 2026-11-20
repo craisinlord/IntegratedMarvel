@@ -12,6 +12,8 @@ public final class MarvelBalanceConfig {
     }
 
     public static final List<HeroStats> ALL_HERO_STATS = new ArrayList<>();
+    public static final ModConfigSpec.BooleanValue SUIT_HIGHEST_BONUS_ONLY;
+    public static final ModConfigSpec.DoubleValue CHEAT_DEATH_COOLDOWN;
     public static final ModConfigSpec SPEC;
     public static final HeroStats SPIDER_POWERS;
     public static final HeroStats WEAPON_X_LOGAN;
@@ -269,9 +271,13 @@ public final class MarvelBalanceConfig {
     public static final ModConfigSpec.DoubleValue TAKEDOWN_DAMAGE;
     public static final ModConfigSpec.IntValue TAKEDOWN_STUN_TICKS;
     public static final ModConfigSpec.DoubleValue TAKEDOWN_COOLDOWN;
+    public static final ModConfigSpec.DoubleValue STAFF_SWEEP_DAMAGE;
+    public static final ModConfigSpec.DoubleValue STAFF_SWEEP_RADIUS;
+    public static final ModConfigSpec.DoubleValue STAFF_SWEEP_COOLDOWN;
 
     public static final HeroStats KITTY;
     public static final ModConfigSpec.DoubleValue PHASE_METER_SECONDS;
+    public static final ModConfigSpec.DoubleValue PHASE_COOLDOWN;
     public static final ModConfigSpec.DoubleValue PHASE_STRIKE_DAMAGE;
     public static final ModConfigSpec.DoubleValue PHASE_STRIKE_COOLDOWN;
     public static final ModConfigSpec.IntValue PHASE_SINK_TICKS;
@@ -473,7 +479,8 @@ public final class MarvelBalanceConfig {
     public static final ModConfigSpec.ConfigValue<String> VILTRUMITE_SUIT_SKIN;
     public static final ModConfigSpec.ConfigValue<String> VILTRUMITE_SUIT_CAPE;
     public static final ModConfigSpec.BooleanValue VILTRUMITE_ANIMATIONS;
-    public static final ModConfigSpec.BooleanValue VILTRUMITE_CAPTAIN_MARVEL_FLIGHT;
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> VILTRUMITE_FLIGHT_HEROES;
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> BULLETPROOF_HEROES;
     public static final ModConfigSpec.DoubleValue VILTRUMITE_ROGUE_BASE_DAMAGE;
     public static final ModConfigSpec.DoubleValue VILTRUMITE_ROGUE_DAMAGE_REDUCTION;
     public static final ModConfigSpec.DoubleValue VILTRUMITE_ROGUE_DASH_DAMAGE;
@@ -491,6 +498,14 @@ public final class MarvelBalanceConfig {
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
+
+        builder.push("stacking");
+        SUIT_HIGHEST_BONUS_ONLY = builder.comment("While a powered suit is worn, serum max health, armor and toughness only count where they beat the suit's own bonus.")
+                .define("suitHighestBonusOnly", true);
+        CHEAT_DEATH_COOLDOWN = builder.comment("Shared cooldown for every power that stops a death: Last Stand, the Ancestral Plane, Probability Dodge and healing factor revives.",
+                        "A healing factor's chain of revives counts as one use.")
+                .defineInRange("cheatDeathCooldownSeconds", 300.0D, 0.0D, 86400.0D);
+        builder.pop();
 
         builder.push("spiderPowersPeterParker");
         SPIDER_POWERS = new HeroStats(builder, 10.0D, 8.0D, 0.5D, 0.5D, 0.04D, 0.0D, 2,
@@ -510,10 +525,10 @@ public final class MarvelBalanceConfig {
         builder.pop();
 
         builder.push("superSoldierSteveRogers");
-        SUPER_SOLDIER = new HeroStats(builder, 30.0D, 12.0D, 0.5D, 0.0D, 0.0D, 42.0D, 1,
+        SUPER_SOLDIER = new HeroStats(builder, 25.0D, 10.0D, 0.5D, 0.0D, 0.0D, 30.0D, 1,
                 List.of("apothic_attributes:healing_received;0.3;ADD_VALUE", "minecraft:generic.knockback_resistance;0.2;ADD_VALUE"));
         SUPER_SOLDIER_JUMP_MULTIPLIER = builder.defineInRange("crouchJumpMultiplier", 3.0D, 1.0D, 20.0D);
-        SHIELD_CHARGE_DAMAGE = builder.defineInRange("shieldChargeDamage", 79.0D, 0.0D, 10000.0D);
+        SHIELD_CHARGE_DAMAGE = builder.defineInRange("shieldChargeDamage", 55.0D, 0.0D, 10000.0D);
         SHIELD_CHARGE_SHIELD_MULTIPLIER = builder.defineInRange("shieldChargeShieldMultiplier", 1.5D, 1.0D, 100.0D);
         SHIELD_CHARGE_SPEED = builder.defineInRange("shieldChargeSpeed", 1.8D, 0.0D, 10.0D);
         SHIELD_CHARGE_COOLDOWN = builder.defineInRange("shieldChargeCooldownSeconds", 8.0D, 0.0D, 600.0D);
@@ -597,11 +612,11 @@ public final class MarvelBalanceConfig {
         builder.push("opticBlastsScottSummers");
         CYCLOPS = new HeroStats(builder, 20.0D, 8.0D, 0.2D, 0.0D, 0.0D, 2.8D, 0,
                 List.of("apothic_attributes:crit_chance;0.12;ADD_VALUE", "apothic_attributes:armor_pierce;10.0;ADD_VALUE"));
-        OPTIC_BLAST_DAMAGE = builder.defineInRange("opticBlastDamagePerHit", 112.0D, 0.0D, 10000.0D);
+        OPTIC_BLAST_DAMAGE = builder.defineInRange("opticBlastDamagePerHit", 70.0D, 0.0D, 10000.0D);
         OPTIC_BLAST_DURATION_TICKS = builder.defineInRange("opticBlastDurationTicks", 20, 1, 200);
         OPTIC_BLAST_RANGE = builder.defineInRange("opticBlastRange", 64.0D, 1.0D, 256.0D);
         OPTIC_BLAST_COOLDOWN = builder.defineInRange("opticBlastCooldownSeconds", 2.0D, 0.0D, 600.0D);
-        WIDE_BLAST_DAMAGE = builder.defineInRange("wideBlastDamagePerHit", 90.0D, 0.0D, 10000.0D);
+        WIDE_BLAST_DAMAGE = builder.defineInRange("wideBlastDamagePerHit", 60.0D, 0.0D, 10000.0D);
         WIDE_BLAST_RANGE = builder.defineInRange("wideBlastRange", 18.0D, 1.0D, 64.0D);
         WIDE_BLAST_COOLDOWN = builder.defineInRange("wideBlastCooldownSeconds", 4.0D, 0.0D, 600.0D);
         WIDE_BLAST_DURATION_TICKS = builder.defineInRange("wideBlastDurationTicks", 14, 1, 200);
@@ -778,8 +793,8 @@ public final class MarvelBalanceConfig {
         builder.push("organicSteelPiotrRasputin");
         PIOTR = new HeroStats(builder, 10.0D, 4.0D, 0.3D, 0.0D, 0.0D, 21.0D, 0);
         builder.push("steelForm");
-        COLOSSUS = new HeroStats(builder, 60.0D, 20.0D, 2.0D, 0.5D, 0.0D, 80.0D, 0,
-                List.of("minecraft:generic.scale;0.2;ADD_MULTIPLIED_BASE", "minecraft:generic.armor_toughness;12.0;ADD_VALUE",
+        COLOSSUS = new HeroStats(builder, 40.0D, 16.0D, 2.0D, 0.5D, 0.0D, 45.0D, 0,
+                List.of("minecraft:generic.scale;0.2;ADD_MULTIPLIED_BASE", "minecraft:generic.armor_toughness;6.0;ADD_VALUE",
                         "minecraft:generic.knockback_resistance;1.0;ADD_VALUE", "minecraft:generic.movement_speed;-0.2;ADD_MULTIPLIED_TOTAL",
                         "minecraft:generic.safe_fall_distance;20.0;ADD_VALUE"));
         builder.pop();
@@ -787,12 +802,12 @@ public final class MarvelBalanceConfig {
         RICOCHET_MULTIPLIER = builder.defineInRange("ricochetDamageMultiplier", 0.25D, 0.0D, 1.0D);
         STEEL_FIRE_MULTIPLIER = builder.defineInRange("steelFireDamageMultiplier", 0.5D, 0.0D, 10.0D);
         FASTBALL_SPEED = builder.defineInRange("fastballSpeed", 2.8D, 0.0D, 10.0D);
-        FASTBALL_THROW_DAMAGE = builder.defineInRange("fastballThrowDamage", 75.0D, 0.0D, 10000.0D);
+        FASTBALL_THROW_DAMAGE = builder.defineInRange("fastballThrowDamage", 55.0D, 0.0D, 10000.0D);
         FASTBALL_DAMAGE_MULTIPLIER = builder.defineInRange("fastballNextHitMultiplier", 2.0D, 1.0D, 100.0D);
         FASTBALL_COOLDOWN = builder.defineInRange("fastballCooldownSeconds", 6.0D, 0.0D, 600.0D);
         STEEL_CHARGE_COOLDOWN = builder.defineInRange("steelChargeCooldownSeconds", 8.0D, 0.0D, 600.0D);
-        STEEL_CHARGE_DAMAGE = builder.defineInRange("steelChargeDamage", 75.0D, 0.0D, 10000.0D);
-        IRON_SLAM_DAMAGE = builder.defineInRange("ironSlamDamage", 131.0D, 0.0D, 10000.0D);
+        STEEL_CHARGE_DAMAGE = builder.defineInRange("steelChargeDamage", 55.0D, 0.0D, 10000.0D);
+        IRON_SLAM_DAMAGE = builder.defineInRange("ironSlamDamage", 85.0D, 0.0D, 10000.0D);
         IRON_SLAM_COOLDOWN = builder.defineInRange("ironSlamCooldownSeconds", 10.0D, 0.0D, 600.0D);
         BULWARK_REDUCTION = builder.defineInRange("bulwarkProjectileMultiplier", 0.5D, 0.0D, 1.0D);
         builder.pop();
@@ -814,16 +829,22 @@ public final class MarvelBalanceConfig {
         TAKEDOWN_DAMAGE = builder.defineInRange("takedownDamage", 46.0D, 0.0D, 10000.0D);
         TAKEDOWN_STUN_TICKS = builder.defineInRange("takedownStunTicks", 40, 0, 1200);
         TAKEDOWN_COOLDOWN = builder.defineInRange("takedownCooldownSeconds", 10.0D, 0.0D, 600.0D);
+        STAFF_SWEEP_DAMAGE = builder.defineInRange("staffSweepDamage", 24.0D, 0.0D, 10000.0D);
+        STAFF_SWEEP_RADIUS = builder.defineInRange("staffSweepRadius", 3.5D, 1.0D, 16.0D);
+        STAFF_SWEEP_COOLDOWN = builder.defineInRange("staffSweepCooldownSeconds", 8.0D, 0.0D, 600.0D);
         builder.pop();
 
         builder.push("phasingKittyPryde");
         KITTY = new HeroStats(builder, 16.0D, 4.0D, 0.0D, 0.0D, 0.0D, 4.2D, 0);
-        PHASE_METER_SECONDS = builder.defineInRange("phaseMeterSeconds", 20.0D, 1.0D, 3600.0D);
+        PHASE_METER_SECONDS = builder.comment("Longest you can stay phased in one go.")
+                .defineInRange("phaseMeterSeconds", 5.0D, 1.0D, 3600.0D);
+        PHASE_COOLDOWN = builder.comment("Cooldown on Phase after it ends.")
+                .defineInRange("phaseCooldownSeconds", 8.0D, 0.0D, 600.0D);
         PHASE_STRIKE_DAMAGE = builder.defineInRange("phaseStrikeDamage", 20.0D, 0.0D, 10000.0D);
         PHASE_STRIKE_COOLDOWN = builder.defineInRange("phaseStrikeCooldownSeconds", 5.0D, 0.0D, 600.0D);
         PHASE_SINK_TICKS = builder.defineInRange("phaseSinkTicks", 60, 1, 1200);
         PHASE_SINK_COOLDOWN = builder.defineInRange("phaseSinkCooldownSeconds", 12.0D, 0.0D, 600.0D);
-        PHASE_OTHERS_TICKS = builder.defineInRange("phaseOthersTicks", 160, 1, 6000);
+        PHASE_OTHERS_TICKS = builder.defineInRange("phaseOthersTicks", 100, 1, 6000);
         PHASE_OTHERS_COOLDOWN = builder.defineInRange("phaseOthersCooldownSeconds", 20.0D, 0.0D, 600.0D);
         builder.pop();
 
@@ -908,20 +929,20 @@ public final class MarvelBalanceConfig {
         builder.pop();
 
         builder.push("rockHideBenGrimm");
-        THING = new HeroStats(builder, 60.0D, 20.0D, 2.0D, 0.5D, 0.0D, 80.0D, 1,
-                List.of("minecraft:generic.knockback_resistance;1.0;ADD_VALUE", "minecraft:generic.max_absorption;40.0;ADD_VALUE"));
-        ROCK_PLATING_MAX = builder.defineInRange("rockPlatingMax", 40.0D, 0.0D, 10000.0D);
+        THING = new HeroStats(builder, 40.0D, 16.0D, 2.0D, 0.5D, 0.0D, 45.0D, 1,
+                List.of("minecraft:generic.knockback_resistance;1.0;ADD_VALUE", "minecraft:generic.max_absorption;20.0;ADD_VALUE"));
+        ROCK_PLATING_MAX = builder.defineInRange("rockPlatingMax", 20.0D, 0.0D, 10000.0D);
         ROCK_PLATING_REGEN = builder.defineInRange("rockPlatingRegenPerSecond", 2.0D, 0.0D, 1000.0D);
         ROCK_PLATING_DELAY_SECONDS = builder.defineInRange("rockPlatingRegenDelaySeconds", 5, 0, 600);
         COMBO_MULTIPLIER = builder.defineInRange("thirdPunchDamageMultiplier", 2.0D, 1.0D, 100.0D);
-        CLOBBER_DAMAGE = builder.defineInRange("clobberDamage", 188.0D, 0.0D, 10000.0D);
+        CLOBBER_DAMAGE = builder.defineInRange("clobberDamage", 110.0D, 0.0D, 10000.0D);
         CRATER_DAMAGE = builder.defineInRange("landingCraterDamage", 38.0D, 0.0D, 10000.0D);
         CLOBBER_COOLDOWN = builder.defineInRange("clobberCooldownSeconds", 8.0D, 0.0D, 600.0D);
-        WRESTLE_DAMAGE = builder.defineInRange("wrestleDamage", 150.0D, 0.0D, 10000.0D);
+        WRESTLE_DAMAGE = builder.defineInRange("wrestleDamage", 90.0D, 0.0D, 10000.0D);
         WRESTLE_COOLDOWN = builder.defineInRange("wrestleCooldownSeconds", 10.0D, 0.0D, 600.0D);
         TOSS_MAX_BLOCKS = builder.defineInRange("ripAndTossMaxBlocks", 4, 1, 64);
         TOSS_THROW_SPEED = builder.defineInRange("ripAndTossThrowSpeed", 1.6D, 0.1D, 10.0D);
-        TOSS_DAMAGE = builder.defineInRange("ripAndTossDamage", 112.0D, 0.0D, 10000.0D);
+        TOSS_DAMAGE = builder.defineInRange("ripAndTossDamage", 70.0D, 0.0D, 10000.0D);
         TOSS_COOLDOWN = builder.defineInRange("ripAndTossCooldownSeconds", 6.0D, 0.0D, 600.0D);
         BRACE_DAMAGE_MULTIPLIER = builder.defineInRange("braceDamageTakenMultiplier", 0.3D, 0.0D, 1.0D);
         THING_LEAP_HORIZONTAL = builder.defineInRange("superJumpHorizontal", 1.6D, 0.0D, 10.0D);
@@ -1080,8 +1101,13 @@ public final class MarvelBalanceConfig {
         VILTRUMITE_SUIT_CAPE = builder.define("suitCape", "red");
         VILTRUMITE_ANIMATIONS = builder.comment("Plays Viltrumite arm and body animations for Hulk's Thunderclap, Thing's Clobberin' Time and Black Panther's Claw Swipe. Purely cosmetic.")
                 .define("heroAnimations", true);
-        VILTRUMITE_CAPTAIN_MARVEL_FLIGHT = builder.comment("Lets Captain Marvel double-tap jump into Viltrumite flight, with its speed and block-breaking takeoff. Other flying heroes never can.")
-                .define("captainMarvelViltrumiteFlight", true);
+        VILTRUMITE_FLIGHT_HEROES = builder.comment("Serum heroes who fly with Viltrumite flight instead of plain hovering: double-tap jump to take off, camera roll, sonic booms and the block-breaking takeoff. Their Flight toggle must be on. Shazam only flies while powered, and a Kryptonian near kryptonite drops out of the sky.")
+                .defineListAllowEmpty("viltrumiteFlightHeroes", List.of("binary_carol_danvers", "kryptonian_clark_kent", "compound_v_homelander",
+                        "martian_jonn_jonzz", "shazam_billy_batson"), () -> "", entry -> entry instanceof String);
+        BULLETPROOF_HEROES = builder.comment("Gun bullets that would deal this much damage or less bounce off these heroes. Stronger rounds still hit. Format: power_id=max_damage")
+                .defineListAllowEmpty("bulletproofHeroes", List.of("kryptonian_clark_kent=20", "compound_v_homelander=20",
+                        "viltrumite_blood_omni_man=20", "shazam_billy_batson=16", "martian_jonn_jonzz=14",
+                        "gamma_mutation_bruce_banner=12", "rock_hide_ben_grimm=12"), () -> "", entry -> entry instanceof String s && s.contains("="));
         builder.push("rogue");
         VILTRUMITE_ROGUE_BASE_DAMAGE = builder.defineInRange("borrowedBaseDamage", 25.0D, 0.0D, 10000.0D);
         VILTRUMITE_ROGUE_DAMAGE_REDUCTION = builder.defineInRange("borrowedDamageReductionPercent", 35.0D, 0.0D, 100.0D);
@@ -1114,6 +1140,18 @@ public final class MarvelBalanceConfig {
         builder.pop();
 
         IronManSuits.define(builder);
+        NewSerumConfig.define(builder);
+        JuggernautConfig.define(builder);
+        BeastConfig.define(builder);
+        NightcrawlerConfig.define(builder);
+        AngelConfig.define(builder);
+        GhostRiderConfig.define(builder);
+        JeanGreyConfig.define(builder);
+        ProfessorXConfig.define(builder);
+        SwampThingConfig.define(builder);
+        GrootConfig.define(builder);
+        SilverSurferConfig.define(builder);
+        com.craisinlord.integrated_superheroes.hero.skin.SkinData.define(builder);
 
         SPEC = builder.build();
     }

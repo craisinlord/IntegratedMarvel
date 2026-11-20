@@ -1,0 +1,149 @@
+{
+  "bat_belt_year_one": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "bat_gadget_year_one": {
+    "cooldown": 0.3,
+    "duration": 6,
+    "range": 32,
+    "damage": 0,
+    "amplifier": 1
+  },
+  "bat_belt_gaslight": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "bat_gadget_gaslight": {
+    "cooldown": 0.3,
+    "duration": 6,
+    "range": 32,
+    "damage": 0,
+    "amplifier": 1
+  },
+  "bat_belt_batman": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "bat_gadget_batman": {
+    "cooldown": 0.3,
+    "duration": 6,
+    "range": 32,
+    "damage": 0,
+    "amplifier": 1
+  },
+  "bat_belt_diving": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "bat_gadget_diving": {
+    "cooldown": 0.3,
+    "duration": 6,
+    "range": 32,
+    "damage": 0,
+    "amplifier": 1
+  },
+  "bat_belt_arctic": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "bat_gadget_arctic": {
+    "cooldown": 0.3,
+    "duration": 6,
+    "range": 32,
+    "damage": 0,
+    "amplifier": 1
+  },
+  "bat_belt_zur": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "bat_gadget_zur": {
+    "cooldown": 0.3,
+    "duration": 6,
+    "range": 32,
+    "damage": 0,
+    "amplifier": 1
+  },
+  "bat_belt_arkham": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "bat_gadget_arkham": {
+    "cooldown": 0.3,
+    "duration": 6,
+    "range": 32,
+    "damage": 0,
+    "amplifier": 1
+  },
+  "bat_belt_dark_knight": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "bat_gadget_dark_knight": {
+    "cooldown": 0.3,
+    "duration": 6,
+    "range": 32,
+    "damage": 0,
+    "amplifier": 1
+  },
+  "bat_belt_netherite": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "bat_gadget_netherite": {
+    "cooldown": 0.3,
+    "duration": 6,
+    "range": 32,
+    "damage": 0,
+    "amplifier": 1
+  },
+  "bat_belt_beyond": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "bat_gadget_beyond": {
+    "cooldown": 0.3,
+    "duration": 6,
+    "range": 32,
+    "damage": 0,
+    "amplifier": 1
+  },
+  "bat_detective_mode": {
+    "cooldown": 0.5,
+    "duration": 0,
+    "range": 45,
+    "damage": 0,
+    "amplifier": 0
+  }
+}

@@ -39,6 +39,10 @@
         "marvel:unstable_pym_particle",
         "marvel:x_genes",
         "marvel:villager_blood_sample",
+        "integrated_superheroes:kryptonian_blood",
+        "integrated_superheroes:martian_blood",
+        "integrated_superheroes:alien_blood",
+        "integrated_superheroes:black_adam_scarab",
         "marvel:tesseract_shard",
         "marvellegacy:cloth_white",
         "marvellegacy:cloth_light_gray",
@@ -70,7 +74,8 @@
       "entries": [
         "marvel:stone_brick_lamp",
         "marvel:deepslate_brick_lamp",
-        "marvel:tesseract"
+        "marvel:tesseract",
+        "integrated_superheroes:storm_command_block"
       ]
     },
     {
@@ -99,7 +104,6 @@
         "marvel:stormbreaker",
         "marvel:vibranium_shield",
         "marvel:proto_adamantium_shield",
-        "marvel:katana",
         "marvel:katanas",
         "marvel:winter_soldier_knife",
         "marvel:tesseract_crossbow",
@@ -190,19 +194,35 @@
         "integrated_superheroes:syringe_cryokinesis_bobby_drake",
         "integrated_superheroes:syringe_invisibility_sue_storm",
         "integrated_superheroes:syringe_phasing_kitty_pryde",
+        "integrated_superheroes:syringe_teleportation_kurt_wagner",
         "integrated_superheroes:syringe_magnetism_erik_lehnsherr",
         "integrated_superheroes:syringe_elasticity_reed_richards",
         "integrated_superheroes:syringe_super_speed_pietro_maximoff",
         "integrated_superheroes:syringe_chaos_magic_wanda_maximoff",
         "marvellegacy:syringe_spider_powers_peter_parker",
         "integrated_superheroes:syringe_squirrel_powers_doreen_green",
+        "integrated_superheroes:syringe_flora_colossus_groot",
         "integrated_superheroes:syringe_weather_manipulation_ororo_munroe",
         "integrated_superheroes:syringe_rock_hide_ben_grimm",
         "integrated_superheroes:syringe_kinetic_charge_remy_lebeau",
         "integrated_superheroes:syringe_absorption_anna_marie",
         "integrated_superheroes:syringe_pyrotechnics_jubilation_lee",
+        "integrated_superheroes:syringe_acrobatics_hank_mccoy",
+        "integrated_superheroes:syringe_winged_mutation_warren_worthington",
+        "integrated_superheroes:syringe_telekinesis_jean_grey",
+        "integrated_superheroes:syringe_telepathy_charles_xavier",
+        "integrated_superheroes:syringe_power_cosmic_norrin_radd",
         "integrated_superheroes:syringe_viltrumite_blood_omni_man",
-        "marvellegacy:syringe_weapon_x_logan"
+        "marvellegacy:syringe_weapon_x_logan",
+        "integrated_superheroes:syringe_kryptonian_clark_kent",
+        "integrated_superheroes:syringe_martian_jonn_jonzz",
+        "integrated_superheroes:syringe_shazam_billy_batson",
+        "integrated_superheroes:syringe_atlantean_arthur_curry",
+        "integrated_superheroes:syringe_amazon_diana_prince",
+        "integrated_superheroes:syringe_sonic_dinah_lance",
+        "integrated_superheroes:syringe_avatar_of_the_green_alec_holland",
+        "integrated_superheroes:syringe_spirit_of_vengeance_johnny_blaze",
+        "integrated_superheroes:syringe_compound_v_homelander"
       ]
     },
     {

@@ -1,0 +1,8 @@
+{
+  "include": [
+    "marvel:hydra_outpost/*",
+    "marvel:hydra_base/*/room/*"
+  ],
+  "weight": 3,
+  "min_tier": 1
+}

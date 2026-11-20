@@ -1,0 +1,97 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:arkham_knight",
+      "required": false
+    },
+    {
+      "id": "thematic:black_mask",
+      "required": false
+    },
+    {
+      "id": "thematic:black_spider",
+      "required": false
+    },
+    {
+      "id": "thematic:cheshire",
+      "required": false
+    },
+    {
+      "id": "thematic:deadshot",
+      "required": false
+    },
+    {
+      "id": "thematic:diggle",
+      "required": false
+    },
+    {
+      "id": "thematic:domino",
+      "required": false
+    },
+    {
+      "id": "thematic:peacemaker",
+      "required": false
+    },
+    {
+      "id": "thematic:punisher",
+      "required": false
+    },
+    {
+      "id": "thematic:punisher_2099",
+      "required": false
+    },
+    {
+      "id": "thematic:punisher_cruz",
+      "required": false
+    },
+    {
+      "id": "thematic:punisher_hand",
+      "required": false
+    },
+    {
+      "id": "thematic:punisher_mcu",
+      "required": false
+    },
+    {
+      "id": "thematic:punisher_noir",
+      "required": false
+    },
+    {
+      "id": "thematic:punisher_rivals",
+      "required": false
+    },
+    {
+      "id": "thematic:punisher_rucka",
+      "required": false
+    },
+    {
+      "id": "thematic:punisher_ultimate",
+      "required": false
+    },
+    {
+      "id": "thematic:punisher_war_machine",
+      "required": false
+    },
+    {
+      "id": "thematic:red_hood",
+      "required": false
+    },
+    {
+      "id": "thematic:redhood_arkham",
+      "required": false
+    },
+    {
+      "id": "thematic:redhood_injustice2",
+      "required": false
+    },
+    {
+      "id": "thematic:redhood_outlaw",
+      "required": false
+    },
+    {
+      "id": "thematic:redhood_utrd",
+      "required": false
+    }
+  ]
+}

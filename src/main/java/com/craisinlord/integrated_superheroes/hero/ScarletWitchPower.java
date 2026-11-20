@@ -37,10 +37,15 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public final class ScarletWitchPower {
+    private static final int WANDA_RED = 0xD0E0143C;
     public static final String ID = "chaos_magic_wanda_maximoff";
     private static final ResourceLocation FLIGHT_ID = ResourceLocation.fromNamespaceAndPath("integrated_superheroes", "wanda_flight");
     private static final DustParticleOptions HEX_RED = new DustParticleOptions(new Vector3f(0.86F, 0.05F, 0.16F), 1.4F);
     private static final double BOLT_SPEED = 1.1D;
+
+    private static DustParticleOptions hex(net.minecraft.world.entity.player.Player player) {
+        return player == null ? HEX_RED : com.craisinlord.integrated_superheroes.hero.skin.SkinColors.primaryDust(player, HEX_RED);
+    }
     private static final List<EntityType<? extends Mob>> HARMLESS = List.of(EntityType.CHICKEN, EntityType.RABBIT, EntityType.SHEEP,
             EntityType.PIG, EntityType.COD, EntityType.BAT);
     public static final HeroPower.Toggle HEX_FIELD = new HeroPower.Toggle("integrated_superheroes_off_hex_field", "Hex Field",
@@ -96,7 +101,7 @@ public final class ScarletWitchPower {
                         tickBolts(player);
                         LAST_HEALTH.put(player.getUUID(), player.getHealth());
                         if (player.getAbilities().flying && player.tickCount % 2 == 0) {
-                            player.serverLevel().sendParticles(HEX_RED, player.getX(), player.getY() + 0.2D, player.getZ(), 2, 0.25D, 0.1D, 0.25D, 0.0D);
+                            player.serverLevel().sendParticles(hex(player), player.getX(), player.getY() + 0.2D, player.getZ(), 2, 0.25D, 0.1D, 0.25D, 0.0D);
                         }
                     }
 
@@ -122,7 +127,7 @@ public final class ScarletWitchPower {
                         event.setCanceled(true);
                         player.causeFoodExhaustion(0.5F);
                         Vec3 center = player.getBoundingBox().getCenter();
-                        player.serverLevel().sendParticles(HEX_RED, center.x, center.y, center.z, 16, 0.5D, 0.6D, 0.5D, 0.0D);
+                        player.serverLevel().sendParticles(hex(player), center.x, center.y, center.z, 16, 0.5D, 0.6D, 0.5D, 0.0D);
                         HeroFx.play(player, SoundEvents.ILLUSIONER_CAST_SPELL, 0.6F, 1.6F);
                     }
 
@@ -130,15 +135,18 @@ public final class ScarletWitchPower {
                     public void death(ServerPlayer player, LivingDeathEvent event) {
                         long now = player.level().getGameTime();
                         Long ready = PROBABILITY_READY.get(player.getUUID());
-                        if (ready != null && now < ready) {
+                        if (ready != null && now < ready || !CheatDeath.ready(player)) {
                             return;
                         }
                         event.setCanceled(true);
+                        CheatDeath.use(player);
                         player.setHealth(Math.max(1.0F, LAST_HEALTH.getOrDefault(player.getUUID(), 1.0F)));
                         PROBABILITY_READY.put(player.getUUID(), now + (long) (MarvelBalanceConfig.PROBABILITY_DODGE_COOLDOWN.get() * 20.0D));
                         Vec3 center = player.getBoundingBox().getCenter();
-                        player.serverLevel().sendParticles(HEX_RED, center.x, center.y, center.z, 60, 0.6D, 1.0D, 0.6D, 0.0D);
-                        player.serverLevel().sendParticles(ParticleTypes.FLASH, center.x, center.y, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+                        if (!HeroFx.vfx(player.serverLevel(), player.position(), "void_twist", WANDA_RED)) {
+                            player.serverLevel().sendParticles(hex(player), center.x, center.y, center.z, 60, 0.6D, 1.0D, 0.6D, 0.0D);
+                            player.serverLevel().sendParticles(ParticleTypes.FLASH, center.x, center.y, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+                        }
                         HeroFx.play(player, SoundEvents.ILLUSIONER_MIRROR_MOVE, 1.2F, 0.8F);
                         player.displayClientMessage(Component.literal("§cProbability bends. It missed."), true);
                         HeroAdvancements.count(player, "avengers/scarlet_witch/it_missed", 1.0D, 10.0D);
@@ -180,7 +188,7 @@ public final class ScarletWitchPower {
             LivingEntity victim = level.getEntitiesOfClass(LivingEntity.class, new AABB(bolt.pos, end).inflate(0.4D),
                             entity -> entity != player && entity.isAlive() && entity.getBoundingBox().inflate(0.4D).clip(current.pos, end).isPresent())
                     .stream().min(Comparator.comparingDouble(entity -> entity.distanceToSqr(current.pos))).orElse(null);
-            HeroAbilities.particleLine(level, bolt.pos, end, HEX_RED, 0.35D);
+            HeroAbilities.particleLine(level, bolt.pos, end, hex(player), 0.35D);
             if (victim != null) {
                 hit(player, victim, bolt.damage);
                 iterator.remove();
@@ -199,8 +207,10 @@ public final class ScarletWitchPower {
         target.hurt(player.damageSources().indirectMagic(player, player), damage);
         Vec3 center = target.getBoundingBox().getCenter();
         ServerLevel level = player.serverLevel();
-        level.sendParticles(ParticleTypes.WITCH, center.x, center.y, center.z, 20, 0.3D, 0.4D, 0.3D, 0.05D);
-        level.sendParticles(HEX_RED, center.x, center.y, center.z, 20, 0.4D, 0.5D, 0.4D, 0.0D);
+        if (!HeroFx.vfx(level, target.position(), "void_twist", WANDA_RED, (float) Math.max(1.0D, target.getBbWidth()))) {
+            level.sendParticles(ParticleTypes.WITCH, center.x, center.y, center.z, 20, 0.3D, 0.4D, 0.3D, 0.05D);
+            level.sendParticles(hex(player), center.x, center.y, center.z, 20, 0.4D, 0.5D, 0.4D, 0.0D);
+        }
         HeroFx.play(target, SoundEvents.EVOKER_CAST_SPELL, 0.8F, 0.7F);
         if (!target.isAlive() || !HeroAbilities.canControl(target)) {
             return;
@@ -308,7 +318,7 @@ public final class ScarletWitchPower {
                 wanda.heal(Math.min(event.getAmount(), wanda.getMaxHealth() * 0.25F));
                 level.sendParticles(ParticleTypes.HEART, wanda.getX(), wanda.getY() + 2.0D, wanda.getZ(), 3, 0.3D, 0.2D, 0.3D, 0.0D);
             }
-            level.sendParticles(HEX_RED, center.x, center.y, center.z, 12, 0.4D, 0.4D, 0.4D, 0.0D);
+            level.sendParticles(hex(wanda), center.x, center.y, center.z, 12, 0.4D, 0.4D, 0.4D, 0.0D);
             return;
         }
         if (BAD_LUCK.remove(attacker.getId()) != null) {
@@ -336,9 +346,11 @@ public final class ScarletWitchPower {
             }
             return 0.0D;
         }
-        boolean grabbed = HeroGrip.grab(player, beam.targets().get(0), 120, HEX_RED,
+        boolean grabbed = HeroGrip.grab(player, beam.targets().get(0), 120, hex(player),
                 held -> held.addEffect(new MobEffectInstance(MobEffects.GLOWING, 5, 0, false, false)));
         if (grabbed) {
+            LivingEntity held = beam.targets().get(0);
+            HeroFx.vfx(player.serverLevel(), held.position(), "invisible_woman/levitation_field", WANDA_RED, (float) Math.max(1.2D, held.getBbWidth() + 0.6D));
             HeroAnimations.play(player, "web_shoot_both");
             HeroFx.play(player, SoundEvents.ILLUSIONER_CAST_SPELL, 1.0F, 1.2F);
         }
@@ -371,14 +383,18 @@ public final class ScarletWitchPower {
             EntityType<? extends Mob> type = HARMLESS.get(player.getRandom().nextInt(HARMLESS.size()));
             if (mob.convertTo(type, false) != null) {
                 rewritten++;
-                level.sendParticles(HEX_RED, center.x, center.y, center.z, 30, 0.5D, 0.6D, 0.5D, 0.0D);
-                level.sendParticles(ParticleTypes.POOF, center.x, center.y, center.z, 8, 0.3D, 0.3D, 0.3D, 0.02D);
+                if (!HeroFx.vfx(level, center.subtract(0.0D, mob.getBbHeight() * 0.5D, 0.0D), "void_twist", WANDA_RED)) {
+                    level.sendParticles(hex(player), center.x, center.y, center.z, 30, 0.5D, 0.6D, 0.5D, 0.0D);
+                    level.sendParticles(ParticleTypes.POOF, center.x, center.y, center.z, 8, 0.3D, 0.3D, 0.3D, 0.02D);
+                }
             }
         }
         if (rewritten >= 6) {
             HeroAdvancements.award(player, "avengers/scarlet_witch/no_more_mobs");
         }
-        level.sendParticles(HEX_RED, player.getX(), player.getY() + 1.0D, player.getZ(), 120, radius * 0.4D, 1.0D, radius * 0.4D, 0.0D);
+        if (!HeroFx.vfx(level, player.position(), "void_maelstrom", WANDA_RED, (float) Math.min(radius, 8.0D))) {
+            level.sendParticles(hex(player), player.getX(), player.getY() + 1.0D, player.getZ(), 120, radius * 0.4D, 1.0D, radius * 0.4D, 0.0D);
+        }
         HeroFx.play(player, SoundEvents.ILLUSIONER_MIRROR_MOVE, 1.5F, 0.7F);
         HeroFx.play(player, SoundEvents.EVOKER_PREPARE_WOLOLO, 1.5F, 0.8F);
         HeroAnimations.play(player, "celestisynth:cs_solaris_spin");

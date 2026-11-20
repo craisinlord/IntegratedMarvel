@@ -94,7 +94,11 @@ public final class SuitIntegrationAbilities {
             bolt.setVisualOnly(true);
             level.addFreshEntity(bolt);
         }
-        HeroAbilities.particleLine(level, eye.add(0.0D, -0.3D, 0.0D), strike, ParticleTypes.ELECTRIC_SPARK, 0.5D);
+        if (HeroFx.vfx(level, strike, "fork_burst", 0, 3.0F)) {
+            HeroAbilities.particleLine(level, eye.add(0.0D, -0.3D, 0.0D), strike, HeroFx.particle("thematic:shock_particle", ParticleTypes.ELECTRIC_SPARK), 0.5D);
+        } else {
+            HeroAbilities.particleLine(level, eye.add(0.0D, -0.3D, 0.0D), strike, ParticleTypes.ELECTRIC_SPARK, 0.5D);
+        }
         if (hit != null && hit.getEntity() instanceof LivingEntity target) {
             float damage = context.damage(SuitAbilityConfig.ARC_CHARGE);
             target.invulnerableTime = 0;

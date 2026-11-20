@@ -1,0 +1,32 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "S": {
+      "item": "thematic:rage_shard"
+    },
+    "L": {
+      "item": "minecraft:redstone_block"
+    },
+    "A": {
+      "item": "thematic:alien_tech"
+    },
+    "B": {
+      "item": "minecraft:netherite_ingot"
+    }
+  },
+  "pattern": [
+    "SLS",
+    "ABA",
+    "S S"
+  ],
+  "result": {
+    "id": "thematic:red_ring"
+  }
+}

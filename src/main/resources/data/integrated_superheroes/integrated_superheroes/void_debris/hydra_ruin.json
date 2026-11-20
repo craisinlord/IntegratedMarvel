@@ -1,0 +1,9 @@
+{
+  "group": "hydra_ruin",
+  "include": [
+    "marvel:hydra_outpost/*",
+    "marvel:hydra_base/*/room/*",
+    "marvel:hydra_base/*/hallway/*"
+  ],
+  "weight": 1
+}

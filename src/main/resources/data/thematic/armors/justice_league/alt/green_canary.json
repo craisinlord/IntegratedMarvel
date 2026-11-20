@@ -1,0 +1,21 @@
+{
+  "tier": 9,
+  "abilities": [
+    {
+      "identifier": "glow",
+      "keybind": "key.thematic.cosmetic",
+      "options": {
+        "fields": {
+          "color": "#32C932"
+        }
+      }
+    }
+  ],
+  "fighting_type": [
+    "UTILITY",
+    "BRAWLER",
+    "DUELIST"
+  ],
+  "suit-recipe": "thematic:alt_green_canary",
+  "parent": "thematic:black_canary"
+}

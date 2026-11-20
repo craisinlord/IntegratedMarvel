@@ -1,0 +1,8 @@
+{
+    "name": "Force Push",
+    "category": "thematic:ability",
+    "icon": "minecraft:breeze_rod",
+    "pages": [
+        "A lighter shove that knocks back the enemies in front of you."
+    ]
+}

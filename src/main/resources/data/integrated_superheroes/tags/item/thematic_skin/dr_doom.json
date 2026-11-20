@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:dr_doom",
+      "required": false
+    },
+    {
+      "id": "thematic:kang",
+      "required": false
+    }
+  ]
+}

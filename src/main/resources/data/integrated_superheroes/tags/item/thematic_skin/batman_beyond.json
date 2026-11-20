@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:batman3000",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_beyond",
+      "required": false
+    },
+    {
+      "id": "thematic:batwing",
+      "required": false
+    }
+  ]
+}

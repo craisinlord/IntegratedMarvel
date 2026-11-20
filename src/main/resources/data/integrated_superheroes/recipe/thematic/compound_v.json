@@ -1,0 +1,42 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:mod_loaded",
+        "modid": "witchery"
+      }
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "leather",
+  "key": {
+    "#": {
+      "item": "minecraft:diamond_block"
+    },
+    "@": {
+      "item": "minecraft:diamond"
+    },
+    "&": {
+      "item": "minecraft:glass_bottle"
+    },
+    "$": {
+      "item": "thematic:ruby"
+    }
+  },
+  "pattern": [
+    "#$#",
+    "@&@",
+    "#$#"
+  ],
+  "result": {
+    "count": 1,
+    "id": "thematic:compound_v"
+  },
+  "show_notification": true
+}

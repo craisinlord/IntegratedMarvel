@@ -1,0 +1,37 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:cpt_marvel",
+      "required": false
+    },
+    {
+      "id": "thematic:king_shazam",
+      "required": false
+    },
+    {
+      "id": "thematic:mazahs",
+      "required": false
+    },
+    {
+      "id": "thematic:shazam",
+      "required": false
+    },
+    {
+      "id": "thematic:shazam_apokolips",
+      "required": false
+    },
+    {
+      "id": "thematic:shazam_dceu",
+      "required": false
+    },
+    {
+      "id": "thematic:shazam_injustice",
+      "required": false
+    },
+    {
+      "id": "thematic:shazam_modern",
+      "required": false
+    }
+  ]
+}

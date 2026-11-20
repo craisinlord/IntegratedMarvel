@@ -1,0 +1,8 @@
+{
+  "name": "Boom Tube",
+  "category": "thematic:ability",
+  "icon": "minecraft:crying_obsidian",
+  "pages": [
+    "Open a Boom Tube to the safe ground position you aim at, up to 48 blocks away in loaded terrain. Arrival unleashes a six-block shockwave against up to eight visible enemies for 65 configured damage and knockback. Fourteen-second base cooldown. Same dimension only; the destination must fit your body, have solid support, and be free of hazards. Failed attempts still spend the ability cooldown. Requires the complete Darkseid set."
+  ]
+}

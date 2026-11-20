@@ -1,0 +1,344 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:batman_zur"
+    }
+  ],
+  "type": "marvel:suit_variant",
+  "suit": {
+    "type": "neoforge:compound",
+    "children": [
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batgirl"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batgirl1"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batgirl1966"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batgirl52"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batgirl_bombshell"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batgirl_dc_vs_vampires"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batgirl_knights"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batgirl_modern"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman1"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman52"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_2025"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_absolute"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_bn"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_btas"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_dcamu"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_flashpoint"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_hush"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_inc"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_jlu"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_lkoe"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_new52"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_rebirth"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_starro"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_telltale"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_tnba"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_unlimited"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_worldsfinest"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_zur"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batwoman"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:moon_knight"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:mr_knight"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:nightwing"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:nightwing_rebirth"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:orphan"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:orphan_batgirl"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:question"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:question_rm"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:red_robin"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:red_robin_rebirth"
+        },
+        "strict": false
+      }
+    ]
+  },
+  "results": {
+    "id": "integrated_superheroes:suit_helmet",
+    "components": {
+      "integrated_superheroes:suit": "thematic:batman_zur"
+    }
+  }
+}

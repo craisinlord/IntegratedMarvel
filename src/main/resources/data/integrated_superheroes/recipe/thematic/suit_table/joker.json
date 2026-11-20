@@ -1,0 +1,46 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:joker"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "minecraft:diamond_chestplate"
+  },
+  "ingredients": [
+    {
+      "item": "thematic:joker_venom"
+    },
+    {
+      "item": "thematic:joker_venom"
+    },
+    {
+      "item": "thematic:playing_cards"
+    },
+    {
+      "item": "thematic:arrow_boxing_glove"
+    },
+    {
+      "item": "thematic:fire_extinguisher"
+    },
+    {
+      "item": "marvellegacy:cloth_purple"
+    },
+    {
+      "item": "marvellegacy:cloth_purple"
+    },
+    {
+      "item": "marvellegacy:cloth_green"
+    }
+  ],
+  "results": {
+    "id": "thematic:joker"
+  }
+}

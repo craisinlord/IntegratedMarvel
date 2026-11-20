@@ -1,0 +1,8 @@
+{
+    "name":  "Sonar Pulse",
+    "category":  "thematic:ability",
+    "icon":  "minecraft:heart_of_the_sea",
+    "pages":  [
+                  "Send out a sonar ping while you are in water. Every creature in the water within a wide radius shows up through walls for a little while. Only you can see the outlines."
+              ]
+}

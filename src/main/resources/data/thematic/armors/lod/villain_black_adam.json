@@ -1,0 +1,70 @@
+{
+  "wip": true,
+  "creative": false,
+  "boss": true,
+  "tier": 9,
+  "model": "thematic:black_adam",
+  "mob_tempo": {
+    "gap": 24,
+    "evaluate": 6
+  },
+  "mob_body": {
+    "attributes": {
+      "minecraft:generic.knockback_resistance": 0.6
+    },
+    "prefer_vs_airborne": [
+      "lightning_clap"
+    ]
+  },
+  "abilities": [
+    {
+      "identifier": "lightning_clap",
+      "keybind": "key.thematic.ability_2",
+      "options": {
+        "fields": {
+          "color": "#FBFF49"
+        }
+      }
+    },
+    {
+      "identifier": "aerial_charge",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "thunder_clap",
+      "keybind": "key.thematic.ability_4"
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 60,
+      "maximum": 80
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 60,
+      "maximum": 70
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 70,
+      "maximum": 90
+    }
+  ],
+  "fighting_type": [
+    "BRAWLER"
+  ],
+  "flight_type": "ONE_HAND_LEFT",
+  "cape": {
+    "partCount": 16,
+    "height": 1.3,
+    "width": 0.4,
+    "thickness": 0.001,
+    "texture": "thematic:textures/cape/blackadam_cape.png",
+    "shinyTexture": null,
+    "simulation": {
+      "type": "cape"
+    }
+  }
+}

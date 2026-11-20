@@ -66,13 +66,35 @@ public final class HeroContent {
     public static final DeferredItem<Item> ROGUE_SYRINGE = syringe("syringe_absorption_anna_marie", RoguePower.ID);
     public static final DeferredItem<Item> JUBILEE_SYRINGE = syringe("syringe_pyrotechnics_jubilation_lee", JubileePower.ID);
     public static final DeferredItem<Item> VILTRUMITE_SYRINGE = ModCompat.VILTRUMITE ? syringe("syringe_viltrumite_blood_omni_man", ViltrumitePower.ID) : null;
+    public static final DeferredItem<Item> KRYPTONIAN_SYRINGE = thematicSyringe(KryptonianPower.ID);
+    public static final DeferredItem<Item> MARTIAN_SYRINGE = thematicSyringe(MartianPower.ID);
+    public static final DeferredItem<Item> SHAZAM_SYRINGE = thematicSyringe(ShazamPower.ID);
+    public static final DeferredItem<Item> ATLANTEAN_SYRINGE = thematicSyringe(AtlanteanPower.ID);
+    public static final DeferredItem<Item> AMAZON_SYRINGE = thematicSyringe(AmazonPower.ID);
+    public static final DeferredItem<Item> SONIC_SYRINGE = thematicSyringe(SonicPower.ID);
+    public static final DeferredItem<Item> HOMELANDER_SYRINGE = thematicSyringe(HomelanderPower.ID);
+    public static final DeferredItem<Item> JUGGERNAUT_SYRINGE = thematicSyringe(JuggernautPower.ID);
+    public static final DeferredItem<Item> BEAST_SYRINGE = thematicSyringe(BeastPower.ID);
+    public static final DeferredItem<Item> NIGHTCRAWLER_SYRINGE = syringe("syringe_" + NightcrawlerPower.ID, NightcrawlerPower.ID);
+    public static final DeferredItem<Item> ANGEL_SYRINGE = thematicSyringe(AngelPower.ID);
+    public static final DeferredItem<Item> GHOST_RIDER_SYRINGE = thematicSyringe(GhostRiderPower.ID);
+    public static final DeferredItem<Item> JEAN_GREY_SYRINGE = syringe("syringe_" + JeanGreyPower.ID, JeanGreyPower.ID);
+    public static final DeferredItem<Item> PROFESSOR_X_SYRINGE = syringe("syringe_" + ProfessorXPower.ID, ProfessorXPower.ID);
+    public static final DeferredItem<Item> SWAMP_THING_SYRINGE = thematicSyringe(SwampThingPower.ID);
+    public static final DeferredItem<Item> GROOT_SYRINGE = thematicSyringe(GrootPower.ID);
+    public static final DeferredItem<Item> SILVER_SURFER_SYRINGE = thematicSyringe(SilverSurferPower.ID);
     private static final List<DeferredItem<Item>> SYRINGES = java.util.stream.Stream.of(
             SUPER_SOLDIER_SYRINGE, PANTHER_SYRINGE, DEADPOOL_SYRINGE, QUICKSILVER_SYRINGE, CYCLOPS_SYRINGE, BINARY_SYRINGE,
             HULK_SYRINGE, MAGNETO_SYRINGE, STORM_SYRINGE, ICEMAN_SYRINGE, SCARLET_WITCH_SYRINGE, COLOSSUS_SYRINGE,
             DAREDEVIL_SYRINGE, KITTY_SYRINGE, SQUIRREL_GIRL_SYRINGE, TORCH_SYRINGE, SUE_SYRINGE, REED_SYRINGE, THING_SYRINGE,
-            GAMBIT_SYRINGE, ROGUE_SYRINGE, JUBILEE_SYRINGE, VILTRUMITE_SYRINGE).filter(java.util.Objects::nonNull).toList();
+            GAMBIT_SYRINGE, ROGUE_SYRINGE, JUBILEE_SYRINGE, VILTRUMITE_SYRINGE, KRYPTONIAN_SYRINGE, MARTIAN_SYRINGE, SHAZAM_SYRINGE,
+            ATLANTEAN_SYRINGE, AMAZON_SYRINGE, SONIC_SYRINGE, HOMELANDER_SYRINGE, JUGGERNAUT_SYRINGE,BEAST_SYRINGE, NIGHTCRAWLER_SYRINGE, ANGEL_SYRINGE, GHOST_RIDER_SYRINGE, JEAN_GREY_SYRINGE, PROFESSOR_X_SYRINGE, SWAMP_THING_SYRINGE, GROOT_SYRINGE, SILVER_SURFER_SYRINGE).filter(java.util.Objects::nonNull).toList();
 
     private HeroContent() {
+    }
+
+    private static DeferredItem<Item> thematicSyringe(String heroId) {
+        return ModCompat.THEMATIC ? syringe("syringe_" + heroId, heroId) : null;
     }
 
     private static DeferredItem<Item> syringe(String name, String heroId) {
@@ -106,6 +128,25 @@ public final class HeroContent {
         HeroPowers.register(GambitPower.create(GAMBIT_SYRINGE));
         HeroPowers.register(RoguePower.create(ROGUE_SYRINGE));
         HeroPowers.register(JubileePower.create(JUBILEE_SYRINGE));
+        HeroPowers.register(NightcrawlerPower.create(NIGHTCRAWLER_SYRINGE));
+        HeroPowers.register(JeanGreyPower.create(JEAN_GREY_SYRINGE));
+        HeroPowers.register(ProfessorXPower.create(PROFESSOR_X_SYRINGE));
+        if (ModCompat.THEMATIC) {
+            HeroPowers.register(KryptonianPower.create(KRYPTONIAN_SYRINGE));
+            HeroPowers.register(MartianPower.create(MARTIAN_SYRINGE));
+            HeroPowers.register(ShazamPower.create(SHAZAM_SYRINGE));
+            HeroPowers.register(AtlanteanPower.create(ATLANTEAN_SYRINGE));
+            HeroPowers.register(AmazonPower.create(AMAZON_SYRINGE));
+            HeroPowers.register(SonicPower.create(SONIC_SYRINGE));
+            HeroPowers.register(HomelanderPower.create(HOMELANDER_SYRINGE));
+            HeroPowers.register(JuggernautPower.create(JUGGERNAUT_SYRINGE));
+            HeroPowers.register(AngelPower.create(ANGEL_SYRINGE));
+            HeroPowers.register(GhostRiderPower.create(GHOST_RIDER_SYRINGE));
+            HeroPowers.register(SwampThingPower.create(SWAMP_THING_SYRINGE));
+            HeroPowers.register(SilverSurferPower.create(SILVER_SURFER_SYRINGE));
+            HeroPowers.register(GrootPower.create(GROOT_SYRINGE));
+            HeroPowers.register(BeastPower.create(BEAST_SYRINGE));
+        }
         if (ModCompat.VILTRUMITE) {
             HeroPowers.register(ViltrumitePower.create(VILTRUMITE_SYRINGE));
             ViltrumiteCompat.register();
@@ -113,6 +154,7 @@ public final class HeroContent {
         }
 
         LEGACY_ITEMS.register(modEventBus);
+        com.craisinlord.integrated_superheroes.hero.skin.SkinData.register(modEventBus);
         modEventBus.addListener(HeroContent::commonSetup);
         NeoForge.EVENT_BUS.addListener(HeroContent::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(HeroContent::onAnyPlayerTick);
@@ -128,6 +170,7 @@ public final class HeroContent {
         NeoForge.EVENT_BUS.addListener(HeroContent::onJoinLevel);
         HealingFactor.register();
         DeadpoolPower.registerEvents();
+        NightcrawlerPower.registerEvents();
         NeoForge.EVENT_BUS.addListener(TempBlocks::onBreak);
         NeoForge.EVENT_BUS.addListener(KittyPower::onAttack);
         NeoForge.EVENT_BUS.addListener(KittyPower::onUseBlock);
@@ -252,6 +295,7 @@ public final class HeroContent {
             HeroBlockLift.drop(player);
             HeroGrapple.clear(player);
             DaredevilPower.dropClub(player);
+            DaredevilPower.dropProp(player);
             GambitPower.clear(player);
             JubileePower.clear(player);
             RogueKit.clear(player);

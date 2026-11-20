@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:spectre",
+      "required": false
+    },
+    {
+      "id": "thematic:spectre_cw",
+      "required": false
+    },
+    {
+      "id": "thematic:spectre_hj",
+      "required": false
+    }
+  ]
+}

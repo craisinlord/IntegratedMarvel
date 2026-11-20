@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:drowned",
+    "minecraft:guardian",
+    { "id": "iceandfire:sea_serpent", "required": false },
+    { "id": "iceandfire:siren", "required": false },
+    { "id": "antarchy:missile_squid", "required": false },
+    { "id": "antarchy:octopus_bomb", "required": false },
+    { "id": "alexscaves:deep_one", "required": false },
+    { "id": "alexscaves:deep_one_knight", "required": false },
+    { "id": "alexscaves:deep_one_mage", "required": false },
+    { "id": "alexscaves:radgill", "required": false }
+  ]
+}

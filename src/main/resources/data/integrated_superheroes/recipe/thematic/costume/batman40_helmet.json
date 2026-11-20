@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:batman40"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "MAM",
+    "M M"
+  ],
+  "key": {
+    "M": {
+      "item": "minecraft:leather"
+    },
+    "A": {
+      "item": "marvellegacy:cloth_black"
+    }
+  },
+  "result": {
+    "id": "integrated_superheroes:suit_helmet",
+    "components": {
+      "integrated_superheroes:suit": "thematic:batman40"
+    },
+    "count": 1
+  }
+}

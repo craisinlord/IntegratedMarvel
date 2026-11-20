@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:ezio",
+      "required": false
+    },
+    {
+      "id": "thematic:lara_croft",
+      "required": false
+    },
+    {
+      "id": "thematic:leon",
+      "required": false
+    }
+  ]
+}

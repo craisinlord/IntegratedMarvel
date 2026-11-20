@@ -1,0 +1,15 @@
+{
+  "parent": "thematic:superman",
+  "suit-recipe": "thematic:alt_superman_hunterprey",
+  "cape": {
+    "partCount": 16,
+    "height": 1.3,
+    "width": 0.4,
+    "thickness": 0.001,
+    "texture": "thematic:textures/cape/superman_cape.png",
+    "shinyTexture": "thematic:textures/cape/hunter_cape.png",
+    "simulation": {
+      "type": "cape"
+    }
+  }
+}

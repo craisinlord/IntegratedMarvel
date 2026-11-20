@@ -1,0 +1,120 @@
+{
+  "tier": 10,
+  "boss": true,
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 2.0
+    },
+    {
+      "identifier": "pehkui:visibility",
+      "effect": 10.0
+    },
+    {
+      "identifier": "pehkui:reach",
+      "effect": 4.0
+    },
+    {
+      "identifier": "pehkui:health",
+      "effect": 10.0
+    },
+    {
+      "identifier": "pehkui:held_item",
+      "effect": 2.0
+    },
+    {
+      "identifier": "pehkui:projectiles",
+      "effect": 3.0
+    }
+  ],
+  "abilities": [
+    {
+      "identifier": "death_charge",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "level": "9",
+          "constructs": "#black_constructs"
+        }
+      }
+    },
+    {
+      "identifier": "flight",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "night_vision",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "glow",
+      "keybind": "key.thematic.cosmetic",
+      "options": {
+        "fields": {
+          "color": "#3A1F4D"
+        }
+      }
+    },
+    {
+      "identifier": "death_beam",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "construct_wheel",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "death_shield",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "death_stare",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "death_run",
+      "keybind": "key.thematic.ultimate"
+    }
+  ],
+  "tags": [
+    "lantern"
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 98,
+      "maximum": 99
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 98,
+      "maximum": 99
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 98,
+      "maximum": 99
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 60,
+      "maximum": 75
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 98,
+      "maximum": 99
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 98,
+      "maximum": 99
+    }
+  ],
+  "fighting_type": [
+    "UTILITY",
+    "BRAWLER",
+    "DUELIST"
+  ],
+  "flight_type": "ONE_HAND_LEFT"
+}

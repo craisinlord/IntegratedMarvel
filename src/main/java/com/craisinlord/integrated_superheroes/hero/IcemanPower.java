@@ -34,6 +34,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public final class IcemanPower {
+    private static final int FROST_CONE = 0xB3D8F4FF;
     public static final String ID = "cryokinesis_bobby_drake";
     public static final HeroPower.Toggle ICE_SLIDE = new HeroPower.Toggle("integrated_superheroes_off_ice_slide", "Ice Slide", () -> Items.PACKED_ICE);
     public static final HeroPower.Toggle ICE_FORM = new HeroPower.Toggle("integrated_superheroes_off_ice_form", "Ice Form", () -> HeroFx.item("pastel:frostbite_crystal", net.minecraft.world.item.Items.PACKED_ICE));
@@ -125,9 +126,14 @@ public final class IcemanPower {
                         target.removeEffect(MobEffects.DIG_SLOWDOWN);
                         ServerLevel level = player.serverLevel();
                         Vec3 center = target.getBoundingBox().getCenter();
-                        level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.ICE.defaultBlockState()), center.x, center.y, center.z,
-                                30, target.getBbWidth() * 0.5D, target.getBbHeight() * 0.5D, target.getBbWidth() * 0.5D, 0.1D);
-                        HeroFx.play(target, SoundEvents.GLASS_BREAK, 1.0F, 0.8F);
+                        if (HeroFx.vfx(level, center, "powergirl_ice_shatter", 0, (float) Math.max(1.5D, target.getBbWidth() * 2.0D))) {
+                            HeroFx.cue(target, "thematic:ice_vision", 1.0F, 0.8F);
+                            HeroFx.play(target, SoundEvents.GLASS_BREAK, 1.0F, 0.8F);
+                        } else {
+                            level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.ICE.defaultBlockState()), center.x, center.y, center.z,
+                                    30, target.getBbWidth() * 0.5D, target.getBbHeight() * 0.5D, target.getBbWidth() * 0.5D, 0.1D);
+                            HeroFx.play(target, SoundEvents.GLASS_BREAK, 1.0F, 0.8F);
+                        }
                     }
                 }
         );
@@ -151,20 +157,29 @@ public final class IcemanPower {
         double range = MarvelBalanceConfig.FREEZE_RANGE.get();
         float damage = MarvelBalanceConfig.FREEZE_DAMAGE.get().floatValue();
         ServerLevel level = player.serverLevel();
+        Vec3 eye = player.getEyePosition().subtract(0.0D, 0.2D, 0.0D);
+        Vec3 look = player.getLookAngle();
+        boolean themed = HeroFx.thematic() && HeroFx.beam(level, eye.add(look), eye.add(look.scale(range)), "pyre_cone", FROST_CONE);
         for (LivingEntity target : HeroAbilities.cone(player, range, 30.0D)) {
             target.hurt(player.damageSources().mobAttack(player), damage);
             freeze(target, MarvelBalanceConfig.FREEZE_TICKS.get());
             Vec3 center = target.getBoundingBox().getCenter();
-            level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SNOWBALL)), center.x, center.y, center.z,
-                    10, 0.3D, 0.4D, 0.3D, 0.05D);
+            if (!(themed && HeroFx.vfx(level, center, "bizarro_frost_burst", 0))) {
+                level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SNOWBALL)), center.x, center.y, center.z,
+                        10, 0.3D, 0.4D, 0.3D, 0.05D);
+            }
         }
-        Vec3 eye = player.getEyePosition().subtract(0.0D, 0.2D, 0.0D);
-        for (int i = -2; i <= 2; i++) {
-            Vec3 direction = Vec3.directionFromRotation(player.getXRot(), player.getYRot() + i * 10.0F);
-            HeroAbilities.particleLine(level, eye.add(direction), eye.add(direction.scale(range)), ParticleTypes.SNOWFLAKE, 0.8D);
+        if (themed) {
+            HeroFx.vfx(level, eye.add(look.scale(range * 0.75D)), "powergirl_frost_mist", 0);
+            HeroFx.cue(player, "thematic:frost_breath", 1.0F, 1.0F);
+        } else {
+            for (int i = -2; i <= 2; i++) {
+                Vec3 direction = Vec3.directionFromRotation(player.getXRot(), player.getYRot() + i * 10.0F);
+                HeroAbilities.particleLine(level, eye.add(direction), eye.add(direction.scale(range)), ParticleTypes.SNOWFLAKE, 0.8D);
+            }
+            HeroFx.play(player, SoundEvents.POWDER_SNOW_BREAK, 1.2F, 0.6F);
+            HeroFx.play(player, SoundEvents.PLAYER_HURT_FREEZE, 0.8F, 1.2F);
         }
-        HeroFx.play(player, SoundEvents.POWDER_SNOW_BREAK, 1.2F, 0.6F);
-        HeroFx.play(player, SoundEvents.PLAYER_HURT_FREEZE, 0.8F, 1.2F);
         HeroAnimations.play(player, "web_shoot_both");
         return MarvelBalanceConfig.FREEZE_COOLDOWN.get();
     }
@@ -203,7 +218,13 @@ public final class IcemanPower {
                 pulse(player, level, target, channel);
             }
             freezeWater(player, level, beam.start(), to);
-            level.sendParticles(ParticleTypes.SNOWFLAKE, to.x, to.y, to.z, 8, 0.3D, 0.3D, 0.3D, 0.05D);
+            if (HeroFx.vfx(level, to, "bizarro_frost_burst", 0)) {
+                if (elapsed % 20 == 0) {
+                    HeroFx.cue(level, to, "thematic:ice_vision", 0.7F, 1.0F);
+                }
+            } else {
+                level.sendParticles(ParticleTypes.SNOWFLAKE, to.x, to.y, to.z, 8, 0.3D, 0.3D, 0.3D, 0.05D);
+            }
         }
         BEAMS.put(player.getUUID(), new Channel(channel.ticksLeft() - 1, channel.hits()));
     }
@@ -303,11 +324,17 @@ public final class IcemanPower {
                 TempBlocks.place(level, player, pos, 200 + level.random.nextInt(100));
             }
         }
-        level.sendParticles(ParticleTypes.SNOWFLAKE, player.getX(), player.getY() + 1.0D, player.getZ(), 120, radius * 0.5D, 0.8D, radius * 0.5D, 0.05D);
-        level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.PACKED_ICE.defaultBlockState()), player.getX(), player.getY() + 0.2D,
-                player.getZ(), 60, radius * 0.4D, 0.1D, radius * 0.4D, 0.1D);
-        HeroFx.play(player, SoundEvents.GLASS_BREAK, 1.2F, 0.5F);
-        HeroFx.play(player, SoundEvents.POWDER_SNOW_PLACE, 1.5F, 0.6F);
+        if (HeroFx.vfx(level, player.position(), "powergirl_frost_mist", 0, (float) radius)) {
+            HeroFx.vfx(level, player.position().add(0.0D, 1.0D, 0.0D), "powergirl_ice_shatter", 0, (float) radius);
+            HeroFx.cue(player, "thematic:frost_breath", 1.2F, 0.8F);
+            HeroFx.play(player, SoundEvents.GLASS_BREAK, 1.2F, 0.5F);
+        } else {
+            level.sendParticles(ParticleTypes.SNOWFLAKE, player.getX(), player.getY() + 1.0D, player.getZ(), 120, radius * 0.5D, 0.8D, radius * 0.5D, 0.05D);
+            level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.PACKED_ICE.defaultBlockState()), player.getX(), player.getY() + 0.2D,
+                    player.getZ(), 60, radius * 0.4D, 0.1D, radius * 0.4D, 0.1D);
+            HeroFx.play(player, SoundEvents.GLASS_BREAK, 1.2F, 0.5F);
+            HeroFx.play(player, SoundEvents.POWDER_SNOW_PLACE, 1.5F, 0.6F);
+        }
         HeroAnimations.play(player, "celestisynth:cs_frostbound_cryogenesis");
         return MarvelBalanceConfig.CRYOGENESIS_COOLDOWN.get();
     }

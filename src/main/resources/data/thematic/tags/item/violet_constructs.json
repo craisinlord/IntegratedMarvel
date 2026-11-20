@@ -1,0 +1,25 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:lantern_spear",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_katana",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_cage_love",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_crystal_blade",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_love_bow",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "abilities": [
+    {
+      "identifier": "acrobatics",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "level": "1"
+        }
+      }
+    },
+    {
+      "identifier": "night_vision",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "stealth",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "gliding",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "snow_speed",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "snow_immunity",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "bat_snow_cloak",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "bat_gadget_arctic",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "bat_belt_arctic",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "bat_detective_mode",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "crowd_control",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "bat_swarm",
+      "keybind": "key.thematic.ability_4"
+    },
+    {
+      "identifier": "double_kick",
+      "keybind": "key.thematic.ability_5"
+    },
+    {
+      "identifier": "bat_belt_batman",
+      "remove": true
+    },
+    {
+      "identifier": "bat_gadget_batman",
+      "remove": true
+    }
+  ],
+  "suit-recipe": "thematic:alt_arcticbatman",
+  "cape": {
+    "partCount": 16,
+    "height": 1.3,
+    "width": 0.5,
+    "thickness": 0.001,
+    "texture": "thematic:textures/cape/arcticbatman_cape.png",
+    "shinyTexture": null,
+    "simulation": {
+      "type": "cape"
+    }
+  },
+  "glider": {
+    "partCount": 4,
+    "height": 2.0,
+    "width": 2.0,
+    "thickness": 0.001,
+    "texture": "thematic:textures/glider/arctic_glider.png",
+    "shinyTexture": null,
+    "simulation": {
+      "type": "glider"
+    }
+  },
+  "parent": "thematic:batman",
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 64,
+      "maximum": 72
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 85,
+      "maximum": 95
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 58,
+      "maximum": 66
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 40,
+      "maximum": 48
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 70,
+      "maximum": 80
+    }
+  ],
+  "tier": 7,
+  "fighting_type": [
+    "UTILITY",
+    "BRAWLER"
+  ],
+  "priority": 10
+}

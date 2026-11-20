@@ -1,0 +1,136 @@
+{
+  "priority": 10,
+  "wip": false,
+  "suit-recipe": "thematic:dracula",
+  "tier": 9,
+  "abilities": [
+    {
+      "identifier": "hypnosis",
+      "keybind": "key.thematic.utility"
+    },
+    {
+      "identifier": "bloodsucker_bite",
+      "keybind": "key.thematic.ability_0",
+      "options": {
+        "fields": {
+          "damage_scale": "8"
+        }
+      }
+    },
+    {
+      "identifier": "bat_key",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "wolf_form",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "vampiric_teleport",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "caped_colony",
+      "keybind": "key.thematic.ability_4",
+      "options": {
+        "fields": {
+          "damage_scale": "8"
+        }
+      }
+    },
+    {
+      "identifier": "transylvanian_terror",
+      "keybind": "key.thematic.ability_5"
+    },
+    {
+      "identifier": "mist_form",
+      "keybind": "key.thematic.equip_item"
+    },
+    {
+      "identifier": "demonic_transformation",
+      "keybind": "key.thematic.ultimate"
+    },
+    {
+      "identifier": "bat_form",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "bat_colony",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "night_vision",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "blood_sense",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "wolf_instincts",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "wolf_lunge",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "damage_scale": "8"
+        }
+      }
+    },
+    {
+      "identifier": "wolf_stampede",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "damage_scale": "8"
+        }
+      }
+    },
+    {
+      "identifier": "bat_bite",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "damage_scale": "8"
+        }
+      }
+    },
+    {
+      "identifier": "toggle_brood",
+      "keybind": "key.thematic.cosmetic"
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 32,
+      "maximum": 48
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 30,
+      "maximum": 48
+    }
+  ],
+  "fighting_type": [
+    "BRAWLER"
+  ],
+  "cape": {
+    "partCount": 16,
+    "height": 1.3,
+    "width": 0.5,
+    "thickness": 0.001,
+    "texture": "thematic:textures/cape/dracula_cape.png",
+    "shinyTexture": null,
+    "simulation": {
+      "type": "cape"
+    }
+  }
+}

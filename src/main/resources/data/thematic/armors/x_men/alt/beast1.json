@@ -1,0 +1,6 @@
+{
+  "parent": "thematic:beast",
+  "fighting_type": [
+    "BRAWLER"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "suit-recipe": "thematic:alt_supergirl_dceu",
+  "parent": "thematic:supergirl",
+  "cape": {
+    "partCount": 16,
+    "height": 1.3,
+    "width": 0.4,
+    "thickness": 0.001,
+    "texture": "thematic:textures/cape/supergirldceu_cape.png",
+    "simulation": {
+      "type": "cape"
+    }
+  }
+}

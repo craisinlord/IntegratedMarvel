@@ -1,0 +1,8 @@
+{
+  "name": "Gauntlet Array",
+  "category": "thematic:ability",
+  "icon": "minecraft:emerald",
+  "pages": [
+    "Fire a piercing green tech beam through up to three enemies, leaving one infernal sigil at its impact point. The sigil damages and weakens enemies for six seconds. A new shot replaces the old field. Four-second base cooldown. Doom Ascendant empowers the beam. Requires the complete Doctor Doom armor set."
+  ]
+}

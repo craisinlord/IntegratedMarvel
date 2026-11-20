@@ -1,0 +1,88 @@
+{
+  "priority": 10,
+  "tier": 10,
+  "abilities": [
+    {
+      "identifier": "acrobatics",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "level": "2"
+        }
+      }
+    },
+    {
+      "identifier": "frenzied_swipes",
+      "keybind": "key.thematic.ability_0",
+      "options": {
+        "fields": {
+          "name": "integrated_superheroes.ability.blades_of_chaos"
+        }
+      }
+    },
+    {
+      "identifier": "cripple",
+      "keybind": "key.thematic.ability_1",
+      "options": {
+        "fields": {
+          "damage": "150"
+        }
+      }
+    },
+    {
+      "identifier": "battle_charge",
+      "keybind": "key.thematic.ability_2",
+      "options": {
+        "fields": {
+          "damage": "170"
+        }
+      }
+    },
+    {
+      "identifier": "ground_pound",
+      "keybind": "key.thematic.ability_3",
+      "options": {
+        "fields": {
+          "damage": "200"
+        }
+      }
+    },
+    {
+      "identifier": "berserker",
+      "keybind": "key.thematic.ultimate",
+      "options": {
+        "fields": {
+          "name": "integrated_superheroes.ability.spartan_rage"
+        }
+      }
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 4,
+      "maximum": 24
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 50,
+      "maximum": 70
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_knockbase_resistance",
+      "minimum": 3,
+      "maximum": 23
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 3,
+      "maximum": 23
+    }
+  ],
+  "fighting_type": []
+}

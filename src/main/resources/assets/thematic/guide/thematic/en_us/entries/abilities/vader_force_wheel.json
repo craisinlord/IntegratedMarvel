@@ -1,0 +1,8 @@
+{
+    "name": "Force Powers",
+    "category": "thematic:ability",
+    "icon": "minecraft:wither_rose",
+    "pages": [
+        "Pick which Force power Use the Force sets off: Force Choke, Force Push, Force Pull or Saber Throw. Your pick stays until you change it."
+    ]
+}

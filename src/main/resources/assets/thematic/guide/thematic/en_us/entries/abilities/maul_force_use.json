@@ -1,0 +1,8 @@
+{
+    "name": "Use the Force",
+    "category": "thematic:ability",
+    "icon": "minecraft:breeze_rod",
+    "pages": [
+        "Sets off the Force power you picked. Each power has its own cooldown. Force Push is used until you pick something else."
+    ]
+}

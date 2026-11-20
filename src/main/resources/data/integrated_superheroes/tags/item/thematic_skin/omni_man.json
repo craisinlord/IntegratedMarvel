@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:omni_man",
+      "required": false
+    }
+  ]
+}

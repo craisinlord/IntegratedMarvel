@@ -1,0 +1,48 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:vision_uncanny"
+    }
+  ],
+  "type": "marvel:suit_variant",
+  "suit": {
+    "type": "neoforge:compound",
+    "children": [
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_boots",
+        "components": {
+          "integrated_superheroes:suit": "thematic:vision"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_boots",
+        "components": {
+          "integrated_superheroes:suit": "thematic:vision_mcu"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_boots",
+        "components": {
+          "integrated_superheroes:suit": "thematic:vision_uncanny"
+        },
+        "strict": false
+      }
+    ]
+  },
+  "results": {
+    "id": "integrated_superheroes:suit_boots",
+    "components": {
+      "integrated_superheroes:suit": "thematic:vision_uncanny"
+    }
+  }
+}

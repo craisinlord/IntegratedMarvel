@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:nova",
+      "required": false
+    },
+    {
+      "id": "thematic:yondu",
+      "required": false
+    }
+  ]
+}

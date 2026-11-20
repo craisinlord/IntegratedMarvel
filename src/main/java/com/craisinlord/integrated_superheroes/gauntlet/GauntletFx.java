@@ -60,6 +60,34 @@ public final class GauntletFx {
                 Math.max(horizontal.length(), vertical));
     }
 
+    public static void farEllipse(ServerLevel level, ParticleOptions particle, Vec3 center, Vec3 horizontal, double vertical, int points,
+                                  double phase, double range) {
+        double rangeSqr = range * range;
+        for (ServerPlayer player : level.players()) {
+            double distanceSqr = player.distanceToSqr(center);
+            if (distanceSqr > rangeSqr) continue;
+            int count = Math.min(points, Math.max(4, thin(points, distanceSqr)));
+            PacketDistributor.sendToPlayer(player, new GauntletShapePayload(particle, GauntletShapePayload.ELLIPSE, center.x, center.y,
+                    center.z, horizontal.x, horizontal.y, horizontal.z, (float) vertical, count, 0.0F, (float) phase, true));
+        }
+    }
+
+    public static void farParticles(ServerLevel level, ParticleOptions particle, Vec3 at, int count, double dx, double dy, double dz,
+                                    double speed, double range) {
+        double rangeSqr = range * range;
+        for (ServerPlayer player : level.players()) {
+            double distanceSqr = player.distanceToSqr(at);
+            if (distanceSqr > rangeSqr) continue;
+            level.sendParticles(player, particle, true, at.x, at.y, at.z, thin(count, distanceSqr), dx, dy, dz, speed);
+        }
+    }
+
+    private static int thin(int count, double distanceSqr) {
+        if (distanceSqr <= 48.0D * 48.0D) return count;
+        double factor = Math.max(0.3D, 48.0D / Math.sqrt(distanceSqr));
+        return Math.max(1, (int) Math.ceil(count * factor));
+    }
+
     private static void shape(ServerLevel level, GauntletShapePayload payload, Vec3 center, double reach) {
         double range = 32.0D + reach;
         double rangeSqr = range * range;

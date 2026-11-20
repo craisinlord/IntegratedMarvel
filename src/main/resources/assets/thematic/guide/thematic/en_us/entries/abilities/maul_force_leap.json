@@ -1,0 +1,8 @@
+{
+    "name": "Force Leap",
+    "category": "thematic:ability",
+    "icon": "minecraft:rabbit_foot",
+    "pages": [
+        "Hold to crouch and gather yourself, then let go to leap where you're looking. The longer you hold, the further you go. You land without taking fall damage and cut into anyone near where you come down."
+    ]
+}

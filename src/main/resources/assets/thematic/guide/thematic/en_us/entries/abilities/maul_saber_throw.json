@@ -1,0 +1,8 @@
+{
+    "name": "Saber Throw",
+    "category": "thematic:ability",
+    "icon": "thematic:maul_saberstaff",
+    "pages": [
+        "Hurl the saberstaff. It bounces from enemy to enemy, up to three of them, then spins back to you. The staff has to be in your hand to throw it."
+    ]
+}

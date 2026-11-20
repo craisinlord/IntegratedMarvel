@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:superboy",
+      "required": false
+    },
+    {
+      "id": "thematic:superboy1",
+      "required": false
+    }
+  ]
+}

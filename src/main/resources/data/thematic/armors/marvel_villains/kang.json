@@ -1,0 +1,63 @@
+{
+  "tier": 10,
+  "abilities": [
+    {
+      "identifier": "doom_gauntlet",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "flight",
+      "keybind": "key.thematic.ability_1",
+      "options": {
+        "fields": {
+          "level": "5"
+        }
+      }
+    },
+    {
+      "identifier": "doom_aegis",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "doom_ascendant",
+      "keybind": "key.thematic.ultimate"
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 80,
+      "maximum": 90
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 82,
+      "maximum": 90
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 50,
+      "maximum": 60
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 70,
+      "maximum": 75
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 90,
+      "maximum": 99
+    }
+  ],
+  "fighting_type": [
+    "DUELIST"
+  ],
+  "flight_type": "ONE_HAND_LEFT",
+  "priority": 10
+}

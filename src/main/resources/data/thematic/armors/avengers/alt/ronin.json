@@ -1,0 +1,8 @@
+{
+  "parent": "thematic:hawkeye",
+  "fighting_type": [
+    "UTILITY",
+    "DUELIST"
+  ],
+  "suit-recipe": "thematic:alt_ronin"
+}

@@ -1,0 +1,14 @@
+{
+  "embrace_fear": {
+    "cooldown": 120,
+    "duration": 8,
+    "range": 24,
+    "damage": 15.0,
+    "amplifier": 2,
+    "tuning": {
+      "levitation_duration": 1.5,
+      "vulnerable_amplifier": 3,
+      "vulnerable_amplifier_2": 3
+    }
+  }
+}

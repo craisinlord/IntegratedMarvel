@@ -1,0 +1,13 @@
+{
+  "vader_saber_thrown": {
+    "fire_seconds": 2,
+    "return_speed": 1.8,
+    "thrown_size": 0.9,
+    "thrown_velocity": 2.2
+  },
+  "maul_saberstaff_thrown": {
+    "return_speed": 1.6,
+    "thrown_size": 1.0,
+    "thrown_velocity": 2.0
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:captain_atom",
+      "required": false
+    },
+    {
+      "id": "thematic:captain_atom_jlu",
+      "required": false
+    },
+    {
+      "id": "thematic:captain_atom_kc",
+      "required": false
+    },
+    {
+      "id": "thematic:captain_atom_tomorrowverse",
+      "required": false
+    }
+  ]
+}

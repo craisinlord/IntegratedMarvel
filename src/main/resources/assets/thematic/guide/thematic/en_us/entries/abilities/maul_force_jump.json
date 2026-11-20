@@ -1,0 +1,8 @@
+{
+    "name": "Force Jump",
+    "category": "thematic:ability",
+    "icon": "minecraft:feather",
+    "pages": [
+        "Sprinting jumps carry you further forward."
+    ]
+}

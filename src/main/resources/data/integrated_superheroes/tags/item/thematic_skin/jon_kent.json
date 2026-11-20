@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:jon_kent",
+      "required": false
+    }
+  ]
+}

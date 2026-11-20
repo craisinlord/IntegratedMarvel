@@ -1,0 +1,36 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:batman_beyond"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "A A",
+    "B M"
+  ],
+  "key": {
+    "M": {
+      "item": "minecraft:diamond"
+    },
+    "A": {
+      "item": "thematic:one_way_glass"
+    },
+    "B": {
+      "item": "minecraft:netherite_ingot"
+    }
+  },
+  "result": {
+    "id": "integrated_superheroes:suit_boots",
+    "components": {
+      "integrated_superheroes:suit": "thematic:batman_beyond"
+    },
+    "count": 1
+  }
+}

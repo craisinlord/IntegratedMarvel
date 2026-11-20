@@ -1,0 +1,22 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    }
+  ],
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "thematic:fear_battery"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "thematic:spawners/arkillos_arena"
+}

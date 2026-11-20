@@ -1,0 +1,97 @@
+{
+  "priority": 10,
+  "tier": 10,
+  "abilities": [
+    {
+      "identifier": "hellfire",
+      "keybind": "key.thematic.ability_0",
+      "options": {
+        "fields": {
+          "damage": "100"
+        }
+      }
+    },
+    {
+      "identifier": "demon_dash",
+      "keybind": "key.thematic.ability_1",
+      "options": {
+        "fields": {
+          "damage": "140"
+        }
+      }
+    },
+    {
+      "identifier": "eldritch_blast",
+      "keybind": "key.thematic.ability_2",
+      "options": {
+        "fields": {
+          "damage": "120",
+          "name": "integrated_superheroes.ability.soulfire"
+        }
+      }
+    },
+    {
+      "identifier": "psychic_invasion",
+      "keybind": "key.thematic.ability_3",
+      "options": {
+        "fields": {
+          "name": "integrated_superheroes.ability.dark_dominion"
+        }
+      }
+    },
+    {
+      "identifier": "immunity_fire",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "scorched_earth",
+      "keybind": "key.thematic.ultimate",
+      "options": {
+        "fields": {
+          "damage": "120"
+        }
+      }
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 1.2
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 55,
+      "maximum": 65
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 50,
+      "maximum": 60
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 70,
+      "maximum": 75
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 50,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 80,
+      "maximum": 98
+    }
+  ],
+  "fighting_type": [
+    "DUELIST"
+  ]
+}

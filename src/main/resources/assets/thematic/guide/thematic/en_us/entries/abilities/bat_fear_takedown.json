@@ -1,0 +1,8 @@
+{
+    "name":  "Fear Takedown",
+    "category":  "thematic:ability",
+    "icon":  "thematic:fear_shard",
+    "pages":  [
+                  "Hitting enemies that can't see you, and taking them out, fills your fear meter. Once it's full, the world around you slows down and you strike up to three enemies close by, one after another. Each hit lands hard and leaves them stunned, though bosses shake it off."
+              ]
+}

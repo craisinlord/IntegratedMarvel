@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "thematic:item/lantern_golf_club",
+    "model": {
+      "type": "thematic:builtin_entity"
+    }
+  }
+}

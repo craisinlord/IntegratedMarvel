@@ -1,0 +1,93 @@
+{
+  "tier": 7,
+  "abilities": [
+    {
+      "identifier": "acrobatics",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "level": "1"
+        }
+      }
+    },
+    {
+      "identifier": "night_vision",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "stealth",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "gliding",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "bat_gadget_batman",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "bat_belt_batman",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "bat_detective_mode",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "crowd_control",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "bat_swarm",
+      "keybind": "key.thematic.ability_4"
+    },
+    {
+      "identifier": "double_kick",
+      "keybind": "key.thematic.ability_5"
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 0.98
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 64,
+      "maximum": 72
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 85,
+      "maximum": 95
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 50,
+      "maximum": 60
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 35,
+      "maximum": 45
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 70,
+      "maximum": 80
+    }
+  ],
+  "fighting_type": [
+    "UTILITY",
+    "BRAWLER"
+  ],
+  "priority": 10
+}

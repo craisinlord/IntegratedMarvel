@@ -1,0 +1,8 @@
+{
+    "name":  "Harpoon Grapnel",
+    "category":  "thematic:ability",
+    "icon":  "thematic:harpoon_gun",
+    "pages":  [
+                  "Fire a harpoon while you are in water. Smaller creatures get dragged straight to you. Hit a large creature or a block and the line reels you in to it instead."
+              ]
+}

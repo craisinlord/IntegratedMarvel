@@ -1,0 +1,89 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:aquaman",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman1",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman1986",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman2",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_1994",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_dceu",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_exiled",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_flashpoint",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_futures_end",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_injustice",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_injustice2",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_jlu",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_rebirth",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_starro",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_tbatb",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_vampires",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_yj",
+      "required": false
+    },
+    {
+      "id": "thematic:aquamanbn",
+      "required": false
+    },
+    {
+      "id": "thematic:aquamankc",
+      "required": false
+    },
+    {
+      "id": "thematic:aquawoman",
+      "required": false
+    },
+    {
+      "id": "thematic:sea_king",
+      "required": false
+    }
+  ]
+}

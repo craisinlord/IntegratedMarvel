@@ -49,8 +49,18 @@ public final class RoguePower {
     private static final Map<UUID, Held[]> STATES = new HashMap<>();
     private static final Map<UUID, Long> ABSORB_COOLDOWNS = new HashMap<>();
     private static final Map<UUID, java.util.Set<String>> BORROWED_STATES = new HashMap<>();
+    private static final Map<String, java.util.function.ToDoubleFunction<ServerPlayer>> BORROW_ADAPTERS = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final java.util.Set<String> BORROW_EXCLUDED = java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     private RoguePower() {
+    }
+
+    public static void adaptBorrowed(String abilityName, java.util.function.ToDoubleFunction<ServerPlayer> use) {
+        BORROW_ADAPTERS.put(abilityName, use);
+    }
+
+    public static void excludeBorrowed(String abilityName) {
+        BORROW_EXCLUDED.add(abilityName);
     }
 
     private record Held(RogueMemory memory, String source, long expiresAt) {
@@ -377,7 +387,7 @@ public final class RoguePower {
     }
 
     private static RogueMemory borrowed(String abilityName) {
-        if (HeroToggles.WHEEL_ABILITY.equals(abilityName) || HeroWheels.get(abilityName) != null) {
+        if (HeroToggles.WHEEL_ABILITY.equals(abilityName) || HeroWheels.get(abilityName) != null || BORROW_EXCLUDED.contains(abilityName)) {
             return null;
         }
         for (HeroPower hero : HeroPowers.all()) {
@@ -409,7 +419,8 @@ public final class RoguePower {
         java.util.Set<String> before = new java.util.HashSet<>(data.getStates());
         double cooldown;
         try {
-            cooldown = ability.handler().press(player, 0);
+            java.util.function.ToDoubleFunction<ServerPlayer> adapter = BORROW_ADAPTERS.get(ability.name());
+            cooldown = adapter != null ? adapter.applyAsDouble(player) : ability.handler().press(player, 0);
         } catch (RuntimeException exception) {
             player.displayClientMessage(Component.literal("§7You can't make " + ability.displayName() + " work."), true);
             return 1.0D;

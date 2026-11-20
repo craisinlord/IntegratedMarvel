@@ -21,6 +21,7 @@ public final class GauntletConfig {
     public static final ModConfigSpec.IntValue SOUL_ALLY_CAP;
     public static final ModConfigSpec.IntValue BANISH_DISTANCE;
     public static final ModConfigSpec.IntValue REWIND_SECONDS;
+    public static final ModConfigSpec.DoubleValue CHRONOSTASIS_RADIUS;
     public static final ModConfigSpec.IntValue TIME_LOOP_COOLDOWN;
     public static final ModConfigSpec.IntValue TIME_SURGE_TICK_MULTIPLIER;
     public static final ModConfigSpec.IntValue TIME_SURGE_CHUNK_RADIUS;
@@ -76,6 +77,8 @@ public final class GauntletConfig {
         builder.pop();
         builder.push("time");
         REWIND_SECONDS = builder.defineInRange("rewindSeconds", 10, 2, 60);
+        CHRONOSTASIS_RADIUS = builder.comment("Chronostasis freezes everything within this many blocks of the wielder. 0 freezes the whole dimension.")
+                .defineInRange("chronostasisRadius", 64.0D, 0.0D, 4096.0D);
         TIME_LOOP_COOLDOWN = builder.defineInRange("timeLoopCooldown", 6000, 0, 720000);
         builder.pop();
         builder.push("timeSurge");

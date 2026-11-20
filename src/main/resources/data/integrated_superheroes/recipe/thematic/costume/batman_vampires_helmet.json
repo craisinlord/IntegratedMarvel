@@ -1,0 +1,36 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:batman_vampires"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "ABA",
+    "C C"
+  ],
+  "key": {
+    "A": {
+      "item": "thematic:wayne_tech"
+    },
+    "B": {
+      "item": "thematic:batman_cowl"
+    },
+    "C": {
+      "item": "minecraft:torch"
+    }
+  },
+  "result": {
+    "id": "integrated_superheroes:suit_helmet",
+    "components": {
+      "integrated_superheroes:suit": "thematic:batman_vampires"
+    },
+    "count": 1
+  }
+}

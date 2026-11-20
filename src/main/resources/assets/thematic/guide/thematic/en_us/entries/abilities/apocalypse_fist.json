@@ -1,0 +1,8 @@
+{
+  "name": "Colossus Fist",
+  "category": "thematic:ability",
+  "icon": "minecraft:anvil",
+  "pages": [
+    "Extend a molecular fist through a wide nine-block cone, striking up to eight visible enemies with immense physical damage. Successful hits slow enemies briefly and knock them away; bosses receive much less displacement. Five-second base cooldown. Survival of the Fittest increases damage and reach. Requires the complete matching Apocalypse suit."
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "thematic:punisher",
+  "tier": 8,
+  "suit-recipe": "thematic:alt_punisher_war_machine",
+  "flight_type": "JETPACK",
+  "flight_profile": "thematic:repulsor_war_machine"
+}

@@ -1,0 +1,8 @@
+{
+    "name":  "Improvised Gadget",
+    "category":  "thematic:ability",
+    "icon":  "thematic:gadget_batarang",
+    "pages":  [
+                  "Grab whatever is closest on the belt and throw it. You never know which gadget will come out."
+              ]
+}

@@ -32,8 +32,20 @@ public final class HeroGrip {
         return HELD.containsKey(player.getUUID());
     }
 
+    public static boolean isHeld(Entity entity) {
+        if (HELD.isEmpty()) {
+            return false;
+        }
+        for (Held held : HELD.values()) {
+            if (held.entityId() == entity.getId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean grab(ServerPlayer player, LivingEntity target, int ticks, ParticleOptions particle, Consumer<LivingEntity> onTick) {
-        if (!HeroAbilities.canControl(target)) {
+        if (!HeroAbilities.canControl(target) || TelekineticFormation.isHeld(target)) {
             return false;
         }
         double distance = Math.max(3.0D, Math.min(6.0D, player.distanceTo(target)));

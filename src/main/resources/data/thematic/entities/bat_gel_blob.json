@@ -1,0 +1,21 @@
+{
+  "type": "thematic:zone",
+  "size": [0.5, 0.5],
+  "spawn_group": "misc",
+  "shape": "box",
+  "lifetime": 1200,
+  "visual": {
+    "kind": "decal",
+    "texture": "integrated_superheroes:textures/entity/bat_gel.png",
+    "size": 0.8,
+    "light_boost": 15,
+    "align": "facing"
+  },
+  "particles": {
+    "particle": "minecraft:glow",
+    "every": 12,
+    "count": 1,
+    "spread": 0.25,
+    "velocity": [0, 0.01, 0]
+  }
+}

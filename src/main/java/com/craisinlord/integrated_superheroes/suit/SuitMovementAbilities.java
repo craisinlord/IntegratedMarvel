@@ -2,6 +2,7 @@ package com.craisinlord.integrated_superheroes.suit;
 
 import com.craisinlord.integrated_superheroes.hero.HeroAbilities;
 import com.craisinlord.integrated_superheroes.hero.HeroAnimations;
+import com.craisinlord.integrated_superheroes.hero.HeroFx;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -27,9 +28,13 @@ public final class SuitMovementAbilities {
                 context.damage(SuitAbilityConfig.AFTERBURNER), 1.2D, entity -> SuitTargeting.canHit(player, entity));
         SuitStates.noFall(player);
         ServerLevel level = player.serverLevel();
-        level.sendParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 0.2D, player.getZ(), 16, 0.2D, 0.1D, 0.2D, 0.05D);
-        level.sendParticles(ParticleTypes.CLOUD, player.getX(), player.getY() + 0.2D, player.getZ(), 8, 0.2D, 0.1D, 0.2D, 0.02D);
-        SuitFx.sound(level, player.position(), SuitFx.JETPACK_FIRE, SoundEvents.FIRECHARGE_USE, 1.0F, 1.0F);
+        if (HeroFx.vfx(level, player.position(), "ember_flare", 0)) {
+            HeroFx.cue(player, "thematic:ultron.rush_engage", 1.0F, 1.0F);
+        } else {
+            level.sendParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 0.2D, player.getZ(), 16, 0.2D, 0.1D, 0.2D, 0.05D);
+            level.sendParticles(ParticleTypes.CLOUD, player.getX(), player.getY() + 0.2D, player.getZ(), 8, 0.2D, 0.1D, 0.2D, 0.02D);
+            SuitFx.sound(level, player.position(), SuitFx.JETPACK_FIRE, SoundEvents.FIRECHARGE_USE, 1.0F, 1.0F);
+        }
         return SuitAbility.Result.FIRED;
     }
 
@@ -67,15 +72,20 @@ public final class SuitMovementAbilities {
             target.knockback(1.2D, -away.x, -away.z);
             target.setDeltaMovement(target.getDeltaMovement().add(0.0D, 0.4D, 0.0D));
         }
-        BlockPos below = player.blockPosition().below();
-        BlockState ground = level.getBlockState(below);
-        if (!ground.isAir()) {
-            level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, ground), player.getX(), player.getY() + 0.1D, player.getZ(),
-                    80, radius * 0.4D, 0.1D, radius * 0.4D, 0.2D);
+        if (HeroFx.vfx(level, player.position(), "slam_fracture", 0, (float) radius)) {
+            HeroFx.vfx(level, player.position(), "slam_dust", 0, (float) radius);
+            HeroFx.cue(player, "thematic:spiderman_hard_landing_" + (1 + player.getRandom().nextInt(2)), 1.2F, 0.8F);
+        } else {
+            BlockPos below = player.blockPosition().below();
+            BlockState ground = level.getBlockState(below);
+            if (!ground.isAir()) {
+                level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, ground), player.getX(), player.getY() + 0.1D, player.getZ(),
+                        80, radius * 0.4D, 0.1D, radius * 0.4D, 0.2D);
+            }
+            level.sendParticles(ParticleTypes.EXPLOSION, player.getX(), player.getY() + 0.2D, player.getZ(), 3, 1.0D, 0.1D, 1.0D, 0.0D);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.8F, 0.7F);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ANVIL_LAND, SoundSource.PLAYERS, 0.6F, 0.5F);
         }
-        level.sendParticles(ParticleTypes.EXPLOSION, player.getX(), player.getY() + 0.2D, player.getZ(), 3, 1.0D, 0.1D, 1.0D, 0.0D);
-        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.8F, 0.7F);
-        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ANVIL_LAND, SoundSource.PLAYERS, 0.6F, 0.5F);
         HeroAnimations.play(player, "spiderman_land_1");
     }
 
@@ -89,8 +99,13 @@ public final class SuitMovementAbilities {
         player.setDeltaMovement(motion.x, 1.0D, motion.z);
         player.hurtMarked = true;
         ServerLevel level = player.serverLevel();
-        level.sendParticles(ParticleTypes.CLOUD, player.getX(), player.getY(), player.getZ(), 30, 0.5D, 0.1D, 0.5D, 0.05D);
-        SuitFx.sound(level, player.position(), SuitFx.JETPACK_FIRE, SoundEvents.FIREWORK_ROCKET_LARGE_BLAST, 1.2F, 0.8F);
+        if (HeroFx.vfx(level, player.position(), "ignition_plume", 0)) {
+            HeroFx.vfx(level, player.position(), "air_burst_ring", 0);
+            HeroFx.cue(player, "thematic:ultron.rush_engage", 1.2F, 0.9F);
+        } else {
+            level.sendParticles(ParticleTypes.CLOUD, player.getX(), player.getY(), player.getZ(), 30, 0.5D, 0.1D, 0.5D, 0.05D);
+            SuitFx.sound(level, player.position(), SuitFx.JETPACK_FIRE, SoundEvents.FIREWORK_ROCKET_LARGE_BLAST, 1.2F, 0.8F);
+        }
         return SuitAbility.Result.FIRED;
     }
 }

@@ -1,0 +1,111 @@
+{
+  "tier": 7,
+  "abilities": [
+    {
+      "identifier": "reload",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "equip",
+      "keybind": "key.thematic.equip_item",
+      "options": {
+        "fields": {
+          "label": "punisher_equip",
+          "items": [
+            {
+              "item": "pointblank:m4sopmodii",
+              "count": 1
+            },
+            {
+              "item": "pointblank:ump45",
+              "count": 1
+            },
+            {
+              "item": "pointblank:m590",
+              "count": 1
+            },
+            {
+              "item": "pointblank:star15",
+              "count": 1
+            },
+            {
+              "item": "pointblank:gm6lynx",
+              "count": 1
+            },
+            {
+              "item": "pointblank:m9",
+              "count": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "identifier": "cripple",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "flashbang",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "molotov",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "grenade",
+      "keybind": "key.thematic.utility"
+    },
+    {
+      "identifier": "upgraded_smoke_bomb",
+      "keybind": "key.thematic.ability_4"
+    },
+    {
+      "identifier": "second_wind",
+      "keybind": "key.thematic.ability_5"
+    },
+    {
+      "identifier": "hold_the_line",
+      "keybind": "key.thematic.ultimate"
+    },
+    {
+      "identifier": "last_stand",
+      "keybind": "key.thematic.passive"
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 64,
+      "maximum": 72
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 40,
+      "maximum": 50
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 10,
+      "maximum": 20
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 85,
+      "maximum": 99
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 50,
+      "maximum": 60
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 80,
+      "maximum": 99
+    }
+  ],
+  "fighting_type": [
+    "DUELIST"
+  ]
+}

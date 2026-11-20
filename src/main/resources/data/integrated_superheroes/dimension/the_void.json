@@ -1,0 +1,11 @@
+{
+  "type": "integrated_superheroes:the_void",
+  "generator": {
+    "type": "minecraft:noise",
+    "settings": "integrated_superheroes:the_void",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "integrated_superheroes:the_void"
+    }
+  }
+}

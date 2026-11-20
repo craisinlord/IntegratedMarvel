@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:atrocitus",
+      "required": false
+    },
+    {
+      "id": "thematic:guy_gardner_red",
+      "required": false
+    }
+  ]
+}

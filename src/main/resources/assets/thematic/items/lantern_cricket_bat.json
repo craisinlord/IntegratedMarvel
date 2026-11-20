@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "thematic:item/lantern_cricket_bat",
+    "model": {
+      "type": "thematic:builtin_entity"
+    }
+  }
+}

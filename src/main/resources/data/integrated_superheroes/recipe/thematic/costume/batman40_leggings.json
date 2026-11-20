@@ -1,0 +1,34 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:batman40"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "MAM",
+    "M M",
+    "M M"
+  ],
+  "key": {
+    "M": {
+      "item": "marvellegacy:cloth_gray"
+    },
+    "A": {
+      "item": "thematic:gadget_batarang"
+    }
+  },
+  "result": {
+    "id": "integrated_superheroes:suit_leggings",
+    "components": {
+      "integrated_superheroes:suit": "thematic:batman40"
+    },
+    "count": 1
+  }
+}

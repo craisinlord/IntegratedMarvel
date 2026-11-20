@@ -1,0 +1,39 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:dark_knight"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "ABA",
+    "C M"
+  ],
+  "key": {
+    "M": {
+      "item": "minecraft:diamond"
+    },
+    "A": {
+      "item": "thematic:advanced_technology"
+    },
+    "B": {
+      "item": "thematic:batman_cowl"
+    },
+    "C": {
+      "item": "minecraft:netherite_ingot"
+    }
+  },
+  "result": {
+    "id": "integrated_superheroes:suit_helmet",
+    "components": {
+      "integrated_superheroes:suit": "thematic:dark_knight"
+    },
+    "count": 1
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "tier": 6,
+  "abilities": [
+    {
+      "identifier": "equip",
+      "keybind": "key.thematic.equip_item",
+      "options": {
+        "fields": {
+          "label": "equip_twd_rick",
+          "items": [
+            {
+              "item": "pointblank:deserteagle",
+              "count": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "identifier": "reload",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "acrobatics",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "grenade",
+      "keybind": "key.thematic.utility"
+    },
+    {
+      "identifier": "flashbang",
+      "keybind": "key.thematic.ability_1"
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 4,
+      "maximum": 24
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 15,
+      "maximum": 25
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 3,
+      "maximum": 23
+    }
+  ],
+  "fighting_type": []
+}

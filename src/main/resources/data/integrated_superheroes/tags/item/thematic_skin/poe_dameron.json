@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:poe_dameron",
+      "required": false
+    }
+  ]
+}

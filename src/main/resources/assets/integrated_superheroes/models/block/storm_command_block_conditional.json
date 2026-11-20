@@ -1,0 +1,6 @@
+{
+  "parent": "integrated_superheroes:block/storm_command_block",
+  "textures": {
+    "side": "minecraft:block/command_block_conditional"
+  }
+}

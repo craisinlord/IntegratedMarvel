@@ -1,0 +1,44 @@
+{
+  "priority": 10,
+  "tier": 6,
+  "abilities": [
+    {
+      "identifier": "ground_pound_no_jump",
+      "keybind": "key.thematic.ability_0",
+      "options": {
+        "fields": {
+          "damage_scale": "0.75"
+        }
+      }
+    },
+    {
+      "identifier": "gotcha",
+      "keybind": "key.thematic.ability_1"
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 50,
+      "maximum": 70
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 70,
+      "maximum": 90
+    },
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 30,
+      "maximum": 60
+    }
+  ],
+  "fighting_type": [
+    "BRAWLER"
+  ]
+}

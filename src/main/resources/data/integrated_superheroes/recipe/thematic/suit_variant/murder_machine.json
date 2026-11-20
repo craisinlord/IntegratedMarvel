@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:murder_machine"
+    }
+  ],
+  "type": "marvel:suit_variant",
+  "suit": {
+    "tag": "integrated_superheroes:thematic_skin/dark_knight"
+  },
+  "results": {
+    "id": "thematic:murder_machine"
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:black_widow",
+      "required": false
+    },
+    {
+      "id": "thematic:catwoman",
+      "required": false
+    },
+    {
+      "id": "thematic:elektra",
+      "required": false
+    },
+    {
+      "id": "thematic:fg_liu_kang",
+      "required": false
+    },
+    {
+      "id": "thematic:huntress",
+      "required": false
+    },
+    {
+      "id": "thematic:iron_fist",
+      "required": false
+    },
+    {
+      "id": "thematic:jade",
+      "required": false
+    },
+    {
+      "id": "thematic:james_bond",
+      "required": false
+    },
+    {
+      "id": "thematic:johnny_cage",
+      "required": false
+    },
+    {
+      "id": "thematic:johnny_cage_mk1",
+      "required": false
+    },
+    {
+      "id": "thematic:katana",
+      "required": false
+    },
+    {
+      "id": "thematic:kitana",
+      "required": false
+    },
+    {
+      "id": "thematic:liu_kang",
+      "required": false
+    },
+    {
+      "id": "thematic:mileena",
+      "required": false
+    },
+    {
+      "id": "thematic:mockingbird",
+      "required": false
+    },
+    {
+      "id": "thematic:nebula",
+      "required": false
+    },
+    {
+      "id": "thematic:rasalghul",
+      "required": false
+    },
+    {
+      "id": "thematic:shang_chi",
+      "required": false
+    },
+    {
+      "id": "thematic:sonya",
+      "required": false
+    },
+    {
+      "id": "thematic:talia",
+      "required": false
+    },
+    {
+      "id": "thematic:talon",
+      "required": false
+    },
+    {
+      "id": "thematic:wildcat",
+      "required": false
+    }
+  ]
+}

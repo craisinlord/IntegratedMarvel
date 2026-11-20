@@ -1,0 +1,55 @@
+{
+  "parent": "thematic:sinestro",
+  "abilities": [
+    {
+      "identifier": "fear_charge",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "level": "9",
+          "constructs": "#yellow_constructs"
+        }
+      }
+    },
+    {
+      "identifier": "flight",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "night_vision",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "glow",
+      "keybind": "key.thematic.cosmetic",
+      "options": {
+        "fields": {
+          "color": "#FFDD00"
+        }
+      }
+    },
+    {
+      "identifier": "fear_beam",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "construct_wheel",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "fear_shield",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "fear_spawn_entity_cave_spider",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "embrace_fear",
+      "keybind": "key.thematic.ultimate"
+    }
+  ],
+  "tags": [
+    "lantern"
+  ]
+}

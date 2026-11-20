@@ -1,0 +1,75 @@
+{
+  "type": "minecraft:random_patch",
+  "config": {
+    "tries": 14,
+    "xz_spread": 4,
+    "y_spread": 2,
+    "feature": {
+      "feature": {
+        "type": "minecraft:simple_block",
+        "config": {
+          "to_place": {
+            "type": "minecraft:weighted_state_provider",
+            "entries": [
+              {
+                "data": {
+                  "Name": "antarchy:cut_dream_sandstone_slab",
+                  "Properties": {
+                    "type": "bottom",
+                    "waterlogged": "false"
+                  }
+                },
+                "weight": 4
+              },
+              {
+                "data": {
+                  "Name": "antarchy:smooth_dream_sandstone_slab",
+                  "Properties": {
+                    "type": "bottom",
+                    "waterlogged": "false"
+                  }
+                },
+                "weight": 3
+              },
+              {
+                "data": {
+                  "Name": "antarchy:dream_sandstone_wall"
+                },
+                "weight": 2
+              },
+              {
+                "data": {
+                  "Name": "antarchy:chiseled_dream_sandstone"
+                },
+                "weight": 1
+              }
+            ]
+          }
+        }
+      },
+      "placement": [
+        {
+          "type": "minecraft:block_predicate_filter",
+          "predicate": {
+            "type": "minecraft:all_of",
+            "predicates": [
+              {
+                "type": "minecraft:matching_blocks",
+                "blocks": "minecraft:air"
+              },
+              {
+                "type": "minecraft:has_sturdy_face",
+                "offset": [
+                  0,
+                  -1,
+                  0
+                ],
+                "direction": "up"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -26,6 +26,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
@@ -33,6 +34,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.tintankgames.marvel.world.entity.BaronZemo;
@@ -70,7 +72,10 @@ public final class Villains {
         NeoForge.EVENT_BUS.addListener(Villains::onTarget);
         NeoForge.EVENT_BUS.addListener(Villains::onLevelTick);
         NeoForge.EVENT_BUS.addListener(Villains::onPlayerTick);
+        NeoForge.EVENT_BUS.addListener(Villains::onLeave);
+        NeoForge.EVENT_BUS.addListener(Villains::onServerStopped);
         HydraCover.register();
+        HydraSquad.register();
     }
 
     public static boolean managed(Entity entity) {
@@ -294,6 +299,18 @@ public final class Villains {
                 && event.getEntity() instanceof Mob && !(event.getEntity() instanceof HydraAgent)) {
             event.setCanceled(true);
         }
+    }
+
+    // Each brain holds its mob, so the weak key never clears on its own. Drop entries when the mob leaves its level
+    // and on server stop, or the last loaded villain keeps the whole old server alive after leaving a world.
+    private static void onLeave(EntityLeaveLevelEvent event) {
+        if (!event.getLevel().isClientSide()) {
+            BRAINS.remove(event.getEntity());
+        }
+    }
+
+    private static void onServerStopped(ServerStoppedEvent event) {
+        BRAINS.clear();
     }
 
     private static void onLevelTick(LevelTickEvent.Post event) {

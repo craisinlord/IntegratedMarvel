@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:fire_jl",
+      "required": false
+    }
+  ]
+}

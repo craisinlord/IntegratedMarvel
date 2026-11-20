@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:smoke1",
+      "required": false
+    },
+    {
+      "id": "thematic:smoke_mk",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:saint_walker",
+      "required": false
+    }
+  ]
+}

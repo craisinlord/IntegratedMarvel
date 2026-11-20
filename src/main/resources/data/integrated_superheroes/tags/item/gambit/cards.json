@@ -14,6 +14,30 @@
     {
       "id": "iceandfire:amphithere_feather",
       "required": false
+    },
+    {
+      "id": "thematic:kinetic_card",
+      "required": false
+    },
+    {
+      "id": "thematic:playing_card",
+      "required": false
+    },
+    {
+      "id": "thematic:playing_cards",
+      "required": false
+    },
+    {
+      "id": "thematic:card_deck",
+      "required": false
+    },
+    {
+      "id": "thematic:joker_card",
+      "required": false
+    },
+    {
+      "id": "thematic:joker_cards",
+      "required": false
     }
   ]
 }

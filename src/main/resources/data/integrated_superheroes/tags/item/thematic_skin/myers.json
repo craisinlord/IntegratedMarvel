@@ -1,0 +1,25 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:myers",
+      "required": false
+    },
+    {
+      "id": "thematic:myers_burnt",
+      "required": false
+    },
+    {
+      "id": "thematic:myers_clown",
+      "required": false
+    },
+    {
+      "id": "thematic:myers_ghost",
+      "required": false
+    },
+    {
+      "id": "thematic:myers_hospital",
+      "required": false
+    }
+  ]
+}

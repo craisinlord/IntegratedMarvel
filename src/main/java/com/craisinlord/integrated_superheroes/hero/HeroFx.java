@@ -1,5 +1,7 @@
 package com.craisinlord.integrated_superheroes.hero;
 
+import com.craisinlord.integrated_superheroes.compat.ModCompat;
+import com.craisinlord.integrated_superheroes.compat.thematic.ThematicVisuals;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -45,6 +47,48 @@ public final class HeroFx {
 
     public static void play(Entity entity, SoundEvent sound, float volume, float pitch) {
         entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, SoundSource.PLAYERS, volume, pitch);
+    }
+
+    public static boolean thematic() {
+        return ModCompat.THEMATIC && ThematicVisuals.enabled();
+    }
+
+    public static boolean vfx(ServerLevel level, Vec3 at, String thematicId, int argb) {
+        return ModCompat.THEMATIC && ThematicVisuals.vfx(level, at, thematicId, argb);
+    }
+
+    public static boolean vfx(ServerLevel level, Vec3 at, String thematicId, int argb, float radius) {
+        return ModCompat.THEMATIC && ThematicVisuals.vfx(level, at, thematicId, argb, radius);
+    }
+
+    public static boolean beam(ServerLevel level, Vec3 from, Vec3 to, String thematicId, int argb) {
+        return ModCompat.THEMATIC && ThematicVisuals.beam(level, from, to, thematicId, argb);
+    }
+
+    public static void cue(Entity entity, String thematicSound, float volume, float pitch) {
+        SoundEvent sound = BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.parse(thematicSound));
+        if (sound != null) {
+            play(entity, sound, volume, pitch);
+        }
+    }
+
+    public static void cue(ServerLevel level, Vec3 at, String thematicSound, float volume, float pitch) {
+        SoundEvent sound = BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.parse(thematicSound));
+        if (sound != null) {
+            level.playSound(null, at.x, at.y, at.z, sound, SoundSource.PLAYERS, volume, pitch);
+        }
+    }
+
+    public static void vfx(ServerLevel level, Vec3 at, String thematicId, int argb, Runnable fallback) {
+        if (!vfx(level, at, thematicId, argb)) {
+            fallback.run();
+        }
+    }
+
+    public static void beam(ServerLevel level, Vec3 from, Vec3 to, String thematicId, int argb, Runnable fallback) {
+        if (!beam(level, from, to, thematicId, argb)) {
+            fallback.run();
+        }
     }
 
     public static void shake(ServerLevel level, Vec3 center, double radius, float intensity, int ticks) {

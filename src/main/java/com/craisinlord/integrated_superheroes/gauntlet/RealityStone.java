@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
+import com.craisinlord.integrated_superheroes.hero.HeroFx;
 import com.craisinlord.anthology.effect.AnthologyEffects;
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import net.minecraft.core.BlockPos;
@@ -77,6 +78,11 @@ public final class RealityStone {
         ServerPlayer player = cast.player();
         LivingEntity target = GauntletAim.living(player, 32.0D);
         if (target != null && !(target instanceof Player)) {
+            if (com.craisinlord.integrated_superheroes.hero.HeroAbilities.isBoss(target)) {
+                GauntletFx.sound(cast.level(), target.position(), SoundEvents.SHIELD_BLOCK, 1.5F, 0.5F);
+                cast.message("boss_resists", target.getDisplayName());
+                return;
+            }
             transmuteEntity(cast, target);
             return;
         }
@@ -229,10 +235,12 @@ public final class RealityStone {
                         && !GauntletAim.isProtectedEntity(entity))) {
             if (invert(target, duration, player)) affected++;
         }
-        GauntletFx.ring(level, center, radius, "reality");
-        GauntletFx.ring(level, center.add(0.0D, 3.0D, 0.0D), radius, "reality");
-        level.sendParticles(ParticleTypes.REVERSE_PORTAL, center.x, center.y + 1.0D, center.z, 150, radius * 0.5D, 1.0D,
-                radius * 0.5D, 0.3D);
+        if (!HeroFx.vfx(level, center, "void_maelstrom", 0xD0000000 | GauntletAbilities.stoneColor("reality"), (float) Math.min(radius, 16.0D))) {
+            GauntletFx.ring(level, center, radius, "reality");
+            GauntletFx.ring(level, center.add(0.0D, 3.0D, 0.0D), radius, "reality");
+            level.sendParticles(ParticleTypes.REVERSE_PORTAL, center.x, center.y + 1.0D, center.z, 150, radius * 0.5D, 1.0D,
+                    radius * 0.5D, 0.3D);
+        }
         GauntletFx.cast(player, "reality", SoundEvents.ILLUSIONER_CAST_SPELL, 0.6F);
         cast.message("reality_gravity", affected);
         cast.cooldown();

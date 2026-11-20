@@ -1,0 +1,8 @@
+{
+    "name": "Sith Onslaught",
+    "category": "thematic:ability",
+    "icon": "minecraft:netherite_sword",
+    "pages": [
+        "For several seconds you keep appearing behind the closest enemy and cutting them down. Bosses take less from each hit."
+    ]
+}

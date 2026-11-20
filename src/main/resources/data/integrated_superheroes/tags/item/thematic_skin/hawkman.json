@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:hawkman",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkman_vampires",
+      "required": false
+    }
+  ]
+}

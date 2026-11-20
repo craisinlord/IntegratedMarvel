@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:batman_gam",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_vampires",
+      "required": false
+    }
+  ]
+}

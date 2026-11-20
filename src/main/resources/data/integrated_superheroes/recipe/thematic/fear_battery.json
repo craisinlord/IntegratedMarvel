@@ -1,0 +1,29 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "!": {
+      "item": "thematic:alien_tech"
+    },
+    "#": {
+      "item": "thematic:fear_shard"
+    },
+    "&": {
+      "item": "minecraft:gold_ingot"
+    }
+  },
+  "pattern": [
+    "#&#",
+    "&!&",
+    "#&#"
+  ],
+  "result": {
+    "id": "thematic:fear_battery"
+  }
+}

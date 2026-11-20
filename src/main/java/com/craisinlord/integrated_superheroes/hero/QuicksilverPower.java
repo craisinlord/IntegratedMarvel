@@ -72,7 +72,9 @@ public final class QuicksilverPower {
                         player.causeFoodExhaustion((float) (MarvelBalanceConfig.SPEED_FORCE_EXHAUSTION_PER_RATE.get() * (rate - 1.0D)));
                         if (player.getDeltaMovement().horizontalDistanceSqr() > 0.01D && player.level() instanceof ServerLevel level) {
                             Vec3 behind = player.position().subtract(player.getViewVector(0.0F));
-                            level.sendParticles(MarvelParticleTypes.QUICKSILVER.get(), behind.x, behind.y + 1.0D, behind.z, 20, 0.0D, 0.0D, 0.0D, 0.3D);
+                            if (!com.craisinlord.integrated_superheroes.hero.skin.SpeedsterTrail.emit(player, level, behind)) {
+                                level.sendParticles(MarvelParticleTypes.QUICKSILVER.get(), behind.x, behind.y + 1.0D, behind.z, 20, 0.0D, 0.0D, 0.0D, 0.3D);
+                            }
                         }
                     }
 
@@ -148,8 +150,14 @@ public final class QuicksilverPower {
             target.knockback(1.5D * scale, -away.x, -away.z);
         }
         ServerLevel level = (ServerLevel) player.level();
-        level.sendParticles(ParticleTypes.SONIC_BOOM, player.getX(), player.getY() + 1.0D, player.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        level.sendParticles(ParticleTypes.EXPLOSION, player.getX(), player.getY() + 1.0D, player.getZ(), 6, radius / 3.0D, 0.5D, radius / 3.0D, 0.0D);
+        Vec3 chest = player.position().add(0.0D, 1.0D, 0.0D);
+        if (HeroFx.vfx(level, chest, "punch_pressure_wave", 0)) {
+            HeroFx.vfx(level, chest, "air_burst_ring", 0, (float) radius);
+            HeroFx.cue(player, "thematic:sonic_punch", 1.2F, 0.8F);
+        } else {
+            level.sendParticles(ParticleTypes.SONIC_BOOM, player.getX(), player.getY() + 1.0D, player.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+            level.sendParticles(ParticleTypes.EXPLOSION, player.getX(), player.getY() + 1.0D, player.getZ(), 6, radius / 3.0D, 0.5D, radius / 3.0D, 0.0D);
+        }
         level.playSound(null, player.blockPosition(), MarvelSoundEvents.QUICKSILVER_SONIC_BOOM.get(), SoundSource.PLAYERS, 1.5F, 1.0F);
         HeroAdvancements.award(player, "avengers/quicksilver/sound_barrier");
         return MarvelBalanceConfig.SONIC_BOOM_COOLDOWN.get();

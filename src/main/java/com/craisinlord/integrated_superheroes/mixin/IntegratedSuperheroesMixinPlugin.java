@@ -9,16 +9,22 @@ import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 public final class IntegratedSuperheroesMixinPlugin implements IMixinConfigPlugin {
-    private static final Map<String, String> OPTIONAL_PREFIXES = Map.of(
-            "AlexsCaves", "alexscaves",
-            "Weather2", "weather2",
-            "ScorchedGuns", "scguns",
-            "IceAndFire", "iceandfire",
-            "MutantMonsters", "mutantmonsters",
-            "BetterCombat", "bettercombat",
-            "Celestisynth", "celestisynth",
-            "Antarchy", "antarchy",
-            "Viltrumite", "viltrumitecore");
+    private static final Map<String, String> OPTIONAL_PREFIXES = Map.ofEntries(
+            Map.entry("AlexsCaves", "alexscaves"),
+            Map.entry("Weather2", "weather2"),
+            Map.entry("ScorchedGuns", "scguns"),
+            Map.entry("IceAndFire", "iceandfire"),
+            Map.entry("MutantMonsters", "mutantmonsters"),
+            Map.entry("BetterCombat", "bettercombat"),
+            Map.entry("Celestisynth", "celestisynth"),
+            Map.entry("Antarchy", "antarchy"),
+            Map.entry("Viltrumite", "viltrumitecore"),
+            Map.entry("ViltrumiteFlight", "viltrumiteflight"),
+            Map.entry("Thematic", "thematic"),
+            Map.entry("ThematicPlayerAnim", "playeranimator"),
+            Map.entry("ThematicScorchedGuns", "scguns"),
+            Map.entry("Emi", "emi"),
+            Map.entry("Jei", "jei"));
 
     @Override
     public void onLoad(String mixinPackage) {

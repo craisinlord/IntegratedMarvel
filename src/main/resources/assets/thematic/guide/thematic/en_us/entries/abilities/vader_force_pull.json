@@ -1,0 +1,8 @@
+{
+    "name": "Force Pull",
+    "category": "thematic:ability",
+    "icon": "minecraft:lead",
+    "pages": [
+        "Yank the enemy you're looking at over to you. Mobs drop whatever they were holding."
+    ]
+}

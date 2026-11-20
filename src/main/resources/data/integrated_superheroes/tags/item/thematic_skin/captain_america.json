@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "marvel:captain_america_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:captain_america_stealth_chestplate",
+      "required": false
+    },
+    {
+      "id": "thematic:captain_america",
+      "required": false
+    }
+  ]
+}

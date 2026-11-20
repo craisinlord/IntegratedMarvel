@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
+import com.craisinlord.integrated_superheroes.hero.HeroFx;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
@@ -99,8 +100,12 @@ public final class PowerStone {
         if (GauntletConfig.griefing()) {
             crater(player, level, BlockPos.containing(center).below(), Math.min(12.0D, radius * 0.35D), charge.infinity());
         }
-        for (int ring = 1; ring <= 3; ring++) GauntletFx.ring(level, center, radius * ring / 3.0D, "power");
-        level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, center.x, center.y + 0.5D, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        if (HeroFx.vfx(level, center, "gamma_shockwave", 0xFF000000 | GauntletAbilities.stoneColor("power"), (float) Math.min(radius, 32.0D))) {
+            HeroFx.vfx(level, center, "slam_fracture_large", 0, (float) Math.min(radius * 0.5D, 12.0D));
+        } else {
+            for (int ring = 1; ring <= 3; ring++) GauntletFx.ring(level, center, radius * ring / 3.0D, "power");
+            level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, center.x, center.y + 0.5D, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        }
         GauntletFx.sound(level, center, SoundEvents.GENERIC_EXPLODE.value(), 4.0F, 0.5F);
         GauntletFx.sound(level, center, SoundEvents.WARDEN_SONIC_BOOM, 3.0F, 0.6F);
         GauntletFx.shake(level, center, (float) Math.min(3.0D, 1.0D + stored * 0.05D), 30, (float) radius * 2.0F);

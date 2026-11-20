@@ -1,6 +1,7 @@
 package com.craisinlord.integrated_superheroes.registry;
 
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
+import com.craisinlord.integrated_superheroes.compat.JammedMobEffect;
 import com.craisinlord.integrated_superheroes.gauntlet.SoulSeveredMobEffect;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -13,6 +14,7 @@ public final class ModEffects {
     private static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(BuiltInRegistries.MOB_EFFECT, IntegratedSuperheroes.MODID);
 
     public static final DeferredHolder<MobEffect, MobEffect> SOUL_SEVERED = EFFECTS.register("soul_severed", SoulSeveredMobEffect::new);
+    public static final DeferredHolder<MobEffect, MobEffect> JAMMED = EFFECTS.register("jammed", JammedMobEffect::new);
 
     private ModEffects() {
     }

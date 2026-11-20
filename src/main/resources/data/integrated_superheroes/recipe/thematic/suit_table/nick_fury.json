@@ -1,0 +1,40 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:nick_fury"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "minecraft:chainmail_chestplate"
+  },
+  "ingredients": [
+    {
+      "type": "neoforge:components",
+      "items": "minecraft:leather_chestplate",
+      "components": {
+        "minecraft:dyed_color": {
+          "rgb": 1908001
+        }
+      }
+    },
+    {
+      "item": "thematic:kevlar"
+    },
+    {
+      "item": "minecraft:name_tag"
+    },
+    {
+      "item": "marvellegacy:cloth_black"
+    }
+  ],
+  "results": {
+    "id": "thematic:nick_fury"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:hawkgirl",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkgirl_2",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkgirl_bn",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkgirl_bombshell",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkgirl_cw",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkgirl_dcau",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkgirl_dcu",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkgirl_injustice",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkgirl_jl",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkgirl_jlu",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkgirl_starro",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkgirl_yj",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkwoman",
+      "required": false
+    }
+  ]
+}

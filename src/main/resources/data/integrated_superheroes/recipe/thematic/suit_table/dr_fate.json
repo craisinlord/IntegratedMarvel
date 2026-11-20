@@ -1,0 +1,49 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:dr_fate"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "minecraft:netherite_chestplate"
+  },
+  "ingredients": [
+    {
+      "item": "integrated_superheroes:black_adam_scarab"
+    },
+    {
+      "item": "thematic:necronomicon_book"
+    },
+    {
+      "item": "thematic:soul"
+    },
+    {
+      "item": "minecraft:gold_block"
+    },
+    {
+      "item": "minecraft:gold_block"
+    },
+    {
+      "item": "minecraft:ender_eye"
+    },
+    {
+      "item": "minecraft:nether_star"
+    },
+    {
+      "item": "marvellegacy:cloth_blue"
+    },
+    {
+      "item": "marvellegacy:cloth_yellow"
+    }
+  ],
+  "results": {
+    "id": "thematic:dr_fate"
+  }
+}

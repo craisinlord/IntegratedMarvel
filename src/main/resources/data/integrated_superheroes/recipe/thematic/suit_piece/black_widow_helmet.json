@@ -1,0 +1,31 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:black_widow"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "minecraft:diamond_helmet"
+  },
+  "ingredients": [
+    {
+      "item": "marvellegacy:cloth_black"
+    },
+    {
+      "item": "thematic:lightning_coil"
+    }
+  ],
+  "results": {
+    "id": "integrated_superheroes:suit_helmet",
+    "components": {
+      "integrated_superheroes:suit": "thematic:black_widow"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "priority": 10,
+  "tier": 8,
+  "tags": [
+    "spiderman"
+  ],
+  "abilities": [
+    {
+      "identifier": "spectacular_spin",
+      "keybind": "key.thematic.ultimate",
+      "options": {
+        "fields": {
+          "afterimage_color": "#F2C230"
+        }
+      }
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 45,
+      "maximum": 50
+    }
+  ]
+}

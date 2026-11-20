@@ -131,6 +131,7 @@ public final class TimeRewindManager {
     }
 
     public static void onPlace(BlockEvent.EntityPlaceEvent event) {
+        if (GauntletGrief.probing()) return;
         if (!(event.getLevel() instanceof ServerLevel level) || !recorded(level, Vec3.atCenterOf(event.getPos()))) return;
         synchronized (BLOCKS) {
             BLOCKS.addLast(new BlockChange(level.getServer().overworld().getGameTime(), level.dimension(), event.getPos().immutable(),

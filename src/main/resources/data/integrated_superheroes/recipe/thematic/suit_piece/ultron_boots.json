@@ -1,0 +1,31 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:ultron"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "marvel:iron_man_mark_7_boots"
+  },
+  "ingredients": [
+    {
+      "item": "marvel:vibranium_block"
+    },
+    {
+      "item": "marvel:adamantium_block"
+    }
+  ],
+  "results": {
+    "id": "integrated_superheroes:suit_boots",
+    "components": {
+      "integrated_superheroes:suit": "thematic:ultron"
+    }
+  }
+}

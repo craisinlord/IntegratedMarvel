@@ -48,6 +48,7 @@ public final class HeroAdvancements {
     private static final Map<UUID, List<Window>> WINDOWS = new HashMap<>();
     private static final Map<String, Vec3> LAST_POSITIONS = new HashMap<>();
     private static final Map<UUID, Integer> CEILING_TICKS = new HashMap<>();
+    private static final Map<UUID, Boolean> SWINGING = new HashMap<>();
 
     static {
         branch("x_men/cyclops", CyclopsPower.ID);
@@ -60,20 +61,35 @@ public final class HeroAdvancements {
         branch("x_men/gambit", GambitPower.ID);
         branch("x_men/rogue", RoguePower.ID);
         branch("x_men/jubilee", JubileePower.ID);
+        branch("x_men/beast", BeastPower.ID);
+        branch("x_men/nightcrawler", NightcrawlerPower.ID);
+        branch("x_men/angel", AngelPower.ID);
+        branch("x_men/jean_grey", JeanGreyPower.ID);
+        branch("x_men/professor_x", ProfessorXPower.ID);
         branch("fantastic_four/mr_fantastic", MrFantasticPower.ID);
         branch("fantastic_four/invisible_woman", InvisibleWomanPower.ID);
         branch("fantastic_four/human_torch", HumanTorchPower.ID);
         branch("fantastic_four/thing", ThingPower.ID);
+        branch("fantastic_four/silver_surfer", SilverSurferPower.ID);
         branch("avengers/captain_america", SuperSoldierPower.ID);
         branch("avengers/hulk", HulkPower.ID);
         branch("avengers/binary", BinaryPower.ID);
         branch("avengers/scarlet_witch", ScarletWitchPower.ID);
         branch("avengers/quicksilver", QuicksilverPower.ID);
         branch("avengers/black_panther", PantherPower.ID);
+        branch("avengers/groot", GrootPower.ID);
         branch("street_level/spider_man", "spider_powers_peter_parker");
         branch("street_level/daredevil", DaredevilPower.ID);
         branch("street_level/squirrel_girl", SquirrelGirlPower.ID);
         branch("viltrumite/viltrumite", ViltrumitePower.ID);
+        branch("justice_league/kryptonian", KryptonianPower.ID);
+        branch("justice_league/martian", MartianPower.ID);
+        branch("justice_league/shazam", ShazamPower.ID);
+        branch("justice_league/atlantean", AtlanteanPower.ID);
+        branch("justice_league/amazon", AmazonPower.ID);
+        branch("justice_league/sonic", SonicPower.ID);
+        branch("justice_league/homelander", HomelanderPower.ID);
+        branch("justice_league/swamp_thing", SwampThingPower.ID);
     }
 
     private HeroAdvancements() {
@@ -89,6 +105,7 @@ public final class HeroAdvancements {
         NeoForge.EVENT_BUS.addListener(HeroAdvancements::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(HeroAdvancements::onServerTick);
         NeoForge.EVENT_BUS.addListener(HeroAdvancements::onExplosion);
+        NeoForge.EVENT_BUS.addListener(HeroAdvancements::onLogout);
     }
 
     public static void award(ServerPlayer player, String path) {
@@ -348,6 +365,14 @@ public final class HeroAdvancements {
         }
     }
 
+    private static void onLogout(net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent event) {
+        UUID id = event.getEntity().getUUID();
+        CEILING_TICKS.remove(id);
+        SWINGING.remove(id);
+        String prefix = id.toString();
+        LAST_POSITIONS.keySet().removeIf(key -> key.startsWith(prefix));
+    }
+
     private static void onPlayerTick(PlayerTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) {
             return;
@@ -432,9 +457,18 @@ public final class HeroAdvancements {
     }
 
     private static void tickSpider(ServerPlayer player) {
-        boolean swinging = !player.onGround() && !player.level().getEntitiesOfClass(
-                com.stxllarplanes.marvellegacy.entity.projectile.WebShot.class, player.getBoundingBox().inflate(64.0D),
-                web -> web.getHolder() == player && web.isInGround() && !web.isFinished()).isEmpty();
+        boolean swinging;
+        if (player.onGround()) {
+            swinging = false;
+            SWINGING.remove(player.getUUID());
+        } else if (player.tickCount % 5 == 0 || !SWINGING.containsKey(player.getUUID())) {
+            swinging = !player.level().getEntitiesOfClass(
+                    com.stxllarplanes.marvellegacy.entity.projectile.WebShot.class, player.getBoundingBox().inflate(64.0D),
+                    web -> web.getHolder() == player && web.isInGround() && !web.isFinished()).isEmpty();
+            SWINGING.put(player.getUUID(), swinging);
+        } else {
+            swinging = SWINGING.get(player.getUUID());
+        }
         travel(player, "street_level/spider_man/thwip", swinging, 1000.0D);
         PlayerData data = HeroPowers.data(player);
         boolean ceiling = data.hasState("WallClimbCeiling")

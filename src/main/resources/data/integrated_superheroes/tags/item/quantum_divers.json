@@ -1,0 +1,16 @@
+{
+  "values": [
+    {
+      "id": "marvel:ant_man_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:ant_man_upgraded_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:wasp_chestplate",
+      "required": false
+    }
+  ]
+}

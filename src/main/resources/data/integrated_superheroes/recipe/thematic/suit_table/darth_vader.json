@@ -1,0 +1,49 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:darth_vader"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "minecraft:netherite_chestplate"
+  },
+  "ingredients": [
+    {
+      "item": "minecraft:netherite_ingot"
+    },
+    {
+      "item": "minecraft:netherite_ingot"
+    },
+    {
+      "item": "thematic:fear_battery"
+    },
+    {
+      "item": "thematic:fear_shard"
+    },
+    {
+      "item": "thematic:fear_shard"
+    },
+    {
+      "item": "thematic:advanced_technology"
+    },
+    {
+      "item": "thematic:gas_mask"
+    },
+    {
+      "item": "thematic:heart_rate_monitor"
+    },
+    {
+      "item": "thematic:ruby"
+    }
+  ],
+  "results": {
+    "id": "thematic:darth_vader"
+  }
+}

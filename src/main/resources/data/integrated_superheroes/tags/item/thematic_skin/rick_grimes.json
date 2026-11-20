@@ -1,0 +1,81 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:abraham",
+      "required": false
+    },
+    {
+      "id": "thematic:andrea",
+      "required": false
+    },
+    {
+      "id": "thematic:carl_grimes",
+      "required": false
+    },
+    {
+      "id": "thematic:ezekiel",
+      "required": false
+    },
+    {
+      "id": "thematic:glenn",
+      "required": false
+    },
+    {
+      "id": "thematic:jesus",
+      "required": false
+    },
+    {
+      "id": "thematic:lee",
+      "required": false
+    },
+    {
+      "id": "thematic:maggie",
+      "required": false
+    },
+    {
+      "id": "thematic:negan",
+      "required": false
+    },
+    {
+      "id": "thematic:princess",
+      "required": false
+    },
+    {
+      "id": "thematic:rick_amc",
+      "required": false
+    },
+    {
+      "id": "thematic:rick_deputy",
+      "required": false
+    },
+    {
+      "id": "thematic:rick_grimes",
+      "required": false
+    },
+    {
+      "id": "thematic:rick_negan",
+      "required": false
+    },
+    {
+      "id": "thematic:rick_new_beginning",
+      "required": false
+    },
+    {
+      "id": "thematic:rick_prison",
+      "required": false
+    },
+    {
+      "id": "thematic:rick_riot",
+      "required": false
+    },
+    {
+      "id": "thematic:the_gov",
+      "required": false
+    },
+    {
+      "id": "thematic:tyreese",
+      "required": false
+    }
+  ]
+}

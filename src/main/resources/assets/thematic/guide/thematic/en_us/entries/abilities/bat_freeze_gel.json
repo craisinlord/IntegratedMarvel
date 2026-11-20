@@ -1,0 +1,8 @@
+{
+    "name":  "Freeze Gel",
+    "category":  "thematic:ability",
+    "icon":  "thematic:gadget_ice_grenade",
+    "pages":  [
+                  "Throw a gel grenade that bursts into a patch of frost. Water around it freezes over, and anything caught in the frost is slowed and keeps taking cold damage until it thaws."
+              ]
+}

@@ -1,0 +1,33 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:lantern_butcher_knife",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_scissors",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_ice_axe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_cage_avarice",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_fishing_rod_avarice",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_grabbing_hand",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_hoard_hammer",
+      "required": false
+    }
+  ]
+}

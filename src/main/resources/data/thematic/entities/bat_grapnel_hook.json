@@ -1,0 +1,19 @@
+{
+  "type": "thematic:tether",
+  "size": [0.5, 0.5],
+  "spawn_group": "misc",
+  "mode": "pull_owner",
+  "attach": "any",
+  "pull": { "base": 0.14, "per_block": 0.03, "max": 2.6 },
+  "body_pull": { "base": 0.14, "per_block": 0.03, "max": 2.6 },
+  "release_at": 2.0,
+  "hang": 0.3,
+  "head": { "gravity": 0, "drag": 1.0, "max_ticks": 14 },
+  "lifetime": 140,
+  "render": { "model": "thematic:grapple_hook" },
+  "look": { "style": "rope", "preset": "strand", "from": "main_hand", "sag": 0.15, "color": "#1C1C22" },
+  "on_attach": [
+    { "type": "thematic:sound", "sound": "minecraft:block.chain.place", "volume": 1.0, "pitch": 1.3, "at": "target" },
+    { "type": "thematic:particles", "particle": "minecraft:crit", "count": 6, "spread": 0.2, "speed": 0.1 }
+  ]
+}

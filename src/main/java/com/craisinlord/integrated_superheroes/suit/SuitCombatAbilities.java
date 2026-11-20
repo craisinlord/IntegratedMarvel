@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.suit;
 
+import com.craisinlord.integrated_superheroes.hero.HeroGrief;
 import com.craisinlord.integrated_superheroes.hero.HeroFx;
 import com.craisinlord.integrated_superheroes.compat.FallbackGrenade;
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
@@ -39,6 +40,7 @@ import java.util.Comparator;
 public final class SuitCombatAbilities {
     private static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath("c", "bosses"));
     private static final int RING_COLOR = 0xFF4040;
+    private static final int PROTON_COLOR = 0xFFD0263E;
 
     private SuitCombatAbilities() {
     }
@@ -97,6 +99,12 @@ public final class SuitCombatAbilities {
             }
         }
         double y = player.getY() + 1.1D;
+        if (HeroFx.vfx(level, new Vec3(player.getX(), y, player.getZ()), "circle_ring", 0xFF000000 | RING_COLOR, (float) radius)) {
+            HeroFx.vfx(level, new Vec3(player.getX(), y, player.getZ()), "unfilled_circle", 0xFF000000 | RING_COLOR, (float) radius);
+            HeroFx.cue(player, "thematic:laser_charge", 0.8F, 1.2F);
+            HeroFx.cue(player, "thematic:radiation_beam", 1.2F, 1.0F);
+            return SuitAbility.Result.FIRED;
+        }
         var laser = SuitFx.particle(SuitFx.SMALL_LASER, ParticleTypes.ELECTRIC_SPARK);
         for (double r = 1.0D; r <= radius; r += 1.0D) {
             int points = (int) (r * 12);
@@ -173,14 +181,19 @@ public final class SuitCombatAbilities {
                 BlockState state = level.getBlockState(pos);
                 float hardness = state.getDestroySpeed(level, pos);
                 if (!state.isAir() && hardness >= 0.0F && hardness <= maxHardness && level.getBlockEntity(pos) == null) {
-                    level.destroyBlock(pos, true, player);
+                    HeroGrief.tryBreak(player, level, pos.immutable(), true);
                 }
             }
         }
-        SuitFx.burst(level, SuitFx.SONIC_BLAST, ParticleTypes.EXPLOSION, center, 1, 0.0D, 0.0D);
-        level.sendParticles(ParticleTypes.EXPLOSION, center.x, center.y, center.z, 2, 0.5D, 0.5D, 0.5D, 0.0D);
-        level.playSound(null, center.x, center.y, center.z, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.8F, 1.2F);
-        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PISTON_EXTEND, SoundSource.PLAYERS, 1.0F, 0.6F);
+        if (HeroFx.vfx(level, center, "punch_pressure_wave", 0)) {
+            HeroFx.vfx(level, center, "impact_starburst", 0);
+            HeroFx.cue(level, center, "thematic:ultron.plutonium_slam", 1.0F, 1.0F);
+        } else {
+            SuitFx.burst(level, SuitFx.SONIC_BLAST, ParticleTypes.EXPLOSION, center, 1, 0.0D, 0.0D);
+            level.sendParticles(ParticleTypes.EXPLOSION, center.x, center.y, center.z, 2, 0.5D, 0.5D, 0.5D, 0.0D);
+            level.playSound(null, center.x, center.y, center.z, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.8F, 1.2F);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PISTON_EXTEND, SoundSource.PLAYERS, 1.0F, 0.6F);
+        }
         return SuitAbility.Result.FIRED;
     }
 
@@ -259,8 +272,13 @@ public final class SuitCombatAbilities {
         state.protonTicks = SuitAbilityConfig.PROTON_CANNON_TICKS.get();
         state.protonDamage = (float) (context.unibeam() * SuitAbilityConfig.PROTON_CANNON.damageMultiplier().get());
         ServerLevel level = player.serverLevel();
-        SuitFx.burst(level, SuitFx.PLASMA_RING, ParticleTypes.FLASH, beamOrigin(player), 1, 0.0D, 0.0D);
-        SuitFx.sound(level, player.position(), SuitFx.BEAM_FIRE, MarvelSoundEvents.IRON_MAN_UNIBEAM_SHOOT.get(), 1.2F, 0.8F);
+        if (HeroFx.vfx(level, beamOrigin(player), "impact_starburst", PROTON_COLOR)) {
+            HeroFx.cue(player, "thematic:ultron.encephalo_cutin", 1.2F, 1.0F);
+            HeroFx.cue(player, "thematic:ultron.encephalo_shot", 1.2F, 1.0F);
+        } else {
+            SuitFx.burst(level, SuitFx.PLASMA_RING, ParticleTypes.FLASH, beamOrigin(player), 1, 0.0D, 0.0D);
+            SuitFx.sound(level, player.position(), SuitFx.BEAM_FIRE, MarvelSoundEvents.IRON_MAN_UNIBEAM_SHOOT.get(), 1.2F, 0.8F);
+        }
         return SuitAbility.Result.FIRED;
     }
 
@@ -276,8 +294,11 @@ public final class SuitCombatAbilities {
         BlockHitResult block = level.clip(new ClipContext(start, start.add(look.scale(range)), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
         Vec3 end = block.getType() == HitResult.Type.MISS ? start.add(look.scale(range)) : block.getLocation();
 
-        HeroAbilities.particleLine(level, start, end, SuitFx.particle(SuitFx.LASER, ParticleTypes.ELECTRIC_SPARK), 0.6D);
-        level.sendParticles(SuitFx.particle(SuitFx.PLASMA_EXPLOSION, ParticleTypes.FLASH), end.x, end.y, end.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        boolean themed = HeroFx.thematic() && (ticksLeft % 3 != 0 || HeroFx.beam(level, start, end, "pyre_ray", PROTON_COLOR));
+        if (!themed) {
+            HeroAbilities.particleLine(level, start, end, SuitFx.particle(SuitFx.LASER, ParticleTypes.ELECTRIC_SPARK), 0.6D);
+            level.sendParticles(SuitFx.particle(SuitFx.PLASMA_EXPLOSION, ParticleTypes.FLASH), end.x, end.y, end.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        }
 
         if (ticksLeft % SuitAbilityConfig.PROTON_CANNON_HIT_INTERVAL.get() != 0) {
             return;
@@ -293,9 +314,13 @@ public final class SuitCombatAbilities {
             BlockState state = level.getBlockState(pos);
             float hardness = state.getDestroySpeed(level, pos);
             if (hardness >= 0.0F && hardness <= SuitAbilityConfig.HYDRAULIC_PUNCH_MAX_HARDNESS.get() && level.getBlockEntity(pos) == null) {
-                level.destroyBlock(pos, true, player);
+                HeroGrief.tryBreak(player, level, pos, true);
             }
         }
-        SuitFx.sound(level, end, SuitFx.LASER_FIRE, SoundEvents.BEACON_POWER_SELECT, 0.6F, 1.4F);
+        if (themed && HeroFx.vfx(level, end, "impact_starburst", PROTON_COLOR)) {
+            HeroFx.cue(level, end, "thematic:ultron.encephalo_hit", 0.7F, 1.0F);
+        } else {
+            SuitFx.sound(level, end, SuitFx.LASER_FIRE, SoundEvents.BEACON_POWER_SELECT, 0.6F, 1.4F);
+        }
     }
 }

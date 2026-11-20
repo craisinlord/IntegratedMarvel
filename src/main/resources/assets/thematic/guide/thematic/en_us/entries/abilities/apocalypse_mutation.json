@@ -1,0 +1,9 @@
+{
+  "name": "Survival of the Fittest",
+  "category": "thematic:ability",
+  "icon": "minecraft:totem_of_undying",
+  "pages": [
+    "Evolve for twelve seconds, releasing an opening shockwave. Gain twelve melee attack damage, two blocks of melee interaction reach, rapid regeneration, and fully developed damage adaptation. Colossus Fist and Tectonic Leap gain 1.65 times their configured damage and two blocks of reach or radius. Your existing model grows slightly if there is room; cramped spaces do not prevent the other benefits. Base cooldown: 110 seconds after the mutation ends.",
+    "The complete matching Apocalypse armor passively adapts to repeated hits of the same damage type: the first hit is normal, then each repeated hit adds twelve percent reduction, up to thirty-six percent. Adaptation expires after eight seconds without that damage type and resets when the type changes. Void-like damage that bypasses invulnerability is never reduced. The suit also restores one health point every two seconds once five seconds have passed since incoming damage. Only three active controls are used: Colossus Fist, Tectonic Leap, and Survival of the Fittest."
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:darkseid"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "minecraft:netherite_leggings"
+  },
+  "ingredients": [
+    {
+      "item": "marvel:adamantium_ingot"
+    },
+    {
+      "item": "marvel:adamantium_ingot"
+    },
+    {
+      "item": "thematic:alien_tech"
+    },
+    {
+      "item": "marvellegacy:cloth_blue"
+    }
+  ],
+  "results": {
+    "id": "integrated_superheroes:suit_leggings",
+    "components": {
+      "integrated_superheroes:suit": "thematic:darkseid"
+    }
+  }
+}

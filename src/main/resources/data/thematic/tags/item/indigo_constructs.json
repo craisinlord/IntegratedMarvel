@@ -1,0 +1,29 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:lantern_baton",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_extinguisher",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_spear",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_shield_compassion",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_indigo_staff",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_mending_lash",
+      "required": false
+    }
+  ]
+}

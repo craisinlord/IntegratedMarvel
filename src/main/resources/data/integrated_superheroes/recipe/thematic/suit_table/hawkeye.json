@@ -1,0 +1,49 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:hawkeye"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "minecraft:diamond_chestplate"
+  },
+  "ingredients": [
+    {
+      "item": "minecraft:bow"
+    },
+    {
+      "item": "minecraft:arrow"
+    },
+    {
+      "item": "minecraft:arrow"
+    },
+    {
+      "item": "thematic:arrow_sonic"
+    },
+    {
+      "item": "marvellegacy:cloth_purple"
+    },
+    {
+      "item": "marvellegacy:cloth_purple"
+    },
+    {
+      "item": "marvellegacy:cloth_black"
+    },
+    {
+      "item": "thematic:carbon_fiber"
+    },
+    {
+      "item": "thematic:stark_tech"
+    }
+  ],
+  "results": {
+    "id": "thematic:hawkeye"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "values": [
+    {
+      "id": "alexscaves:block_of_uranium",
+      "required": false
+    },
+    {
+      "id": "alexscaves:radrock_uranium_ore",
+      "required": false
+    },
+    {
+      "id": "thematic:kryptonite_ore",
+      "required": false
+    },
+    {
+      "id": "thematic:kryptonite_block",
+      "required": false
+    }
+  ]
+}

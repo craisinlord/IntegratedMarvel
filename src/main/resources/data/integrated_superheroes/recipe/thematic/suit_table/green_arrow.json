@@ -1,0 +1,49 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:green_arrow"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "minecraft:diamond_chestplate"
+  },
+  "ingredients": [
+    {
+      "item": "minecraft:bow"
+    },
+    {
+      "item": "thematic:queen_tech"
+    },
+    {
+      "item": "thematic:queen_tech"
+    },
+    {
+      "item": "thematic:queen_tech"
+    },
+    {
+      "item": "thematic:arrow_boxing_glove"
+    },
+    {
+      "item": "thematic:arrow_net"
+    },
+    {
+      "item": "marvellegacy:cloth_black"
+    },
+    {
+      "item": "marvellegacy:cloth_green"
+    },
+    {
+      "item": "marvellegacy:cloth_green"
+    }
+  ],
+  "results": {
+    "id": "thematic:green_arrow"
+  }
+}

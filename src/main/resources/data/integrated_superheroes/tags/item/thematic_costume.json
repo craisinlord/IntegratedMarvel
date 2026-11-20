@@ -1,0 +1,1593 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:a_train",
+      "required": false
+    },
+    {
+      "id": "thematic:accelerated_man",
+      "required": false
+    },
+    {
+      "id": "thematic:angel",
+      "required": false
+    },
+    {
+      "id": "thematic:aqualad",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman1",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman1986",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman2",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_1994",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_dceu",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_exiled",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_flashpoint",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_futures_end",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_injustice",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_injustice2",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_jlu",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_rebirth",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_starro",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_tbatb",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_vampires",
+      "required": false
+    },
+    {
+      "id": "thematic:aquaman_yj",
+      "required": false
+    },
+    {
+      "id": "thematic:aquamanbn",
+      "required": false
+    },
+    {
+      "id": "thematic:aquamankc",
+      "required": false
+    },
+    {
+      "id": "thematic:aquawoman",
+      "required": false
+    },
+    {
+      "id": "thematic:barda",
+      "required": false
+    },
+    {
+      "id": "thematic:barry_allen",
+      "required": false
+    },
+    {
+      "id": "thematic:beast",
+      "required": false
+    },
+    {
+      "id": "thematic:beast1",
+      "required": false
+    },
+    {
+      "id": "thematic:beast_97",
+      "required": false
+    },
+    {
+      "id": "thematic:bizarro",
+      "required": false
+    },
+    {
+      "id": "thematic:black_adam",
+      "required": false
+    },
+    {
+      "id": "thematic:black_canary",
+      "required": false
+    },
+    {
+      "id": "thematic:black_canary1985",
+      "required": false
+    },
+    {
+      "id": "thematic:black_canary52",
+      "required": false
+    },
+    {
+      "id": "thematic:black_canary_bombshell",
+      "required": false
+    },
+    {
+      "id": "thematic:black_canary_bop",
+      "required": false
+    },
+    {
+      "id": "thematic:black_canary_injustice",
+      "required": false
+    },
+    {
+      "id": "thematic:black_canary_rebirth",
+      "required": false
+    },
+    {
+      "id": "thematic:black_canary_yj",
+      "required": false
+    },
+    {
+      "id": "thematic:black_canarycw",
+      "required": false
+    },
+    {
+      "id": "thematic:black_mary",
+      "required": false
+    },
+    {
+      "id": "thematic:black_panther",
+      "required": false
+    },
+    {
+      "id": "thematic:blackflash_cw",
+      "required": false
+    },
+    {
+      "id": "thematic:captain_america",
+      "required": false
+    },
+    {
+      "id": "thematic:captain_marvel",
+      "required": false
+    },
+    {
+      "id": "thematic:cheetah",
+      "required": false
+    },
+    {
+      "id": "thematic:clark_kent",
+      "required": false
+    },
+    {
+      "id": "thematic:colossus",
+      "required": false
+    },
+    {
+      "id": "thematic:composite_superman",
+      "required": false
+    },
+    {
+      "id": "thematic:cpt_marvel",
+      "required": false
+    },
+    {
+      "id": "thematic:cyborg_superman",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_2000",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_2024",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_apocalypse",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_astonishing",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_evolution",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_new",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_noir",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_pheonix",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_revolution",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_rivals",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_ultimate",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_wolverine",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_xfactor",
+      "required": false
+    },
+    {
+      "id": "thematic:daredevil",
+      "required": false
+    },
+    {
+      "id": "thematic:daredevil_homemade",
+      "required": false
+    },
+    {
+      "id": "thematic:daredevil_mcu",
+      "required": false
+    },
+    {
+      "id": "thematic:daredevil_rivals",
+      "required": false
+    },
+    {
+      "id": "thematic:darla_shazam",
+      "required": false
+    },
+    {
+      "id": "thematic:deadman",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool_2099",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool_classic",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool_golden_age",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool_origins",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool_pulp",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool_spy",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool_ultimate",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool_wolverine",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool_x",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool_xmen",
+      "required": false
+    },
+    {
+      "id": "thematic:deathpool",
+      "required": false
+    },
+    {
+      "id": "thematic:emma_frost",
+      "required": false
+    },
+    {
+      "id": "thematic:eugene_shazam",
+      "required": false
+    },
+    {
+      "id": "thematic:evil_deadpool",
+      "required": false
+    },
+    {
+      "id": "thematic:firestorm",
+      "required": false
+    },
+    {
+      "id": "thematic:flash3000",
+      "required": false
+    },
+    {
+      "id": "thematic:flash90",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_absolute_power",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_blue",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_cw",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_cw_v2",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_dceu",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_elseworlds",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_hot_pursuit",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_injustice",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_ssktjl",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_starro",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_testrun",
+      "required": false
+    },
+    {
+      "id": "thematic:flashmkdc",
+      "required": false
+    },
+    {
+      "id": "thematic:freddy_shazam",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_2024",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_aoa",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_death",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_evolution",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_excalibur",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_guildmaster",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_mcu",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_red",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_revolution",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_rivals",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_thief",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_tux",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_unbreakable",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_wolverine",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_x_uniform",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_xfactor",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_year_end",
+      "required": false
+    },
+    {
+      "id": "thematic:ghost_rider",
+      "required": false
+    },
+    {
+      "id": "thematic:ghost_spider",
+      "required": false
+    },
+    {
+      "id": "thematic:godspeed",
+      "required": false
+    },
+    {
+      "id": "thematic:green_canary",
+      "required": false
+    },
+    {
+      "id": "thematic:groot",
+      "required": false
+    },
+    {
+      "id": "thematic:homelander",
+      "required": false
+    },
+    {
+      "id": "thematic:hulk",
+      "required": false
+    },
+    {
+      "id": "thematic:hulk_gladiator",
+      "required": false
+    },
+    {
+      "id": "thematic:iceman",
+      "required": false
+    },
+    {
+      "id": "thematic:invincible",
+      "required": false
+    },
+    {
+      "id": "thematic:jay_garrick",
+      "required": false
+    },
+    {
+      "id": "thematic:jay_garrick_cw",
+      "required": false
+    },
+    {
+      "id": "thematic:jean_grey",
+      "required": false
+    },
+    {
+      "id": "thematic:john_jones",
+      "required": false
+    },
+    {
+      "id": "thematic:johnny_quick",
+      "required": false
+    },
+    {
+      "id": "thematic:jon_kent",
+      "required": false
+    },
+    {
+      "id": "thematic:jubilee",
+      "required": false
+    },
+    {
+      "id": "thematic:juggernaut",
+      "required": false
+    },
+    {
+      "id": "thematic:kidflash",
+      "required": false
+    },
+    {
+      "id": "thematic:kidpool",
+      "required": false
+    },
+    {
+      "id": "thematic:king_daredevil",
+      "required": false
+    },
+    {
+      "id": "thematic:king_shazam",
+      "required": false
+    },
+    {
+      "id": "thematic:kitty_pryde",
+      "required": false
+    },
+    {
+      "id": "thematic:kong_kenan",
+      "required": false
+    },
+    {
+      "id": "thematic:lady_deadpool",
+      "required": false
+    },
+    {
+      "id": "thematic:logan",
+      "required": false
+    },
+    {
+      "id": "thematic:maestro",
+      "required": false
+    },
+    {
+      "id": "thematic:maeve",
+      "required": false
+    },
+    {
+      "id": "thematic:magneto",
+      "required": false
+    },
+    {
+      "id": "thematic:martian_manhunter",
+      "required": false
+    },
+    {
+      "id": "thematic:martian_manhunter_bd",
+      "required": false
+    },
+    {
+      "id": "thematic:martian_manhunter_beyond",
+      "required": false
+    },
+    {
+      "id": "thematic:martian_manhunter_jlu",
+      "required": false
+    },
+    {
+      "id": "thematic:martian_manhunter_starro",
+      "required": false
+    },
+    {
+      "id": "thematic:martian_manhunterdceu",
+      "required": false
+    },
+    {
+      "id": "thematic:martianmanhunter1",
+      "required": false
+    },
+    {
+      "id": "thematic:martianmanhunter_jl",
+      "required": false
+    },
+    {
+      "id": "thematic:mary_shazam",
+      "required": false
+    },
+    {
+      "id": "thematic:matt_murdock",
+      "required": false
+    },
+    {
+      "id": "thematic:mazahs",
+      "required": false
+    },
+    {
+      "id": "thematic:mera",
+      "required": false
+    },
+    {
+      "id": "thematic:miss_martian",
+      "required": false
+    },
+    {
+      "id": "thematic:mmh52",
+      "required": false
+    },
+    {
+      "id": "thematic:mmh_bn",
+      "required": false
+    },
+    {
+      "id": "thematic:mmh_cw",
+      "required": false
+    },
+    {
+      "id": "thematic:mmh_natural",
+      "required": false
+    },
+    {
+      "id": "thematic:mmh_tomorrowverse",
+      "required": false
+    },
+    {
+      "id": "thematic:mmh_yj",
+      "required": false
+    },
+    {
+      "id": "thematic:nicepool",
+      "required": false
+    },
+    {
+      "id": "thematic:nightcrawler",
+      "required": false
+    },
+    {
+      "id": "thematic:nubia",
+      "required": false
+    },
+    {
+      "id": "thematic:ocean_master",
+      "required": false
+    },
+    {
+      "id": "thematic:old_flash",
+      "required": false
+    },
+    {
+      "id": "thematic:old_man_logan",
+      "required": false
+    },
+    {
+      "id": "thematic:omni_man",
+      "required": false
+    },
+    {
+      "id": "thematic:pedro_shazam",
+      "required": false
+    },
+    {
+      "id": "thematic:plastic_man",
+      "required": false
+    },
+    {
+      "id": "thematic:powergirl",
+      "required": false
+    },
+    {
+      "id": "thematic:prof_x",
+      "required": false
+    },
+    {
+      "id": "thematic:quicksilver",
+      "required": false
+    },
+    {
+      "id": "thematic:raven",
+      "required": false
+    },
+    {
+      "id": "thematic:red_hulk",
+      "required": false
+    },
+    {
+      "id": "thematic:red_racer",
+      "required": false
+    },
+    {
+      "id": "thematic:reverse_flash",
+      "required": false
+    },
+    {
+      "id": "thematic:reverse_flash_cw",
+      "required": false
+    },
+    {
+      "id": "thematic:reverse_flash_rebirth",
+      "required": false
+    },
+    {
+      "id": "thematic:rogue",
+      "required": false
+    },
+    {
+      "id": "thematic:roninpool",
+      "required": false
+    },
+    {
+      "id": "thematic:scarlet_witch",
+      "required": false
+    },
+    {
+      "id": "thematic:sea_king",
+      "required": false
+    },
+    {
+      "id": "thematic:shazam",
+      "required": false
+    },
+    {
+      "id": "thematic:shazam_apokolips",
+      "required": false
+    },
+    {
+      "id": "thematic:shazam_dceu",
+      "required": false
+    },
+    {
+      "id": "thematic:shazam_injustice",
+      "required": false
+    },
+    {
+      "id": "thematic:shazam_modern",
+      "required": false
+    },
+    {
+      "id": "thematic:she_hulk",
+      "required": false
+    },
+    {
+      "id": "thematic:she_hulk_f4",
+      "required": false
+    },
+    {
+      "id": "thematic:silver_banshee",
+      "required": false
+    },
+    {
+      "id": "thematic:silver_surfer",
+      "required": false
+    },
+    {
+      "id": "thematic:spiderman",
+      "required": false
+    },
+    {
+      "id": "thematic:spiderman_2099",
+      "required": false
+    },
+    {
+      "id": "thematic:spiderwoman",
+      "required": false
+    },
+    {
+      "id": "thematic:squirrel_girl",
+      "required": false
+    },
+    {
+      "id": "thematic:starfire",
+      "required": false
+    },
+    {
+      "id": "thematic:storm",
+      "required": false
+    },
+    {
+      "id": "thematic:storm_x_uniform",
+      "required": false
+    },
+    {
+      "id": "thematic:stormfront",
+      "required": false
+    },
+    {
+      "id": "thematic:superboy",
+      "required": false
+    },
+    {
+      "id": "thematic:superboy1",
+      "required": false
+    },
+    {
+      "id": "thematic:supergirl",
+      "required": false
+    },
+    {
+      "id": "thematic:supergirl_bombshell",
+      "required": false
+    },
+    {
+      "id": "thematic:supergirl_dawn",
+      "required": false
+    },
+    {
+      "id": "thematic:supergirl_dcau",
+      "required": false
+    },
+    {
+      "id": "thematic:supergirl_dceu",
+      "required": false
+    },
+    {
+      "id": "thematic:supergirl_dcu",
+      "required": false
+    },
+    {
+      "id": "thematic:supergirl_dkos",
+      "required": false
+    },
+    {
+      "id": "thematic:superman",
+      "required": false
+    },
+    {
+      "id": "thematic:superman1",
+      "required": false
+    },
+    {
+      "id": "thematic:superman14",
+      "required": false
+    },
+    {
+      "id": "thematic:superman3000",
+      "required": false
+    },
+    {
+      "id": "thematic:superman52",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_1997",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_authority",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_beyond",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_blacksuit",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_bn",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_cw",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_dcau",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_dceu",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_dcu",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_dkos",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_flashpoint",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_frontier",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_future",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_gam",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_godfall",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_hereafter",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_hunterprey",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_injustice",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_injustice1",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_justice_lords",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_new_krypton",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_redson",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_skies",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_ssktjl",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_starro",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_tomorrowverse",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_val",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_war",
+      "required": false
+    },
+    {
+      "id": "thematic:supermankc",
+      "required": false
+    },
+    {
+      "id": "thematic:supermanmaws",
+      "required": false
+    },
+    {
+      "id": "thematic:superwoman",
+      "required": false
+    },
+    {
+      "id": "thematic:swamp_thing",
+      "required": false
+    },
+    {
+      "id": "thematic:the_dp_kid",
+      "required": false
+    },
+    {
+      "id": "thematic:the_flash",
+      "required": false
+    },
+    {
+      "id": "thematic:the_flash_bn",
+      "required": false
+    },
+    {
+      "id": "thematic:the_flash_rebirth",
+      "required": false
+    },
+    {
+      "id": "thematic:ultraman",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_1",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_2000",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_2024",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_ablation",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_ageofultron",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_aoa",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_brown",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_classic",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_dofp",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_dp",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_evolution",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_fang",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_logan",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_midnight",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_patch",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_rivals",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_strike_force",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_ultimate",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_x",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_x_uniform",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_girl",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman1",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman1st",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman3000",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman600",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_absolute_power",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_amazonia",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_battle",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_bombshell",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_divine",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_dkos",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_flashpoint",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_gam",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_jl",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_lkoe",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_metal",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_redson",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_ssktjl",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_starro",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_vampires",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_womanbn",
+      "required": false
+    },
+    {
+      "id": "thematic:x23",
+      "required": false
+    },
+    {
+      "id": "thematic:x23_wolverine",
+      "required": false
+    },
+    {
+      "id": "thematic:zatanna",
+      "required": false
+    },
+    {
+      "id": "thematic:zenpool",
+      "required": false
+    },
+    {
+      "id": "thematic:zoom_cw",
+      "required": false
+    },
+    {
+      "id": "thematic:abomination",
+      "required": false
+    },
+    {
+      "id": "thematic:adam_warlock",
+      "required": false
+    },
+    {
+      "id": "thematic:ares",
+      "required": false
+    },
+    {
+      "id": "thematic:atom_smasher",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_dkos",
+      "required": false
+    },
+    {
+      "id": "thematic:batson",
+      "required": false
+    },
+    {
+      "id": "thematic:black_manta",
+      "required": false
+    },
+    {
+      "id": "thematic:black_noir",
+      "required": false
+    },
+    {
+      "id": "thematic:brick",
+      "required": false
+    },
+    {
+      "id": "thematic:bruce_banner",
+      "required": false
+    },
+    {
+      "id": "thematic:cable",
+      "required": false
+    },
+    {
+      "id": "thematic:captain_atom",
+      "required": false
+    },
+    {
+      "id": "thematic:captain_atom_jlu",
+      "required": false
+    },
+    {
+      "id": "thematic:captain_atom_kc",
+      "required": false
+    },
+    {
+      "id": "thematic:captain_atom_tomorrowverse",
+      "required": false
+    },
+    {
+      "id": "thematic:captain_cold",
+      "required": false
+    },
+    {
+      "id": "thematic:circe",
+      "required": false
+    },
+    {
+      "id": "thematic:clayface",
+      "required": false
+    },
+    {
+      "id": "thematic:constantine",
+      "required": false
+    },
+    {
+      "id": "thematic:deathstroke",
+      "required": false
+    },
+    {
+      "id": "thematic:deathstroke_cw",
+      "required": false
+    },
+    {
+      "id": "thematic:doomsday",
+      "required": false
+    },
+    {
+      "id": "thematic:dr_m",
+      "required": false
+    },
+    {
+      "id": "thematic:dr_strange",
+      "required": false
+    },
+    {
+      "id": "thematic:enchantress",
+      "required": false
+    },
+    {
+      "id": "thematic:etrigan",
+      "required": false
+    },
+    {
+      "id": "thematic:gentleman_ghost",
+      "required": false
+    },
+    {
+      "id": "thematic:geras",
+      "required": false
+    },
+    {
+      "id": "thematic:gill_man",
+      "required": false
+    },
+    {
+      "id": "thematic:goro",
+      "required": false
+    },
+    {
+      "id": "thematic:gwenpool",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkgirl",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkman",
+      "required": false
+    },
+    {
+      "id": "thematic:hela",
+      "required": false
+    },
+    {
+      "id": "thematic:hourman",
+      "required": false
+    },
+    {
+      "id": "thematic:human_torch",
+      "required": false
+    },
+    {
+      "id": "thematic:invisible_man",
+      "required": false
+    },
+    {
+      "id": "thematic:invisible_woman",
+      "required": false
+    },
+    {
+      "id": "thematic:iron_spider",
+      "required": false
+    },
+    {
+      "id": "thematic:jason_blood",
+      "required": false
+    },
+    {
+      "id": "thematic:kabal",
+      "required": false
+    },
+    {
+      "id": "thematic:killer_croc",
+      "required": false
+    },
+    {
+      "id": "thematic:king_shark",
+      "required": false
+    },
+    {
+      "id": "thematic:kratos",
+      "required": false
+    },
+    {
+      "id": "thematic:loki",
+      "required": false
+    },
+    {
+      "id": "thematic:luke_cage",
+      "required": false
+    },
+    {
+      "id": "thematic:miles_morales",
+      "required": false
+    },
+    {
+      "id": "thematic:mongul",
+      "required": false
+    },
+    {
+      "id": "thematic:mr_fantastic",
+      "required": false
+    },
+    {
+      "id": "thematic:mr_fantastic1",
+      "required": false
+    },
+    {
+      "id": "thematic:mr_fantastic2005",
+      "required": false
+    },
+    {
+      "id": "thematic:mr_fantastic_fant4stic",
+      "required": false
+    },
+    {
+      "id": "thematic:mr_fantastic_fof4",
+      "required": false
+    },
+    {
+      "id": "thematic:mr_fantastic_future",
+      "required": false
+    },
+    {
+      "id": "thematic:mr_fantastic_mcu",
+      "required": false
+    },
+    {
+      "id": "thematic:mr_fantastic_rivals",
+      "required": false
+    },
+    {
+      "id": "thematic:mr_fantastic_ultimate",
+      "required": false
+    },
+    {
+      "id": "thematic:mr_fantastic_wgh",
+      "required": false
+    },
+    {
+      "id": "thematic:mystique",
+      "required": false
+    },
+    {
+      "id": "thematic:namor",
+      "required": false
+    },
+    {
+      "id": "thematic:parasite",
+      "required": false
+    },
+    {
+      "id": "thematic:polaris",
+      "required": false
+    },
+    {
+      "id": "thematic:punisher_parker",
+      "required": false
+    },
+    {
+      "id": "thematic:quan_chi",
+      "required": false
+    },
+    {
+      "id": "thematic:raiden",
+      "required": false
+    },
+    {
+      "id": "thematic:rain",
+      "required": false
+    },
+    {
+      "id": "thematic:ravager",
+      "required": false
+    },
+    {
+      "id": "thematic:red_death",
+      "required": false
+    },
+    {
+      "id": "thematic:red_tornado",
+      "required": false
+    },
+    {
+      "id": "thematic:reptile",
+      "required": false
+    },
+    {
+      "id": "thematic:scorpion",
+      "required": false
+    },
+    {
+      "id": "thematic:shang_tsung",
+      "required": false
+    },
+    {
+      "id": "thematic:shao_kahn",
+      "required": false
+    },
+    {
+      "id": "thematic:smoke_mk",
+      "required": false
+    },
+    {
+      "id": "thematic:soldier_boy",
+      "required": false
+    },
+    {
+      "id": "thematic:starlight",
+      "required": false
+    },
+    {
+      "id": "thematic:stranger",
+      "required": false
+    },
+    {
+      "id": "thematic:sub_zero",
+      "required": false
+    },
+    {
+      "id": "thematic:thanos",
+      "required": false
+    },
+    {
+      "id": "thematic:the_deep",
+      "required": false
+    },
+    {
+      "id": "thematic:the_drowned",
+      "required": false
+    },
+    {
+      "id": "thematic:the_maker",
+      "required": false
+    },
+    {
+      "id": "thematic:the_thing",
+      "required": false
+    },
+    {
+      "id": "thematic:the_wizard",
+      "required": false
+    },
+    {
+      "id": "thematic:translucent",
+      "required": false
+    },
+    {
+      "id": "thematic:trigon",
+      "required": false
+    },
+    {
+      "id": "thematic:vandal",
+      "required": false
+    },
+    {
+      "id": "thematic:vixen",
+      "required": false
+    },
+    {
+      "id": "thematic:weather_wizard",
+      "required": false
+    },
+    {
+      "id": "thematic:winter_soldier",
+      "required": false
+    },
+    {
+      "id": "thematic:wong",
+      "required": false
+    }
+  ]
+}

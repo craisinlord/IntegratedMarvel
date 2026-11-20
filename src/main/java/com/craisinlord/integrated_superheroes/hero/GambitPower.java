@@ -327,7 +327,7 @@ public final class GambitPower {
     private static void chargeFx(ServerPlayer player) {
         Vec3 hand = player.getEyePosition().add(player.getLookAngle().scale(0.6D)).subtract(0.0D, 0.25D, 0.0D);
         player.serverLevel().sendParticles(HeroAbilities.emissive(KineticBurst.PURPLE, 0.9F), hand.x, hand.y, hand.z, 8, 0.1D, 0.1D, 0.1D, 0.0D);
-        player.serverLevel().sendParticles(ParticleTypes.ELECTRIC_SPARK, hand.x, hand.y, hand.z, 4, 0.1D, 0.1D, 0.1D, 0.05D);
+        player.serverLevel().sendParticles((HeroFx.thematic() ? HeroFx.particle("thematic:shock_particle", ParticleTypes.ELECTRIC_SPARK) : ParticleTypes.ELECTRIC_SPARK), hand.x, hand.y, hand.z, 4, 0.1D, 0.1D, 0.1D, 0.05D);
         HeroFx.play(player, SoundEvents.AMETHYST_BLOCK_CHIME, 0.8F, 1.6F);
     }
 
@@ -419,7 +419,7 @@ public final class GambitPower {
         if (remaining % (remaining < 20 ? 4 : 10) == 0) {
             level.playSound(null, center.x, center.y, center.z, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.0F,
                     remaining < 20 ? 2.0F : 1.2F);
-            level.sendParticles(ParticleTypes.ELECTRIC_SPARK, center.x, center.y, center.z, 3, width, height, width, 0.1D);
+            level.sendParticles((HeroFx.thematic() ? HeroFx.particle("thematic:shock_particle", ParticleTypes.ELECTRIC_SPARK) : ParticleTypes.ELECTRIC_SPARK), center.x, center.y, center.z, 3, width, height, width, 0.1D);
         }
     }
 

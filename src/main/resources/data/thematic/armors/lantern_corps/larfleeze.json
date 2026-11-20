@@ -1,0 +1,97 @@
+{
+  "tier": 8,
+  "abilities": [
+    {
+      "identifier": "avarice_charge",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "level": "9",
+          "constructs": "#orange_constructs"
+        }
+      }
+    },
+    {
+      "identifier": "flight",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "night_vision",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "glow",
+      "keybind": "key.thematic.cosmetic",
+      "options": {
+        "fields": {
+          "color": "#FF6600"
+        }
+      }
+    },
+    {
+      "identifier": "avarice_beam",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "construct_wheel",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "avarice_shield",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "mine_mine_mine",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "avarice_unleash",
+      "keybind": "key.thematic.ultimate"
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 0.98
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 55,
+      "maximum": 65
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 50,
+      "maximum": 60
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 70,
+      "maximum": 75
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 50,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 80,
+      "maximum": 98
+    }
+  ],
+  "fighting_type": [
+    "DUELIST"
+  ],
+  "flight_type": "ONE_HAND_LEFT",
+  "tags": [
+    "lantern"
+  ]
+}

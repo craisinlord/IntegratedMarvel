@@ -105,6 +105,6 @@ public final class GauntletFxClient {
             y += random.nextGaussian() * spread;
             z += random.nextGaussian() * spread;
         }
-        level.addParticle(particle, false, x, y, z, 0.0D, 0.0D, 0.0D);
+        level.addParticle(particle, payload.far(), x, y, z, 0.0D, 0.0D, 0.0D);
     }
 }

@@ -1,0 +1,123 @@
+{
+  "priority": 10,
+  "wip": false,
+  "suit-recipe": "thematic:ultron",
+  "tier": 10,
+  "abilities": [
+    {
+      "identifier": "encephalo_beam",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "concussion_blasters",
+      "keybind": "key.thematic.ability_1",
+      "options": {
+        "fields": {
+          "damage_scale": "14"
+        }
+      }
+    },
+    {
+      "identifier": "tractor_beam",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "thruster_rush",
+      "keybind": "key.thematic.ability_3",
+      "options": {
+        "fields": {
+          "damage_scale": "20"
+        }
+      }
+    },
+    {
+      "identifier": "sentinel_strike",
+      "keybind": "key.thematic.ability_4"
+    },
+    {
+      "identifier": "vibranium_shell",
+      "keybind": "key.thematic.ability_5"
+    },
+    {
+      "identifier": "age_of_ultron",
+      "keybind": "key.thematic.ultimate"
+    },
+    {
+      "identifier": "hive_control",
+      "keybind": "key.thematic.equip_item"
+    },
+    {
+      "identifier": "flight",
+      "keybind": "key.thematic.utility",
+      "options": {
+        "fields": {
+          "level": "5"
+        }
+      }
+    },
+    {
+      "identifier": "ultron_formation",
+      "keybind": "key.thematic.cosmetic"
+    },
+    {
+      "identifier": "ultron_hive",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "mind_virus",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "weakness_electric_damaging",
+      "keybind": "key.thematic.passive"
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 80,
+      "maximum": 90
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 70,
+      "maximum": 80
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 60,
+      "maximum": 70
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 85,
+      "maximum": 90
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 75,
+      "maximum": 85
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 95,
+      "maximum": 99
+    }
+  ],
+  "fighting_type": [
+    "DUELIST"
+  ],
+  "flight_type": "ONE_HAND_LEFT",
+  "flight_profile": "thematic:ultron",
+  "cape": {
+    "partCount": 16,
+    "height": 1.3,
+    "width": 0.3,
+    "thickness": 0.001,
+    "texture": "thematic:textures/cape/no_cape.png",
+    "shinyTexture": "thematic:textures/cape/lkoe_cape.png",
+    "simulation": {
+      "type": "cape"
+    }
+  }
+}

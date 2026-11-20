@@ -1,0 +1,33 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:supergirl",
+      "required": false
+    },
+    {
+      "id": "thematic:supergirl_bombshell",
+      "required": false
+    },
+    {
+      "id": "thematic:supergirl_dawn",
+      "required": false
+    },
+    {
+      "id": "thematic:supergirl_dcau",
+      "required": false
+    },
+    {
+      "id": "thematic:supergirl_dceu",
+      "required": false
+    },
+    {
+      "id": "thematic:supergirl_dcu",
+      "required": false
+    },
+    {
+      "id": "thematic:supergirl_dkos",
+      "required": false
+    }
+  ]
+}

@@ -11,7 +11,7 @@ import java.util.Set;
 @Mixin(targets = "mezz.jei.neoforge.platform.ModHelper", remap = false)
 public abstract class JeiMarvelModNameMixin {
     @Unique
-    private static final Set<String> integratedSuperheroes$MARVEL_MODS = Set.of("marvellegacy", "marvel", "infinity_gauntlet", "integrated_superheroes");
+    private static final Set<String> integratedSuperheroes$MARVEL_MODS = Set.of("marvellegacy", "marvel", "infinity_gauntlet", "integrated_superheroes", "thematic");
 
     @Inject(method = "computeModNameForModId", at = @At("HEAD"), cancellable = true)
     private void integratedSuperheroes$integratedMarvelName(String modId, CallbackInfoReturnable<String> cir) {

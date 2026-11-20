@@ -1,0 +1,37 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:azrael",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_arkham",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_injustice",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_knights",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_modern",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_ssktjl",
+      "required": false
+    },
+    {
+      "id": "thematic:owlman",
+      "required": false
+    },
+    {
+      "id": "thematic:zombie_batman",
+      "required": false
+    }
+  ]
+}

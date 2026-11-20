@@ -1,0 +1,10 @@
+{
+  "parent": "thematic:wolverine",
+  "suit-recipe": "thematic:alt_wolverine_rivals",
+  "abilities": [
+    {
+      "identifier": "toggle_hood",
+      "remove": true
+    }
+  ]
+}

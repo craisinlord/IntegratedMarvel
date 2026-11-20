@@ -374,7 +374,7 @@ public final class JubileePower {
             ServerLevel level = player.serverLevel();
             level.sendParticles(ParticleTypes.FIREWORK, player.getX(), player.getY(), player.getZ(), 3, 0.15D, 0.05D, 0.15D, 0.02D);
             if (ticks % 2 == 0) {
-                level.sendParticles(ParticleTypes.ELECTRIC_SPARK, player.getX(), player.getY(), player.getZ(), 2, 0.2D, 0.1D, 0.2D, 0.05D);
+                level.sendParticles((HeroFx.thematic() ? HeroFx.particle("thematic:shock_particle", ParticleTypes.ELECTRIC_SPARK) : ParticleTypes.ELECTRIC_SPARK), player.getX(), player.getY(), player.getZ(), 2, 0.2D, 0.1D, 0.2D, 0.05D);
             }
         }
     }

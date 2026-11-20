@@ -1,0 +1,43 @@
+{
+  "type": "minecraft:min",
+  "argument1": {
+    "type": "minecraft:interpolated",
+    "argument": {
+      "type": "minecraft:min",
+      "argument1": "integrated_superheroes:void/top",
+      "argument2": {
+        "type": "minecraft:add",
+        "argument1": {
+          "type": "minecraft:mul",
+          "argument1": 0.16667,
+          "argument2": {
+            "type": "minecraft:add",
+            "argument1": {
+              "type": "minecraft:y_clamped_gradient",
+              "from_y": 0,
+              "to_y": 256,
+              "from_value": 0.0,
+              "to_value": 256.0
+            },
+            "argument2": {
+              "type": "minecraft:mul",
+              "argument1": -1.0,
+              "argument2": "integrated_superheroes:void/bottom"
+            }
+          }
+        },
+        "argument2": {
+          "type": "minecraft:mul",
+          "argument1": 0.35,
+          "argument2": {
+            "type": "minecraft:noise",
+            "noise": "integrated_superheroes:void_underside",
+            "xz_scale": 1.0,
+            "y_scale": 1.0
+          }
+        }
+      }
+    }
+  },
+  "argument2": "integrated_superheroes:void/crack"
+}

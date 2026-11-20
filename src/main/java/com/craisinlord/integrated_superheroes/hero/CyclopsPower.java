@@ -82,7 +82,12 @@ public final class CyclopsPower {
     }
 
     private static boolean hasVisor(ServerPlayer player) {
-        return player.getItemBySlot(EquipmentSlot.HEAD).is(VISOR);
+        net.minecraft.world.item.ItemStack head = player.getItemBySlot(EquipmentSlot.HEAD);
+        if (head.is(VISOR)) {
+            return true;
+        }
+        boolean bare = head.isEmpty() || ResourceLocation.DEFAULT_NAMESPACE.equals(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(head.getItem()).getNamespace());
+        return bare && !com.craisinlord.integrated_superheroes.hero.skin.SkinData.costume(player).isEmpty();
     }
 
     private static double toggleEyes(ServerPlayer player, int slot) {
@@ -112,6 +117,7 @@ public final class CyclopsPower {
         HeroBeams.fire(player, NARROW, spec(MarvelBalanceConfig.OPTIC_BLAST_RANGE.get(), MarvelBalanceConfig.OPTIC_BLAST_DURATION_TICKS.get(),
                 MarvelBalanceConfig.OPTIC_BLAST_DAMAGE.get(), 1.0F, 2.0F, 0.0F, 0.0F, 1));
         player.level().playSound(null, player.blockPosition(), MarvelSoundEvents.CYCLOPS_OPTIC_BLAST.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+        opticImpact(player, MarvelBalanceConfig.OPTIC_BLAST_RANGE.get());
         return MarvelBalanceConfig.OPTIC_BLAST_COOLDOWN.get();
     }
 
@@ -128,7 +134,15 @@ public final class CyclopsPower {
             }
         });
         player.level().playSound(null, player.blockPosition(), MarvelSoundEvents.CYCLOPS_OPTIC_BLAST_BIG.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+        opticImpact(player, MarvelBalanceConfig.WIDE_BLAST_RANGE.get());
         return MarvelBalanceConfig.WIDE_BLAST_COOLDOWN.get();
+    }
+
+    private static void opticImpact(ServerPlayer player, double range) {
+        net.minecraft.world.phys.Vec3 at = player.pick(range, 0.0F, false).getLocation();
+        if (HeroFx.vfx(player.serverLevel(), at, "impact_starburst", 0xFFFF3030, 2.2F)) {
+            HeroFx.cue(player, "thematic:optic_blast", 1.0F, 1.0F);
+        }
     }
 
     private static HeroBeams.Spec uncontrolledSpec() {

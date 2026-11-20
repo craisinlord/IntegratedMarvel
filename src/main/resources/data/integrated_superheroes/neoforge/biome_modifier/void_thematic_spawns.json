@@ -1,0 +1,30 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    }
+  ],
+  "type": "neoforge:add_spawns",
+  "biomes": "#integrated_superheroes:is_the_void",
+  "spawners": [
+    {
+      "type": "thematic:hydra_soldier",
+      "weight": 8,
+      "minCount": 1,
+      "maxCount": 2
+    },
+    {
+      "type": "thematic:hydra_rifle",
+      "weight": 5,
+      "minCount": 1,
+      "maxCount": 2
+    },
+    {
+      "type": "thematic:hydra_smg",
+      "weight": 4,
+      "minCount": 1,
+      "maxCount": 1
+    }
+  ]
+}

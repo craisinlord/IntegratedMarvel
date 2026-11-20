@@ -1,0 +1,78 @@
+{
+  "tier": 7,
+  "abilities": [
+    {
+      "identifier": "equip",
+      "keybind": "key.thematic.equip_item",
+      "options": {
+        "fields": {
+          "label": "equip_boba_fett",
+          "items": [
+            {
+              "item": "thematic:ee3carbine",
+              "count": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "identifier": "flight",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "flamethrower",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "homing_missile",
+      "keybind": "key.thematic.utility"
+    },
+    {
+      "identifier": "propelled_flight",
+      "keybind": "key.thematic.passive"
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 64,
+      "maximum": 72
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 40,
+      "maximum": 50
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 10,
+      "maximum": 20
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 85,
+      "maximum": 99
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 50,
+      "maximum": 60
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 80,
+      "maximum": 99
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 0.6
+    }
+  ],
+  "fighting_type": [
+    "DUELIST"
+  ],
+  "flight_type": "ONE_HAND_LEFT"
+}

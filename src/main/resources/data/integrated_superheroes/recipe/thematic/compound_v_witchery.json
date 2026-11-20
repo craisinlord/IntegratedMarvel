@@ -1,0 +1,54 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "witchery"
+    }
+  ],
+  "type": "witchery:cauldron_crafting",
+  "altarPower": 1000,
+  "inputItems": [
+    {
+      "color": -1,
+      "itemStack": {
+        "count": 1,
+        "id": "minecraft:glass_bottle"
+      },
+      "order": 0
+    },
+    {
+      "color": -1,
+      "itemStack": {
+        "count": 1,
+        "id": "marvel:villager_blood_sample"
+      },
+      "order": 1
+    },
+    {
+      "color": -1,
+      "itemStack": {
+        "count": 1,
+        "id": "witchery:mutandis_extremis"
+      },
+      "order": 2
+    },
+    {
+      "color": -1,
+      "itemStack": {
+        "count": 1,
+        "id": "witchery:tear_of_the_goddess"
+      },
+      "order": 3
+    }
+  ],
+  "outputItems": [
+    {
+      "count": 1,
+      "id": "thematic:compound_v"
+    }
+  ]
+}

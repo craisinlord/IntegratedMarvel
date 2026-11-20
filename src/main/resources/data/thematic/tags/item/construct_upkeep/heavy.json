@@ -1,0 +1,77 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:lantern_anchor",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_anchor_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_battle_axe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_blood_axe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_blood_axe_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_chainsaw",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_dual_sword",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_giant_fist",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_giant_fist_stewart",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_hammer",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_hammer_kilowog",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_hammer_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_hoard_hammer",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_hoard_hammer_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_scythe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_soul_scythe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_soul_scythe_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_steel_beam",
+      "required": false
+    }
+  ]
+}

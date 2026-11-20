@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:lex_luthor",
+      "required": false
+    },
+    {
+      "id": "thematic:lex_luthor_superman",
+      "required": false
+    }
+  ]
+}

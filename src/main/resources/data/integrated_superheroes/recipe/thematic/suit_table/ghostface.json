@@ -1,0 +1,49 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:ghostface"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "minecraft:diamond_chestplate"
+  },
+  "ingredients": [
+    {
+      "item": "thematic:ghostface_mask"
+    },
+    {
+      "item": "minecraft:note_block"
+    },
+    {
+      "item": "thematic:vintage_phone"
+    },
+    {
+      "item": "thematic:butcher_knife"
+    },
+    {
+      "item": "thematic:kevlar"
+    },
+    {
+      "item": "thematic:imbued_blood_vial"
+    },
+    {
+      "item": "thematic:imbued_blood_vial"
+    },
+    {
+      "item": "marvellegacy:cloth_black"
+    },
+    {
+      "item": "marvellegacy:cloth_black"
+    }
+  ],
+  "results": {
+    "id": "thematic:ghostface"
+  }
+}

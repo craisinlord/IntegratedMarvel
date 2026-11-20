@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:mirror_master",
+      "required": false
+    }
+  ]
+}

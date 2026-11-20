@@ -67,3 +67,24 @@ dependencies {
     jarJar(implementation("com.github.bawnorton.mixinsquared:mixinsquared-neoforge:0.3.3"))
     localRuntime fileTree(dir: 'libs/runtime', include: '*.jar')
 }
+
+sourceSets.test.compileClasspath += sourceSets.main.compileClasspath
+
+tasks.register('verifyDoom', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.output + sourceSets.main.output + sourceSets.main.compileClasspath
+    mainClass = 'com.craisinlord.integrated_superheroes.compat.thematic.DoomVerification'
+}
+
+tasks.register('verifyEndgameSuits', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.output + sourceSets.main.output + sourceSets.main.compileClasspath
+    mainClass = 'com.craisinlord.integrated_superheroes.compat.thematic.EndgameSuitVerification'
+}
+
+tasks.register('verifyPowerOwnership', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.output + sourceSets.main.output + sourceSets.main.compileClasspath
+    mainClass = 'com.craisinlord.integrated_superheroes.compat.thematic.PowerOwnershipVerification'
+    args 'C:/Users/maxlo/Desktop/modding/Boogloo Core fr/neoforge/src/main/resources/data/boogaloo_core/thematic_suit_bands.json'
+}

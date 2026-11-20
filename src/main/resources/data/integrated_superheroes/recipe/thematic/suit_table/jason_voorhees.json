@@ -1,0 +1,49 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:jason_voorhees"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "minecraft:diamond_chestplate"
+  },
+  "ingredients": [
+    {
+      "item": "thematic:jason_mask"
+    },
+    {
+      "type": "neoforge:components",
+      "items": "minecraft:leather_chestplate",
+      "components": {
+        "minecraft:dyed_color": {
+          "rgb": 1908001
+        }
+      }
+    },
+    {
+      "tag": "minecraft:axes"
+    },
+    {
+      "item": "thematic:imbued_blood_vial"
+    },
+    {
+      "item": "thematic:imbued_blood_vial"
+    },
+    {
+      "item": "minecraft:water_bucket"
+    },
+    {
+      "item": "marvellegacy:cloth_brown"
+    }
+  ],
+  "results": {
+    "id": "thematic:jason_voorhees"
+  }
+}

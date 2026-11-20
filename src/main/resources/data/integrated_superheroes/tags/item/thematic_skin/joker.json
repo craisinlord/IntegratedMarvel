@@ -1,0 +1,25 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:harley_quinn",
+      "required": false
+    },
+    {
+      "id": "thematic:harley_quinn1",
+      "required": false
+    },
+    {
+      "id": "thematic:joker",
+      "required": false
+    },
+    {
+      "id": "thematic:joker_modern",
+      "required": false
+    },
+    {
+      "id": "thematic:trickster",
+      "required": false
+    }
+  ]
+}

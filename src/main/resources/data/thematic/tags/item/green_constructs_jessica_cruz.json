@@ -1,0 +1,161 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:lantern_bat",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_baton",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_mace",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_golf_club",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_cricket_bat",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_steel_beam",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_frying_pan",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_boxing_glove",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_sword",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_katana",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_longsword",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_dual_sword",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_spear",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_fly_swatter",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_crowbar",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_wrench",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_hammer",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_blade",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_butcher_knife",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_battle_axe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_scissors",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_ice_axe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_fire_axe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_jackhammer",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_shovel",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_lighter",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_fishing_rod",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_hoe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_extinguisher",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_taser",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_shield_cruz",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_bow",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_giant_fist",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_cage",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_anvil",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_catapult",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_boomerang",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_bear_trap",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_anchor",
+      "required": false
+    }
+  ]
+}

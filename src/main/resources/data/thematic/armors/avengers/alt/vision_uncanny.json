@@ -1,0 +1,15 @@
+{
+  "cape": {
+    "partCount": 16,
+    "height": 1.3,
+    "width": 0.4,
+    "thickness": 0.001,
+    "texture": "thematic:textures/cape/vision_uncanny_cape.png",
+    "shinyTexture": "thematic:textures/cape/vision_uncanny_cape_shiny.png",
+    "simulation": {
+      "type": "cape"
+    }
+  },
+  "parent": "thematic:vision",
+  "suit-recipe": "thematic:alt_vision_uncanny"
+}

@@ -1,0 +1,8 @@
+{
+    "name": "Use the Force",
+    "category": "thematic:ability",
+    "icon": "minecraft:wither_rose",
+    "pages": [
+        "Sets off the Force power you picked. Each power has its own cooldown. Force Choke is used until you pick something else."
+    ]
+}

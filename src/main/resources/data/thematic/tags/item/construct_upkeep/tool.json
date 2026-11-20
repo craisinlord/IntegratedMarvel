@@ -1,0 +1,61 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:lantern_extinguisher",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_fire_axe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_fishing_rod",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_fishing_rod_avarice",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_fishing_rod_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_hoe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_ice_axe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_jackhammer",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_light_of_hope",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_light_of_hope_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_lighter",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_scissors",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_shovel",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_wrench",
+      "required": false
+    }
+  ]
+}

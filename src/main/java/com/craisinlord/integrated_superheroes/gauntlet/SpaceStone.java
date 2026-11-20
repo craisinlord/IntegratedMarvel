@@ -1,5 +1,8 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
+import com.craisinlord.integrated_superheroes.hero.HeroFx;
+import com.craisinlord.integrated_superheroes.hero.HeroAbilities;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceKey;
@@ -50,8 +53,13 @@ public final class SpaceStone {
             moved = SpaceTravel.teleport(target, cast.level(), mine, target.getYRot())
                     && SpaceTravel.teleport(player, cast.level(), theirs, yaw);
             if (moved) {
-                GauntletFx.burst(cast.level(), mine.add(0.0D, 1.0D, 0.0D), "space", 30, 0.5D);
-                GauntletFx.burst(cast.level(), theirs.add(0.0D, 1.0D, 0.0D), "space", 30, 0.5D);
+                if (HeroFx.beam(cast.level(), mine.add(0.0D, 1.0D, 0.0D), theirs.add(0.0D, 1.0D, 0.0D), "void_hop", 0xFF000000 | GauntletAbilities.stoneColor("space"))) {
+                    HeroFx.vfx(cast.level(), mine, "void_arrive", 0xFF000000 | GauntletAbilities.stoneColor("space"));
+                    HeroFx.vfx(cast.level(), theirs, "void_arrive", 0xFF000000 | GauntletAbilities.stoneColor("space"));
+                } else {
+                    GauntletFx.burst(cast.level(), mine.add(0.0D, 1.0D, 0.0D), "space", 30, 0.5D);
+                    GauntletFx.burst(cast.level(), theirs.add(0.0D, 1.0D, 0.0D), "space", 30, 0.5D);
+                }
                 cast.message("space_swapped", target.getDisplayName());
             }
         } else {
@@ -64,8 +72,12 @@ public final class SpaceStone {
             Vec3 arrival = SpaceTravel.arrivalPosition(player, cast.level(), hit.getBlockPos().relative(hit.getDirection()));
             moved = SpaceTravel.teleport(player, cast.level(), arrival, player.getYRot());
             if (moved) {
-                GauntletFx.burst(cast.level(), from.add(0.0D, 1.0D, 0.0D), "space", 30, 0.5D);
-                GauntletFx.burst(cast.level(), arrival.add(0.0D, 1.0D, 0.0D), "space", 30, 0.5D);
+                if (HeroFx.vfx(cast.level(), from, "void_depart", 0xFF000000 | GauntletAbilities.stoneColor("space"))) {
+                    HeroFx.vfx(cast.level(), arrival, "void_arrive", 0xFF000000 | GauntletAbilities.stoneColor("space"));
+                } else {
+                    GauntletFx.burst(cast.level(), from.add(0.0D, 1.0D, 0.0D), "space", 30, 0.5D);
+                    GauntletFx.burst(cast.level(), arrival.add(0.0D, 1.0D, 0.0D), "space", 30, 0.5D);
+                }
             }
         }
         if (!moved) {
@@ -132,6 +144,10 @@ public final class SpaceStone {
             cast.message("space_no_target");
             return;
         }
+        if (HeroAbilities.isBoss(target)) {
+            cast.message("boss_resists", target.getDisplayName());
+            return;
+        }
         ServerLevel level = cast.level();
         Vec3 from = target.position();
         boolean moved;
@@ -152,8 +168,10 @@ public final class SpaceStone {
             cast.message("space_arrival_failed");
             return;
         }
-        level.sendParticles(ParticleTypes.REVERSE_PORTAL, from.x, from.y + 1.0D, from.z, 120, 0.4D, 0.8D, 0.4D, 0.4D);
-        GauntletFx.burst(level, from.add(0.0D, 1.0D, 0.0D), "space", 40, 0.6D);
+        if (!HeroFx.vfx(level, from, "void_implode", 0xFF000000 | GauntletAbilities.stoneColor("space"))) {
+            level.sendParticles(ParticleTypes.REVERSE_PORTAL, from.x, from.y + 1.0D, from.z, 120, 0.4D, 0.8D, 0.4D, 0.4D);
+            GauntletFx.burst(level, from.add(0.0D, 1.0D, 0.0D), "space", 40, 0.6D);
+        }
         GauntletFx.cast(player, "space", SoundEvents.ENDERMAN_TELEPORT, 0.5F);
         cast.message(cast.crouching() ? "space_banished_void" : "space_banished", target.getDisplayName());
         cast.cooldown();

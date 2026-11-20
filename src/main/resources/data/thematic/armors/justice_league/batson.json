@@ -1,0 +1,52 @@
+{
+  "priority": 10,
+  "tier": 2,
+  "abilities": [
+    {
+      "identifier": "toggle_hood",
+      "keybind": "key.thematic.cosmetic"
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 0.8
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 25,
+      "maximum": 35
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 50,
+      "maximum": 65
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 50,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 50,
+      "maximum": 60
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 80,
+      "maximum": 98
+    }
+  ],
+  "fighting_type": [
+    "UTILITY",
+    "BRAWLER"
+  ]
+}

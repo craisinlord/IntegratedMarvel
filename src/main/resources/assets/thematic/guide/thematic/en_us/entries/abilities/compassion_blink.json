@@ -1,0 +1,8 @@
+{
+  "name": "Blink",
+  "category": "thematic:ability",
+  "icon": "thematic:indigo_ring",
+  "pages": [
+    "Step through the light to a spot up to ten blocks ahead of you. It won't put you inside a wall."
+  ]
+}

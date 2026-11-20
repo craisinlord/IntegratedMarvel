@@ -8,6 +8,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.level.BlockEvent;
 
@@ -33,12 +35,16 @@ public final class GauntletGrief {
         BlockState state = level.getBlockState(pos);
         if (state.is(IMMUNE)) return false;
         if (!allowUnbreakable && state.getDestroySpeed(level, pos) < 0.0F) return false;
-        if (player == null) return true;
+        if (player == null) return false;
         if (!player.mayInteract(level, pos)) return false;
         if (state.isAir()) return true;
+        return probe(new BlockEvent.BreakEvent(level, pos, state, player));
+    }
+
+    public static <T extends Event & ICancellableEvent> boolean probe(T event) {
         PROBING.set(true);
         try {
-            return !NeoForge.EVENT_BUS.post(new BlockEvent.BreakEvent(level, pos, state, player)).isCanceled();
+            return !NeoForge.EVENT_BUS.post(event).isCanceled();
         } finally {
             PROBING.set(false);
         }
@@ -48,12 +54,12 @@ public final class GauntletGrief {
         if (!level.isInWorldBounds(pos) || !level.isLoaded(pos)) return false;
         BlockState state = level.getBlockState(pos);
         if (state.is(IMMUNE) || state.getDestroySpeed(level, pos) < 0.0F) return false;
-        return player == null || player.mayInteract(level, pos);
+        return player != null && player.mayInteract(level, pos);
     }
 
     public static boolean canEditQuietly(ServerPlayer player, ServerLevel level, BlockPos pos, BlockState state) {
         if (state.is(IMMUNE) || state.getDestroySpeed(level, pos) < 0.0F) return false;
-        return player == null || player.mayInteract(level, pos);
+        return player != null && player.mayInteract(level, pos);
     }
 
     public static boolean canDestroyTerrain(ServerPlayer player, ServerLevel level, BlockPos pos) {

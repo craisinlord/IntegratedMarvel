@@ -2,6 +2,7 @@ package com.craisinlord.integrated_superheroes.gauntlet;
 
 import com.craisinlord.integrated_superheroes.compat.AntarchyDimensionalTear;
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
+import com.craisinlord.integrated_superheroes.portal.MarvelPortal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceKey;
@@ -27,7 +28,7 @@ public final class SpacePortalManager {
     private static final double EXIT_OFFSET = 1.4D;
     private static final double HALF_WIDTH = 1.15D;
     private static final double HALF_HEIGHT = 1.55D;
-    private static final Map<UUID, PortalPair> PORTAL_PAIRS = new ConcurrentHashMap<>();
+    private static final Map<PortalOwner, PortalPair> PORTAL_PAIRS = new ConcurrentHashMap<>();
     private static final Map<UUID, Tracked> TRACKED = new HashMap<>();
 
     private SpacePortalManager() {
@@ -35,6 +36,20 @@ public final class SpacePortalManager {
 
     public static boolean create(ServerLevel source, Vec3 sourcePosition, Vec3 normal, Vec3 openerPosition,
                                  ServerLevel destination, BlockPos destinationBlock, ServerPlayer owner, long now) {
+        return create(source, sourcePosition, normal, openerPosition, destination, destinationBlock, owner, now,
+                MarvelPortal.SPIDERVERSE);
+    }
+
+    public static boolean createEldritch(ServerLevel level, Vec3 position, Vec3 normal, BlockPos destination,
+                                         ServerPlayer owner) {
+        return create(level, position, normal, owner.position(), level, destination, owner,
+                level.getServer().overworld().getGameTime(), MarvelPortal.STRANGE);
+    }
+
+    private static boolean create(ServerLevel source, Vec3 sourcePosition, Vec3 normal, Vec3 openerPosition,
+                                  ServerLevel destination, BlockPos destinationBlock, ServerPlayer owner,
+                                  long now, int style) {
+        int lifetime = style == MarvelPortal.STRANGE ? 300 : PORTAL_LIFETIME_TICKS;
         normal = new Vec3(normal.x, 0.0D, normal.z);
         normal = normal.lengthSqr() < 1.0E-6D ? new Vec3(0.0D, 0.0D, 1.0D) : normal.normalize();
 
@@ -49,8 +64,14 @@ public final class SpacePortalManager {
 
         Endpoint first = new Endpoint(source.dimension(), sourceCenter, normal, returnArrival, towardOpener);
         Endpoint second = new Endpoint(destination.dimension(), exitCenter, exitNormal, arrival, exitNormal.scale(-1.0D));
-        Entity firstVisual = createVisual(source, first);
-        Entity secondVisual = createVisual(destination, second);
+        boolean marvel = MarvelPortal.enabled();
+        Entity firstVisual = createVisual(source, first, marvel, style, lifetime);
+        Entity secondVisual = createVisual(destination, second, marvel, style, lifetime);
+        if (source == destination && firstVisual instanceof MarvelPortal firstPortal
+                && secondVisual instanceof MarvelPortal secondPortal) {
+            firstPortal.linkTo(secondPortal);
+            secondPortal.linkTo(firstPortal);
+        }
         if (firstVisual != null && !source.addFreshEntity(firstVisual)) {
             firstVisual.discard();
             return false;
@@ -62,9 +83,9 @@ public final class SpacePortalManager {
         }
         SpaceTravel.keepLoaded(source, BlockPos.containing(sourceCenter));
         SpaceTravel.keepLoaded(destination, BlockPos.containing(exitCenter));
-        PortalPair previous = PORTAL_PAIRS.put(owner.getUUID(), new PortalPair(first, second,
+        PortalPair previous = PORTAL_PAIRS.put(new PortalOwner(owner.getUUID(), style), new PortalPair(first, second,
                 firstVisual == null ? null : firstVisual.getUUID(), secondVisual == null ? null : secondVisual.getUUID(),
-                now + PORTAL_LIFETIME_TICKS));
+                now + 20, now + lifetime, marvel, style));
         if (previous != null) {
             discardVisuals(source.getServer(), previous);
         }
@@ -103,7 +124,10 @@ public final class SpacePortalManager {
         return candidates[0];
     }
 
-    private static Entity createVisual(ServerLevel level, Endpoint endpoint) {
+    private static Entity createVisual(ServerLevel level, Endpoint endpoint, boolean marvel, int style, int lifetime) {
+        if (marvel) {
+            return MarvelPortal.create(level, endpoint.center(), endpoint.facing(), style, lifetime);
+        }
         if (!ModCompat.ANTARCHY) {
             return null;
         }
@@ -134,7 +158,7 @@ public final class SpacePortalManager {
         }
         long now = server.overworld().getGameTime();
         Map<UUID, Tracked> seen = new HashMap<>();
-        for (Map.Entry<UUID, PortalPair> entry : PORTAL_PAIRS.entrySet()) {
+        for (Map.Entry<PortalOwner, PortalPair> entry : PORTAL_PAIRS.entrySet()) {
             PortalPair pair = entry.getValue();
             if (now >= pair.expiresAt()) {
                 if (PORTAL_PAIRS.remove(entry.getKey(), pair)) {
@@ -142,8 +166,11 @@ public final class SpacePortalManager {
                 }
                 continue;
             }
-            tickEndpoint(server, pair.first(), pair.second(), now, seen);
-            tickEndpoint(server, pair.second(), pair.first(), now, seen);
+            if (pair.marvel() && now < pair.opensAt()) {
+                continue;
+            }
+            tickEndpoint(server, pair.first(), pair.second(), pair, now, seen);
+            tickEndpoint(server, pair.second(), pair.first(), pair, now, seen);
         }
         TRACKED.clear();
         TRACKED.putAll(seen);
@@ -173,7 +200,7 @@ public final class SpacePortalManager {
         }
     }
 
-    private static void tickEndpoint(MinecraftServer server, Endpoint endpoint, Endpoint exit, long now,
+    private static void tickEndpoint(MinecraftServer server, Endpoint endpoint, Endpoint exit, PortalPair pair, long now,
                                      Map<UUID, Tracked> seen) {
         ServerLevel level = server.getLevel(endpoint.dimension());
         ServerLevel destination = server.getLevel(exit.dimension());
@@ -186,7 +213,7 @@ public final class SpacePortalManager {
         if (now % 80L == 0L) {
             level.playSound(null, BlockPos.containing(endpoint.center()), idleSound(), SoundSource.AMBIENT, 0.45F, 0.95F);
         }
-        if (!ModCompat.ANTARCHY && now % 2L == 0L) {
+        if (!pair.marvel() && !ModCompat.ANTARCHY && now % 2L == 0L) {
             portalParticles(level, endpoint, now);
         }
         AABB bounds = AABB.ofSize(endpoint.center(), 8.0D, 6.0D, 8.0D);
@@ -197,7 +224,7 @@ public final class SpacePortalManager {
             if (previous == null || !previous.dimension().equals(level.dimension()) || entity.isOnPortalCooldown()) {
                 continue;
             }
-            if (!crosses(previous.position(), current, endpoint)) {
+            if (!crosses(previous.position(), current, endpoint, pair)) {
                 continue;
             }
             Vec3 arrival = SpaceTravel.confirmArrival(entity, destination, exit.arrival());
@@ -209,11 +236,11 @@ public final class SpacePortalManager {
     }
 
     private static boolean canTravel(Entity entity) {
-        return entity.isAlive() && !entity.isSpectator() && !entity.isPassenger()
+        return entity.isAlive() && !(entity instanceof MarvelPortal) && !entity.isSpectator() && !entity.isPassenger()
                 && !(ModCompat.ANTARCHY && AntarchyDimensionalTear.isTear(entity));
     }
 
-    private static boolean crosses(Vec3 previous, Vec3 current, Endpoint endpoint) {
+    private static boolean crosses(Vec3 previous, Vec3 current, Endpoint endpoint, PortalPair pair) {
         Vec3 center = endpoint.center();
         Vec3 normal = endpoint.normal();
         double previousDepth = previous.subtract(center).dot(normal);
@@ -226,11 +253,20 @@ public final class SpacePortalManager {
         Vec3 crossing = previous.add(current.subtract(previous).scale(fraction));
         Vec3 right = new Vec3(-normal.z, 0.0D, normal.x);
         Vec3 relative = crossing.subtract(center);
+        if (pair.marvel()) {
+            double x = Math.abs(relative.dot(right));
+            double y = Math.abs(relative.y);
+            double radius = MarvelPortal.APERTURE_RADIUS;
+            if (pair.style() == MarvelPortal.STRANGE) {
+                return x * x + y * y <= radius * radius;
+            }
+            return y <= radius * Math.sqrt(3) / 2 && x + y / Math.sqrt(3) <= radius;
+        }
         return Math.abs(relative.dot(right)) <= HALF_WIDTH && Math.abs(relative.y) <= HALF_HEIGHT;
     }
 
     public static java.util.List<Opening> openings(UUID owner) {
-        PortalPair pair = PORTAL_PAIRS.get(owner);
+        PortalPair pair = PORTAL_PAIRS.get(new PortalOwner(owner, MarvelPortal.SPIDERVERSE));
         if (pair == null) return java.util.List.of();
         return java.util.List.of(new Opening(pair.first().dimension(), pair.first().center()),
                 new Opening(pair.second().dimension(), pair.second().center()));
@@ -242,7 +278,11 @@ public final class SpacePortalManager {
     private record Endpoint(ResourceKey<Level> dimension, Vec3 center, Vec3 normal, Vec3 arrival, Vec3 facing) {
     }
 
-    private record PortalPair(Endpoint first, Endpoint second, UUID firstVisual, UUID secondVisual, long expiresAt) {
+    private record PortalOwner(UUID player, int style) {
+    }
+
+    private record PortalPair(Endpoint first, Endpoint second, UUID firstVisual, UUID secondVisual,
+                              long opensAt, long expiresAt, boolean marvel, int style) {
     }
 
     private record Tracked(ResourceKey<Level> dimension, Vec3 position) {

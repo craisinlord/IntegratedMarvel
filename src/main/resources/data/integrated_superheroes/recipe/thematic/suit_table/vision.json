@@ -1,0 +1,46 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:vision"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "minecraft:netherite_chestplate"
+  },
+  "ingredients": [
+    {
+      "item": "marvel:vibranium_block"
+    },
+    {
+      "item": "integrated_superheroes:mind_stone"
+    },
+    {
+      "item": "thematic:advanced_technology"
+    },
+    {
+      "item": "thematic:advanced_technology"
+    },
+    {
+      "item": "minecraft:nether_star"
+    },
+    {
+      "item": "marvellegacy:cloth_green"
+    },
+    {
+      "item": "marvellegacy:cloth_yellow"
+    },
+    {
+      "item": "minecraft:glowstone_dust"
+    }
+  ],
+  "results": {
+    "id": "thematic:vision"
+  }
+}

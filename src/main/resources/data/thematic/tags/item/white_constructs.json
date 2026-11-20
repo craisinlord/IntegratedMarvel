@@ -1,0 +1,233 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:lantern_bat",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_baton",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_battle_axe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_blade",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_boxing_glove",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_butcher_knife",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_chainsaw",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_cricket_bat",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_crowbar",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_dual_sword",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_extinguisher",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_fire_axe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_fly_swatter",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_frying_pan",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_golf_club",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_hoe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_ice_axe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_jackhammer",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_katana",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_lighter",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_longsword",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_mace",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_scissors",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_scythe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_shovel",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_spear",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_steel_beam",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_sword",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_taser",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_trident",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_wrench",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_anchor_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_anvil_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_bear_trap_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_blood_axe_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_bow_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_cage_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_catapult_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_crystal_blade_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_fear_parasite_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_fishing_rod_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_grabbing_hand_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_grasping_hand_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_hammer_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_hoard_hammer_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_hook_chain_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_hope_bubble_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_indigo_staff_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_light_of_hope_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_love_bow_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_mending_lash_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_rage_gauntlet_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_shield_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_soul_scythe_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_spider_swarm_life",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_giant_fist",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_boomerang",
+      "required": false
+    }
+  ]
+}

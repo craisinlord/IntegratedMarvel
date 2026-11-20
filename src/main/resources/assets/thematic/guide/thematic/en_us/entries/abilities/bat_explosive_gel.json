@@ -1,0 +1,8 @@
+{
+    "name":  "Explosive Gel",
+    "category":  "thematic:ability",
+    "icon":  "thematic:explosivegelgun",
+    "pages":  [
+                  "Spray a glowing blob of gel onto the block you're looking at. You can have three out at once. Use it again while crouching to set them all off: each blast hurts and throws back enemies nearby, and cracks weak blocks if the area allows it."
+              ]
+}

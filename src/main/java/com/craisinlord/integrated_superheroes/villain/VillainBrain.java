@@ -229,6 +229,10 @@ public abstract class VillainBrain extends Goal {
         return false;
     }
 
+    protected boolean holdAtDeath() {
+        return false;
+    }
+
     public boolean incoming(LivingIncomingDamageEvent event) {
         if (finishing || bypassPipeline()) {
             return false;
@@ -269,7 +273,7 @@ public abstract class VillainBrain extends Goal {
         if (mob.tickCount % 5 == 0) {
             VillainFx.bossBarProgress(mob, mob.getHealth() / mob.getMaxHealth());
         }
-        if (!dying && engaged && !bypassPipeline() && phase >= thresholds().length && mob.getHealth() <= 1.0F) {
+        if (!dying && engaged && !bypassPipeline() && phase >= thresholds().length && mob.getHealth() <= 1.0F && !holdAtDeath()) {
             beginDeath(level);
         }
         if (dying) {
@@ -604,7 +608,9 @@ public abstract class VillainBrain extends Goal {
             }
         } else if (health - amount <= 0.5F) {
             amount = Math.max(0.0F, health - 1.0F);
-            beginDeath(level);
+            if (!holdAtDeath()) {
+                beginDeath(level);
+            }
         }
         damageTimes.addLast(now);
         damageAmounts.addLast(amount);
@@ -684,6 +690,15 @@ public abstract class VillainBrain extends Goal {
         mob.getNavigation().stop();
         save();
         onDeathStart(level);
+    }
+
+    void suspendDeath() {
+        if (!dying || finishing) {
+            return;
+        }
+        dying = false;
+        deathAt = 0L;
+        save();
     }
 
     private void releaseHolds() {

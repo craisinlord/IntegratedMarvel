@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:mr_freeze",
+      "required": false
+    },
+    {
+      "id": "thematic:mrfreeze_btas",
+      "required": false
+    }
+  ]
+}

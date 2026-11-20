@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:atom_smasher",
+      "required": false
+    }
+  ]
+}

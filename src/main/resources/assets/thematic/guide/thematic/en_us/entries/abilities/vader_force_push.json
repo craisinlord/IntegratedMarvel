@@ -1,0 +1,8 @@
+{
+    "name": "Force Push",
+    "category": "thematic:ability",
+    "icon": "minecraft:wind_charge",
+    "pages": [
+        "Shove everything in front of you away. Enemies thrown into a wall take extra damage, and arrows and other shots in front of you fly back the way they came."
+    ]
+}

@@ -42,6 +42,7 @@ public final class HumanTorchPower {
     private static final class Cage {
         private final LivingEntity target;
         private int ticks;
+        private boolean themed;
 
         private Cage(LivingEntity target, int ticks) {
             this.target = target;
@@ -165,12 +166,16 @@ public final class HumanTorchPower {
             }
             data.addState(FLAME_STATE);
             ServerLevel level = player.serverLevel();
-            level.sendParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 1.0D, player.getZ(), 40, 0.4D, 0.9D, 0.4D, 0.08D);
-            Vec3 center = player.getBoundingBox().getCenter();
-            level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.MAGMA_BLOCK.defaultBlockState()),
-                    center.x, center.y, center.z, 40, 0.4D, 0.8D, 0.4D, 0.2D);
-            HeroFx.play(player, SoundEvents.FIRECHARGE_USE, 1.0F, 0.8F);
-            HeroFx.play(player, SoundEvents.BLAZE_SHOOT, 0.8F, 0.7F);
+            if (HeroFx.vfx(level, player.position(), "ignition_burst", 0, 1.6F)) {
+                HeroFx.cue(player, "thematic:ignite", 1.0F, 1.0F);
+            } else {
+                level.sendParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 1.0D, player.getZ(), 40, 0.4D, 0.9D, 0.4D, 0.08D);
+                Vec3 center = player.getBoundingBox().getCenter();
+                level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.MAGMA_BLOCK.defaultBlockState()),
+                        center.x, center.y, center.z, 40, 0.4D, 0.8D, 0.4D, 0.2D);
+                HeroFx.play(player, SoundEvents.FIRECHARGE_USE, 1.0F, 0.8F);
+                HeroFx.play(player, SoundEvents.BLAZE_SHOOT, 0.8F, 0.7F);
+            }
             player.displayClientMessage(Component.literal("§6Flame on!"), true);
         }
         PlayerData.sync(player);
@@ -209,8 +214,10 @@ public final class HumanTorchPower {
             target.igniteForSeconds(5.0F);
         }
         Vec3 at = hit.getLocation();
-        level.sendParticles(ParticleTypes.FLAME, at.x, at.y, at.z, 12, 0.2D, 0.2D, 0.2D, 0.05D);
-        level.sendParticles(ParticleTypes.SMOKE, at.x, at.y, at.z, 6, 0.2D, 0.2D, 0.2D, 0.02D);
+        if (!HeroFx.vfx(level, at, "ember_flare", 0)) {
+            level.sendParticles(ParticleTypes.FLAME, at.x, at.y, at.z, 12, 0.2D, 0.2D, 0.2D, 0.05D);
+            level.sendParticles(ParticleTypes.SMOKE, at.x, at.y, at.z, 6, 0.2D, 0.2D, 0.2D, 0.02D);
+        }
         fireball.discard();
         event.setCanceled(true);
     }
@@ -225,14 +232,20 @@ public final class HumanTorchPower {
         }
         LivingEntity target = beam.targets().get(0);
         int ticks = MarvelBalanceConfig.FLAME_CAGE_TICKS.get();
-        CAGES.put(player.getUUID(), new Cage(target, ticks));
+        Cage cage = new Cage(target, ticks);
+        CAGES.put(player.getUUID(), cage);
         if (HeroAbilities.canControl(target)) {
             HeroStun.stun(target, ticks);
         }
         target.igniteForSeconds(ticks / 20.0F + 3.0F);
-        HeroAbilities.particleLine(player.serverLevel(), player.getEyePosition().subtract(0.0D, 0.3D, 0.0D), target.getBoundingBox().getCenter(),
-                ParticleTypes.FLAME, 0.5D);
-        HeroFx.play(target, SoundEvents.BLAZE_SHOOT, 1.0F, 0.6F);
+        cage.themed = HeroFx.vfx(player.serverLevel(), target.position(), "fire_ring_wall", 0, (float) Math.max(1.5D, target.getBbWidth() + 1.0D));
+        if (cage.themed) {
+            HeroFx.cue(target, "thematic:ignite", 1.0F, 0.8F);
+        } else {
+            HeroAbilities.particleLine(player.serverLevel(), player.getEyePosition().subtract(0.0D, 0.3D, 0.0D), target.getBoundingBox().getCenter(),
+                    ParticleTypes.FLAME, 0.5D);
+            HeroFx.play(target, SoundEvents.BLAZE_SHOOT, 1.0F, 0.6F);
+        }
         HeroAnimations.play(player, "web_shoot_r");
         return MarvelBalanceConfig.FLAME_CAGE_COOLDOWN.get();
     }
@@ -253,7 +266,7 @@ public final class HumanTorchPower {
         ServerLevel level = player.serverLevel();
         double radius = Math.max(1.0D, target.getBbWidth() * 0.9D + 0.6D);
         double spin = cage.ticks * 0.25D;
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; !cage.themed && i < 12; i++) {
             double angle = spin + Math.PI * 2.0D * i / 12.0D;
             double height = (i % 3) * target.getBbHeight() / 3.0D;
             level.sendParticles(ParticleTypes.FLAME, target.getX() + Math.cos(angle) * radius, target.getY() + height,
@@ -284,15 +297,20 @@ public final class HumanTorchPower {
             }
         });
         Vec3 center = player.position().add(0.0D, 1.0D, 0.0D);
-        for (int i = 0; i < 48; i++) {
-            double angle = Math.PI * 2.0D * i / 48.0D;
-            level.sendParticles(ParticleTypes.FLAME, center.x, center.y, center.z, 0, Math.cos(angle), 0.05D, Math.sin(angle), 0.6D);
+        if (HeroFx.vfx(level, player.position(), "supernova_bubble", 0, (float) radius)) {
+            HeroFx.cue(player, "thematic:ignite", 1.4F, 0.6F);
+            HeroFx.play(player, SoundEvents.GENERIC_EXPLODE.value(), 1.2F, 0.8F);
+        } else {
+            for (int i = 0; i < 48; i++) {
+                double angle = Math.PI * 2.0D * i / 48.0D;
+                level.sendParticles(ParticleTypes.FLAME, center.x, center.y, center.z, 0, Math.cos(angle), 0.05D, Math.sin(angle), 0.6D);
+            }
+            level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, center.x, center.y, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+            level.sendParticles(ParticleTypes.LAVA, center.x, center.y, center.z, 20, 1.0D, 0.5D, 1.0D, 0.0D);
+            HeroFx.play(player, SoundEvents.GENERIC_EXPLODE.value(), 1.2F, 0.8F);
+            HeroFx.play(player, SoundEvents.FIRECHARGE_USE, 1.2F, 0.5F);
         }
-        level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, center.x, center.y, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        level.sendParticles(ParticleTypes.LAVA, center.x, center.y, center.z, 20, 1.0D, 0.5D, 1.0D, 0.0D);
         HeroFx.shake(level, center, radius * 2.0D, 0.8F, 20);
-        HeroFx.play(player, SoundEvents.GENERIC_EXPLODE.value(), 1.2F, 0.8F);
-        HeroFx.play(player, SoundEvents.FIRECHARGE_USE, 1.2F, 0.5F);
         HeroAnimations.play(player, "web_shoot_both");
         flameOut(player, MarvelBalanceConfig.NOVA_BURNOUT_SECONDS.get());
         player.displayClientMessage(Component.literal("§6Nova flare! §7Burned out."), true);

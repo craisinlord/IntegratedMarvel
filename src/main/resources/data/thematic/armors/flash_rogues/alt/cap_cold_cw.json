@@ -1,0 +1,13 @@
+{
+  "parent": "thematic:captain_cold",
+  "abilities": [
+    {
+      "identifier": "toggle_hood",
+      "keybind": "key.thematic.cosmetic"
+    }
+  ],
+  "fighting_type": [
+    "UTILITY",
+    "BRAWLER"
+  ]
+}

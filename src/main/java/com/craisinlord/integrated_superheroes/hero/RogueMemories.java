@@ -108,6 +108,30 @@ public final class RogueMemories {
         if (ViltrumitePower.ID.equals(primary)) {
             return ViltrumiteCompat.memory();
         }
+        if (JuggernautPower.ID.equals(primary)) {
+            return JuggernautPower.rogueMemory();
+        }
+        if (BeastPower.ID.equals(primary)) {
+            return BeastPower.rogueMemory();
+        }
+        if (AngelPower.ID.equals(primary)) {
+            return AngelPower.rogueMemory();
+        }
+        if (JeanGreyPower.ID.equals(primary)) {
+            return JeanGreyPower.rogueMemory();
+        }
+        if (ProfessorXPower.ID.equals(primary)) {
+            return ProfessorXPower.rogueMemory();
+        }
+        if (SwampThingPower.ID.equals(primary)) {
+            return SwampThingPower.rogueMemory();
+        }
+        if (GrootPower.ID.equals(primary)) {
+            return GrootPower.rogueMemory();
+        }
+        if (SilverSurferPower.ID.equals(primary)) {
+            return SilverSurferPower.rogueMemory();
+        }
         return null;
     }
 

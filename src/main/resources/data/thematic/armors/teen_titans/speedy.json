@@ -1,0 +1,111 @@
+{
+  "wip": false,
+  "tier": 7,
+  "abilities": [
+    {
+      "identifier": "stealth",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "trickshot",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "equip",
+      "keybind": "key.thematic.equip_item",
+      "options": {
+        "fields": {
+          "label": "equip_greenarrowbow",
+          "items": [
+            {
+              "item": "thematic:greenarrowbow",
+              "count": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "identifier": "toggle_hood",
+      "keybind": "key.thematic.cosmetic"
+    },
+    {
+      "identifier": "quiver",
+      "keybind": "key.thematic.ability_0",
+      "options": {
+        "fields": {
+          "level": "9"
+        }
+      }
+    },
+    {
+      "identifier": "deadly_aim",
+      "keybind": "key.thematic.ability_4"
+    },
+    {
+      "identifier": "arrow_blitz",
+      "keybind": "key.thematic.ability_5"
+    },
+    {
+      "identifier": "hurricane_bow",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "fletchette",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "double_arrow",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "grapple",
+      "keybind": "key.thematic.utility"
+    },
+    {
+      "identifier": "survivalist",
+      "keybind": "key.thematic.ultimate"
+    },
+    {
+      "identifier": "acrobatics",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "level": "2"
+        }
+      }
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 0.96
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 52,
+      "maximum": 62
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 85,
+      "maximum": 95
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 50,
+      "maximum": 60
+    }
+  ],
+  "fighting_type": [
+    "UTILITY"
+  ],
+  "suit-recipe": "thematic:speedy"
+}

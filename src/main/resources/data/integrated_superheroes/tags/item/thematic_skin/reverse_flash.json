@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:reverse_flash",
+      "required": false
+    },
+    {
+      "id": "thematic:reverse_flash_cw",
+      "required": false
+    },
+    {
+      "id": "thematic:reverse_flash_rebirth",
+      "required": false
+    }
+  ]
+}

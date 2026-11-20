@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:dir_bones",
+      "required": false
+    }
+  ]
+}

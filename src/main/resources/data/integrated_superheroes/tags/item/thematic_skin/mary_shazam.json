@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:black_mary",
+      "required": false
+    },
+    {
+      "id": "thematic:mary_shazam",
+      "required": false
+    }
+  ]
+}

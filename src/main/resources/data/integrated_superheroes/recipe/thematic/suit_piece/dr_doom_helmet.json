@@ -1,0 +1,34 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:dr_doom"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "minecraft:netherite_helmet"
+  },
+  "ingredients": [
+    {
+      "item": "marvel:titanium_block"
+    },
+    {
+      "item": "thematic:advanced_technology"
+    },
+    {
+      "item": "thematic:necronomicon_book"
+    }
+  ],
+  "results": {
+    "id": "integrated_superheroes:suit_helmet",
+    "components": {
+      "integrated_superheroes:suit": "thematic:dr_doom"
+    }
+  }
+}

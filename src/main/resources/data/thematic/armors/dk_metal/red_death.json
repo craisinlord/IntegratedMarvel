@@ -1,0 +1,141 @@
+{
+  "tier": 9,
+  "wip": false,
+  "abilities": [
+    {
+      "identifier": "speed_mirage",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "color": "#FF0000",
+          "sound_prefix": "rf"
+        }
+      }
+    },
+    {
+      "identifier": "water_runner",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "utility_use",
+      "keybind": "key.thematic.ability_1",
+      "options": {
+        "fields": {
+          "extra_cooldown": "3"
+        }
+      }
+    },
+    {
+      "identifier": "utility_belt",
+      "keybind": "key.thematic.ability_2",
+      "options": {
+        "fields": {
+          "level": "6"
+        }
+      }
+    },
+    {
+      "identifier": "speedster_punches",
+      "keybind": "key.thematic.ability_0",
+      "options": {
+        "fields": {
+          "damage_scale": "0.25"
+        }
+      }
+    },
+    {
+      "identifier": "sonic_vortex",
+      "keybind": "key.thematic.ability_3",
+      "options": {
+        "fields": {
+          "damage_scale": "0.25",
+          "extra_cooldown": "15"
+        }
+      }
+    },
+    {
+      "identifier": "speed_force",
+      "keybind": "key.thematic.ability_4",
+      "options": {
+        "fields": {
+          "extra_cooldown": "30"
+        }
+      }
+    },
+    {
+      "identifier": "thoratic_invasion",
+      "keybind": "key.thematic.ability_5",
+      "options": {
+        "fields": {
+          "damage_scale": "0.25",
+          "extra_cooldown": "20"
+        }
+      }
+    },
+    {
+      "identifier": "supercharged",
+      "keybind": "key.thematic.equip_item"
+    },
+    {
+      "identifier": "quantum_tunneling",
+      "keybind": "key.thematic.utility",
+      "options": {
+        "fields": {
+          "damage_scale": "0.25",
+          "duration": "1.5",
+          "extra_cooldown": "25"
+        }
+      }
+    },
+    {
+      "identifier": "death_run",
+      "keybind": "key.thematic.ultimate",
+      "options": {
+        "fields": {
+          "damage_scale": "0.25",
+          "extra_cooldown": "30"
+        }
+      }
+    },
+    {
+      "identifier": "gliding",
+      "keybind": "key.thematic.passive"
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 32,
+      "maximum": 48
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 70,
+      "maximum": 90
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 2,
+      "maximum": 20
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 70,
+      "maximum": 80
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 30,
+      "maximum": 50
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 50,
+      "maximum": 60
+    }
+  ],
+  "fighting_type": [
+    "BRAWLER"
+  ],
+  "priority": 10
+}

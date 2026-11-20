@@ -1,0 +1,81 @@
+{
+  "abilities": [
+    {
+      "identifier": "willpower_charge",
+      "remove": true,
+      "options": {
+        "fields": {
+          "constructs": "#green_constructs"
+        }
+      }
+    },
+    {
+      "identifier": "willpower_beam",
+      "remove": true
+    },
+    {
+      "identifier": "willpower_shield",
+      "remove": true
+    },
+    {
+      "identifier": "willpower_airstrike",
+      "remove": true
+    },
+    {
+      "identifier": "cut_the_sky_open",
+      "remove": true
+    },
+    {
+      "identifier": "death_charge",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "level": "9",
+          "constructs": "#black_constructs"
+        }
+      }
+    },
+    {
+      "identifier": "flight",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "night_vision",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "glow",
+      "keybind": "key.thematic.cosmetic",
+      "options": {
+        "fields": {
+          "color": "#3A1F4D"
+        }
+      }
+    },
+    {
+      "identifier": "death_beam",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "construct_wheel",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "death_shield",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "death_stare",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "death_run",
+      "keybind": "key.thematic.ultimate"
+    }
+  ],
+  "tags": [
+    "lantern"
+  ],
+  "flight_type": "ONE_HAND_LEFT",
+  "parent": "thematic:hal_jordan"
+}

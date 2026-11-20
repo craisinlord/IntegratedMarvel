@@ -1,0 +1,65 @@
+{
+  "wip": true,
+  "creative": false,
+  "boss": true,
+  "tier": 9,
+  "model": "thematic:ultron",
+  "mob_tempo": {
+    "gap": 20,
+    "evaluate": 5
+  },
+  "mob_body": {
+    "damage_taken": [
+      {
+        "damage_type": "#thematic:guns",
+        "multiplier": 0.5
+      }
+    ],
+    "prefer_vs_airborne": [
+      "tractor_beam",
+      "encephalo_beam"
+    ],
+    "immune_effects": [
+      "thematic:stun"
+    ]
+  },
+  "abilities": [
+    {
+      "identifier": "encephalo_beam",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "concussion_blasters",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "tractor_beam",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "thruster_rush",
+      "keybind": "key.thematic.ability_3"
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 55,
+      "maximum": 65
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 50,
+      "maximum": 55
+    }
+  ],
+  "fighting_type": [
+    "DUELIST"
+  ],
+  "flight_profile": "thematic:ultron"
+}

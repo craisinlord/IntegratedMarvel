@@ -648,10 +648,15 @@ public final class FantasticClient {
             }
         }
         float age = pass.player().tickCount + pass.partial();
-        for (RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> layer : pass.renderer().layers) {
-            if (layer instanceof HumanoidArmorLayer<?, ?, ?>) {
-                layer.render(pass.pose(), pass.buffers(), light, pass.player(), 0.0F, 0.0F, pass.partial(), age, 0.0F, 0.0F);
+        net.minecraft.world.entity.Entity previous = com.craisinlord.integrated_superheroes.hero.skin.MarvelSerumLooks.begin(pass.player());
+        try {
+            for (RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> layer : pass.renderer().layers) {
+                if (layer instanceof HumanoidArmorLayer<?, ?, ?>) {
+                    layer.render(pass.pose(), pass.buffers(), light, pass.player(), 0.0F, 0.0F, pass.partial(), age, 0.0F, 0.0F);
+                }
             }
+        } finally {
+            com.craisinlord.integrated_superheroes.hero.skin.MarvelSerumLooks.end(previous);
         }
         for (int i = 0; i < others.length; i++) {
             if (others[i] != arm) {

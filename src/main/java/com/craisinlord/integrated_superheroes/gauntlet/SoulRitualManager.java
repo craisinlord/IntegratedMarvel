@@ -89,6 +89,7 @@ public final class SoulRitualManager {
     public static void onLivingDeath(LivingDeathEvent event) {
         if (!(event.getEntity().level() instanceof ServerLevel level)) return;
         Entity deceased = event.getEntity();
+        if (!(deceased instanceof Player) && !(deceased instanceof OwnableEntity pet && pet.getOwnerUUID() != null)) return;
         if (!isInsideTemple(level, deceased.blockPosition())) return;
 
         ServerPlayer recipient;

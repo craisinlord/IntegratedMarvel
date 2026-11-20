@@ -1,0 +1,169 @@
+{
+  "age_of_ultron": {
+    "cooldown": 90,
+    "duration": 10,
+    "tuning": {
+      "command_radius": 128,
+      "command_radius_2": 256,
+      "command_radius_3": 128,
+      "command_range": 32,
+      "command_share": 0.22,
+      "cooldown_set": 0,
+      "damage_taken_times": 0.8,
+      "summon_owner_share": 1.5
+    }
+  },
+  "concussion_blasters": {
+    "cooldown": 5,
+    "duration": 1,
+    "range": 3,
+    "damage": 9,
+    "tuning": {
+      "hit_damage_times": 0.5,
+      "mob_cooldown": 10,
+      "mob_max_range": 24,
+      "mob_weight": 25,
+      "prone_amplifier": 0,
+      "push_lift": 0.35,
+      "push_strength": 2.6,
+      "push_wall_for": 0.75
+    }
+  },
+  "encephalo_beam": {
+    "cooldown": 10,
+    "duration": 3,
+    "range": 24,
+    "damage": 5,
+    "tuning": {
+      "command_radius": 256,
+      "effect_add": 10,
+      "effect_duration": 10,
+      "effect_gain_every": 12,
+      "effect_max_amplifier": 99,
+      "effect_max_duration": 10,
+      "mob_cooldown": 20,
+      "mob_lasts": 3,
+      "mob_max_range": 20,
+      "mob_min_range": 4,
+      "mob_weight": 20
+    }
+  },
+  "hive_control": {
+    "cooldown": -1,
+    "tuning": {
+      "base_scale": 0.6,
+      "command_radius": 256,
+      "command_radius_2": 256,
+      "owned_mobs_radius": 256,
+      "owned_mobs_radius_2": 256,
+      "summon_owner_share": 1.5,
+      "summon_owner_share_2": 1.5
+    }
+  },
+  "mind_virus": {
+    "cooldown": -1,
+    "tuning": {
+      "effect_add": 10,
+      "effect_add_2": 10,
+      "effect_amplifier": 1,
+      "effect_amplifier_2": 0,
+      "effect_amplifier_add": 2,
+      "effect_amplifier_add_2": 1,
+      "effect_duration": 10,
+      "effect_duration_2": 10,
+      "effect_gain_every": 2,
+      "effect_gain_every_2": 2,
+      "effect_max_amplifier": 99,
+      "effect_max_amplifier_2": 99,
+      "effect_max_duration": 10,
+      "effect_max_duration_2": 10
+    }
+  },
+  "sentinel_strike": {
+    "cooldown": 15,
+    "damage": 20,
+    "tuning": {
+      "command_radius": 256,
+      "command_range": 48,
+      "owned_mobs_radius": 256,
+      "owned_mobs_radius_2": 256,
+      "owned_mobs_radius_3": 256,
+      "strike_lock": 45,
+      "summon_owner_share": 1.5
+    }
+  },
+  "thruster_rush": {
+    "cooldown": 28,
+    "duration": 0.25,
+    "range": 8,
+    "damage": 5.4,
+    "tuning": {
+      "drive_vertical": 0,
+      "ignite_jets_duration": 0.25,
+      "mob_cooldown": 15,
+      "mob_lasts": 0.25,
+      "mob_max_range": 16,
+      "mob_weight": 15,
+      "push_vertical": 0,
+      "target_radius": 1.6,
+      "teleport_distance": 1,
+      "teleport_max_snap": 1.5
+    }
+  },
+  "tractor_beam": {
+    "cooldown": 12.5,
+    "duration": 1.5,
+    "range": 16,
+    "damage": 3.6,
+    "tuning": {
+      "effect_amplifier": 10,
+      "effect_amplifier_2": 10,
+      "effect_duration_times": 2,
+      "mob_cooldown": 25,
+      "mob_max_range": 16,
+      "mob_weight": 30,
+      "pull_anchor_height": 0.55,
+      "pull_for": 0.35,
+      "pull_for_2": 0.1,
+      "pull_for_3": 0.3,
+      "pull_max_rise": 0.6,
+      "pull_stop_within": 2.5,
+      "pull_stop_within_2": 3,
+      "pull_strength": 2.4,
+      "pull_strength_2": 0.2,
+      "pull_strength_3": 1.6,
+      "push_strength": 4,
+      "push_vertical": 0,
+      "push_vertical_2": 0.2,
+      "push_vertical_3": -1.8,
+      "teleport_distance": 1.5
+    }
+  },
+  "ultron_formation": {},
+  "ultron_hive": {
+    "cooldown": -1,
+    "tuning": {
+      "mark_deadline_for": 0.6,
+      "meter_max": 500,
+      "meter_starts_at": 0,
+      "owned_mobs_radius": 256,
+      "summon_owner_share": 1.5,
+      "target_radius": 64
+    }
+  },
+  "vibranium_shell": {
+    "cooldown": 15,
+    "duration": 3,
+    "amplifier": 30,
+    "tuning": {
+      "command_radius": 128,
+      "command_radius_2": 128,
+      "command_range": 24,
+      "command_spread": 20,
+      "overshield": 1500,
+      "owned_mobs_radius": 256,
+      "owned_mobs_radius_2": 128,
+      "summon_owner_share": 1.5
+    }
+  }
+}

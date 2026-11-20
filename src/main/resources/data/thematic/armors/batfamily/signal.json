@@ -1,0 +1,77 @@
+{
+  "tier": 4,
+  "abilities": [
+    {
+      "identifier": "acrobatics",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "level": "1"
+        }
+      }
+    },
+    {
+      "identifier": "gliding",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "stealth",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "bat_gadget_year_one",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "bat_belt_year_one",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "double_kick",
+      "keybind": "key.thematic.ability_3"
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 0.98
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 40,
+      "maximum": 48
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 40,
+      "maximum": 50
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 50,
+      "maximum": 60
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 30,
+      "maximum": 40
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 20,
+      "maximum": 30
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 55,
+      "maximum": 65
+    }
+  ],
+  "fighting_type": [
+    "UTILITY",
+    "BRAWLER"
+  ],
+  "priority": 10
+}

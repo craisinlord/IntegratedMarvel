@@ -1,0 +1,7 @@
+{
+  "parent": "thematic:joker",
+  "fighting_type": [
+    "UTILITY",
+    "BRAWLER"
+  ]
+}

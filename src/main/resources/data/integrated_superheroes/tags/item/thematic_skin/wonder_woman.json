@@ -1,0 +1,97 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:nubia",
+      "required": false
+    },
+    {
+      "id": "thematic:superwoman",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman1",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman1st",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman3000",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman600",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_absolute_power",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_amazonia",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_battle",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_bombshell",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_divine",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_dkos",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_flashpoint",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_gam",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_jl",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_lkoe",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_metal",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_redson",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_ssktjl",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_starro",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_woman_vampires",
+      "required": false
+    },
+    {
+      "id": "thematic:wonder_womanbn",
+      "required": false
+    }
+  ]
+}

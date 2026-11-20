@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:killer_moth",
+      "required": false
+    }
+  ]
+}

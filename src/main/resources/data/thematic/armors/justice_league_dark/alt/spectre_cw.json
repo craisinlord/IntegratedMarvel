@@ -1,0 +1,11 @@
+{
+  "priority": 1,
+  "parent": "thematic:spectre",
+  "fighting_type": [
+    "UTILITY",
+    "BRAWLER"
+  ],
+  "cape": {
+    "remove": true
+  }
+}

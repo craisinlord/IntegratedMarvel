@@ -1,0 +1,65 @@
+{
+  "tier": 10,
+  "abilities": [
+    {
+      "identifier": "apocalypse_fist",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "apocalypse_leap",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "apocalypse_mutation",
+      "keybind": "key.thematic.ultimate"
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 1.4
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 90,
+      "maximum": 99
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 85,
+      "maximum": 95
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 65,
+      "maximum": 75
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 30,
+      "maximum": 40
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 60,
+      "maximum": 70
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 90,
+      "maximum": 99
+    },
+    {
+      "identifier": "thematic:base_knockbase_resistance",
+      "minimum": 90,
+      "maximum": 99
+    }
+  ],
+  "fighting_type": [
+    "BRAWLER"
+  ],
+  "flight_type": "ONE_HAND_LEFT",
+  "priority": 10
+}

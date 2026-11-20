@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:batman_vampires"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "A A",
+    "M M"
+  ],
+  "key": {
+    "M": {
+      "item": "minecraft:diamond"
+    },
+    "A": {
+      "item": "minecraft:golden_sword"
+    }
+  },
+  "result": {
+    "id": "integrated_superheroes:suit_boots",
+    "components": {
+      "integrated_superheroes:suit": "thematic:batman_vampires"
+    },
+    "count": 1
+  }
+}

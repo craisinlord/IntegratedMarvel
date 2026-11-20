@@ -1,0 +1,8 @@
+{
+    "name":  "Gas Lantern",
+    "category":  "thematic:ability",
+    "icon":  "minecraft:lantern",
+    "pages":  [
+                  "Throw an oil lantern. It shatters into flame and lights the area for a good while, and mobs that see it go up are left blinded and lose track of you."
+              ]
+}

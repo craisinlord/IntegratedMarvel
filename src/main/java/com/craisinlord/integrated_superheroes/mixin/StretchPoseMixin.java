@@ -1,6 +1,7 @@
 package com.craisinlord.integrated_superheroes.mixin;
 
 import com.craisinlord.integrated_superheroes.hero.FantasticClient;
+import com.craisinlord.integrated_superheroes.hero.GrootClient;
 import com.craisinlord.integrated_superheroes.hero.HulkProportions;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -29,6 +30,7 @@ public abstract class StretchPoseMixin {
         if (entity instanceof Player player && model instanceof PlayerModel<?> playerModel) {
             HulkProportions.pose(player, playerModel, partialTick, pose);
             FantasticClient.pose(player, playerModel, partialTick, pose);
+            GrootClient.morph(player, playerModel, partialTick, pose);
             original.call(model, pose, consumer, light, overlay, color);
             FantasticClient.renderNeck(player, playerModel, pose, consumer, light, overlay, color);
             return;

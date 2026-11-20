@@ -1,0 +1,73 @@
+{
+  "spawn_egg": { "colors": ["#1A1A1A", "#E8C21A"] },
+  "type": "thematic:mob",
+  "size": [
+    0.6,
+    1.95
+  ],
+  "scale": 1.1,
+  "spawn_group": "monster",
+  "track_range": 10,
+  "boss": true,
+  "attributes": {
+    "minecraft:generic.max_health": 500.0,
+    "minecraft:generic.armor": 16.0,
+    "minecraft:generic.knockback_resistance": 0.5,
+    "minecraft:generic.movement_speed": 0.3,
+    "minecraft:generic.follow_range": 48.0,
+    "minecraft:generic.attack_damage": 14.0
+  },
+  "render": {
+    "kind": "worn_suit",
+    "model": "thematic:black_adam"
+  },
+  "suit": {
+    "id": "villain_black_adam",
+    "iv": 3
+  },
+  "phases": [
+    {
+      "health_below": 1.0,
+      "unlock": [
+        "lightning_clap",
+        "aerial_charge"
+      ]
+    },
+    {
+      "health_below": 0.5,
+      "unlock": [
+        "thunder_clap"
+      ]
+    }
+  ],
+  "persistent": true,
+  "morale": {
+    "break_chance": 0
+  },
+  "brain": {
+    "idle": [
+      {
+        "id": "thematic:random_walk",
+        "radius": 16,
+        "height": 6
+      }
+    ],
+    "fight": [
+      {
+        "id": "thematic:hover_flight",
+        "ascend_trigger_height": 2,
+        "ascend_trigger_distance": 8,
+        "hover_height": 3,
+        "hover_max": 300,
+        "landing_cooldown": 60,
+        "land_below_health": 0.2,
+        "thump_damage": 10
+      },
+      {
+        "id": "thematic:strafe_target",
+        "distance": 7
+      }
+    ]
+  },
+  "fire_immune": true
+}

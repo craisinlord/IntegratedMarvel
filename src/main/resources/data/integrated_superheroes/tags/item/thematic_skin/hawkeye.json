@@ -1,0 +1,49 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:hawkeye",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkeye_avengers_game",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkeye_civil_war",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkeye_disney",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkeye_mcu",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkeye_modern",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkeye_old",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkeye_rivals",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkeye_ultimate",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkeye_ultron",
+      "required": false
+    },
+    {
+      "id": "thematic:ronin",
+      "required": false
+    }
+  ]
+}

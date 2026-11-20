@@ -1,0 +1,36 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:aqua_batman"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "ABA",
+    "C C"
+  ],
+  "key": {
+    "A": {
+      "item": "thematic:kevlar"
+    },
+    "B": {
+      "item": "thematic:batman_cowl"
+    },
+    "C": {
+      "item": "marvellegacy:cloth_gray"
+    }
+  },
+  "result": {
+    "id": "integrated_superheroes:suit_helmet",
+    "components": {
+      "integrated_superheroes:suit": "thematic:aqua_batman"
+    },
+    "count": 1
+  }
+}

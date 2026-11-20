@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:kylo_ren"
+    }
+  ],
+  "type": "marvel:suit_variant",
+  "suit": {
+    "tag": "integrated_superheroes:thematic_skin/darth_vader"
+  },
+  "results": {
+    "id": "thematic:kylo_ren"
+  }
+}

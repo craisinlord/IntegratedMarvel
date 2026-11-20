@@ -38,8 +38,14 @@ public class HeroSyringeItem extends Item {
         }
         HeroPower hero = HeroPowers.get(this.heroId);
         if (hero != null) {
-            HeroPowers.inject(player, hero);
+            if (HeroPowers.inject(player, hero)) {
+                com.craisinlord.integrated_superheroes.hero.skin.SkinData.clear(player);
+            }
         }
+    }
+
+    public String heroId() {
+        return this.heroId;
     }
 
     @Override

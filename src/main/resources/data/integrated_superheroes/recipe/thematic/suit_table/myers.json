@@ -1,0 +1,46 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:myers"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "minecraft:diamond_chestplate"
+  },
+  "ingredients": [
+    {
+      "item": "thematic:myers_mask"
+    },
+    {
+      "item": "marvellegacy:cloth_blue"
+    },
+    {
+      "item": "marvellegacy:cloth_blue"
+    },
+    {
+      "item": "thematic:gravestone"
+    },
+    {
+      "item": "minecraft:jack_o_lantern"
+    },
+    {
+      "tag": "minecraft:swords"
+    },
+    {
+      "item": "thematic:imbued_blood_vial"
+    },
+    {
+      "item": "thematic:imbued_blood_vial"
+    }
+  ],
+  "results": {
+    "id": "thematic:myers"
+  }
+}

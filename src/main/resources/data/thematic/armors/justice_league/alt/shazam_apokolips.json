@@ -1,0 +1,20 @@
+{
+  "cape": {
+    "partCount": 16,
+    "height": 1.3,
+    "width": 0.4,
+    "thickness": 0.001,
+    "texture": "thematic:textures/cape/shazam_cape.png",
+    "shinyTexture": null,
+    "simulation": {
+      "type": "cape"
+    }
+  },
+  "parent": "thematic:shazam",
+  "abilities": [
+    {
+      "identifier": "toggle_hood",
+      "remove": true
+    }
+  ]
+}

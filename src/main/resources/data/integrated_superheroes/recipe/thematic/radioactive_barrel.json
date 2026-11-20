@@ -1,0 +1,15 @@
+{
+  "neoforge:conditions": [ { "type": "neoforge:mod_loaded", "modid": "thematic" } ],
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": { "item": "thematic:steel_ingot" },
+    "X": { "item": "minecraft:glowstone_dust" }
+  },
+  "pattern": [
+    "###",
+    "#X#",
+    "###"
+  ],
+  "result": { "count": 1, "id": "thematic:radioactive_barrel" }
+}

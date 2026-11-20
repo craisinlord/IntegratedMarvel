@@ -1,0 +1,7 @@
+{
+  "suit-recipe": "thematic:alt_supergirl_bombshell",
+  "parent": "thematic:supergirl",
+  "cape": {
+    "remove": true
+  }
+}

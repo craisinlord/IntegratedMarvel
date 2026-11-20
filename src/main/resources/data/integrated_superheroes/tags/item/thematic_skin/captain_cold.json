@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:cap_cold_cw",
+      "required": false
+    },
+    {
+      "id": "thematic:captain_cold",
+      "required": false
+    }
+  ]
+}

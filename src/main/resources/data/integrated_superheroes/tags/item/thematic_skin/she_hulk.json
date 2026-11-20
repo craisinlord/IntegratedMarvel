@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:she_hulk",
+      "required": false
+    },
+    {
+      "id": "thematic:she_hulk_f4",
+      "required": false
+    }
+  ]
+}

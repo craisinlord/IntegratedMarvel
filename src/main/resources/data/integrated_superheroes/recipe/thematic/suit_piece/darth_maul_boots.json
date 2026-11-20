@@ -1,0 +1,31 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:darth_maul"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "minecraft:netherite_boots"
+  },
+  "ingredients": [
+    {
+      "item": "minecraft:netherite_ingot"
+    },
+    {
+      "item": "thematic:ruby"
+    }
+  ],
+  "results": {
+    "id": "integrated_superheroes:suit_boots",
+    "components": {
+      "integrated_superheroes:suit": "thematic:darth_maul"
+    }
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "wip": false,
+  "tier": 9,
+  "abilities": [
+    {
+      "identifier": "willpower_charge",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "level": "9",
+          "constructs": "#green_constructs_john_stewart"
+        }
+      }
+    },
+    {
+      "identifier": "flight",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "night_vision",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "glow",
+      "keybind": "key.thematic.cosmetic",
+      "options": {
+        "fields": {
+          "color": "#00CC33"
+        }
+      }
+    },
+    {
+      "identifier": "willpower_beam",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "construct_wheel",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "willpower_shield",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "willpower_airstrike",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "cut_the_sky_open",
+      "keybind": "key.thematic.ultimate"
+    }
+  ],
+  "tags": [
+    "lantern"
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 75,
+      "maximum": 98
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 55,
+      "maximum": 60
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 30,
+      "maximum": 35
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 20,
+      "maximum": 35
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 60,
+      "maximum": 80
+    }
+  ],
+  "fighting_type": [
+    "DUELIST"
+  ],
+  "flight_type": "ONE_HAND_LEFT"
+}

@@ -1,0 +1,152 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:batman_halloween"
+    }
+  ],
+  "type": "marvel:suit_variant",
+  "suit": {
+    "type": "neoforge:compound",
+    "children": [
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:adam_west"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman40"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman70s"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_gotham"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_halloween"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_robe"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:bluebird"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:bruce_wayne"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:damian_vampires"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:damian_wayne"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:damian_wayne_2025"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:dick_grayson"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:robin"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:robin_arkham"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:signal"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:spoiler"
+        },
+        "strict": false
+      }
+    ]
+  },
+  "results": {
+    "id": "integrated_superheroes:suit_leggings",
+    "components": {
+      "integrated_superheroes:suit": "thematic:batman_halloween"
+    }
+  }
+}

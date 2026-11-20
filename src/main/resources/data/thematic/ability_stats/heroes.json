@@ -1,0 +1,1491 @@
+{
+  "alfred_equip": {
+    "cooldown": 1.8,
+    "duration": 8,
+    "range": 1,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "anonymous": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 0.6,
+    "amplifier": 1
+  },
+  "arm_wrap": {
+    "cooldown": 30,
+    "duration": 5,
+    "range": 5,
+    "damage": 3.6
+  },
+  "arrow_plane": {
+    "cooldown": 24
+  },
+  "avarice_bat_swarm": {
+    "cooldown": 135,
+    "duration": 7,
+    "damage": 12.6,
+    "tuning": {
+      "blindness_amplifier": 0,
+      "blindness_duration": 3.5,
+      "darkness_amplifier": 0,
+      "darkness_duration": 1.25,
+      "immobile_amplifier": 0,
+      "immobile_duration": 3.5,
+      "slowness_amplifier": 0,
+      "slowness_duration": 4,
+      "stat_attack": 20,
+      "stat_defense": 5,
+      "stat_utility": 10,
+      "summon_count": 2,
+      "summon_scatter": 1,
+      "weakness_amplifier": 1,
+      "weakness_duration": 3
+    }
+  },
+  "avarice_beam": {
+    "cooldown": 6.6,
+    "duration": 1,
+    "range": 1,
+    "damage": 0.9,
+    "tuning": {
+      "beam_range": 100,
+      "gauge_drain": 1,
+      "gauge_fill": 3
+    }
+  },
+  "avarice_charge": {
+    "cooldown": 0,
+    "duration": 1,
+    "range": 1,
+    "damage": 0.9,
+    "tuning": {
+      "meter_max": 2000,
+      "meter_reserve": 1
+    }
+  },
+  "avarice_jet": {
+    "cooldown": 90,
+    "duration": 1,
+    "range": 1,
+    "damage": 16.2,
+    "tuning": {
+      "summon_count": 3,
+      "summon_velocity": 0.5
+    }
+  },
+  "avarice_large_throw": {
+    "cooldown": 90,
+    "duration": 1,
+    "range": 1,
+    "damage": 81.0,
+    "tuning": {
+      "knockback_strength": 2.5,
+      "lasts": 1.5,
+      "projectile_homing_speed": 1.5,
+      "projectile_homing_strength": 0.9,
+      "projectile_hover_seconds": 0.75,
+      "projectile_max_age": 10,
+      "projectile_size": 4,
+      "projectile_speed": 1.5,
+      "push_lift": 0.6
+    }
+  },
+  "avarice_missile": {
+    "cooldown": 15,
+    "duration": 1,
+    "range": 1,
+    "damage": 16.2,
+    "tuning": {
+      "projectile_explode_radius": 1,
+      "projectile_homing_speed": 0.35,
+      "projectile_homing_strength": 0.15,
+      "projectile_hover_seconds": 0.5,
+      "projectile_max_age": 15,
+      "projectile_size": 0.5,
+      "projectile_speed": 0.35
+    }
+  },
+  "avarice_sandwiches": {
+    "cooldown": 72,
+    "duration": 1,
+    "range": 1
+  },
+  "avarice_shield": {
+    "cooldown": 24,
+    "duration": 1,
+    "range": 1,
+    "tuning": {
+      "absorb_within": 2,
+      "push_strength": 0.35,
+      "target_radius": 1.7,
+      "target_radius_2": 24
+    }
+  },
+  "avarice_spawn_entity_cave_spider": {
+    "cooldown": 21,
+    "duration": 1,
+    "range": 1
+  },
+  "avarice_surge": {
+    "cooldown": 30,
+    "duration": 4,
+    "range": 5,
+    "damage": 243.0,
+    "amplifier": 2,
+    "tuning": {
+      "effect_amplifier": 1,
+      "give_lasts": 0.4,
+      "push_min_strength": -1000,
+      "push_strength": 1.5,
+      "push_vertical": 0.5,
+      "recharge_amplifier": 2
+    }
+  },
+  "avarice_train": {
+    "cooldown": 90,
+    "duration": 1,
+    "range": 1,
+    "damage": 243.0,
+    "tuning": {
+      "knockback_strength": 2.5,
+      "projectile_max_age": 5,
+      "projectile_size": 9,
+      "projectile_speed": 1.75,
+      "push_lift": 0.6
+    }
+  },
+  "avarice_unleash": {
+    "cooldown": 90,
+    "duration": 1,
+    "range": 1,
+    "damage": 16.2,
+    "tuning": {
+      "beam_range": 100,
+      "when_in_state_for": 0.5
+    }
+  },
+  "avarice_unleash_hold": {
+    "cooldown": 90,
+    "damage": 16.2,
+    "tuning": {
+      "beam_range": 60
+    }
+  },
+  "bat_vehicles": {
+    "cooldown": 36
+  },
+  "canarybike": {
+    "cooldown": 24
+  },
+  "compassion_bat_swarm": {
+    "cooldown": 135,
+    "duration": 7,
+    "damage": 12.6,
+    "tuning": {
+      "blindness_amplifier": 0,
+      "blindness_duration": 3.5,
+      "darkness_amplifier": 0,
+      "darkness_duration": 1.25,
+      "immobile_amplifier": 0,
+      "immobile_duration": 3.5,
+      "slowness_amplifier": 0,
+      "slowness_duration": 4,
+      "stat_attack": 20,
+      "stat_defense": 5,
+      "stat_utility": 10,
+      "summon_count": 2,
+      "summon_scatter": 1,
+      "weakness_amplifier": 1,
+      "weakness_duration": 3
+    }
+  },
+  "compassion_beam": {
+    "cooldown": 6.6,
+    "damage": 0.9,
+    "tuning": {
+      "beam_range": 100,
+      "gauge_drain": 1,
+      "gauge_fill": 3
+    }
+  },
+  "compassion_charge": {
+    "cooldown": 0,
+    "damage": 0.9,
+    "tuning": {
+      "meter_max": 2000,
+      "meter_reserve": 1
+    }
+  },
+  "compassion_jet": {
+    "cooldown": 90,
+    "damage": 16.2,
+    "tuning": {
+      "summon_count": 3,
+      "summon_velocity": 0.5
+    }
+  },
+  "compassion_large_throw": {
+    "cooldown": 90,
+    "damage": 81.0,
+    "tuning": {
+      "knockback_strength": 2.5,
+      "lasts": 1.5,
+      "projectile_homing_speed": 1.5,
+      "projectile_homing_strength": 0.9,
+      "projectile_hover_seconds": 0.75,
+      "projectile_max_age": 10,
+      "projectile_size": 4,
+      "projectile_speed": 1.5,
+      "push_lift": 0.6
+    }
+  },
+  "compassion_missile": {
+    "cooldown": 15,
+    "damage": 16.2,
+    "tuning": {
+      "projectile_explode_radius": 1,
+      "projectile_homing_speed": 0.35,
+      "projectile_homing_strength": 0.15,
+      "projectile_hover_seconds": 0.5,
+      "projectile_max_age": 15,
+      "projectile_size": 0.5,
+      "projectile_speed": 0.35
+    }
+  },
+  "compassion_sandwiches": {
+    "cooldown": 72
+  },
+  "compassion_shield": {
+    "cooldown": 24,
+    "tuning": {
+      "absorb_within": 2,
+      "push_strength": 0.35,
+      "target_radius": 1.7,
+      "target_radius_2": 24
+    }
+  },
+  "compassion_spawn_entity_cave_spider": {
+    "cooldown": 21
+  },
+  "compassion_surge": {
+    "cooldown": 30,
+    "duration": 4,
+    "range": 5,
+    "damage": 243.0,
+    "amplifier": 2,
+    "tuning": {
+      "effect_amplifier": 1,
+      "give_lasts": 0.4,
+      "push_min_strength": -1000,
+      "push_strength": 1.5,
+      "push_vertical": 0.5,
+      "recharge_amplifier": 2
+    }
+  },
+  "compassion_train": {
+    "cooldown": 90,
+    "damage": 243.0,
+    "tuning": {
+      "knockback_strength": 2.5,
+      "projectile_max_age": 5,
+      "projectile_size": 9,
+      "projectile_speed": 1.75,
+      "push_lift": 0.6
+    }
+  },
+  "compassion_unleash": {
+    "cooldown": 90,
+    "damage": 16.2,
+    "tuning": {
+      "beam_range": 100,
+      "when_in_state_for": 0.5
+    }
+  },
+  "compassion_unleash_hold": {
+    "cooldown": 90,
+    "damage": 16.2,
+    "tuning": {
+      "beam_range": 60
+    }
+  },
+  "crimson_feast": {
+    "cooldown": 120,
+    "duration": 4.5,
+    "range": 8,
+    "damage": 8,
+    "amplifier": 1,
+    "tuning": {
+      "bleed_duration": 2,
+      "blindness_amplifier": 0,
+      "blindness_amplifier_2": 0,
+      "blindness_duration": 3.5,
+      "blindness_duration_2": 1.25,
+      "heal": 1.25,
+      "immobile_amplifier": 0,
+      "immobile_duration": 3.5,
+      "slowness_amplifier": 0,
+      "slowness_duration": 4,
+      "stat_attack": 20,
+      "stat_defense": 5,
+      "stat_utility": 10,
+      "summon_count": 2,
+      "summon_scatter": 1,
+      "when_below": 12
+    }
+  },
+  "darkest_knight": {
+    "cooldown": 135,
+    "duration": 7,
+    "damage": 7.8,
+    "tuning": {
+      "blindness_amplifier": 0,
+      "blindness_duration": 3.5,
+      "darkness_amplifier": 0,
+      "darkness_duration": 1.25,
+      "immobile_amplifier": 0,
+      "immobile_duration": 3.5,
+      "laughing_amplifier": 2,
+      "slowness_amplifier": 0,
+      "slowness_duration": 4,
+      "stat_attack": 20,
+      "stat_defense": 5,
+      "stat_utility": 10,
+      "stun_amplifier": 0,
+      "stun_duration": 1.5,
+      "summon_count": 2,
+      "summon_scatter": 1
+    }
+  },
+  "death_bat_swarm": {
+    "cooldown": 135,
+    "duration": 7,
+    "damage": 12.6,
+    "tuning": {
+      "blindness_amplifier": 0,
+      "blindness_duration": 3.5,
+      "darkness_amplifier": 0,
+      "darkness_duration": 1.25,
+      "immobile_amplifier": 0,
+      "immobile_duration": 3.5,
+      "slowness_amplifier": 0,
+      "slowness_duration": 4,
+      "stat_attack": 20,
+      "stat_defense": 5,
+      "stat_utility": 10,
+      "summon_count": 2,
+      "summon_scatter": 1,
+      "weakness_amplifier": 1,
+      "weakness_duration": 3
+    }
+  },
+  "death_beam": {
+    "cooldown": 6.6,
+    "damage": 0.9,
+    "tuning": {
+      "beam_range": 100,
+      "gauge_drain": 1,
+      "gauge_fill": 3
+    }
+  },
+  "death_charge": {
+    "cooldown": 0,
+    "damage": 0.9,
+    "tuning": {
+      "meter_max": 2000,
+      "meter_reserve": 1
+    }
+  },
+  "death_jet": {
+    "cooldown": 90,
+    "damage": 16.2,
+    "tuning": {
+      "summon_count": 3,
+      "summon_velocity": 0.5
+    }
+  },
+  "death_large_throw": {
+    "cooldown": 90,
+    "damage": 81.0,
+    "tuning": {
+      "knockback_strength": 2.5,
+      "lasts": 1.5,
+      "projectile_homing_speed": 1.5,
+      "projectile_homing_strength": 0.9,
+      "projectile_hover_seconds": 0.75,
+      "projectile_max_age": 10,
+      "projectile_size": 4,
+      "projectile_speed": 1.5,
+      "push_lift": 0.6
+    }
+  },
+  "death_missile": {
+    "cooldown": 15,
+    "damage": 16.2,
+    "tuning": {
+      "projectile_explode_radius": 1,
+      "projectile_homing_speed": 0.35,
+      "projectile_homing_strength": 0.15,
+      "projectile_hover_seconds": 0.5,
+      "projectile_max_age": 15,
+      "projectile_size": 0.5,
+      "projectile_speed": 0.35
+    }
+  },
+  "death_sandwiches": {
+    "cooldown": 72
+  },
+  "death_shield": {
+    "cooldown": 24,
+    "tuning": {
+      "absorb_within": 2,
+      "push_strength": 0.35,
+      "target_radius": 1.7,
+      "target_radius_2": 24
+    }
+  },
+  "death_spawn_entity_cave_spider": {
+    "cooldown": 21
+  },
+  "death_surge": {
+    "cooldown": 30,
+    "duration": 4,
+    "range": 5,
+    "damage": 243.0,
+    "amplifier": 2,
+    "tuning": {
+      "effect_amplifier": 1,
+      "give_lasts": 0.4,
+      "push_min_strength": -1000,
+      "push_strength": 1.5,
+      "push_vertical": 0.5,
+      "recharge_amplifier": 2
+    }
+  },
+  "death_train": {
+    "cooldown": 90,
+    "damage": 243.0,
+    "tuning": {
+      "knockback_strength": 2.5,
+      "projectile_max_age": 5,
+      "projectile_size": 9,
+      "projectile_speed": 1.75,
+      "push_lift": 0.6
+    }
+  },
+  "death_unleash": {
+    "cooldown": 90,
+    "damage": 16.2,
+    "tuning": {
+      "beam_range": 100,
+      "when_in_state_for": 0.5
+    }
+  },
+  "death_unleash_hold": {
+    "cooldown": 90,
+    "damage": 16.2,
+    "tuning": {
+      "beam_range": 60
+    }
+  },
+  "equip_death_ring": {
+    "cooldown": 1.8,
+    "duration": 8,
+    "range": 1,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "equip_fear_ring": {
+    "cooldown": 1.8,
+    "duration": 8,
+    "range": 1,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "equip_rage_ring": {
+    "cooldown": 1.8,
+    "duration": 8,
+    "range": 1,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "equip_willpower_ring": {
+    "cooldown": 1.8,
+    "duration": 8,
+    "range": 1,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "fear_bat_swarm": {
+    "cooldown": 135,
+    "duration": 7,
+    "damage": 0.9,
+    "tuning": {
+      "blindness_amplifier": 0,
+      "blindness_duration": 3.5,
+      "darkness_amplifier": 0,
+      "darkness_duration": 1.25,
+      "immobile_amplifier": 0,
+      "immobile_duration": 3.5,
+      "slowness_amplifier": 0,
+      "slowness_duration": 4,
+      "stat_attack": 20,
+      "stat_defense": 5,
+      "stat_utility": 10,
+      "summon_count": 2,
+      "summon_scatter": 1,
+      "weakness_amplifier": 1,
+      "weakness_duration": 3
+    }
+  },
+  "fear_beam": {
+    "cooldown": 6.6,
+    "damage": 0.9,
+    "tuning": {
+      "beam_range": 100,
+      "gauge_drain": 1,
+      "gauge_fill": 3
+    }
+  },
+  "fear_charge": {
+    "cooldown": 0,
+    "damage": 16.2,
+    "tuning": {
+      "meter_max": 2000,
+      "meter_reserve": 1
+    }
+  },
+  "fear_jet": {
+    "cooldown": 90,
+    "damage": 81.0,
+    "tuning": {
+      "summon_count": 3,
+      "summon_velocity": 0.5
+    }
+  },
+  "fear_large_throw": {
+    "cooldown": 90,
+    "damage": 16.2,
+    "tuning": {
+      "knockback_strength": 2.5,
+      "lasts": 1.5,
+      "projectile_homing_speed": 1.5,
+      "projectile_homing_strength": 0.9,
+      "projectile_hover_seconds": 0.75,
+      "projectile_max_age": 10,
+      "projectile_size": 4,
+      "projectile_speed": 1.5,
+      "push_lift": 0.6
+    }
+  },
+  "fear_missile": {
+    "cooldown": 15,
+    "tuning": {
+      "projectile_explode_radius": 1,
+      "projectile_homing_speed": 0.35,
+      "projectile_homing_strength": 0.15,
+      "projectile_hover_seconds": 0.5,
+      "projectile_max_age": 15,
+      "projectile_size": 0.5,
+      "projectile_speed": 0.35
+    }
+  },
+  "fear_sandwiches": {
+    "cooldown": 72
+  },
+  "fear_shield": {
+    "cooldown": 24,
+    "tuning": {
+      "absorb_within": 2,
+      "push_strength": 0.35,
+      "target_radius": 1.7,
+      "target_radius_2": 24
+    }
+  },
+  "fear_spawn_entity_cave_spider": {
+    "cooldown": 21,
+    "damage": 9.0,
+    "amplifier": 10
+  },
+  "fear_surge": {
+    "cooldown": 30,
+    "duration": 4,
+    "range": 5,
+    "damage": 243.0,
+    "amplifier": 2,
+    "tuning": {
+      "effect_amplifier": 1,
+      "give_lasts": 0.4,
+      "push_min_strength": -1000,
+      "push_strength": 1.5,
+      "push_vertical": 0.5,
+      "recharge_amplifier": 2
+    }
+  },
+  "fear_train": {
+    "cooldown": 90,
+    "damage": 16.2,
+    "tuning": {
+      "knockback_strength": 2.5,
+      "projectile_max_age": 5,
+      "projectile_size": 9,
+      "projectile_speed": 1.75,
+      "push_lift": 0.6
+    }
+  },
+  "fear_unleash": {
+    "cooldown": 90,
+    "damage": 26.1,
+    "tuning": {
+      "beam_range": 100,
+      "when_in_state_for": 0.5
+    }
+  },
+  "fear_unleash_hold": {
+    "cooldown": 90,
+    "damage": 16.2,
+    "tuning": {
+      "beam_range": 60
+    }
+  },
+  "final_gambit": {
+    "cooldown": 105,
+    "duration": 7,
+    "damage": 0.0075,
+    "amplifier": 2
+  },
+  "grab_construct": {
+    "cooldown": 50,
+    "duration": 22,
+    "range": 15,
+    "amplifier": 20
+  },
+  "group_grab_construct": {
+    "cooldown": 50,
+    "duration": 22,
+    "range": 15,
+    "amplifier": 40
+  },
+  "hope_bat_swarm": {
+    "cooldown": 135,
+    "duration": 7,
+    "damage": 0.9,
+    "tuning": {
+      "blindness_amplifier": 0,
+      "blindness_duration": 3.5,
+      "darkness_amplifier": 0,
+      "darkness_duration": 1.25,
+      "immobile_amplifier": 0,
+      "immobile_duration": 3.5,
+      "slowness_amplifier": 0,
+      "slowness_duration": 4,
+      "stat_attack": 20,
+      "stat_defense": 5,
+      "stat_utility": 10,
+      "summon_count": 2,
+      "summon_scatter": 1,
+      "weakness_amplifier": 1,
+      "weakness_duration": 3
+    }
+  },
+  "hope_beam": {
+    "cooldown": 6.6,
+    "damage": 0.9,
+    "tuning": {
+      "beam_range": 100,
+      "gauge_drain": 1,
+      "gauge_fill": 3
+    }
+  },
+  "hope_charge": {
+    "cooldown": 0,
+    "damage": 16.2,
+    "tuning": {
+      "meter_max": 2000,
+      "meter_reserve": 1
+    }
+  },
+  "hope_jet": {
+    "cooldown": 90,
+    "damage": 81.0,
+    "tuning": {
+      "summon_count": 3,
+      "summon_velocity": 0.5
+    }
+  },
+  "hope_large_throw": {
+    "cooldown": 90,
+    "damage": 16.2,
+    "tuning": {
+      "knockback_strength": 2.5,
+      "lasts": 1.5,
+      "projectile_homing_speed": 1.5,
+      "projectile_homing_strength": 0.9,
+      "projectile_hover_seconds": 0.75,
+      "projectile_max_age": 10,
+      "projectile_size": 4,
+      "projectile_speed": 1.5,
+      "push_lift": 0.6
+    }
+  },
+  "hope_missile": {
+    "cooldown": 15,
+    "tuning": {
+      "projectile_explode_radius": 1,
+      "projectile_homing_speed": 0.35,
+      "projectile_homing_strength": 0.15,
+      "projectile_hover_seconds": 0.5,
+      "projectile_max_age": 15,
+      "projectile_size": 0.5,
+      "projectile_speed": 0.35
+    }
+  },
+  "hope_sandwiches": {
+    "cooldown": 72
+  },
+  "hope_shield": {
+    "cooldown": 24,
+    "tuning": {
+      "absorb_within": 2,
+      "push_strength": 0.35,
+      "target_radius": 1.7,
+      "target_radius_2": 24
+    }
+  },
+  "hope_spawn_entity_cave_spider": {
+    "cooldown": 21,
+    "damage": 9.0
+  },
+  "hope_surge": {
+    "cooldown": 30,
+    "duration": 4,
+    "range": 5,
+    "damage": 243.0,
+    "amplifier": 2,
+    "tuning": {
+      "effect_amplifier": 1,
+      "give_lasts": 0.4,
+      "push_min_strength": -1000,
+      "push_strength": 1.5,
+      "push_vertical": 0.5,
+      "recharge_amplifier": 2
+    }
+  },
+  "hope_train": {
+    "cooldown": 90,
+    "damage": 16.2,
+    "tuning": {
+      "knockback_strength": 2.5,
+      "projectile_max_age": 5,
+      "projectile_size": 9,
+      "projectile_speed": 1.75,
+      "push_lift": 0.6
+    }
+  },
+  "hope_unleash": {
+    "cooldown": 90,
+    "damage": 18.0,
+    "tuning": {
+      "beam_range": 100,
+      "when_in_state_for": 0.5
+    }
+  },
+  "hope_unleash_hold": {
+    "cooldown": 90,
+    "damage": 16.2,
+    "tuning": {
+      "beam_range": 60
+    }
+  },
+  "invisiblejet": {
+    "cooldown": 24
+  },
+  "jason_equip": {
+    "cooldown": 0,
+    "duration": 8,
+    "range": 1,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "joker_utility": {
+    "cooldown": 0.6,
+    "duration": 0,
+    "range": 0,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "kryptonite_knuckles": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 30,
+    "amplifier": 0
+  },
+  "lasso_grab": {
+    "cooldown": 30,
+    "duration": 22,
+    "range": 16,
+    "damage": 20,
+    "amplifier": 20,
+    "tuning": {
+      "hit_damage": 10,
+      "immobile_amplifier": 10,
+      "immobile_duration": 6,
+      "lasts": 0.5,
+      "projectile_speed": 2.25,
+      "projectile_spread": 0.8,
+      "pull_anchor_height": 0.8,
+      "pull_strength": 0.5
+    }
+  },
+  "lasso_wrap": {
+    "cooldown": 120,
+    "duration": 8,
+    "range": 32,
+    "damage": 20,
+    "amplifier": 20,
+    "tuning": {
+      "hit_damage": 10,
+      "immobile_amplifier": 10,
+      "immobile_duration": 6,
+      "lasts": 0.5,
+      "projectile_speed": 2.25,
+      "projectile_speed_2": 2,
+      "projectile_spread": 0.8,
+      "projectile_spread_2": 0.8,
+      "pull_anchor_height": 0.8,
+      "pull_strength": 0.5
+    }
+  },
+  "life_bat_swarm": {
+    "cooldown": 135,
+    "duration": 7,
+    "damage": 0.9,
+    "tuning": {
+      "blindness_amplifier": 0,
+      "blindness_duration": 3.5,
+      "darkness_amplifier": 0,
+      "darkness_duration": 1.25,
+      "immobile_amplifier": 0,
+      "immobile_duration": 3.5,
+      "slowness_amplifier": 0,
+      "slowness_duration": 4,
+      "stat_attack": 20,
+      "stat_defense": 5,
+      "stat_utility": 10,
+      "summon_count": 2,
+      "summon_scatter": 1,
+      "weakness_amplifier": 1,
+      "weakness_duration": 3
+    }
+  },
+  "life_beam": {
+    "cooldown": 6.6,
+    "damage": 0.9,
+    "tuning": {
+      "beam_range": 100,
+      "gauge_drain": 1,
+      "gauge_fill": 3
+    }
+  },
+  "life_charge": {
+    "cooldown": 0,
+    "damage": 16.2,
+    "tuning": {
+      "meter_max": 2000,
+      "meter_reserve": 1
+    }
+  },
+  "life_jet": {
+    "cooldown": 90,
+    "damage": 81.0,
+    "tuning": {
+      "summon_count": 3,
+      "summon_velocity": 0.5
+    }
+  },
+  "life_large_throw": {
+    "cooldown": 90,
+    "damage": 16.5,
+    "tuning": {
+      "knockback_strength": 2.5,
+      "lasts": 1.5,
+      "projectile_homing_speed": 1.5,
+      "projectile_homing_strength": 0.9,
+      "projectile_hover_seconds": 0.75,
+      "projectile_max_age": 10,
+      "projectile_size": 4,
+      "projectile_speed": 1.5,
+      "push_lift": 0.6
+    }
+  },
+  "life_missile": {
+    "cooldown": 15,
+    "tuning": {
+      "projectile_explode_radius": 1,
+      "projectile_homing_speed": 0.35,
+      "projectile_homing_strength": 0.15,
+      "projectile_hover_seconds": 0.5,
+      "projectile_max_age": 15,
+      "projectile_size": 0.5,
+      "projectile_speed": 0.35
+    }
+  },
+  "life_sandwiches": {
+    "cooldown": 72
+  },
+  "life_shield": {
+    "cooldown": 24,
+    "tuning": {
+      "absorb_within": 2,
+      "push_strength": 0.35,
+      "target_radius": 1.7,
+      "target_radius_2": 24
+    }
+  },
+  "life_spawn_entity_cave_spider": {
+    "cooldown": 21,
+    "damage": 9.0
+  },
+  "life_surge": {
+    "cooldown": 24,
+    "damage": 243.0,
+    "tuning": {
+      "effect_amplifier": 1,
+      "give_lasts": 0.4,
+      "push_min_strength": -1000,
+      "push_strength": 1.5,
+      "push_vertical": 0.5,
+      "recharge_amplifier": 2
+    }
+  },
+  "life_train": {
+    "cooldown": 90,
+    "damage": 16.2,
+    "tuning": {
+      "knockback_strength": 2.5,
+      "projectile_max_age": 5,
+      "projectile_size": 9,
+      "projectile_speed": 1.75,
+      "push_lift": 0.6
+    }
+  },
+  "life_unleash": {
+    "cooldown": 90,
+    "damage": 0.9,
+    "tuning": {
+      "beam_range": 100,
+      "when_in_state_for": 0.5
+    }
+  },
+  "life_unleash_hold": {
+    "cooldown": 90,
+    "damage": 16.2,
+    "tuning": {
+      "beam_range": 60
+    }
+  },
+  "love_bat_swarm": {
+    "cooldown": 135,
+    "duration": 7,
+    "damage": 0.9,
+    "tuning": {
+      "blindness_amplifier": 0,
+      "blindness_duration": 3.5,
+      "darkness_amplifier": 0,
+      "darkness_duration": 1.25,
+      "immobile_amplifier": 0,
+      "immobile_duration": 3.5,
+      "slowness_amplifier": 0,
+      "slowness_duration": 4,
+      "stat_attack": 20,
+      "stat_defense": 5,
+      "stat_utility": 10,
+      "summon_count": 2,
+      "summon_scatter": 1,
+      "weakness_amplifier": 1,
+      "weakness_duration": 3
+    }
+  },
+  "love_beam": {
+    "cooldown": 6.6,
+    "damage": 0.9,
+    "tuning": {
+      "beam_range": 100,
+      "gauge_drain": 1,
+      "gauge_fill": 3
+    }
+  },
+  "love_charge": {
+    "cooldown": 0,
+    "damage": 16.2,
+    "tuning": {
+      "meter_max": 2000,
+      "meter_reserve": 1
+    }
+  },
+  "love_jet": {
+    "cooldown": 90,
+    "damage": 81.0,
+    "tuning": {
+      "summon_count": 3,
+      "summon_velocity": 0.5
+    }
+  },
+  "love_large_throw": {
+    "cooldown": 90,
+    "damage": 16.2,
+    "tuning": {
+      "knockback_strength": 2.5,
+      "lasts": 1.5,
+      "projectile_homing_speed": 1.5,
+      "projectile_homing_strength": 0.9,
+      "projectile_hover_seconds": 0.75,
+      "projectile_max_age": 10,
+      "projectile_size": 4,
+      "projectile_speed": 1.5,
+      "push_lift": 0.6
+    }
+  },
+  "love_missile": {
+    "cooldown": 15,
+    "range": 1,
+    "tuning": {
+      "projectile_explode_radius": 1,
+      "projectile_homing_speed": 0.35,
+      "projectile_homing_strength": 0.15,
+      "projectile_hover_seconds": 0.5,
+      "projectile_max_age": 15,
+      "projectile_size": 0.5,
+      "projectile_speed": 0.35
+    }
+  },
+  "love_sandwiches": {
+    "cooldown": 72
+  },
+  "love_shield": {
+    "cooldown": 24,
+    "tuning": {
+      "absorb_within": 2,
+      "push_strength": 0.35,
+      "target_radius": 1.7,
+      "target_radius_2": 24
+    }
+  },
+  "love_spawn_entity_cave_spider": {
+    "cooldown": 21,
+    "damage": 9.0
+  },
+  "love_surge": {
+    "cooldown": 24,
+    "damage": 243.0,
+    "tuning": {
+      "effect_amplifier": 1,
+      "give_lasts": 0.4,
+      "push_min_strength": -1000,
+      "push_strength": 1.5,
+      "push_vertical": 0.5,
+      "recharge_amplifier": 2
+    }
+  },
+  "love_train": {
+    "cooldown": 90,
+    "damage": 16.2,
+    "tuning": {
+      "knockback_strength": 2.5,
+      "projectile_max_age": 5,
+      "projectile_size": 9,
+      "projectile_speed": 1.75,
+      "push_lift": 0.6
+    }
+  },
+  "love_unleash": {
+    "cooldown": 90,
+    "damage": 0.9,
+    "tuning": {
+      "beam_range": 100,
+      "when_in_state_for": 0.5
+    }
+  },
+  "love_unleash_hold": {
+    "cooldown": 90,
+    "damage": 16.2,
+    "tuning": {
+      "beam_range": 60
+    }
+  },
+  "mallot_hands": {
+    "cooldown": 21,
+    "duration": 15,
+    "tuning": {
+      "active_for": 3.6,
+      "confusion_amplifier": 1,
+      "confusion_duration": 1.5,
+      "immobile_amplifier": 1,
+      "immobile_duration": 2.5,
+      "reach_scale": 1.75,
+      "reach_scale_2": 2,
+      "when_chance": 0.1,
+      "when_chance_2": 0.1
+    }
+  },
+  "myers_equip": {
+    "cooldown": 0,
+    "duration": 8,
+    "range": 1,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "no_ring_requirement": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 36,
+    "amplifier": 0
+  },
+  "passive_lightning_throw": {
+    "cooldown": 14.4,
+    "range": 30,
+    "amplifier": 30,
+    "tuning": {
+      "run_speed_at_least": 1
+    }
+  },
+  "rage_bat_swarm": {
+    "cooldown": 102,
+    "duration": 6,
+    "damage": 0.9,
+    "tuning": {
+      "blindness_amplifier": 0,
+      "blindness_duration": 3.5,
+      "darkness_amplifier": 0,
+      "darkness_duration": 1.25,
+      "immobile_amplifier": 0,
+      "immobile_duration": 3.5,
+      "slowness_amplifier": 0,
+      "slowness_duration": 4,
+      "stat_attack": 20,
+      "stat_defense": 5,
+      "stat_utility": 10,
+      "summon_count": 2,
+      "summon_scatter": 1,
+      "weakness_amplifier": 1,
+      "weakness_duration": 3
+    }
+  },
+  "rage_beam": {
+    "cooldown": 6.6,
+    "duration": 11,
+    "range": 20,
+    "damage": 0.9,
+    "amplifier": 1,
+    "tuning": {
+      "beam_range": 100,
+      "gauge_drain": 1,
+      "gauge_fill": 3
+    }
+  },
+  "rage_charge": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 0.9,
+    "amplifier": 1,
+    "tuning": {
+      "meter_max": 2000,
+      "meter_reserve": 1
+    }
+  },
+  "rage_jet": {
+    "cooldown": 108,
+    "duration": 20,
+    "damage": 58.5,
+    "tuning": {
+      "summon_count": 3,
+      "summon_velocity": 0.5
+    }
+  },
+  "rage_large_throw": {
+    "cooldown": 84,
+    "damage": 18.0,
+    "tuning": {
+      "knockback_strength": 2.5,
+      "lasts": 1.5,
+      "projectile_homing_speed": 1.5,
+      "projectile_homing_strength": 0.9,
+      "projectile_hover_seconds": 0.75,
+      "projectile_max_age": 10,
+      "projectile_size": 4,
+      "projectile_speed": 1.5,
+      "push_lift": 0.6
+    }
+  },
+  "rage_missile": {
+    "cooldown": 45.6,
+    "tuning": {
+      "projectile_explode_radius": 1,
+      "projectile_homing_speed": 0.35,
+      "projectile_homing_strength": 0.15,
+      "projectile_hover_seconds": 0.5,
+      "projectile_max_age": 15,
+      "projectile_size": 0.5,
+      "projectile_speed": 0.35
+    }
+  },
+  "rage_sandwiches": {
+    "cooldown": 72,
+    "duration": 11,
+    "range": 64,
+    "amplifier": 2
+  },
+  "rage_shield": {
+    "cooldown": 14.4,
+    "duration": 18,
+    "range": 48,
+    "amplifier": 20,
+    "tuning": {
+      "absorb_within": 2,
+      "push_strength": 0.35,
+      "target_radius": 1.7,
+      "target_radius_2": 24
+    }
+  },
+  "rage_spawn_entity_cave_spider": {
+    "cooldown": 18,
+    "damage": 9.0,
+    "amplifier": 12
+  },
+  "rage_surge": {
+    "cooldown": 24,
+    "duration": 12,
+    "range": 5,
+    "damage": 225.0,
+    "tuning": {
+      "effect_amplifier": 1,
+      "give_lasts": 0.4,
+      "push_min_strength": -1000,
+      "push_strength": 1.5,
+      "push_vertical": 0.5,
+      "recharge_amplifier": 2
+    }
+  },
+  "rage_train": {
+    "cooldown": 66,
+    "damage": 5.4,
+    "tuning": {
+      "knockback_strength": 2.5,
+      "projectile_max_age": 5,
+      "projectile_size": 9,
+      "projectile_speed": 1.75,
+      "push_lift": 0.6
+    }
+  },
+  "rage_unleash": {
+    "cooldown": 12,
+    "duration": 6,
+    "range": 8,
+    "damage": 5.4,
+    "amplifier": 1,
+    "tuning": {
+      "beam_range": 100,
+      "when_in_state_for": 0.5
+    }
+  },
+  "rage_unleash_hold": {
+    "cooldown": 90,
+    "damage": 16.2,
+    "tuning": {
+      "beam_range": 60
+    }
+  },
+  "silver_lasso_grab": {
+    "cooldown": 30,
+    "duration": 22,
+    "range": 16,
+    "damage": 24,
+    "amplifier": 20,
+    "tuning": {
+      "hit_damage": 10,
+      "immobile_amplifier": 10,
+      "immobile_duration": 6,
+      "lasts": 0.5,
+      "projectile_speed": 2.25,
+      "projectile_spread": 0.8,
+      "pull_anchor_height": 0.8,
+      "pull_strength": 0.5
+    }
+  },
+  "skateboard": {
+    "cooldown": 24
+  },
+  "snow_immunity": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 0.6,
+    "amplifier": 1
+  },
+  "toggle_move": {
+    "cooldown": 1.8,
+    "duration": 8,
+    "range": 1,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "unlimited_power": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "amplifier": 0
+  },
+  "willpower_bat_swarm": {
+    "cooldown": 135,
+    "duration": 7,
+    "damage": 0.9,
+    "tuning": {
+      "blindness_amplifier": 0,
+      "blindness_duration": 3.5,
+      "darkness_amplifier": 0,
+      "darkness_duration": 1.25,
+      "immobile_amplifier": 0,
+      "immobile_duration": 3.5,
+      "slowness_amplifier": 0,
+      "slowness_duration": 4,
+      "stat_attack": 20,
+      "stat_defense": 5,
+      "stat_utility": 10,
+      "summon_count": 2,
+      "summon_scatter": 1,
+      "weakness_amplifier": 1,
+      "weakness_duration": 3
+    }
+  },
+  "willpower_beam": {
+    "cooldown": 6.6,
+    "duration": 11,
+    "range": 20,
+    "damage": 0.9,
+    "amplifier": 1,
+    "tuning": {
+      "beam_range": 100,
+      "gauge_drain": 1,
+      "gauge_fill": 3
+    }
+  },
+  "willpower_charge": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 16.2,
+    "amplifier": 1,
+    "tuning": {
+      "meter_max": 2000,
+      "meter_reserve": 1
+    }
+  },
+  "willpower_jet": {
+    "cooldown": 90,
+    "duration": 10,
+    "damage": 81.0,
+    "amplifier": 10,
+    "tuning": {
+      "summon_count": 3,
+      "summon_velocity": 0.5
+    }
+  },
+  "willpower_large_throw": {
+    "cooldown": 90,
+    "duration": 3,
+    "damage": 16.2,
+    "tuning": {
+      "knockback_strength": 2.5,
+      "lasts": 1.5,
+      "projectile_homing_speed": 1.5,
+      "projectile_homing_strength": 0.9,
+      "projectile_hover_seconds": 0.75,
+      "projectile_max_age": 10,
+      "projectile_size": 4,
+      "projectile_speed": 1.5,
+      "push_lift": 0.6
+    }
+  },
+  "willpower_missile": {
+    "cooldown": 15,
+    "tuning": {
+      "projectile_explode_radius": 1,
+      "projectile_homing_speed": 0.35,
+      "projectile_homing_strength": 0.15,
+      "projectile_hover_seconds": 0.5,
+      "projectile_max_age": 15,
+      "projectile_size": 0.5,
+      "projectile_speed": 0.35
+    }
+  },
+  "willpower_sandwiches": {
+    "cooldown": 72,
+    "duration": 11,
+    "range": 64,
+    "amplifier": 2
+  },
+  "willpower_shield": {
+    "cooldown": 30,
+    "duration": 10,
+    "range": 48,
+    "amplifier": 20,
+    "tuning": {
+      "absorb_within": 2,
+      "push_strength": 0.35,
+      "target_radius": 1.7,
+      "target_radius_2": 24
+    }
+  },
+  "willpower_spawn_entity_cave_spider": {
+    "cooldown": 18,
+    "damage": 9.0,
+    "amplifier": 12
+  },
+  "willpower_surge": {
+    "cooldown": 30,
+    "duration": 4,
+    "range": 5,
+    "damage": 243.0,
+    "amplifier": 3,
+    "tuning": {
+      "effect_amplifier": 1,
+      "give_lasts": 0.4,
+      "push_min_strength": -1000,
+      "push_strength": 1.5,
+      "push_vertical": 0.5,
+      "recharge_amplifier": 2
+    }
+  },
+  "willpower_train": {
+    "cooldown": 90,
+    "duration": 3,
+    "damage": 16.2,
+    "tuning": {
+      "knockback_strength": 2.5,
+      "projectile_max_age": 5,
+      "projectile_size": 9,
+      "projectile_speed": 1.75,
+      "push_lift": 0.6
+    }
+  },
+  "willpower_unleash": {
+    "cooldown": 90,
+    "duration": 5,
+    "range": 8,
+    "tuning": {
+      "beam_range": 100,
+      "when_in_state_for": 0.5
+    }
+  },
+  "willpower_unleash_hold": {
+    "cooldown": 90,
+    "damage": 16.2,
+    "tuning": {
+      "beam_range": 60
+    }
+  }
+}

@@ -1,0 +1,189 @@
+{
+  "vader_force_choke": {
+    "cooldown": 14,
+    "duration": 4,
+    "range": 12,
+    "damage": 12,
+    "amplifier": 0,
+    "tuning": {
+      "boss_share": 0.6,
+      "break_share": 0.2,
+      "damage_every": 10,
+      "lift": 1.8,
+      "player_hold": 2,
+      "player_lift": 1.2,
+      "slowness_amplifier": 1,
+      "slowness_duration": 3
+    }
+  },
+  "vader_force_push": {
+    "cooldown": 8,
+    "duration": 0,
+    "range": 8,
+    "damage": 28,
+    "amplifier": 0,
+    "tuning": {
+      "boss_share": 0.5,
+      "push_arc": 50,
+      "push_lift": 0.35,
+      "push_strength": 2.4,
+      "redirect_speed": 1.3,
+      "slam_damage": 24,
+      "slam_ticks": 12
+    }
+  },
+  "maul_force_push": {
+    "cooldown": 10,
+    "duration": 0,
+    "range": 6,
+    "damage": 16,
+    "amplifier": 0,
+    "tuning": {
+      "push_arc": 45,
+      "push_lift": 0.3,
+      "push_strength": 1.6
+    }
+  },
+  "vader_saber_throw": {
+    "cooldown": 10,
+    "duration": 0,
+    "range": 16,
+    "damage": 34,
+    "amplifier": 0,
+    "tuning": {
+      "projectile_speed": 2.2
+    }
+  },
+  "maul_saber_throw": {
+    "cooldown": 10,
+    "duration": 0,
+    "range": 12,
+    "damage": 26,
+    "amplifier": 0,
+    "tuning": {
+      "projectile_speed": 2.0
+    }
+  },
+  "vader_force_pull": {
+    "cooldown": 9,
+    "duration": 0,
+    "range": 14,
+    "damage": 6,
+    "amplifier": 0,
+    "tuning": {
+      "pull_per_block": 0.16,
+      "push_lift": 0.35,
+      "stop_short": 2
+    }
+  },
+  "maul_force_pull": {
+    "cooldown": 9,
+    "duration": 0,
+    "range": 10,
+    "damage": 4,
+    "amplifier": 0,
+    "tuning": {
+      "pull_per_block": 0.16,
+      "push_lift": 0.35,
+      "stop_short": 2
+    }
+  },
+  "vader_crushing_grip": {
+    "cooldown": 90,
+    "duration": 5,
+    "range": 10,
+    "damage": 14,
+    "amplifier": 0,
+    "tuning": {
+      "boss_share": 0.5,
+      "damage_every": 10,
+      "grip_arc": 40,
+      "lift": 2.5,
+      "max_targets": 4,
+      "player_hold": 1.5,
+      "player_lift": 1.2,
+      "slowness_amplifier": 2,
+      "slowness_duration": 4
+    }
+  },
+  "vader_presence": {
+    "cooldown": 0,
+    "duration": 2,
+    "range": 6,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "maul_force_leap": {
+    "cooldown": 6,
+    "duration": 0,
+    "range": 3,
+    "damage": 40,
+    "amplifier": 0,
+    "tuning": {
+      "charge_lasts": 1.2,
+      "charge_ticks": 24,
+      "leap_base": 0.9,
+      "leap_lasts": 4,
+      "leap_lift": 0.25,
+      "leap_per_tick": 0.06,
+      "push_lift": 0.3,
+      "push_strength": 0.8
+    }
+  },
+  "maul_saber_whirl": {
+    "cooldown": 12,
+    "duration": 3,
+    "range": 3.5,
+    "damage": 9,
+    "amplifier": 0,
+    "tuning": {
+      "push_strength": 0.3
+    }
+  },
+  "maul_onslaught": {
+    "cooldown": 90,
+    "duration": 6,
+    "range": 10,
+    "damage": 18,
+    "amplifier": 0
+  },
+  "maul_force_jump": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 0,
+    "amplifier": 0,
+    "tuning": {
+      "push_lift": 0.1,
+      "push_strength": 0.45
+    }
+  },
+  "vader_force_wheel": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "maul_force_wheel": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "vader_force_use": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "maul_force_use": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 0,
+    "amplifier": 0
+  }
+}

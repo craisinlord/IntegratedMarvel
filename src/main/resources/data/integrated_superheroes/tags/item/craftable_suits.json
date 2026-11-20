@@ -1,0 +1,117 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:apocalypse",
+      "required": false
+    },
+    {
+      "id": "thematic:aqua_batman",
+      "required": false
+    },
+    {
+      "id": "thematic:arcticbatman",
+      "required": false
+    },
+    {
+      "id": "thematic:batman",
+      "required": false
+    },
+    {
+      "id": "thematic:batman40",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_arkham",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_beyond",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_vampires",
+      "required": false
+    },
+    {
+      "id": "thematic:black_widow",
+      "required": false
+    },
+    {
+      "id": "thematic:blade",
+      "required": false
+    },
+    {
+      "id": "thematic:dark_knight",
+      "required": false
+    },
+    {
+      "id": "thematic:darkseid",
+      "required": false
+    },
+    {
+      "id": "thematic:darth_maul",
+      "required": false
+    },
+    {
+      "id": "thematic:darth_vader",
+      "required": false
+    },
+    {
+      "id": "thematic:dr_doom",
+      "required": false
+    },
+    {
+      "id": "thematic:dr_fate",
+      "required": false
+    },
+    {
+      "id": "thematic:dracula",
+      "required": false
+    },
+    {
+      "id": "thematic:ghostface",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow",
+      "required": false
+    },
+    {
+      "id": "thematic:hawkeye",
+      "required": false
+    },
+    {
+      "id": "thematic:jason_voorhees",
+      "required": false
+    },
+    {
+      "id": "thematic:joker",
+      "required": false
+    },
+    {
+      "id": "thematic:myers",
+      "required": false
+    },
+    {
+      "id": "thematic:netherite_batman",
+      "required": false
+    },
+    {
+      "id": "thematic:nick_fury",
+      "required": false
+    },
+    {
+      "id": "thematic:punisher",
+      "required": false
+    },
+    {
+      "id": "thematic:ultron",
+      "required": false
+    },
+    {
+      "id": "thematic:vision",
+      "required": false
+    }
+  ]
+}

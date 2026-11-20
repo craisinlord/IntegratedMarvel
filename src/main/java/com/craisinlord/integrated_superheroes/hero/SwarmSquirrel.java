@@ -49,6 +49,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -62,6 +63,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -152,6 +154,9 @@ public class SwarmSquirrel extends TamableAnimal implements GeoEntity {
     private int shoulderSneakGraceTicks;
     private boolean tippy;
     private float biteDamage = 1.0F;
+    private Mob summoner;
+    private LivingEntity summonTarget;
+    private int summonExpires;
     private ItemStack carried = ItemStack.EMPTY;
     private ItemEntity forageTarget;
     private int pickupTicks;
@@ -190,6 +195,22 @@ public class SwarmSquirrel extends TamableAnimal implements GeoEntity {
         if (tippy) {
             this.setCustomName(net.minecraft.network.chat.Component.literal("Tippy-Toe"));
         }
+    }
+
+    public void summonFor(Mob summoner, LivingEntity target, float biteDamage, double health, int lifeTicks) {
+        this.summoner = summoner;
+        this.summonTarget = target;
+        this.summonExpires = this.tickCount + lifeTicks;
+        this.biteDamage = biteDamage;
+        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(health);
+        this.setHealth((float) health);
+        this.setTextureVariant(this.random.nextFloat() < 0.2F ? 1 : 0);
+        this.wanderCooldown = 40 + this.random.nextInt(60);
+        this.setTarget(target);
+    }
+
+    public boolean summonedBy(Mob mob) {
+        return this.summoner == mob;
     }
 
     public boolean isTippy() {
@@ -453,6 +474,13 @@ public class SwarmSquirrel extends TamableAnimal implements GeoEntity {
     }
 
     private boolean ownerValid() {
+        if (this.summoner != null) {
+            if (this.summonTarget != null && this.summonTarget.isAlive() && this.pileTarget == null && this.getTarget() != this.summonTarget) {
+                this.setTarget(this.summonTarget);
+            }
+            return this.summoner.isAlive() && this.summoner.level() == this.level() && this.tickCount < this.summonExpires
+                    && this.summonTarget != null && this.summonTarget.isAlive();
+        }
         if (!(this.getOwner() instanceof ServerPlayer owner) || !owner.isAlive() || owner.level() != this.level()
                 || this.distanceToSqr(owner) > 48.0D * 48.0D || !SquirrelGirlPower.has(owner)) {
             return false;
@@ -581,9 +609,52 @@ public class SwarmSquirrel extends TamableAnimal implements GeoEntity {
         return false;
     }
 
+    private boolean onHead() {
+        return this.isOnShoulder() || this.isClimbingToShoulder();
+    }
+
+    @Override
+    public boolean isPickable() {
+        return !this.onHead() && super.isPickable();
+    }
+
+    @Override
+    public boolean canBeHitByProjectile() {
+        return !this.onHead() && super.canBeHitByProjectile();
+    }
+
+    @Override
+    public boolean canBeCollidedWith() {
+        return !this.onHead() && super.canBeCollidedWith();
+    }
+
+    @Override
+    protected AABB makeBoundingBox() {
+        if (this.onHead()) {
+            return new AABB(this.position(), this.position());
+        }
+        return super.makeBoundingBox();
+    }
+
+    @Override
+    public AABB getBoundingBoxForCulling() {
+        if (this.onHead()) {
+            return this.getDimensions(this.getPose()).makeBoundingBox(this.position());
+        }
+        return super.getBoundingBoxForCulling();
+    }
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
+        super.onSyncedDataUpdated(key);
+        if (SHOULDER_PLAYER.equals(key)) {
+            this.setBoundingBox(this.makeBoundingBox());
+        }
+    }
+
     @Override
     public boolean isPushable() {
-        return !this.isOnShoulder() && !this.isClimbingToShoulder() && super.isPushable();
+        return !this.onHead() && super.isPushable();
     }
 
     @Override
@@ -848,6 +919,7 @@ public class SwarmSquirrel extends TamableAnimal implements GeoEntity {
         this.shoulderClimbTicks = 0;
         this.shoulderSneakGraceTicks = 0;
         this.setClimbingTrunk(false);
+        this.setBoundingBox(this.makeBoundingBox());
     }
 
     private void glideOffShoulder(Player player) {
@@ -1588,6 +1660,9 @@ public class SwarmSquirrel extends TamableAnimal implements GeoEntity {
             if (!SwarmSquirrel.this.carried.isEmpty()) {
                 return true;
             }
+            if (SwarmSquirrel.this.random.nextInt(reducedTickDelay(10)) != 0) {
+                return false;
+            }
             SwarmSquirrel.this.forageTarget = this.find();
             return SwarmSquirrel.this.forageTarget != null;
         }
@@ -1642,12 +1717,20 @@ public class SwarmSquirrel extends TamableAnimal implements GeoEntity {
                 return null;
             }
             double range = MarvelBalanceConfig.SWARM_FORAGE_RANGE.get();
+            List<ItemEntity> items = SwarmSquirrel.this.level().getEntitiesOfClass(ItemEntity.class, owner.getBoundingBox().inflate(range),
+                    entity -> entity.isAlive() && !entity.hasPickUpDelay());
+            if (items.isEmpty()) {
+                return null;
+            }
+            java.util.Set<ItemEntity> claimed = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+            for (SwarmSquirrel other : SwarmSquirrel.this.level().getEntitiesOfClass(SwarmSquirrel.class, owner.getBoundingBox().inflate(range * 2.0D),
+                    other -> other != SwarmSquirrel.this && other.forageTarget != null)) {
+                claimed.add(other.forageTarget);
+            }
             ItemEntity best = null;
             double bestDistance = Double.MAX_VALUE;
-            for (ItemEntity item : SwarmSquirrel.this.level().getEntitiesOfClass(ItemEntity.class, owner.getBoundingBox().inflate(range),
-                    entity -> entity.isAlive() && !entity.hasPickUpDelay())) {
-                if (SwarmSquirrel.this.level().getEntitiesOfClass(SwarmSquirrel.class, item.getBoundingBox().inflate(range),
-                        other -> other != SwarmSquirrel.this && other.forageTarget == item).isEmpty()) {
+            for (ItemEntity item : items) {
+                if (!claimed.contains(item)) {
                     double distance = SwarmSquirrel.this.distanceToSqr(item);
                     if (distance < bestDistance) {
                         best = item;

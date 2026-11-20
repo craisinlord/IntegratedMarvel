@@ -8,10 +8,11 @@ public final class FlightClientConfig {
     public static final ModConfigSpec.DoubleValue SCREEN_SHAKE_SCALE;
     public static final ModConfigSpec.BooleanValue FOV_EFFECT;
     public static final ModConfigSpec.DoubleValue FOV_EFFECT_SCALE;
+    public static final ModConfigSpec.DoubleValue HERO_CAMERA_ROLL;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
-        builder.comment("Viltrumite flight visuals, used by Omni-Man and Captain Marvel.").push("flight");
+        builder.comment("Flight visuals. The Viltrumite settings cover Omni-Man and every hero in viltrumiteFlightHeroes.").push("flight");
         SCREEN_SHAKE = builder.comment("Shake the screen on takeoff and at high speed.")
                 .define("screenShake", true);
         SCREEN_SHAKE_SCALE = builder.comment("How hard the screen shakes. 1 is the default, 0 is none, 2 is double.")
@@ -20,6 +21,8 @@ public final class FlightClientConfig {
                 .define("fovEffect", true);
         FOV_EFFECT_SCALE = builder.comment("How much the field of view widens. 1 is the default, 0 is none, 2 is double.")
                 .defineInRange("fovEffectScale", 1.0D, 0.0D, 2.0D);
+        HERO_CAMERA_ROLL = builder.comment("How far the camera leans into turns while a serum hero hovers without Viltrumite flight. 1 is the default, 0 is none, 2 is double.")
+                .defineInRange("heroCameraRoll", 1.0D, 0.0D, 2.0D);
         builder.pop();
         SPEC = builder.build();
     }
@@ -32,6 +35,10 @@ public final class FlightClientConfig {
             return 1.0F;
         }
         return SCREEN_SHAKE.get() ? SCREEN_SHAKE_SCALE.get().floatValue() : 0.0F;
+    }
+
+    public static float heroCameraRoll() {
+        return SPEC.isLoaded() ? HERO_CAMERA_ROLL.get().floatValue() : 1.0F;
     }
 
     public static boolean fovEffect() {

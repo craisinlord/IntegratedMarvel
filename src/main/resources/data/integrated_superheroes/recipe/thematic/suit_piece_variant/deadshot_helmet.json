@@ -1,0 +1,200 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:deadshot"
+    }
+  ],
+  "type": "marvel:suit_variant",
+  "suit": {
+    "type": "neoforge:compound",
+    "children": [
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:arkham_knight"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:black_mask"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:black_spider"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:cheshire"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:deadshot"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:diggle"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:domino"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:punisher"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:punisher_2099"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:punisher_cruz"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:punisher_hand"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:punisher_mcu"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:punisher_noir"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:punisher_rivals"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:punisher_rucka"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:punisher_ultimate"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:punisher_war_machine"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:red_hood"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:redhood_arkham"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:redhood_injustice2"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:redhood_outlaw"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:redhood_utrd"
+        },
+        "strict": false
+      }
+    ]
+  },
+  "results": {
+    "id": "integrated_superheroes:suit_helmet",
+    "components": {
+      "integrated_superheroes:suit": "thematic:deadshot"
+    }
+  }
+}

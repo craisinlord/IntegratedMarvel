@@ -1,0 +1,33 @@
+{
+  "fate_judgment": {
+    "cooldown": 3,
+    "duration": 0,
+    "range": 40,
+    "damage": 96,
+    "disabled": false,
+    "tuning": {
+      "focus_multiplier": 1.4
+    }
+  },
+  "fate_bonds": {
+    "cooldown": 16,
+    "duration": 6,
+    "range": 28,
+    "damage": 48,
+    "disabled": false,
+    "tuning": {
+      "seal_radius": 6,
+      "seal_damage": 18
+    }
+  },
+  "fate_decree": {
+    "cooldown": 100,
+    "duration": 0,
+    "range": 18,
+    "damage": 200,
+    "disabled": false,
+    "tuning": {
+      "heal": 12
+    }
+  }
+}

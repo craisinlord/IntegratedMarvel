@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:freddy_shazam",
+      "required": false
+    }
+  ]
+}

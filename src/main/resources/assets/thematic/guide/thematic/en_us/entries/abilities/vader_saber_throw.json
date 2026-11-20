@@ -1,0 +1,8 @@
+{
+    "name": "Saber Throw",
+    "category": "thematic:ability",
+    "icon": "thematic:vader_saber",
+    "pages": [
+        "Throw your lightsaber straight ahead. It cuts through everything in its path, sets enemies on fire and comes back to your hand. The saber has to be in your hand to throw it."
+    ]
+}

@@ -48,7 +48,7 @@ public final class IronManSuits {
         suit(builder, "iron_man_mark_21", 5, 10, 8, 4, 3.4, 22, 12, 73, 1.73, 300, 0.65);
         suit(builder, "iron_man_mark_22", 5, 10, 8, 5, 3.5, 24, 12, 82, 1.81, 400, 0.7);
         suit(builder, "iron_man_mark_23", 5, 11, 8, 5, 3.55, 27, 11, 93, 1.9, 450, 0.7);
-        suit(builder, "iron_man_mark_24", 6, 12, 9, 5, 3.8, 29, 11, 156, 1.7, 500, 0.7);
+        suit(builder, "iron_man_mark_24", 6, 12, 9, 5, 3.8, 29, 11, 104, 1.7, 500, 0.7);
         suit(builder, "iron_man_mark_25", 5, 11, 9, 5, 3.6, 31, 11, 115, 2.09, 550, 0.75);
         suit(builder, "iron_man_mark_28", 6, 12, 9, 5, 4.0, 34, 10, 128, 2.18, 620, 0.75);
         suit(builder, "iron_man_mark_30", 6, 12, 9, 5, 4.1, 37, 10, 141, 2.28, 700, 0.8);

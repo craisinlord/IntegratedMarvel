@@ -1,0 +1,66 @@
+{
+  "values": [
+    "minecraft:spawner",
+    "minecraft:trial_spawner",
+    "minecraft:vault",
+    "minecraft:command_block",
+    "minecraft:chain_command_block",
+    "minecraft:repeating_command_block",
+    "minecraft:structure_block",
+    "minecraft:jigsaw",
+    "minecraft:barrier",
+    "minecraft:light",
+    "minecraft:nether_portal",
+    "minecraft:end_portal",
+    "minecraft:end_gateway",
+    "minecraft:structure_void",
+    {
+      "id": "dimdoors:detached_rift",
+      "required": false
+    },
+    {
+      "id": "dimdoors:dimensional_portal",
+      "required": false
+    },
+    {
+      "id": "antarchy:undertrial_spawner",
+      "required": false
+    },
+    {
+      "id": "antarchy:undervault",
+      "required": false
+    },
+    {
+      "id": "antarchy:elythia_portal",
+      "required": false
+    },
+    {
+      "id": "antarchy:cavaryn_portal",
+      "required": false
+    },
+    {
+      "id": "antarchy:thoraxis_portal",
+      "required": false
+    },
+    {
+      "id": "antarchy:portal_gun_portal_base",
+      "required": false
+    },
+    {
+      "id": "antarchy:portal_gun_portal_master",
+      "required": false
+    },
+    {
+      "id": "antarchy:brutalfly_cocoon_spawner",
+      "required": false
+    },
+    {
+      "id": "thematic:wave_spawner",
+      "required": false
+    },
+    {
+      "id": "waystones:warp_portal",
+      "required": false
+    }
+  ]
+}

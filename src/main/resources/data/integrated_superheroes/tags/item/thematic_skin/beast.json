@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:beast",
+      "required": false
+    },
+    {
+      "id": "thematic:beast1",
+      "required": false
+    },
+    {
+      "id": "thematic:beast_97",
+      "required": false
+    }
+  ]
+}

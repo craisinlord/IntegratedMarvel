@@ -118,6 +118,9 @@ public final class StormPower {
             return;
         }
         StormWind.takeoff(player);
+        if (HeroFx.vfx(level, player.position(), "air_burst_ring", 0, 3.0F)) {
+            HeroFx.vfx(level, player.position(), "gust_tornado", 0);
+        }
         HeroFx.play(player, SoundEvents.BREEZE_WIND_CHARGE_BURST.value(), 0.9F, 1.1F);
         HeroAnimations.play(player, "celestisynth:cs_breezebreaker_jump");
     }
@@ -163,6 +166,9 @@ public final class StormPower {
             bolt.setVisualOnly(true);
             level.addFreshEntity(bolt);
         }
+        if (HeroFx.vfx(level, at, "fork_strike", 0)) {
+            HeroFx.vfx(level, at, "fork_burst", 0, (float) Math.max(2.0D, radius * 2.0D));
+        }
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, new AABB(at, at).inflate(radius, radius + 1.0D, radius),
                 entity -> entity != player && entity.isAlive() && !hit.contains(entity.getId()))) {
             hit.add(target.getId());
@@ -197,6 +203,9 @@ public final class StormPower {
         }
         GUSTS.put(player.getUUID(), new Gust(starts, player.level().getGameTime() + 120L));
         StormWind.gale(player, player.getEyePosition().add(look), look);
+        if (HeroFx.vfx(player.serverLevel(), player.position().add(look.scale(3.0D)), "gust_tornado", 0)) {
+            HeroFx.vfx(player.serverLevel(), player.position(), "air_burst_ring", 0, 4.0F);
+        }
         HeroAnimations.play(player, "celestisynth:cs_solaris_spin");
         return MarvelBalanceConfig.GALE_COOLDOWN.get();
     }

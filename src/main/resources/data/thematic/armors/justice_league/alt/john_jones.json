@@ -1,0 +1,7 @@
+{
+  "suit-recipe": "thematic:alt_martianmanhunter1",
+  "parent": "thematic:martian_manhunter",
+  "cape": {
+    "remove": true
+  }
+}

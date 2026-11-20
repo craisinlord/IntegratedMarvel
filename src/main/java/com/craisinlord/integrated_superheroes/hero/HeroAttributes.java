@@ -16,7 +16,15 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import com.craisinlord.integrated_superheroes.compat.ModCompat;
+import com.craisinlord.integrated_superheroes.compat.thematic.ThematicFixes;
+import com.craisinlord.integrated_superheroes.suit.PymAbilities;
+import com.craisinlord.integrated_superheroes.suit.SuitAbilities;
+import com.craisinlord.integrated_superheroes.suit.SuitContext;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.slf4j.Logger;
 
 public final class HeroAttributes {
@@ -28,19 +36,61 @@ public final class HeroAttributes {
     private static final ResourceLocation SPEED = legacyId("speed_modifier");
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Set<String> WARNED = new HashSet<>();
+    private static final Set<Attribute> SUIT_CAPPED = Set.of(Attributes.MAX_HEALTH.value(), Attributes.ARMOR.value(), Attributes.ARMOR_TOUGHNESS.value());
 
     private HeroAttributes() {
     }
 
     public static void apply(Player player, MarvelBalanceConfig.HeroStats stats) {
-        set(player, Attributes.MAX_HEALTH, HEALTH, stats.health.get());
+        Map<Attribute, Double> suit = suitBonuses(player);
+        set(player, Attributes.MAX_HEALTH, HEALTH, beyondSuit(suit, Attributes.MAX_HEALTH.value(), stats.health.get()));
         set(player, Attributes.ATTACK_DAMAGE, ATTACK, 0.0D);
-        set(player, Attributes.ARMOR, ARMOR, stats.armor.get());
+        set(player, Attributes.ARMOR, ARMOR, beyondSuit(suit, Attributes.ARMOR.value(), stats.armor.get()));
         set(player, Attributes.ATTACK_KNOCKBACK, KNOCKBACK, stats.attackKnockback.get());
         set(player, Attributes.STEP_HEIGHT, STEP_HEIGHT, stats.stepHeight.get());
         set(player, Attributes.MOVEMENT_SPEED, SPEED, stats.movementSpeed.get());
-        syncExtras(player, stats);
+        syncExtras(player, stats, suit);
         syncStrength(player, stats.strength.get());
+        if (player.getHealth() > player.getMaxHealth()) {
+            player.setHealth(player.getMaxHealth());
+        }
+    }
+
+    private static Map<Attribute, Double> suitBonuses(Player player) {
+        Map<Attribute, Double> bonuses = new HashMap<>();
+        if (!(player instanceof ServerPlayer serverPlayer) || !MarvelBalanceConfig.SUIT_HIGHEST_BONUS_ONLY.get() || !poweredSuit(serverPlayer)) {
+            return bonuses;
+        }
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            if (!slot.isArmor()) {
+                continue;
+            }
+            ItemStack stack = player.getItemBySlot(slot);
+            if (stack.isEmpty()) {
+                continue;
+            }
+            stack.getAttributeModifiers().forEach(slot, (attribute, modifier) -> {
+                if (modifier.operation() == AttributeModifier.Operation.ADD_VALUE && SUIT_CAPPED.contains(attribute.value())) {
+                    bonuses.merge(attribute.value(), modifier.amount(), Double::sum);
+                }
+            });
+        }
+        return bonuses;
+    }
+
+    private static boolean poweredSuit(ServerPlayer player) {
+        if (!player.isSpectator()) {
+            SuitContext context = SuitAbilities.context(player);
+            if (context != null && !SuitAbilities.loadout(context.suitId()).isEmpty() || !PymAbilities.loadout(player).isEmpty()) {
+                return true;
+            }
+        }
+        return ModCompat.THEMATIC && ThematicFixes.suited(player);
+    }
+
+    private static double beyondSuit(Map<Attribute, Double> suit, Attribute attribute, double amount) {
+        Double worn = suit.get(attribute);
+        return worn == null ? amount : Math.max(0.0D, amount - Math.max(0.0D, worn));
     }
 
     public static void clear(Player player) {
@@ -99,6 +149,10 @@ public final class HeroAttributes {
     }
 
     public static void syncExtras(Player player, MarvelBalanceConfig.HeroStats stats) {
+        syncExtras(player, stats, Map.of());
+    }
+
+    private static void syncExtras(Player player, MarvelBalanceConfig.HeroStats stats, Map<Attribute, Double> suit) {
         Map<ResourceLocation, Extra> wanted = new HashMap<>();
         if (stats != null) {
             for (String entry : stats.extraAttributes.get()) {
@@ -107,6 +161,11 @@ public final class HeroAttributes {
                     wanted.merge(extra.id(), extra, (a, b) -> new Extra(a.id(), a.attribute(), a.amount() + b.amount(), a.operation()));
                 }
             }
+        }
+        if (!suit.isEmpty()) {
+            wanted.replaceAll((id, extra) -> extra.operation() == AttributeModifier.Operation.ADD_VALUE
+                    ? new Extra(id, extra.attribute(), beyondSuit(suit, extra.attribute().value(), extra.amount()), extra.operation()) : extra);
+            wanted.values().removeIf(extra -> extra.amount() == 0.0D);
         }
 
         Map<ResourceLocation, Holder<Attribute>> candidates = new HashMap<>();

@@ -1,0 +1,10 @@
+{
+  "abilities": [
+    {
+      "identifier": "toggle_hood",
+      "remove": true
+    }
+  ],
+  "suit-recipe": "thematic:alt_green_arrow_cw",
+  "parent": "thematic:green_arrow"
+}

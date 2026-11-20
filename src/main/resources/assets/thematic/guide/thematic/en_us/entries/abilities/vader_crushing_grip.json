@@ -1,0 +1,8 @@
+{
+    "name": "Crushing Grip",
+    "category": "thematic:ability",
+    "icon": "minecraft:netherite_scrap",
+    "pages": [
+        "Lift up to four enemies in front of you and squeeze. When you let them drop they can barely move. Bosses stay on the ground, and players slip free quickly."
+    ]
+}

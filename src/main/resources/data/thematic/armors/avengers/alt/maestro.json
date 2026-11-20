@@ -1,0 +1,11 @@
+{
+  "parent": "thematic:hulk",
+  "tier": 9,
+  "suit-recipe": "thematic:alt_maestro",
+  "abilities": [
+    {
+      "identifier": "banner_transform",
+      "remove": true
+    }
+  ]
+}

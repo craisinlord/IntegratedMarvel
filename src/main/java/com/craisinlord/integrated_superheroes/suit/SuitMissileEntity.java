@@ -3,6 +3,7 @@ package com.craisinlord.integrated_superheroes.suit;
 import com.craisinlord.integrated_superheroes.compat.AlexsCavesSuits;
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import com.craisinlord.integrated_superheroes.hero.HeroAbilities;
+import com.craisinlord.integrated_superheroes.hero.HeroFx;
 import com.craisinlord.integrated_superheroes.registry.SuitEntities;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -339,10 +340,14 @@ public class SuitMissileEntity extends Projectile {
             boolean griefing = level.getGameRules().getBoolean(MarvelGameRules.RULE_SUPERPOWERGRIEFING);
             level.explode(this, null, NO_ENTITY_DAMAGE, getX(), getY(), getZ(), 2.0F, false,
                     griefing ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
-            level.sendParticles(particle(ROCKET_EXPLOSION, ParticleTypes.EXPLOSION), getX(), getY(), getZ(), 3, 0.6D, 0.6D, 0.6D, 0.0D);
+            if (!HeroFx.vfx(level, position(), "pyre_detonation", 0, 3.0F)) {
+                level.sendParticles(particle(ROCKET_EXPLOSION, ParticleTypes.EXPLOSION), getX(), getY(), getZ(), 3, 0.6D, 0.6D, 0.6D, 0.0D);
+            }
         } else if (kind() == Kind.ORDNANCE) {
-            level.sendParticles(particle(ROCKET_EXPLOSION, ParticleTypes.EXPLOSION), getX(), getY(), getZ(), 3,
-                    splashRadius * 0.3D, 0.4D, splashRadius * 0.3D, 0.0D);
+            if (!HeroFx.vfx(level, position(), "pyre_detonation", 0, (float) Math.max(2.0D, splashRadius))) {
+                level.sendParticles(particle(ROCKET_EXPLOSION, ParticleTypes.EXPLOSION), getX(), getY(), getZ(), 3,
+                        splashRadius * 0.3D, 0.4D, splashRadius * 0.3D, 0.0D);
+            }
             level.playSound(null, getX(), getY(), getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1.2F, 0.9F + random.nextFloat() * 0.2F);
         } else {
             level.sendParticles(particle(ROCKET_EXPLOSION, ParticleTypes.EXPLOSION), getX(), getY(), getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
@@ -353,6 +358,9 @@ public class SuitMissileEntity extends Projectile {
     }
 
     private void nuclearDetonation(ServerLevel level) {
+        if (HeroFx.vfx(level, position(), "solar_explosion", 0)) {
+            HeroFx.cue(level, position(), "thematic:major_detonation", 6.0F, 1.0F);
+        }
         if (!ModCompat.ALEXS_CAVES || !AlexsCavesSuits.nuke(level, this)) {
             level.explode(this, getX(), getY(), getZ(), 16.0F, true, Level.ExplosionInteraction.TNT);
         }

@@ -1,0 +1,34 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:jason_voorhees"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "minecraft:diamond_boots"
+  },
+  "ingredients": [
+    {
+      "type": "neoforge:components",
+      "items": "minecraft:leather_chestplate",
+      "components": {
+        "minecraft:dyed_color": {
+          "rgb": 1908001
+        }
+      }
+    }
+  ],
+  "results": {
+    "id": "integrated_superheroes:suit_boots",
+    "components": {
+      "integrated_superheroes:suit": "thematic:jason_voorhees"
+    }
+  }
+}

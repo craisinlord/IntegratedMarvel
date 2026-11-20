@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:x_men/nightcrawler",
+  "display": {
+    "icon": {
+      "id": "minecraft:ender_pearl"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.x_men.nightcrawler.ballet.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.x_men.nightcrawler.ballet.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

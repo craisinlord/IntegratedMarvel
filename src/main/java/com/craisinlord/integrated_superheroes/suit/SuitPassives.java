@@ -124,6 +124,10 @@ public final class SuitPassives {
     }
 
     public static void onRepulsorHit(Entity shooter, Entity target) {
+        if (target.level() instanceof net.minecraft.server.level.ServerLevel level
+                && HeroFx.vfx(level, target.getBoundingBox().getCenter(), "impact_starburst", 0xFFBFE8FF)) {
+            HeroFx.cue(level, target.getBoundingBox().getCenter(), "thematic:ultron.blaster_shot", 0.6F, 1.2F);
+        }
         if (target instanceof LivingEntity living && shooter instanceof LivingEntity wearer && IronManSuits.isLoaded()
                 && JACK.equals(IronManSuits.fullSuitId(wearer))) {
             HeroFx.effect("alexscaves:irradiated").ifPresent(effect -> living.addEffect(new MobEffectInstance(effect, 100, 0)));

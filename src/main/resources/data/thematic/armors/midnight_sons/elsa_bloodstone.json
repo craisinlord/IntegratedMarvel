@@ -1,0 +1,121 @@
+{
+  "tier": 7,
+  "abilities": [
+    {
+      "identifier": "acrobatics",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "level": "2"
+        }
+      }
+    },
+    {
+      "identifier": "night_vision",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "stealth",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "hunter_vision",
+      "keybind": "key.thematic.ability_5"
+    },
+    {
+      "identifier": "equip",
+      "keybind": "key.thematic.equip_item",
+      "options": {
+        "fields": {
+          "label": "equip_blade_arsenal",
+          "items": [
+            {
+              "item": "thematic:blade_sword",
+              "count": 1
+            },
+            {
+              "item": "pointblank:mp7",
+              "count": 1
+            },
+            {
+              "item": "pointblank:spas12",
+              "count": 1
+            }
+          ],
+          "bones": [
+            "sword2"
+          ]
+        }
+      }
+    },
+    {
+      "identifier": "reload",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "bite",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "katana_blitz",
+      "keybind": "key.thematic.ability_4"
+    },
+    {
+      "identifier": "healing_factor",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "throwing_knife",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "grenade",
+      "keybind": "key.thematic.utility"
+    },
+    {
+      "identifier": "shadow_veil",
+      "keybind": "key.thematic.ultimate"
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 0.98
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 64,
+      "maximum": 72
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 40,
+      "maximum": 50
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 85,
+      "maximum": 99
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 50,
+      "maximum": 60
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 80,
+      "maximum": 99
+    }
+  ],
+  "fighting_type": [
+    "DUELIST"
+  ]
+}

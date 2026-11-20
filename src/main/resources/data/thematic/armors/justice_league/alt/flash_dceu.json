@@ -1,0 +1,8 @@
+{
+  "tier": 8,
+  "wip": false,
+  "parent": "thematic:the_flash",
+  "fighting_type": [
+    "BRAWLER"
+  ]
+}

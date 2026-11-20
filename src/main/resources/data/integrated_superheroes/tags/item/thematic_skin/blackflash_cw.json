@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:blackflash_cw",
+      "required": false
+    }
+  ]
+}

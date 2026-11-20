@@ -95,10 +95,11 @@ public final class PantherPower {
                     @Override
                     public void death(ServerPlayer player, LivingDeathEvent event) {
                         Power power = HeroAbilities.slotPower(player, ANCESTRAL_PLANE);
-                        if (power != null && power.getCooldown() > 0.0D) {
+                        if (power != null && power.getCooldown() > 0.0D || !CheatDeath.ready(player)) {
                             return;
                         }
                         event.setCanceled(true);
+                        CheatDeath.use(player);
                         player.setHealth(player.getMaxHealth() * 0.5F);
                         EffectCleanse.removeAll(player);
                         player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 1));

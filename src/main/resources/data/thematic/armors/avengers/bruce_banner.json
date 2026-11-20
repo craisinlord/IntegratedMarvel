@@ -1,0 +1,27 @@
+{
+  "priority": 10,
+  "wip": false,
+  "tier": 2,
+  "abilities": [
+    {
+      "identifier": "banner_transform",
+      "keybind": "key.thematic.cosmetic"
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 1.05
+    }
+  ],
+  "tags": [
+    "tank_i"
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 20,
+      "maximum": 25
+    }
+  ]
+}

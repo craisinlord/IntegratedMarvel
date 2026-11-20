@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:darla_shazam",
+      "required": false
+    }
+  ]
+}

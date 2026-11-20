@@ -1,0 +1,8 @@
+{
+  "name": "Omega Sanction",
+  "category": "thematic:ability",
+  "icon": "minecraft:nether_star",
+  "pages": [
+    "Unleash a decisive Omega execution against up to six visible enemies in a forward cone within 32 blocks. Each takes 240 configured magic damage and Weakness II for six seconds. A target marked by your Omega Beams takes 50% more damage. One hundred-second base cooldown. No disintegration, boss immobilization, terrain destruction, or dropped-item deletion. The full set passively grants fire resistance, breathing, and 15% reduction to damage that does not bypass armor. Darkseid has only three active controls; heavy melee stats and armor attributes support his physical attacks."
+  ]
+}

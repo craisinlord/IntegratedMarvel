@@ -1,0 +1,165 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:batgirl",
+      "required": false
+    },
+    {
+      "id": "thematic:batgirl1",
+      "required": false
+    },
+    {
+      "id": "thematic:batgirl1966",
+      "required": false
+    },
+    {
+      "id": "thematic:batgirl52",
+      "required": false
+    },
+    {
+      "id": "thematic:batgirl_bombshell",
+      "required": false
+    },
+    {
+      "id": "thematic:batgirl_dc_vs_vampires",
+      "required": false
+    },
+    {
+      "id": "thematic:batgirl_knights",
+      "required": false
+    },
+    {
+      "id": "thematic:batgirl_modern",
+      "required": false
+    },
+    {
+      "id": "thematic:batman",
+      "required": false
+    },
+    {
+      "id": "thematic:batman1",
+      "required": false
+    },
+    {
+      "id": "thematic:batman52",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_2025",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_absolute",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_bn",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_btas",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_dcamu",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_flashpoint",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_hush",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_inc",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_jlu",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_lkoe",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_new52",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_rebirth",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_starro",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_telltale",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_tnba",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_unlimited",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_worldsfinest",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_zur",
+      "required": false
+    },
+    {
+      "id": "thematic:batwoman",
+      "required": false
+    },
+    {
+      "id": "thematic:moon_knight",
+      "required": false
+    },
+    {
+      "id": "thematic:mr_knight",
+      "required": false
+    },
+    {
+      "id": "thematic:nightwing",
+      "required": false
+    },
+    {
+      "id": "thematic:nightwing_rebirth",
+      "required": false
+    },
+    {
+      "id": "thematic:orphan",
+      "required": false
+    },
+    {
+      "id": "thematic:orphan_batgirl",
+      "required": false
+    },
+    {
+      "id": "thematic:question",
+      "required": false
+    },
+    {
+      "id": "thematic:question_rm",
+      "required": false
+    },
+    {
+      "id": "thematic:red_robin",
+      "required": false
+    },
+    {
+      "id": "thematic:red_robin_rebirth",
+      "required": false
+    }
+  ]
+}

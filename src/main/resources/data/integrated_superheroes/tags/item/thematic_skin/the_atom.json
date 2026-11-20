@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:atom_cw",
+      "required": false
+    },
+    {
+      "id": "thematic:atomica",
+      "required": false
+    },
+    {
+      "id": "thematic:the_atom",
+      "required": false
+    }
+  ]
+}

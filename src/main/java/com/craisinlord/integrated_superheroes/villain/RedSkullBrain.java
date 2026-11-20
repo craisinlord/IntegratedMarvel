@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public final class RedSkullBrain extends VillainBrain {
+    private static final int SKULL_CYAN = 0xC040D8FF;
     private static final Map<UUID, int[]> PORTAL_HITS = new HashMap<>();
     private final List<Move> commander;
     private final List<Move> cube;
@@ -163,7 +164,9 @@ public final class RedSkullBrain extends VillainBrain {
     }
 
     private void beginBlink(LivingEntity t) {
-        VillainFx.spaceBurst(level(), mob.position().add(0.0D, mob.getBbHeight() * 0.5D, 0.0D), 1.5F, mob.getYHeadRot(), false);
+        if (!HeroFx.vfx(level(), mob.position(), "void_depart", SKULL_CYAN)) {
+            VillainFx.spaceBurst(level(), mob.position().add(0.0D, mob.getBbHeight() * 0.5D, 0.0D), 1.5F, mob.getYHeadRot(), false);
+        }
     }
 
     private void fireBlink(LivingEntity t) {
@@ -174,7 +177,9 @@ public final class RedSkullBrain extends VillainBrain {
         }
         ServerLevel level = level();
         mob.teleportTo(spot.x, spot.y, spot.z);
-        VillainFx.spaceBurst(level, spot.add(0.0D, 1.0D, 0.0D), 1.5F, mob.getYHeadRot(), true);
+        if (!HeroFx.vfx(level, spot, "void_arrive", SKULL_CYAN)) {
+            VillainFx.spaceBurst(level, spot.add(0.0D, 1.0D, 0.0D), 1.5F, mob.getYHeadRot(), true);
+        }
         VillainFx.sound(mob, MarvelSoundEvents.TESSERACT_TELEPORT.get(), 1.0F, 1.0F);
     }
 
@@ -457,6 +462,7 @@ public final class RedSkullBrain extends VillainBrain {
         lockedSpot = null;
         long end = mob.level().getGameTime() + 120L;
         VillainFx.sound(level(), spot, SoundEvents.FIRE_EXTINGUISH, 1.2F, 0.5F);
+        HeroFx.vfx(level(), spot, "pyre_pillar", 0xE6D81414, 3.0F);
         DustParticleOptions red = new DustParticleOptions(VillainFx.RED, 2.0F);
         VillainWorld.hazard(level(), (level, now) -> {
             if (now >= end) {

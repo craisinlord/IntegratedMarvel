@@ -1,0 +1,8 @@
+{
+  "name": "Omega Beams",
+  "category": "thematic:ability",
+  "icon": "minecraft:redstone",
+  "pages": [
+    "Lock onto the visible enemy closest to your aim within 48 blocks. Twin red Omega Beams deal 110 configured magic damage, then chain to up to two nearby enemies for 60% damage. A successful primary hit marks that enemy for twelve seconds; Omega Sanction deals 50% more damage to your marked target. Five-second base cooldown. Beams do not pass through walls, bypass immunity frames, or hit allies and owned pets. Requires the complete Darkseid set."
+  ]
+}

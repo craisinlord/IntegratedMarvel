@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:trickster"
+    }
+  ],
+  "type": "marvel:suit_variant",
+  "suit": {
+    "tag": "integrated_superheroes:thematic_skin/joker"
+  },
+  "results": {
+    "id": "thematic:trickster"
+  }
+}

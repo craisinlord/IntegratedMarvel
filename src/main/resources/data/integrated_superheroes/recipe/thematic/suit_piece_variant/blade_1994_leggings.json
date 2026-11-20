@@ -1,0 +1,88 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:blade_1994"
+    }
+  ],
+  "type": "marvel:suit_variant",
+  "suit": {
+    "type": "neoforge:compound",
+    "children": [
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:blade"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:blade_1994"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:blade_classic"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:blade_mcu"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:blade_modern"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:blade_rivals"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:elsa_bloodstone"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:morbius"
+        },
+        "strict": false
+      }
+    ]
+  },
+  "results": {
+    "id": "integrated_superheroes:suit_leggings",
+    "components": {
+      "integrated_superheroes:suit": "thematic:blade_1994"
+    }
+  }
+}

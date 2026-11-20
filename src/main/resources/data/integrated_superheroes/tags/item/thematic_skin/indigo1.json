@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:indigo1",
+      "required": false
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
+import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -7,7 +8,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Clearable;
+import net.minecraft.world.Container;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -16,12 +19,15 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 public final class BlockEditQueue {
     private static final List<Job> JOBS = new ArrayList<>();
+    private static final Set<Block> FAILED = new HashSet<>();
 
     private BlockEditQueue() {
     }
@@ -118,7 +124,15 @@ public final class BlockEditQueue {
                     job.denied++;
                     continue;
                 }
-                apply(level, job, edit);
+                try {
+                    apply(level, job, edit);
+                } catch (RuntimeException exception) {
+                    job.denied++;
+                    if (FAILED.add(level.getBlockState(edit.pos()).getBlock())) {
+                        IntegratedSuperheroes.LOGGER.error("Gauntlet block edit failed at {} ({})", edit.pos(),
+                                level.getBlockState(edit.pos()), exception);
+                    }
+                }
             }
             if (job.edits.isEmpty()) {
                 iterator.remove();
@@ -134,7 +148,7 @@ public final class BlockEditQueue {
         if (previous == edit.state() && edit.data() == null) return;
         BlockEntity previousEntity = level.getBlockEntity(pos);
         CompoundTag previousData = previousEntity == null ? null : previousEntity.saveWithFullMetadata(level.registryAccess());
-        if (previousEntity != null) Clearable.tryClear(previousEntity);
+        if (previousEntity != null) clear(previousEntity);
         if (!level.setBlock(pos, edit.state(), job.flags) && previous != edit.state()) {
             if (previousEntity != null && previousData != null) previousEntity.loadWithComponents(previousData, level.registryAccess());
             return;
@@ -157,6 +171,21 @@ public final class BlockEditQueue {
             GauntletFx.burst(level, Vec3.atCenterOf(pos), job.stone, 3, 0.4D);
         }
         if (job.listener != null) job.listener.edited(level, pos, previous, edit.state());
+    }
+
+    private static void clear(BlockEntity entity) {
+        try {
+            Clearable.tryClear(entity);
+        } catch (RuntimeException exception) {
+            if (entity instanceof Container container) {
+                for (int slot = 0; slot < container.getContainerSize(); slot++) {
+                    try {
+                        container.removeItemNoUpdate(slot);
+                    } catch (RuntimeException ignored) {
+                    }
+                }
+            }
+        }
     }
 
     public static void clear() {

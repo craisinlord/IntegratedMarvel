@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
+import com.craisinlord.integrated_superheroes.hero.HeroFx;
 import com.craisinlord.anthology.time.TimeDilationApi;
 import com.craisinlord.anthology.time.TimeDilationEntityAccess;
 import com.craisinlord.anthology.time.TimeDilationManager;
@@ -190,7 +191,11 @@ public final class TimeStone {
         TimeFieldManager.create(cast.level(), center, radius, rate, 400, player.getUUID());
         if (rate > 1.0D) TimeSurgeManager.activateArea(cast.level(), center, radius, 400, rate);
         GauntletFx.cast(player, "time", rate > 1.0D ? SoundEvents.BEACON_POWER_SELECT : SoundEvents.BEACON_DEACTIVATE, 0.6F);
-        GauntletFx.ring(cast.level(), center, Math.min(radius, 24.0D), "time");
+        if (HeroFx.vfx(cast.level(), center, "circle_ring", 0xFF000000 | GauntletAbilities.stoneColor("time"), (float) Math.min(radius, 24.0D))) {
+            HeroFx.vfx(cast.level(), center, "unfilled_circle", 0xFF000000 | GauntletAbilities.stoneColor("time"), (float) Math.min(radius, 24.0D));
+        } else {
+            GauntletFx.ring(cast.level(), center, Math.min(radius, 24.0D), "time");
+        }
         cast.message("time_field", Math.round(radius), Math.round(rate * 100.0D));
         cast.cooldown();
     }

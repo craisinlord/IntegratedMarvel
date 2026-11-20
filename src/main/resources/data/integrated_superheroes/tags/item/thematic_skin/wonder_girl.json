@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:wonder_girl",
+      "required": false
+    }
+  ]
+}

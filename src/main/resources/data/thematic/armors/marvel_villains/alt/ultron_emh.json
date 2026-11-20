@@ -1,0 +1,7 @@
+{
+  "parent": "thematic:ultron",
+  "suit-recipe": "thematic:alt_ultron_emh",
+  "cape": {
+    "remove": true
+  }
+}

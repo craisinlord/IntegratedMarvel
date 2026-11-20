@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:eugene_shazam",
+      "required": false
+    }
+  ]
+}

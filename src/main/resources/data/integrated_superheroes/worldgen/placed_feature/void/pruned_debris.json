@@ -1,0 +1,23 @@
+{
+  "feature": "integrated_superheroes:void/pruned_debris",
+  "placement": [
+    {
+      "type": "integrated_superheroes:void_tier_chance",
+      "chances": [
+        0.14,
+        0.18,
+        0.22,
+        0.26,
+        0.3,
+        0.34
+      ]
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "WORLD_SURFACE_WG"
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

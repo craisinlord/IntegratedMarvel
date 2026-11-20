@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:ghostface",
+      "required": false
+    },
+    {
+      "id": "thematic:ghostface_devil",
+      "required": false
+    },
+    {
+      "id": "thematic:ghostface_scarecrow",
+      "required": false
+    }
+  ]
+}

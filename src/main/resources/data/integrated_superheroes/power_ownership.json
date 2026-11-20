@@ -1,0 +1,1315 @@
+{
+  "costumes": {
+    "thematic:a_train": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:abomination": [
+      "gamma_mutation_bruce_banner"
+    ],
+    "thematic:accelerated_man": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:adam_warlock": [
+      "binary_carol_danvers"
+    ],
+    "thematic:angel": [
+      "winged_mutation_warren_worthington"
+    ],
+    "thematic:aqualad": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:aquaman": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:aquaman1": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:aquaman1986": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:aquaman2": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:aquaman_1994": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:aquaman_dceu": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:aquaman_exiled": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:aquaman_flashpoint": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:aquaman_futures_end": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:aquaman_injustice": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:aquaman_injustice2": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:aquaman_jlu": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:aquaman_rebirth": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:aquaman_starro": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:aquaman_tbatb": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:aquaman_vampires": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:aquaman_yj": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:aquamanbn": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:aquamankc": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:aquawoman": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:ares": [
+      "amazon_diana_prince"
+    ],
+    "thematic:atom_smasher": [
+      "gamma_mutation_bruce_banner"
+    ],
+    "thematic:barda": [
+      "amazon_diana_prince"
+    ],
+    "thematic:barry_allen": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:batman_dkos": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:batson": [
+      "shazam_billy_batson"
+    ],
+    "thematic:beast": [
+      "acrobatics_hank_mccoy"
+    ],
+    "thematic:beast1": [
+      "acrobatics_hank_mccoy"
+    ],
+    "thematic:beast_97": [
+      "acrobatics_hank_mccoy"
+    ],
+    "thematic:bizarro": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:black_adam": [
+      "shazam_billy_batson"
+    ],
+    "thematic:black_canary": [
+      "sonic_dinah_lance"
+    ],
+    "thematic:black_canary1985": [
+      "sonic_dinah_lance"
+    ],
+    "thematic:black_canary52": [
+      "sonic_dinah_lance"
+    ],
+    "thematic:black_canary_bombshell": [
+      "sonic_dinah_lance"
+    ],
+    "thematic:black_canary_bop": [
+      "sonic_dinah_lance"
+    ],
+    "thematic:black_canary_injustice": [
+      "sonic_dinah_lance"
+    ],
+    "thematic:black_canary_rebirth": [
+      "sonic_dinah_lance"
+    ],
+    "thematic:black_canary_yj": [
+      "sonic_dinah_lance"
+    ],
+    "thematic:black_canarycw": [
+      "sonic_dinah_lance"
+    ],
+    "thematic:black_manta": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:black_mary": [
+      "shazam_billy_batson"
+    ],
+    "thematic:black_noir": [
+      "super_soldier_steve_rogers"
+    ],
+    "thematic:black_panther": [
+      "heart_shaped_herb_tchalla"
+    ],
+    "thematic:blackflash_cw": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:brick": [
+      "super_soldier_steve_rogers"
+    ],
+    "thematic:bruce_banner": [
+      "gamma_mutation_bruce_banner"
+    ],
+    "thematic:cable": [
+      "telekinesis_jean_grey"
+    ],
+    "thematic:captain_america": [
+      "super_soldier_steve_rogers"
+    ],
+    "thematic:captain_atom": [
+      "binary_carol_danvers"
+    ],
+    "thematic:captain_atom_jlu": [
+      "binary_carol_danvers"
+    ],
+    "thematic:captain_atom_kc": [
+      "binary_carol_danvers"
+    ],
+    "thematic:captain_atom_tomorrowverse": [
+      "binary_carol_danvers"
+    ],
+    "thematic:captain_cold": [
+      "cryokinesis_bobby_drake"
+    ],
+    "thematic:captain_marvel": [
+      "binary_carol_danvers"
+    ],
+    "thematic:cheetah": [
+      "amazon_diana_prince"
+    ],
+    "thematic:circe": [
+      "chaos_magic_wanda_maximoff"
+    ],
+    "thematic:clark_kent": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:clayface": [
+      "elasticity_reed_richards"
+    ],
+    "thematic:colossus": [
+      "organic_steel_piotr_rasputin"
+    ],
+    "thematic:composite_superman": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:constantine": [
+      "chaos_magic_wanda_maximoff"
+    ],
+    "thematic:cpt_marvel": [
+      "shazam_billy_batson"
+    ],
+    "thematic:cyborg_superman": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:cyclops": [
+      "optic_blasts_scott_summers"
+    ],
+    "thematic:cyclops_2000": [
+      "optic_blasts_scott_summers"
+    ],
+    "thematic:cyclops_2024": [
+      "optic_blasts_scott_summers"
+    ],
+    "thematic:cyclops_apocalypse": [
+      "optic_blasts_scott_summers"
+    ],
+    "thematic:cyclops_astonishing": [
+      "optic_blasts_scott_summers"
+    ],
+    "thematic:cyclops_evolution": [
+      "optic_blasts_scott_summers"
+    ],
+    "thematic:cyclops_new": [
+      "optic_blasts_scott_summers"
+    ],
+    "thematic:cyclops_noir": [
+      "optic_blasts_scott_summers"
+    ],
+    "thematic:cyclops_pheonix": [
+      "optic_blasts_scott_summers"
+    ],
+    "thematic:cyclops_revolution": [
+      "optic_blasts_scott_summers"
+    ],
+    "thematic:cyclops_rivals": [
+      "optic_blasts_scott_summers"
+    ],
+    "thematic:cyclops_ultimate": [
+      "optic_blasts_scott_summers"
+    ],
+    "thematic:cyclops_wolverine": [
+      "optic_blasts_scott_summers"
+    ],
+    "thematic:cyclops_xfactor": [
+      "optic_blasts_scott_summers"
+    ],
+    "thematic:daredevil": [
+      "radar_sense_matt_murdock"
+    ],
+    "thematic:daredevil_homemade": [
+      "radar_sense_matt_murdock"
+    ],
+    "thematic:daredevil_mcu": [
+      "radar_sense_matt_murdock"
+    ],
+    "thematic:daredevil_rivals": [
+      "radar_sense_matt_murdock"
+    ],
+    "thematic:darla_shazam": [
+      "shazam_billy_batson"
+    ],
+    "thematic:deadman": [
+      "phasing_kitty_pryde"
+    ],
+    "thematic:deadpool": [
+      "weapon_x_wade_wilson"
+    ],
+    "thematic:deadpool_2099": [
+      "weapon_x_wade_wilson"
+    ],
+    "thematic:deadpool_classic": [
+      "weapon_x_wade_wilson"
+    ],
+    "thematic:deadpool_golden_age": [
+      "weapon_x_wade_wilson"
+    ],
+    "thematic:deadpool_origins": [
+      "weapon_x_wade_wilson"
+    ],
+    "thematic:deadpool_pulp": [
+      "weapon_x_wade_wilson"
+    ],
+    "thematic:deadpool_spy": [
+      "weapon_x_wade_wilson"
+    ],
+    "thematic:deadpool_ultimate": [
+      "weapon_x_wade_wilson"
+    ],
+    "thematic:deadpool_wolverine": [
+      "weapon_x_wade_wilson"
+    ],
+    "thematic:deadpool_x": [
+      "weapon_x_wade_wilson"
+    ],
+    "thematic:deadpool_xmen": [
+      "weapon_x_wade_wilson"
+    ],
+    "thematic:deathpool": [
+      "weapon_x_wade_wilson"
+    ],
+    "thematic:deathstroke": [
+      "super_soldier_steve_rogers"
+    ],
+    "thematic:deathstroke_cw": [
+      "super_soldier_steve_rogers"
+    ],
+    "thematic:doomsday": [
+      "gamma_mutation_bruce_banner"
+    ],
+    "thematic:dr_m": [
+      "power_cosmic_norrin_radd"
+    ],
+    "thematic:dr_strange": [
+      "chaos_magic_wanda_maximoff"
+    ],
+    "thematic:emma_frost": [
+      "telepathy_charles_xavier"
+    ],
+    "thematic:enchantress": [
+      "chaos_magic_wanda_maximoff"
+    ],
+    "thematic:etrigan": [
+      "spirit_of_vengeance_johnny_blaze"
+    ],
+    "thematic:eugene_shazam": [
+      "shazam_billy_batson"
+    ],
+    "thematic:evil_deadpool": [
+      "weapon_x_wade_wilson"
+    ],
+    "thematic:firestorm": [
+      "flame_on_johnny_storm"
+    ],
+    "thematic:flash3000": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:flash90": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:flash_absolute_power": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:flash_blue": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:flash_cw": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:flash_cw_v2": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:flash_dceu": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:flash_elseworlds": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:flash_hot_pursuit": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:flash_injustice": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:flash_ssktjl": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:flash_starro": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:flash_testrun": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:flashmkdc": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:freddy_shazam": [
+      "shazam_billy_batson"
+    ],
+    "thematic:gambit": [
+      "kinetic_charge_remy_lebeau"
+    ],
+    "thematic:gambit_2024": [
+      "kinetic_charge_remy_lebeau"
+    ],
+    "thematic:gambit_aoa": [
+      "kinetic_charge_remy_lebeau"
+    ],
+    "thematic:gambit_death": [
+      "kinetic_charge_remy_lebeau"
+    ],
+    "thematic:gambit_evolution": [
+      "kinetic_charge_remy_lebeau"
+    ],
+    "thematic:gambit_excalibur": [
+      "kinetic_charge_remy_lebeau"
+    ],
+    "thematic:gambit_guildmaster": [
+      "kinetic_charge_remy_lebeau"
+    ],
+    "thematic:gambit_mcu": [
+      "kinetic_charge_remy_lebeau"
+    ],
+    "thematic:gambit_red": [
+      "kinetic_charge_remy_lebeau"
+    ],
+    "thematic:gambit_revolution": [
+      "kinetic_charge_remy_lebeau"
+    ],
+    "thematic:gambit_rivals": [
+      "kinetic_charge_remy_lebeau"
+    ],
+    "thematic:gambit_thief": [
+      "kinetic_charge_remy_lebeau"
+    ],
+    "thematic:gambit_tux": [
+      "kinetic_charge_remy_lebeau"
+    ],
+    "thematic:gambit_unbreakable": [
+      "kinetic_charge_remy_lebeau"
+    ],
+    "thematic:gambit_wolverine": [
+      "kinetic_charge_remy_lebeau"
+    ],
+    "thematic:gambit_x_uniform": [
+      "kinetic_charge_remy_lebeau"
+    ],
+    "thematic:gambit_xfactor": [
+      "kinetic_charge_remy_lebeau"
+    ],
+    "thematic:gambit_year_end": [
+      "kinetic_charge_remy_lebeau"
+    ],
+    "thematic:gentleman_ghost": [
+      "phasing_kitty_pryde"
+    ],
+    "thematic:geras": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:ghost_rider": [
+      "spirit_of_vengeance_johnny_blaze"
+    ],
+    "thematic:ghost_spider": [
+      "spider_powers_peter_parker"
+    ],
+    "thematic:gill_man": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:godspeed": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:goro": [
+      "gamma_mutation_bruce_banner"
+    ],
+    "thematic:green_canary": [
+      "sonic_dinah_lance"
+    ],
+    "thematic:groot": [
+      "flora_colossus_groot"
+    ],
+    "thematic:gwenpool": [
+      "weapon_x_wade_wilson"
+    ],
+    "thematic:hawkgirl": [
+      "winged_mutation_warren_worthington"
+    ],
+    "thematic:hawkman": [
+      "winged_mutation_warren_worthington"
+    ],
+    "thematic:hela": [
+      "chaos_magic_wanda_maximoff"
+    ],
+    "thematic:homelander": [
+      "compound_v_homelander"
+    ],
+    "thematic:hourman": [
+      "super_soldier_steve_rogers"
+    ],
+    "thematic:hulk": [
+      "gamma_mutation_bruce_banner"
+    ],
+    "thematic:hulk_gladiator": [
+      "gamma_mutation_bruce_banner"
+    ],
+    "thematic:human_torch": [
+      "flame_on_johnny_storm"
+    ],
+    "thematic:iceman": [
+      "cryokinesis_bobby_drake"
+    ],
+    "thematic:invincible": [
+      "viltrumite_blood_omni_man"
+    ],
+    "thematic:invisible_man": [
+      "invisibility_sue_storm"
+    ],
+    "thematic:invisible_woman": [
+      "invisibility_sue_storm"
+    ],
+    "thematic:iron_spider": [
+      "spider_powers_peter_parker"
+    ],
+    "thematic:jason_blood": [
+      "spirit_of_vengeance_johnny_blaze"
+    ],
+    "thematic:jay_garrick": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:jay_garrick_cw": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:jean_grey": [
+      "telekinesis_jean_grey"
+    ],
+    "thematic:john_jones": [
+      "martian_jonn_jonzz"
+    ],
+    "thematic:johnny_quick": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:jon_kent": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:jubilee": [
+      "pyrotechnics_jubilation_lee"
+    ],
+    "thematic:juggernaut": [
+      "cyttorak_avatar_cain_marko"
+    ],
+    "thematic:kabal": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:kidflash": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:kidpool": [
+      "weapon_x_wade_wilson"
+    ],
+    "thematic:killer_croc": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:king_daredevil": [
+      "radar_sense_matt_murdock"
+    ],
+    "thematic:king_shark": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:king_shazam": [
+      "shazam_billy_batson"
+    ],
+    "thematic:kitty_pryde": [
+      "phasing_kitty_pryde"
+    ],
+    "thematic:kong_kenan": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:kratos": [
+      "amazon_diana_prince"
+    ],
+    "thematic:lady_deadpool": [
+      "weapon_x_wade_wilson"
+    ],
+    "thematic:logan": [
+      "weapon_x_logan"
+    ],
+    "thematic:loki": [
+      "chaos_magic_wanda_maximoff"
+    ],
+    "thematic:luke_cage": [
+      "organic_steel_piotr_rasputin"
+    ],
+    "thematic:maestro": [
+      "gamma_mutation_bruce_banner"
+    ],
+    "thematic:maeve": [
+      "amazon_diana_prince",
+      "compound_v_homelander"
+    ],
+    "thematic:magneto": [
+      "magnetism_erik_lehnsherr"
+    ],
+    "thematic:martian_manhunter": [
+      "martian_jonn_jonzz"
+    ],
+    "thematic:martian_manhunter_bd": [
+      "martian_jonn_jonzz"
+    ],
+    "thematic:martian_manhunter_beyond": [
+      "martian_jonn_jonzz"
+    ],
+    "thematic:martian_manhunter_jlu": [
+      "martian_jonn_jonzz"
+    ],
+    "thematic:martian_manhunter_starro": [
+      "martian_jonn_jonzz"
+    ],
+    "thematic:martian_manhunterdceu": [
+      "martian_jonn_jonzz"
+    ],
+    "thematic:martianmanhunter1": [
+      "martian_jonn_jonzz"
+    ],
+    "thematic:martianmanhunter_jl": [
+      "martian_jonn_jonzz"
+    ],
+    "thematic:mary_shazam": [
+      "shazam_billy_batson"
+    ],
+    "thematic:matt_murdock": [
+      "radar_sense_matt_murdock"
+    ],
+    "thematic:mazahs": [
+      "shazam_billy_batson"
+    ],
+    "thematic:mera": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:miles_morales": [
+      "spider_powers_peter_parker"
+    ],
+    "thematic:miss_martian": [
+      "martian_jonn_jonzz"
+    ],
+    "thematic:mmh52": [
+      "martian_jonn_jonzz"
+    ],
+    "thematic:mmh_bn": [
+      "martian_jonn_jonzz"
+    ],
+    "thematic:mmh_cw": [
+      "martian_jonn_jonzz"
+    ],
+    "thematic:mmh_natural": [
+      "martian_jonn_jonzz"
+    ],
+    "thematic:mmh_tomorrowverse": [
+      "martian_jonn_jonzz"
+    ],
+    "thematic:mmh_yj": [
+      "martian_jonn_jonzz"
+    ],
+    "thematic:mongul": [
+      "gamma_mutation_bruce_banner"
+    ],
+    "thematic:mr_fantastic": [
+      "elasticity_reed_richards"
+    ],
+    "thematic:mr_fantastic1": [
+      "elasticity_reed_richards"
+    ],
+    "thematic:mr_fantastic2005": [
+      "elasticity_reed_richards"
+    ],
+    "thematic:mr_fantastic_fant4stic": [
+      "elasticity_reed_richards"
+    ],
+    "thematic:mr_fantastic_fof4": [
+      "elasticity_reed_richards"
+    ],
+    "thematic:mr_fantastic_future": [
+      "elasticity_reed_richards"
+    ],
+    "thematic:mr_fantastic_mcu": [
+      "elasticity_reed_richards"
+    ],
+    "thematic:mr_fantastic_rivals": [
+      "elasticity_reed_richards"
+    ],
+    "thematic:mr_fantastic_ultimate": [
+      "elasticity_reed_richards"
+    ],
+    "thematic:mr_fantastic_wgh": [
+      "elasticity_reed_richards"
+    ],
+    "thematic:mystique": [
+      "martian_jonn_jonzz"
+    ],
+    "thematic:namor": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:nicepool": [
+      "weapon_x_wade_wilson"
+    ],
+    "thematic:nightcrawler": [
+      "teleportation_kurt_wagner"
+    ],
+    "thematic:nubia": [
+      "amazon_diana_prince"
+    ],
+    "thematic:ocean_master": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:old_flash": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:old_man_logan": [
+      "weapon_x_logan"
+    ],
+    "thematic:omni_man": [
+      "viltrumite_blood_omni_man"
+    ],
+    "thematic:parasite": [
+      "absorption_anna_marie"
+    ],
+    "thematic:pedro_shazam": [
+      "shazam_billy_batson"
+    ],
+    "thematic:plastic_man": [
+      "elasticity_reed_richards"
+    ],
+    "thematic:polaris": [
+      "magnetism_erik_lehnsherr"
+    ],
+    "thematic:powergirl": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:prof_x": [
+      "telepathy_charles_xavier"
+    ],
+    "thematic:punisher_parker": [
+      "spider_powers_peter_parker"
+    ],
+    "thematic:quan_chi": [
+      "chaos_magic_wanda_maximoff"
+    ],
+    "thematic:quicksilver": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:raiden": [
+      "weather_manipulation_ororo_munroe"
+    ],
+    "thematic:rain": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:ravager": [
+      "super_soldier_steve_rogers"
+    ],
+    "thematic:raven": [
+      "chaos_magic_wanda_maximoff"
+    ],
+    "thematic:red_death": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:red_hulk": [
+      "gamma_mutation_bruce_banner"
+    ],
+    "thematic:red_racer": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:red_tornado": [
+      "weather_manipulation_ororo_munroe"
+    ],
+    "thematic:reptile": [
+      "invisibility_sue_storm"
+    ],
+    "thematic:reverse_flash": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:reverse_flash_cw": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:reverse_flash_rebirth": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:rogue": [
+      "absorption_anna_marie"
+    ],
+    "thematic:roninpool": [
+      "weapon_x_wade_wilson"
+    ],
+    "thematic:scarlet_witch": [
+      "chaos_magic_wanda_maximoff"
+    ],
+    "thematic:scorpion": [
+      "spirit_of_vengeance_johnny_blaze"
+    ],
+    "thematic:sea_king": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:shang_tsung": [
+      "martian_jonn_jonzz"
+    ],
+    "thematic:shao_kahn": [
+      "gamma_mutation_bruce_banner"
+    ],
+    "thematic:shazam": [
+      "shazam_billy_batson"
+    ],
+    "thematic:shazam_apokolips": [
+      "shazam_billy_batson"
+    ],
+    "thematic:shazam_dceu": [
+      "shazam_billy_batson"
+    ],
+    "thematic:shazam_injustice": [
+      "shazam_billy_batson"
+    ],
+    "thematic:shazam_modern": [
+      "shazam_billy_batson"
+    ],
+    "thematic:she_hulk": [
+      "gamma_mutation_bruce_banner"
+    ],
+    "thematic:she_hulk_f4": [
+      "gamma_mutation_bruce_banner"
+    ],
+    "thematic:silver_banshee": [
+      "sonic_dinah_lance"
+    ],
+    "thematic:silver_surfer": [
+      "power_cosmic_norrin_radd"
+    ],
+    "thematic:smoke_mk": [
+      "teleportation_kurt_wagner"
+    ],
+    "thematic:soldier_boy": [
+      "super_soldier_steve_rogers"
+    ],
+    "thematic:spiderman": [
+      "spider_powers_peter_parker"
+    ],
+    "thematic:spiderman_2099": [
+      "spider_powers_peter_parker"
+    ],
+    "thematic:spiderwoman": [
+      "spider_powers_peter_parker"
+    ],
+    "thematic:squirrel_girl": [
+      "squirrel_powers_doreen_green"
+    ],
+    "thematic:starfire": [
+      "binary_carol_danvers"
+    ],
+    "thematic:starlight": [
+      "binary_carol_danvers"
+    ],
+    "thematic:storm": [
+      "weather_manipulation_ororo_munroe"
+    ],
+    "thematic:storm_x_uniform": [
+      "weather_manipulation_ororo_munroe"
+    ],
+    "thematic:stormfront": [
+      "weather_manipulation_ororo_munroe"
+    ],
+    "thematic:stranger": [
+      "chaos_magic_wanda_maximoff"
+    ],
+    "thematic:sub_zero": [
+      "cryokinesis_bobby_drake"
+    ],
+    "thematic:superboy": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superboy1": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:supergirl": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:supergirl_bombshell": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:supergirl_dawn": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:supergirl_dcau": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:supergirl_dceu": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:supergirl_dcu": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:supergirl_dkos": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman1": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman14": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman3000": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman52": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_1997": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_authority": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_beyond": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_blacksuit": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_bn": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_cw": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_dcau": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_dceu": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_dcu": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_dkos": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_flashpoint": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_frontier": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_future": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_gam": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_godfall": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_hereafter": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_hunterprey": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_injustice": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_injustice1": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_justice_lords": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_new_krypton": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_redson": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_skies": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_ssktjl": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_starro": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_tomorrowverse": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_val": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superman_war": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:supermankc": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:supermanmaws": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:superwoman": [
+      "amazon_diana_prince"
+    ],
+    "thematic:swamp_thing": [
+      "avatar_of_the_green_alec_holland"
+    ],
+    "thematic:thanos": [
+      "gamma_mutation_bruce_banner"
+    ],
+    "thematic:the_deep": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:the_dp_kid": [
+      "weapon_x_wade_wilson"
+    ],
+    "thematic:the_drowned": [
+      "atlantean_arthur_curry"
+    ],
+    "thematic:the_flash": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:the_flash_bn": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:the_flash_rebirth": [
+      "super_speed_pietro_maximoff"
+    ],
+    "thematic:the_maker": [
+      "elasticity_reed_richards"
+    ],
+    "thematic:the_thing": [
+      "rock_hide_ben_grimm"
+    ],
+    "thematic:the_wizard": [
+      "chaos_magic_wanda_maximoff"
+    ],
+    "thematic:translucent": [
+      "invisibility_sue_storm"
+    ],
+    "thematic:trigon": [
+      "spirit_of_vengeance_johnny_blaze"
+    ],
+    "thematic:ultraman": [
+      "kryptonian_clark_kent"
+    ],
+    "thematic:vandal": [
+      "super_soldier_steve_rogers"
+    ],
+    "thematic:vixen": [
+      "squirrel_powers_doreen_green"
+    ],
+    "thematic:weather_wizard": [
+      "weather_manipulation_ororo_munroe"
+    ],
+    "thematic:winter_soldier": [
+      "super_soldier_steve_rogers"
+    ],
+    "thematic:wolverine": [
+      "weapon_x_logan"
+    ],
+    "thematic:wolverine_1": [
+      "weapon_x_logan"
+    ],
+    "thematic:wolverine_2000": [
+      "weapon_x_logan"
+    ],
+    "thematic:wolverine_2024": [
+      "weapon_x_logan"
+    ],
+    "thematic:wolverine_ablation": [
+      "weapon_x_logan"
+    ],
+    "thematic:wolverine_ageofultron": [
+      "weapon_x_logan"
+    ],
+    "thematic:wolverine_aoa": [
+      "weapon_x_logan"
+    ],
+    "thematic:wolverine_brown": [
+      "weapon_x_logan"
+    ],
+    "thematic:wolverine_classic": [
+      "weapon_x_logan"
+    ],
+    "thematic:wolverine_dofp": [
+      "weapon_x_logan"
+    ],
+    "thematic:wolverine_dp": [
+      "weapon_x_logan"
+    ],
+    "thematic:wolverine_evolution": [
+      "weapon_x_logan"
+    ],
+    "thematic:wolverine_fang": [
+      "weapon_x_logan"
+    ],
+    "thematic:wolverine_logan": [
+      "weapon_x_logan"
+    ],
+    "thematic:wolverine_midnight": [
+      "weapon_x_logan"
+    ],
+    "thematic:wolverine_patch": [
+      "weapon_x_logan"
+    ],
+    "thematic:wolverine_rivals": [
+      "weapon_x_logan"
+    ],
+    "thematic:wolverine_strike_force": [
+      "weapon_x_logan"
+    ],
+    "thematic:wolverine_ultimate": [
+      "weapon_x_logan"
+    ],
+    "thematic:wolverine_x": [
+      "weapon_x_logan"
+    ],
+    "thematic:wolverine_x_uniform": [
+      "weapon_x_logan"
+    ],
+    "thematic:wonder_girl": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_woman": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_woman1": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_woman1st": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_woman3000": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_woman600": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_woman_absolute_power": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_woman_amazonia": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_woman_battle": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_woman_bombshell": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_woman_divine": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_woman_dkos": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_woman_flashpoint": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_woman_gam": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_woman_jl": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_woman_lkoe": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_woman_metal": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_woman_redson": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_woman_ssktjl": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_woman_starro": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_woman_vampires": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wonder_womanbn": [
+      "amazon_diana_prince"
+    ],
+    "thematic:wong": [
+      "chaos_magic_wanda_maximoff"
+    ],
+    "thematic:x23": [
+      "weapon_x_logan"
+    ],
+    "thematic:x23_wolverine": [
+      "weapon_x_logan"
+    ],
+    "thematic:zatanna": [
+      "chaos_magic_wanda_maximoff"
+    ],
+    "thematic:zenpool": [
+      "weapon_x_wade_wilson"
+    ],
+    "thematic:zoom_cw": [
+      "super_speed_pietro_maximoff"
+    ]
+  },
+  "looks": {
+    "chaos_magic_wanda_maximoff": [
+      "thematic:circe",
+      "thematic:enchantress",
+      "thematic:constantine",
+      "thematic:dr_strange",
+      "thematic:wong",
+      "thematic:the_wizard",
+      "thematic:stranger",
+      "thematic:loki",
+      "thematic:hela",
+      "thematic:quan_chi"
+    ],
+    "super_soldier_steve_rogers": [
+      "thematic:soldier_boy",
+      "thematic:deathstroke",
+      "thematic:black_noir",
+      "thematic:vandal",
+      "thematic:winter_soldier",
+      "thematic:ravager",
+      "thematic:brick",
+      "thematic:hourman"
+    ],
+    "gamma_mutation_bruce_banner": [
+      "thematic:thanos",
+      "thematic:abomination",
+      "thematic:doomsday",
+      "thematic:mongul",
+      "thematic:goro",
+      "thematic:shao_kahn",
+      "thematic:bruce_banner",
+      "thematic:atom_smasher"
+    ],
+    "atlantean_arthur_curry": [
+      "thematic:killer_croc",
+      "thematic:king_shark",
+      "thematic:gill_man",
+      "thematic:namor",
+      "thematic:the_drowned",
+      "thematic:rain",
+      "thematic:black_manta"
+    ],
+    "super_speed_pietro_maximoff": [
+      "thematic:red_death",
+      "thematic:geras",
+      "thematic:blackflash_cw"
+    ],
+    "magnetism_erik_lehnsherr": [
+      "thematic:polaris"
+    ],
+    "telekinesis_jean_grey": [
+      "thematic:cable"
+    ],
+    "binary_carol_danvers": [
+      "thematic:starlight",
+      "thematic:adam_warlock"
+    ],
+    "invisibility_sue_storm": [
+      "thematic:invisible_man",
+      "thematic:translucent",
+      "thematic:reptile"
+    ],
+    "absorption_anna_marie": [
+      "thematic:parasite"
+    ],
+    "spider_powers_peter_parker": [
+      "thematic:miles_morales",
+      "thematic:iron_spider",
+      "thematic:punisher_parker"
+    ],
+    "kryptonian_clark_kent": [
+      "thematic:batman_dkos"
+    ],
+    "shazam_billy_batson": [
+      "thematic:batson"
+    ],
+    "amazon_diana_prince": [
+      "thematic:ares",
+      "thematic:kratos"
+    ],
+    "spirit_of_vengeance_johnny_blaze": [
+      "thematic:trigon",
+      "thematic:etrigan",
+      "thematic:jason_blood",
+      "thematic:scorpion"
+    ],
+    "power_cosmic_norrin_radd": [
+      "thematic:dr_m"
+    ],
+    "winged_mutation_warren_worthington": [
+      "thematic:hawkgirl",
+      "thematic:hawkman"
+    ],
+    "weather_manipulation_ororo_munroe": [
+      "thematic:red_tornado",
+      "thematic:weather_wizard",
+      "thematic:raiden"
+    ],
+    "cryokinesis_bobby_drake": [
+      "thematic:captain_cold",
+      "thematic:sub_zero"
+    ],
+    "martian_jonn_jonzz": [
+      "thematic:mystique",
+      "thematic:shang_tsung"
+    ],
+    "organic_steel_piotr_rasputin": [
+      "thematic:luke_cage"
+    ],
+    "weapon_x_wade_wilson": [
+      "thematic:gwenpool"
+    ],
+    "teleportation_kurt_wagner": [
+      "thematic:smoke_mk"
+    ],
+    "squirrel_powers_doreen_green": [
+      "thematic:vixen"
+    ]
+  }
+}

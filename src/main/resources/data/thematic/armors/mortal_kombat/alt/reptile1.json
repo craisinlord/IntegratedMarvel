@@ -1,0 +1,6 @@
+{
+  "parent": "thematic:reptile",
+  "fighting_type": [
+    "BRAWLER"
+  ]
+}

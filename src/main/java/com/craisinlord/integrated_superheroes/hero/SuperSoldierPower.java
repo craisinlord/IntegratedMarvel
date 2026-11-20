@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 public final class SuperSoldierPower {
     public static final String ID = "super_soldier_steve_rogers";
     private static final Map<Holder<MobEffect>, Integer> PERMANENT_EFFECTS = Map.of(
-            MobEffects.MOVEMENT_SPEED, 0, MobEffects.JUMP, 0, MobEffects.DAMAGE_RESISTANCE, 0);
+            MobEffects.MOVEMENT_SPEED, 0, MobEffects.JUMP, 0);
     private static final Map<Holder<MobEffect>, HeroPower.Toggle> EFFECT_TOGGLES = Map.of(
             MobEffects.MOVEMENT_SPEED, HeroToggles.SPEED, MobEffects.JUMP, HeroToggles.SUPER_LEAP);
 
@@ -81,7 +81,12 @@ public final class SuperSoldierPower {
         double charge = damage;
         HeroAdvancements.cast(player).hits(4, "avengers/captain_america/on_your_left")
                 .run(() -> HeroAbilities.startDash(player, new Vec3(push.x, 0.2D, push.z), 10, charge, 1.2D));
-        player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.0F, 0.8F);
+        Vec3 front = player.position().add(0.0D, 1.0D, 0.0D).add(horizontal.normalize().scale(1.2D));
+        if (HeroFx.vfx(player.serverLevel(), front, "impact_starburst", 0)) {
+            HeroFx.cue(player, "thematic:shield_throw", 1.0F, 1.0F);
+        } else {
+            player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.0F, 0.8F);
+        }
         return MarvelBalanceConfig.SHIELD_CHARGE_COOLDOWN.get();
     }
 

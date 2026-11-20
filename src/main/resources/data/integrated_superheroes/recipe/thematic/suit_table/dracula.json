@@ -1,0 +1,49 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:dracula"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "minecraft:netherite_chestplate"
+  },
+  "ingredients": [
+    {
+      "item": "thematic:imbued_blood_vial"
+    },
+    {
+      "item": "thematic:imbued_blood_vial"
+    },
+    {
+      "item": "thematic:imbued_blood_vial"
+    },
+    {
+      "item": "thematic:fear_shard"
+    },
+    {
+      "item": "thematic:fear_shard"
+    },
+    {
+      "item": "marvel:villager_blood_sample"
+    },
+    {
+      "item": "marvellegacy:cloth_black"
+    },
+    {
+      "item": "marvellegacy:cloth_red"
+    },
+    {
+      "item": "minecraft:phantom_membrane"
+    }
+  ],
+  "results": {
+    "id": "thematic:dracula"
+  }
+}

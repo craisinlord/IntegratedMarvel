@@ -1,0 +1,45 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:batman89",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_2004",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_dceu",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_lords",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_redson",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_who_laughs",
+      "required": false
+    },
+    {
+      "id": "thematic:dark_knight",
+      "required": false
+    },
+    {
+      "id": "thematic:grim_knight",
+      "required": false
+    },
+    {
+      "id": "thematic:murder_machine",
+      "required": false
+    },
+    {
+      "id": "thematic:the_batman",
+      "required": false
+    }
+  ]
+}

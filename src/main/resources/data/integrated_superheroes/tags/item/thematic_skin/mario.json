@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:luigi",
+      "required": false
+    },
+    {
+      "id": "thematic:mario",
+      "required": false
+    }
+  ]
+}

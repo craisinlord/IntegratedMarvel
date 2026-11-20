@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "thematic:batman89",
+      "required": false
+    },
+    {
+      "id": "thematic:king_shark",
+      "required": false
+    }
+  ]
+}

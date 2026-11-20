@@ -1,0 +1,17 @@
+{
+  "tier": 9,
+  "fighting_type": [
+    "DUELIST"
+  ],
+  "cape": {
+    "partCount": 16,
+    "height": 1.3,
+    "width": 0.5,
+    "thickness": 0.001,
+    "texture": "thematic:textures/cape/magneto_cape.png",
+    "shinyTexture": "thematic:textures/cape/magneto_cape_shiny.png",
+    "simulation": {
+      "type": "cape"
+    }
+  }
+}

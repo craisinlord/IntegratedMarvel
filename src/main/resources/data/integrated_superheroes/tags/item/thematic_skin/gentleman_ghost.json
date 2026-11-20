@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:gentleman_ghost",
+      "required": false
+    }
+  ]
+}

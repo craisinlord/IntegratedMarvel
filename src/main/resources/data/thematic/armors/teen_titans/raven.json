@@ -1,0 +1,12 @@
+{
+  "tier": 8,
+  "abilities": [
+    {
+      "identifier": "toggle_hood",
+      "keybind": "key.thematic.cosmetic"
+    }
+  ],
+  "fighting_type": [
+    "BRAWLER"
+  ]
+}

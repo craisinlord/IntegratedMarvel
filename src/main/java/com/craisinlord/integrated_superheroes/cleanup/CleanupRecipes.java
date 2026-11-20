@@ -28,12 +28,16 @@ public final class CleanupRecipes {
                 continue;
             }
             JsonObject recipe = entry.getValue().getAsJsonObject();
-            if (Cleanup.dropsRecipe(entry.getKey()) || producesHidden(recipe)) {
+            JsonElement type = recipe.get("type");
+            if (CatalogCleanup.dropsRecipe(recipe) || Cleanup.dropsRecipe(entry.getKey()) || producesHidden(recipe)
+                    || (type != null && type.isJsonPrimitive() && Cleanup.dropsRecipeType(type.getAsString()))) {
                 iterator.remove();
                 dropped++;
                 continue;
             }
             State state = new State();
+            state.changed = CatalogCleanup.rewriteLegacyIngredients(recipe);
+            state.changed |= CosmeticMerges.rewriteProgressionRecipe(recipe);
             for (Map.Entry<String, JsonElement> field : recipe.entrySet()) {
                 if (!RESULT_KEYS.contains(field.getKey())) {
                     field.setValue(rewrite(field.getKey(), field.getValue(), state));
@@ -84,6 +88,11 @@ public final class CleanupRecipes {
 
     private static JsonElement rewrite(String key, JsonElement element, State state) {
         if (element.isJsonObject()) {
+            JsonObject dyed = dyed(element.getAsJsonObject());
+            if (dyed != null) {
+                state.changed = true;
+                return dyed;
+            }
             for (Map.Entry<String, JsonElement> field : element.getAsJsonObject().entrySet()) {
                 field.setValue(rewrite(field.getKey(), field.getValue(), state));
             }
@@ -124,6 +133,28 @@ public final class CleanupRecipes {
             state.dead = true;
         }
         return element;
+    }
+
+    private static JsonObject dyed(JsonObject object) {
+        JsonElement item = object.get("item");
+        if (object.size() != 1 || item == null || !item.isJsonPrimitive() || !item.getAsJsonPrimitive().isString()) {
+            return null;
+        }
+        ResourceLocation id = ResourceLocation.tryParse(item.getAsString());
+        Integer rgb = id == null ? null : Cleanup.dyes().get(id);
+        ResourceLocation target = rgb == null ? null : Cleanup.replacements().get(id);
+        if (target == null) {
+            return null;
+        }
+        JsonObject color = new JsonObject();
+        color.addProperty("rgb", rgb);
+        JsonObject components = new JsonObject();
+        components.add("minecraft:dyed_color", color);
+        JsonObject ingredient = new JsonObject();
+        ingredient.addProperty("type", "neoforge:components");
+        ingredient.addProperty("items", target.toString());
+        ingredient.add("components", components);
+        return ingredient;
     }
 
     private static final class State {

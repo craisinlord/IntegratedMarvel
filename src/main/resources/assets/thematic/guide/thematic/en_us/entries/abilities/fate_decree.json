@@ -1,0 +1,8 @@
+{
+  "name": "Decree of Nabu",
+  "category": "thematic:ability",
+  "icon": "minecraft:nether_star",
+  "pages": [
+    "Proclaim judgment over the battlefield. Up to ten visible enemies within eighteen blocks take a massive magic hit and Weakness III. You and up to nine nearby allies receive healing and ten seconds of Absorption III, with poison and Wither cleansed. Your Mantle of Order is fully restored. One-hundred-second base cooldown. The complete suit also carries a passive one-hundred-point Mantle that absorbs thirty-five percent of ordinary incoming damage; it restores two points per second after six seconds without casting or being hit. It also cleanses Blindness, Darkness, and Poison. Four active controls total: Judgment, flight, Bonds, and Decree."
+  ]
+}

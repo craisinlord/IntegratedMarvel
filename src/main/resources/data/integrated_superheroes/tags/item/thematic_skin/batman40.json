@@ -1,0 +1,69 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:adam_west",
+      "required": false
+    },
+    {
+      "id": "thematic:batman40",
+      "required": false
+    },
+    {
+      "id": "thematic:batman70s",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_gotham",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_halloween",
+      "required": false
+    },
+    {
+      "id": "thematic:batman_robe",
+      "required": false
+    },
+    {
+      "id": "thematic:bluebird",
+      "required": false
+    },
+    {
+      "id": "thematic:bruce_wayne",
+      "required": false
+    },
+    {
+      "id": "thematic:damian_vampires",
+      "required": false
+    },
+    {
+      "id": "thematic:damian_wayne",
+      "required": false
+    },
+    {
+      "id": "thematic:damian_wayne_2025",
+      "required": false
+    },
+    {
+      "id": "thematic:dick_grayson",
+      "required": false
+    },
+    {
+      "id": "thematic:robin",
+      "required": false
+    },
+    {
+      "id": "thematic:robin_arkham",
+      "required": false
+    },
+    {
+      "id": "thematic:signal",
+      "required": false
+    },
+    {
+      "id": "thematic:spoiler",
+      "required": false
+    }
+  ]
+}

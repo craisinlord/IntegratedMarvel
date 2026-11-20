@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.hero;
 
+import com.craisinlord.integrated_superheroes.gauntlet.GauntletGrief;
 import com.craisinlord.integrated_superheroes.compat.FallbackGrenade;
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import com.craisinlord.integrated_superheroes.compat.ScorchedGunsWeapons;
@@ -329,9 +330,9 @@ public final class DeadpoolPower {
         float radius = MarvelBalanceConfig.GRENADE_RADIUS.get().floatValue();
         SuitFx.sound(level, player.position(), SuitFx.GRENADE_PIN, SoundEvents.TRIPWIRE_CLICK_ON, 1.0F, 1.0F);
         if (player.getRandom().nextDouble() < MarvelBalanceConfig.GRENADE_FUMBLE_CHANCE.get()) {
-            Entity grenade = ModCompat.SCORCHED_GUNS
-                    ? ScorchedGunsWeapons.grenade(level, player, 2, damage, radius)
-                    : FallbackGrenade.create(level, player, 2).explosive(damage, radius);
+            // FallbackGrenade, not the Scorched Guns one: its blast skips the thrower (Scorched's would add the full
+            // grenade damage on top), but it still hurts everything else for the Self-Inflicted Combo advancement.
+            Entity grenade = FallbackGrenade.create(level, player, 2).explosive(damage, radius);
             grenade.setPos(player.getX(), player.getY() + 1.0D, player.getZ());
             grenade.setDeltaMovement(Vec3.ZERO);
             level.addFreshEntity(grenade);
@@ -629,20 +630,40 @@ public final class DeadpoolPower {
             ambient.lastMoved = now;
             DeadpoolNarration.say(player, "idle");
         }
-        if (!level.getEntitiesOfClass(Warden.class, player.getBoundingBox().inflate(24.0D)).isEmpty()) {
+        boolean warden = false;
+        boolean watcher = false;
+        boolean hydra = false;
+        int targeting = 0;
+        net.minecraft.world.phys.AABB near = player.getBoundingBox().inflate(24.0D);
+        for (Entity entity : level.getEntities(player, player.getBoundingBox().inflate(48.0D))) {
+            if (entity.getType().is(ModTags.DEADPOOL_WATCHERS)) {
+                watcher = true;
+            }
+            if (!entity.getBoundingBox().intersects(near)) {
+                continue;
+            }
+            if (entity instanceof Warden) {
+                warden = true;
+            } else if (entity instanceof HydraAgent) {
+                hydra = true;
+            }
+            if (entity instanceof Mob mob && mob.getTarget() == player) {
+                targeting++;
+            }
+        }
+        if (warden) {
             DeadpoolNarration.say(player, "warden");
         }
-        if (!level.getEntitiesOfClass(EnderDragon.class, player.getBoundingBox().inflate(96.0D)).isEmpty()) {
+        if (level.dimension() == Level.END && !level.getEntitiesOfClass(EnderDragon.class, player.getBoundingBox().inflate(96.0D)).isEmpty()) {
             DeadpoolNarration.say(player, "dragon");
         }
-        if (!level.getEntities(player, player.getBoundingBox().inflate(48.0D),
-                entity -> entity.getType().is(ModTags.DEADPOOL_WATCHERS)).isEmpty()) {
+        if (watcher) {
             DeadpoolNarration.say(player, "watcher");
         }
-        if (!level.getEntitiesOfClass(HydraAgent.class, player.getBoundingBox().inflate(24.0D)).isEmpty()) {
+        if (hydra) {
             DeadpoolNarration.say(player, "hydra");
         }
-        if (level.getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(24.0D), mob -> mob.getTarget() == player).size() == 2) {
+        if (targeting == 2) {
             DeadpoolNarration.say(player, "two_mobs");
         }
     }
@@ -664,6 +685,7 @@ public final class DeadpoolPower {
     }
 
     private static void onBreak(BlockEvent.BreakEvent event) {
+        if (GauntletGrief.probing()) return;
         if (!(event.getPlayer() instanceof ServerPlayer player) || !isDeadpool(player)) {
             return;
         }

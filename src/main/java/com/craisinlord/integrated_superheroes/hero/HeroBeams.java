@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.BaseFireBlock;
@@ -29,21 +30,34 @@ public final class HeroBeams {
     }
 
     public record Spec(int renderKind, BeamSettings settings, BeamTerrainMode terrain, float yawOffset,
-                       double forwardOffset, double downOffset, int fireSeconds, float wobble) {
+                       double forwardOffset, double downOffset, int fireSeconds, float wobble, float sweep) {
+        public Spec(int renderKind, BeamSettings settings, BeamTerrainMode terrain, float yawOffset,
+                    double forwardOffset, double downOffset, int fireSeconds, float wobble) {
+            this(renderKind, settings, terrain, yawOffset, forwardOffset, downOffset, fireSeconds, wobble, 0.0F);
+        }
+    }
+
+    public record Eye(int core, int glow, float scale, String sound, int soundEvery, String impact) {
     }
 
     private static final class Active {
         private final BeamController controller;
         private final Spec spec;
+        private final Eye eye;
         private final HeroAdvancements.Cast cast = HeroAdvancements.current();
         private int ticksLeft;
         private int age;
 
-        private Active(BeamController controller, Spec spec) {
+        private Active(BeamController controller, Spec spec, Eye eye) {
             this.controller = controller;
             this.spec = spec;
+            this.eye = eye;
             this.ticksLeft = spec.settings().durationTicks();
         }
+    }
+
+    public static Eye thematicEye(int core, int glow, float scale, String sound, int soundEvery, String impact) {
+        return HeroFx.thematic() ? new Eye(core, glow, scale, sound, soundEvery, impact) : null;
     }
 
     public static BeamSettings settings(double range, int durationTicks, float pathRadius, float impactRadius, double damage,
@@ -55,8 +69,16 @@ public final class HeroBeams {
     }
 
     public static void fire(ServerPlayer player, int channel, Spec spec) {
+        fire(player, channel, spec, null);
+    }
+
+    public static void fire(ServerPlayer player, int channel, Spec spec, Eye eye) {
         stop(player, channel);
-        BEAMS.computeIfAbsent(player.getUUID(), ignored -> new HashMap<>()).put(channel, new Active(new BeamController(player), spec));
+        BEAMS.computeIfAbsent(player.getUUID(), ignored -> new HashMap<>()).put(channel, new Active(new BeamController(player), spec, eye));
+    }
+
+    public static void flash(ServerPlayer player, int channel, Vec3 end, Eye eye, int life) {
+        send(player, new EyeBeamPayload(player.getId(), channel, true, end.x, end.y, end.z, eye.core(), eye.glow(), eye.scale(), life));
     }
 
     public static boolean isFiring(ServerPlayer player, int channel) {
@@ -72,7 +94,11 @@ public final class HeroBeams {
         Active active = beams.remove(channel);
         if (active != null) {
             active.controller.stop();
-            broadcast(player, channel, active.spec.renderKind(), false, Vec3.ZERO, Vec3.ZERO, 0);
+            if (active.eye != null) {
+                send(player, new EyeBeamPayload(player.getId(), channel, false, 0.0D, 0.0D, 0.0D, 0, 0, 0.0F, 0));
+            } else {
+                broadcast(player, channel, active.spec.renderKind(), false, Vec3.ZERO, Vec3.ZERO, 0);
+            }
         }
         if (beams.isEmpty()) {
             BEAMS.remove(player.getUUID());
@@ -106,7 +132,7 @@ public final class HeroBeams {
                 continue;
             }
             Vec3 start = origin(player, spec);
-            Vec3 direction = direction(player, spec);
+            Vec3 direction = direction(player, spec, active.age);
             active.controller.start(start, start.add(direction.scale(spec.settings().range())), active.ticksLeft);
             HeroAdvancements.within(active.cast, () -> HeroAbilities.runAsAbilityDamage(() ->
                     active.controller.tick(start, direction, null, spec.settings(), spec.terrain(), ignored -> {})));
@@ -117,7 +143,11 @@ public final class HeroBeams {
                 stop(player, channel);
                 continue;
             }
-            broadcast(player, channel, spec.renderKind(), true, start, end, active.age);
+            if (active.eye != null) {
+                eye(player, channel, active, end);
+            } else {
+                broadcast(player, channel, spec.renderKind(), true, start, end, active.age);
+            }
             if (spec.fireSeconds() > 0) {
                 burn(player, start, end, spec);
             }
@@ -142,7 +172,8 @@ public final class HeroBeams {
         if (spec.terrain() == BeamTerrainMode.DESTROY && player.tickCount % 5 == 0
                 && level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
             BlockPos firePos = BlockPos.containing(end);
-            if (level.getBlockState(firePos).isAir() && BaseFireBlock.canBePlacedAt(level, firePos, player.getDirection())) {
+            if (level.getBlockState(firePos).isAir() && BaseFireBlock.canBePlacedAt(level, firePos, player.getDirection())
+                    && HeroGrief.canPlace(player, level, firePos)) {
                 level.setBlockAndUpdate(firePos, BaseFireBlock.getState(level, firePos));
             }
         }
@@ -152,14 +183,46 @@ public final class HeroBeams {
         return player.getEyePosition().add(player.getLookAngle().scale(spec.forwardOffset())).subtract(0.0D, spec.downOffset(), 0.0D);
     }
 
-    private static Vec3 direction(ServerPlayer player, Spec spec) {
+    private static Vec3 direction(ServerPlayer player, Spec spec, int age) {
         float yaw = spec.yawOffset();
+        if (spec.sweep() != 0.0F) {
+            float progress = Math.min(1.0F, age / (float) Math.max(1, spec.settings().durationTicks() - 1));
+            yaw += spec.sweep() * (progress - 0.5F);
+        }
         float pitch = 0.0F;
         if (spec.wobble() > 0.0F) {
             yaw += (player.getRandom().nextFloat() - 0.5F) * spec.wobble();
             pitch += (player.getRandom().nextFloat() - 0.5F) * spec.wobble();
         }
         return Vec3.directionFromRotation(player.getXRot() + pitch, player.getYRot() + yaw);
+    }
+
+    private static void eye(ServerPlayer player, int channel, Active active, Vec3 end) {
+        Eye eye = active.eye;
+        send(player, new EyeBeamPayload(player.getId(), channel, true, end.x, end.y, end.z, eye.core(), eye.glow(), eye.scale(), 4));
+        if (channel != 0) {
+            return;
+        }
+        if (eye.sound() != null && eye.soundEvery() > 0 && (active.age - 1) % eye.soundEvery() == 0) {
+            HeroFx.play(player, HeroFx.sound(eye.sound(), SoundEvents.BLAZE_SHOOT), 0.8F, 1.0F);
+        }
+        if (eye.impact() != null && active.age % 6 == 1) {
+            ServerLevel level = player.serverLevel();
+            for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, new AABB(end, end).inflate(1.5D),
+                    entity -> entity != player && entity.isAlive())) {
+                HeroFx.vfx(level, target.position(), eye.impact(), 0, () -> {
+                });
+                break;
+            }
+        }
+    }
+
+    private static void send(ServerPlayer owner, EyeBeamPayload payload) {
+        for (ServerPlayer viewer : owner.serverLevel().players()) {
+            if (viewer.distanceToSqr(owner) <= 192.0D * 192.0D) {
+                PacketDistributor.sendToPlayer(viewer, payload);
+            }
+        }
     }
 
     private static void broadcast(ServerPlayer owner, int channel, int kind, boolean active, Vec3 start, Vec3 end, int age) {

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:polkadot_man",
+      "required": false
+    }
+  ]
+}

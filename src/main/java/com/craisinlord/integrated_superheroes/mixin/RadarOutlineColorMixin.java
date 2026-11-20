@@ -13,7 +13,7 @@ public abstract class RadarOutlineColorMixin {
     private void integratedSuperheroes$radarColor(CallbackInfoReturnable<Integer> cir) {
         Entity self = (Entity) (Object) this;
         if (self.level().isClientSide && DaredevilClient.highlights(self)) {
-            cir.setReturnValue(DaredevilClient.OUTLINE);
+            cir.setReturnValue(DaredevilClient.outline(self));
         }
     }
 }

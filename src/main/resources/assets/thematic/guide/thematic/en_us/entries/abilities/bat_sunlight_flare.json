@@ -1,0 +1,8 @@
+{
+    "name":  "Sunlight Flare",
+    "category":  "thematic:ability",
+    "icon":  "thematic:hunter_flare",
+    "pages":  [
+                  "Throw a flare that burns as bright as daylight. It lights up the area and keeps scorching any undead that stay near it."
+              ]
+}

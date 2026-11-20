@@ -1,0 +1,103 @@
+{
+  "priority": 10,
+  "tier": 9,
+  "abilities": [
+    {
+      "identifier": "flight",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "level": "5"
+        }
+      }
+    },
+    {
+      "identifier": "eldritch_blast",
+      "keybind": "key.thematic.ability_0",
+      "options": {
+        "fields": {
+          "damage": "120",
+          "name": "integrated_superheroes.ability.witchfire"
+        }
+      }
+    },
+    {
+      "identifier": "psychic_invasion",
+      "keybind": "key.thematic.ability_1",
+      "options": {
+        "fields": {
+          "name": "integrated_superheroes.ability.bewitch"
+        }
+      }
+    },
+    {
+      "identifier": "psionic_push",
+      "keybind": "key.thematic.ability_2",
+      "options": {
+        "fields": {
+          "damage": "130"
+        }
+      }
+    },
+    {
+      "identifier": "kitana_teleport",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "invisibility",
+      "keybind": "key.thematic.ability_4"
+    },
+    {
+      "identifier": "divine_wrath",
+      "keybind": "key.thematic.ultimate",
+      "options": {
+        "fields": {
+          "damage": "150",
+          "name": "integrated_superheroes.ability.wrath_of_hecate"
+        }
+      }
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 0.99
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 65,
+      "maximum": 70
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 55,
+      "maximum": 60
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 40,
+      "maximum": 45
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 65,
+      "maximum": 70
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 20,
+      "maximum": 40
+    }
+  ],
+  "fighting_type": [
+    "BRAWLER"
+  ],
+  "flight_type": "ONE_HAND_LEFT"
+}

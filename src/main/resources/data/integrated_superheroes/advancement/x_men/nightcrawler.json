@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:x_men/root",
+  "display": {
+    "icon": {
+      "id": "integrated_superheroes:syringe_teleportation_kurt_wagner"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.x_men.nightcrawler.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.x_men.nightcrawler.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

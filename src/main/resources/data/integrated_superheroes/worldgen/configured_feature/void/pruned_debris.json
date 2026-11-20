@@ -1,0 +1,7 @@
+{
+  "type": "integrated_superheroes:pruned_debris",
+  "config": {
+    "group": "debris",
+    "processors": "integrated_superheroes:void/pruned"
+  }
+}

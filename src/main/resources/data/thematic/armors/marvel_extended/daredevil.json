@@ -1,0 +1,9 @@
+{
+  "tier": 6,
+  "wip": false,
+  "suit-recipe": "thematic:daredevil",
+  "fighting_type": [
+    "DUELIST",
+    "BRAWLER"
+  ]
+}

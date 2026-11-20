@@ -1,0 +1,24 @@
+{
+  "include": [
+    "minecraft:village/*/houses/*",
+    "minecraft:shipwreck/*",
+    "minecraft:ruined_portal/*",
+    "minecraft:trail_ruins/buildings/*",
+    "minecraft:underwater_ruin/*",
+    "minecraft:igloo/top",
+    "minecraft:desert_pyramid/*",
+    "minecraft:pillager_outpost/feature_*",
+    "minecraft:woodland_mansion/*",
+    "minecraft:village/*/streets/*",
+    "minecraft:village/*/town_centers/*",
+    "minecraft:trail_ruins/roads/*"
+  ],
+  "exclude": [
+    "**/zombie/**"
+  ],
+  "exclude_everywhere": [
+    "waystones:**",
+    "boogaloo_core:solemn_falls/**"
+  ],
+  "weight": 10
+}

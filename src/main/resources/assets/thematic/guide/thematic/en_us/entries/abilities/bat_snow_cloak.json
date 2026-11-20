@@ -1,0 +1,8 @@
+{
+    "name":  "Snow Cloak",
+    "category":  "thematic:ability",
+    "icon":  "minecraft:snowball",
+    "pages":  [
+                  "Crouch without moving on snow or ice for a couple of seconds and you blend into the white. Mobs lose track of you until you move or swing."
+              ]
+}

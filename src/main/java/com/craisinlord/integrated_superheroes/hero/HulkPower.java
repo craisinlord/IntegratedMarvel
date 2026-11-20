@@ -41,6 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 public final class HulkPower {
+    private static final int GAMMA_GREEN = 0xFF3CFF3C;
     public static final String ID = "gamma_mutation_bruce_banner";
     public static final String HULK_STATE = "integrated_superheroes_hulk";
     private static final String HULK_OUT = "hulk_out";
@@ -105,6 +106,7 @@ public final class HulkPower {
                         if (isHulk(player)) {
                             tickFootsteps(player);
                             HulkRampage.tickCharge(player);
+                            com.craisinlord.integrated_superheroes.hero.skin.RedHulkHeat.tick(player, rage(player));
                         }
                     }
 
@@ -122,6 +124,10 @@ public final class HulkPower {
 
                     @Override
                     public void incomingDamage(ServerPlayer player, LivingIncomingDamageEvent event) {
+                        if (com.craisinlord.integrated_superheroes.hero.skin.RedHulkHeat.blocksDamage(player, event)) {
+                            event.setCanceled(true);
+                            return;
+                        }
                         if (event.getSource().is(DamageTypeTags.IS_FALL) && (isHulk(player) || SERVER_LEAPS.containsKey(player.getUUID()))) {
                             event.setCanceled(true);
                             return;
@@ -138,6 +144,7 @@ public final class HulkPower {
                             addRage(player, MarvelBalanceConfig.RAGE_PER_HIT.get().floatValue());
                         }
                         event.setAmount(event.getAmount() * rageMultiplier(player));
+                        com.craisinlord.integrated_superheroes.hero.skin.RedHulkHeat.ignite(player, event, rage(player));
                     }
 
                     @Override
@@ -215,7 +222,7 @@ public final class HulkPower {
         if (scale == null) {
             return;
         }
-        double target = isHulk(player) ? Math.round(rage / 10.0F) / 10.0D * MarvelBalanceConfig.HULK_RAGE_GROWTH.get() : 0.0D;
+        double target = isHulk(player) && !com.craisinlord.integrated_superheroes.hero.skin.RedHulkHeat.active(player) ? Math.round(rage / 10.0F) / 10.0D * MarvelBalanceConfig.HULK_RAGE_GROWTH.get() : 0.0D;
         AttributeModifier current = scale.getModifier(RAGE_GROWTH);
         double applied = current == null ? 0.0D : current.amount();
         if (Math.abs(applied - target) < 1.0E-4D) {
@@ -263,12 +270,13 @@ public final class HulkPower {
         }
         long now = player.level().getGameTime();
         Long ready = LAST_STAND_READY.get(player.getUUID());
-        if (ready != null && now < ready) {
+        if (ready != null && now < ready || !CheatDeath.ready(player)) {
             return false;
         }
         if (!transform(player, true)) {
             return false;
         }
+        CheatDeath.use(player);
         LAST_STAND_READY.put(player.getUUID(), now + (long) (MarvelBalanceConfig.LAST_STAND_COOLDOWN.get() * 20.0D));
         Rage rage = RAGE.computeIfAbsent(player.getUUID(), ignored -> new Rage());
         rage.value = 100.0F;
@@ -276,7 +284,7 @@ public final class HulkPower {
         player.setHealth(player.getMaxHealth() * 0.5F);
         EffectCleanse.removeAll(player);
         player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 60, 3));
-        player.displayClientMessage(Component.literal("\u00a72HULK SMASH."), true);
+        player.displayClientMessage(Component.literal((com.craisinlord.integrated_superheroes.hero.skin.RedHulkHeat.active(player) ? "\u00a7c" : "\u00a72") + "HULK SMASH."), true);
         return true;
     }
 
@@ -352,9 +360,13 @@ public final class HulkPower {
         PlayerData.sync(player);
         HeroAttributes.apply(player, MarvelBalanceConfig.HULK);
         HeroAnimations.play(player, "uppercut");
-        HeroFx.play(player, HeroFx.sound("mutantmonsters:entity.mutant_zombie.roar", SoundEvents.RAVAGER_ROAR), 2.0F, 0.9F);
         ServerLevel level = player.serverLevel();
-        level.sendParticles(ParticleTypes.EXPLOSION, player.getX(), player.getY() + 0.5D, player.getZ(), 4, 0.6D, 0.2D, 0.6D, 0.0D);
+        if (HeroFx.vfx(level, player.position().add(0.0D, 1.0D, 0.0D), "gamma_shockwave", GAMMA_GREEN, 2.5F)) {
+            HeroFx.cue(player, "thematic:hulk_roar", 2.0F, 1.0F);
+        } else {
+            HeroFx.play(player, HeroFx.sound("mutantmonsters:entity.mutant_zombie.roar", SoundEvents.RAVAGER_ROAR), 2.0F, 0.9F);
+            level.sendParticles(ParticleTypes.EXPLOSION, player.getX(), player.getY() + 0.5D, player.getZ(), 4, 0.6D, 0.2D, 0.6D, 0.0D);
+        }
         HeroFx.shake(level, player.position(), 24.0D, 0.6F, 12);
         if (forced) {
             player.displayClientMessage(Component.literal("§2You won't like him when he's angry."), true);
@@ -407,9 +419,14 @@ public final class HulkPower {
         });
         ServerLevel level = player.serverLevel();
         Vec3 front = player.getEyePosition().add(look.scale(1.5D));
-        level.sendParticles(ParticleTypes.GUST_EMITTER_LARGE, front.x, front.y - 0.3D, front.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        HeroAbilities.particleLine(level, front, front.add(look.scale(range * 0.8D)), ParticleTypes.SONIC_BOOM, 2.5D);
-        HeroFx.play(player, SoundEvents.WARDEN_SONIC_BOOM, 2.0F, 0.6F);
+        if (HeroFx.vfx(level, front, "punch_pressure_wave", 0, 2.0F)) {
+            HeroFx.vfx(level, front.add(look.scale(range * 0.4D)), "air_burst_ring", 0, (float) (range * 0.5D));
+            HeroFx.cue(player, "thematic:thunder_clap", 2.0F, 1.0F);
+        } else {
+            level.sendParticles(ParticleTypes.GUST_EMITTER_LARGE, front.x, front.y - 0.3D, front.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+            HeroAbilities.particleLine(level, front, front.add(look.scale(range * 0.8D)), ParticleTypes.SONIC_BOOM, 2.5D);
+            HeroFx.play(player, SoundEvents.WARDEN_SONIC_BOOM, 2.0F, 0.6F);
+        }
         if (!ViltrumiteAnimations.play(player, ViltrumiteAnimations.THUNDERCLAP)) {
             HeroAnimations.play(player, "bettercombat:two_handed_slam");
         }
@@ -428,9 +445,16 @@ public final class HulkPower {
                         || entity instanceof net.minecraft.world.entity.monster.Ravager, "avengers/hulk/puny")
                 .run(() -> HeroShockwaves.ring(player, 8, MarvelBalanceConfig.HULK_SMASH_LENGTH.get(), damage));
         ServerLevel level = player.serverLevel();
-        level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, player.getX(), player.getY(), player.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        HeroFx.play(player, SoundEvents.GENERIC_EXPLODE.value(), 1.5F, 0.6F);
-        HeroFx.play(player, HeroFx.sound("mutantmonsters:entity.mutant_zombie.attack", SoundEvents.RAVAGER_ATTACK), 1.5F, 0.8F);
+        if (HeroFx.vfx(level, player.position(), "gamma_shockwave", GAMMA_GREEN, MarvelBalanceConfig.HULK_SMASH_LENGTH.get().floatValue())) {
+            HeroFx.vfx(level, player.position(), "slam_fracture_large", 0);
+            HeroFx.vfx(level, player.position(), "slam_dust_large", 0);
+            HeroFx.cue(player, "thematic:irradiated_fist2", 1.5F, 0.8F);
+            HeroFx.play(player, SoundEvents.GENERIC_EXPLODE.value(), 1.5F, 0.6F);
+        } else {
+            level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, player.getX(), player.getY(), player.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+            HeroFx.play(player, SoundEvents.GENERIC_EXPLODE.value(), 1.5F, 0.6F);
+            HeroFx.play(player, HeroFx.sound("mutantmonsters:entity.mutant_zombie.attack", SoundEvents.RAVAGER_ATTACK), 1.5F, 0.8F);
+        }
         HeroAnimations.play(player, "celestisynth:cs_keres_smash");
         HeroFx.shake(level, player.position(), 32.0D, 1.0F, 16);
         HulkRampage.trenches(player, 8, MarvelBalanceConfig.HULK_SMASH_LENGTH.get());
@@ -546,7 +570,11 @@ public final class HulkPower {
         HeroShockwaves.ring(player, 12, (int) Math.ceil(radius), damage * 0.3F);
         HulkRampage.crater(player, drop);
         ServerLevel level = player.serverLevel();
-        level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, player.getX(), player.getY(), player.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        if (HeroFx.vfx(level, player.position(), "slam_fracture_large", 0, (float) radius)) {
+            HeroFx.vfx(level, player.position(), "slam_dust_large", 0, (float) radius);
+        } else {
+            level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, player.getX(), player.getY(), player.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        }
         HeroFx.play(player, SoundEvents.GENERIC_EXPLODE.value(), 2.0F, 0.5F);
         HeroFx.shake(level, player.position(), 40.0D, (float) Math.min(1.4D, 0.5D + drop / 25.0D), 18);
         addRage(player, MarvelBalanceConfig.RAGE_PER_IMPACT.get().floatValue());

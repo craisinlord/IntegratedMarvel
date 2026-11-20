@@ -1,0 +1,131 @@
+{
+  "suit-recipe": "thematic:alt_batman_knights",
+  "cape": {
+    "partCount": 16,
+    "height": 1.3,
+    "width": 0.5,
+    "thickness": 0.001,
+    "texture": "thematic:textures/cape/knights_cape.png",
+    "shinyTexture": "thematic:textures/cape/knights_cape_shiny.png",
+    "simulation": {
+      "type": "cape"
+    }
+  },
+  "glider": {
+    "partCount": 4,
+    "height": 2.0,
+    "width": 2.0,
+    "thickness": 0.001,
+    "texture": "thematic:textures/glider/knights_glider.png",
+    "shinyTexture": "thematic:textures/glider/knights_glider_shiny.png",
+    "simulation": {
+      "type": "glider"
+    }
+  },
+  "parent": "thematic:batman",
+  "abilities": [
+    {
+      "identifier": "toggle_brood",
+      "remove": true
+    },
+    {
+      "identifier": "acrobatics",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "level": "1"
+        }
+      }
+    },
+    {
+      "identifier": "night_vision",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "stealth",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "gliding",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "bat_gadget_arkham",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "bat_belt_arkham",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "bat_detective_mode",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "perfect_counter",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "bat_fear_takedown",
+      "keybind": "key.thematic.ability_4"
+    },
+    {
+      "identifier": "crowd_control",
+      "keybind": "key.thematic.ability_5"
+    },
+    {
+      "identifier": "bat_belt_batman",
+      "remove": true
+    },
+    {
+      "identifier": "bat_gadget_batman",
+      "remove": true
+    },
+    {
+      "identifier": "bat_swarm",
+      "remove": true
+    },
+    {
+      "identifier": "double_kick",
+      "remove": true
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 72,
+      "maximum": 80
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 50,
+      "maximum": 60
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 88,
+      "maximum": 96
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 62,
+      "maximum": 70
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 42,
+      "maximum": 50
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 80,
+      "maximum": 90
+    }
+  ],
+  "tier": 8,
+  "fighting_type": [
+    "UTILITY",
+    "BRAWLER"
+  ],
+  "priority": 10
+}

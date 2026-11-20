@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "marvel:black_panther_chestplate",
+      "required": false
+    },
+    {
+      "id": "thematic:black_panther",
+      "required": false
+    }
+  ]
+}

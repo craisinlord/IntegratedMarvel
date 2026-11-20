@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:alpha",
+      "required": false
+    },
+    {
+      "id": "thematic:beta",
+      "required": false
+    },
+    {
+      "id": "thematic:michonne",
+      "required": false
+    }
+  ]
+}

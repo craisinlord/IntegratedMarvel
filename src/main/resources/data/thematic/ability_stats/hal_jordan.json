@@ -1,0 +1,71 @@
+{
+  "cut_the_sky_open": {
+    "cooldown": 90,
+    "duration": 6,
+    "damage": 81.0,
+    "tuning": {
+      "burst_damage_times": 0.5,
+      "burst_damage_times_2": 3,
+      "burst_radius": 2.5,
+      "burst_radius_2": 6,
+      "damage_taken_times": 0.75,
+      "damage_taken_times_2": 0.75,
+      "hit_damage_times": 0.1,
+      "projectile_explode_radius": 1.5,
+      "projectile_homing_speed": 1.4,
+      "projectile_homing_strength": 0.25,
+      "projectile_max_age": 2,
+      "projectile_max_age_2": 5,
+      "projectile_max_age_3": 4,
+      "projectile_size": 0.3,
+      "projectile_size_2": 0.5,
+      "projectile_size_3": 0.6,
+      "projectile_speed": 4,
+      "projectile_speed_2": 1.4,
+      "projectile_speed_3": 1.8,
+      "projectile_spread": 1.5
+    }
+  },
+  "fearless": {
+    "cooldown": 20,
+    "duration": 3,
+    "range": 0,
+    "amplifier": 0,
+    "tuning": {
+      "slowness_amplifier": 5,
+      "slowness_duration": 0.1
+    }
+  },
+  "willpower_airstrike": {
+    "cooldown": 15,
+    "duration": 4,
+    "range": 3,
+    "damage": 30.0,
+    "amplifier": 1,
+    "tuning": {
+      "effect_amplifier_x": 10,
+      "projectile_gravity": 0,
+      "projectile_max_age": 5,
+      "projectile_max_distance": 0,
+      "projectile_size": 0.6,
+      "projectile_speed": 0.001
+    }
+  },
+  "willpower_minigun_sweep": {
+    "cooldown": 18,
+    "duration": 3,
+    "range": 1.5,
+    "damage": 9.0,
+    "tuning": {
+      "give_rounds": 1,
+      "overshield": 50,
+      "projectile_max_age": 1.5,
+      "projectile_max_distance": 40,
+      "projectile_size": 0.4,
+      "projectile_speed": 3,
+      "projectile_spread": 1.5,
+      "push_lift": 0.2,
+      "push_strength": 0.6
+    }
+  }
+}

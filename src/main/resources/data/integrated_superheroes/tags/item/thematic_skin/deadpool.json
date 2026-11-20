@@ -1,0 +1,89 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "marvel:deadpool_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:deadpool_x_force_chestplate",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool_2099",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool_classic",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool_golden_age",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool_origins",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool_pulp",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool_spy",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool_ultimate",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool_wolverine",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool_x",
+      "required": false
+    },
+    {
+      "id": "thematic:deadpool_xmen",
+      "required": false
+    },
+    {
+      "id": "thematic:deathpool",
+      "required": false
+    },
+    {
+      "id": "thematic:evil_deadpool",
+      "required": false
+    },
+    {
+      "id": "thematic:kidpool",
+      "required": false
+    },
+    {
+      "id": "thematic:lady_deadpool",
+      "required": false
+    },
+    {
+      "id": "thematic:nicepool",
+      "required": false
+    },
+    {
+      "id": "thematic:roninpool",
+      "required": false
+    },
+    {
+      "id": "thematic:the_dp_kid",
+      "required": false
+    },
+    {
+      "id": "thematic:zenpool",
+      "required": false
+    }
+  ]
+}

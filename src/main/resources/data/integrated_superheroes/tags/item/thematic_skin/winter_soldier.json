@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:winter_soldier",
+      "required": false
+    }
+  ]
+}

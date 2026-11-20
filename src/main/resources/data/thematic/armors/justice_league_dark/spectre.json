@@ -1,0 +1,140 @@
+{
+  "priority": 10,
+  "tier": 10,
+  "abilities": [
+    {
+      "identifier": "spectral_beam",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "army_of_one",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "divine_exertion",
+      "keybind": "key.thematic.ability_3",
+      "options": {
+        "fields": {
+          "damage_scale": "10"
+        }
+      }
+    },
+    {
+      "identifier": "spectre_invasion",
+      "keybind": "key.thematic.ability_4",
+      "options": {
+        "fields": {
+          "damage_scale": "10"
+        }
+      }
+    },
+    {
+      "identifier": "ethereal_bondage",
+      "keybind": "key.thematic.ability_5"
+    },
+    {
+      "identifier": "vengeful_spirit",
+      "keybind": "key.thematic.equip_item"
+    },
+    {
+      "identifier": "spectral_orb",
+      "keybind": "key.thematic.utility",
+      "options": {
+        "fields": {
+          "damage_scale": "10"
+        }
+      }
+    },
+    {
+      "identifier": "spectral_vision",
+      "keybind": "key.thematic.cosmetic"
+    },
+    {
+      "identifier": "invisibility",
+      "keybind": "key.thematic.cosmetic"
+    },
+    {
+      "identifier": "intangibility",
+      "keybind": "key.thematic.cosmetic"
+    },
+    {
+      "identifier": "flight",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "night_vision",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "anonymous",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "judgement",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "enhanced_reflexes_immunity",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "spectre_fire_proof",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "spectre_poison_proof",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "spectre_wither_proof",
+      "keybind": "key.thematic.passive"
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 65,
+      "maximum": 70
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 55,
+      "maximum": 60
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 40,
+      "maximum": 45
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 65,
+      "maximum": 70
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 20,
+      "maximum": 40
+    }
+  ],
+  "fighting_type": [
+    "BRAWLER"
+  ],
+  "flight_type": "NO_HANDS",
+  "cape": {
+    "partCount": 16,
+    "height": 1.3,
+    "width": 0.5,
+    "thickness": 0.001,
+    "texture": "thematic:textures/cape/spectre_cape.png",
+    "shinyTexture": "thematic:textures/cape/spectre_cape_shiny.png",
+    "simulation": {
+      "type": "cape"
+    }
+  }
+}

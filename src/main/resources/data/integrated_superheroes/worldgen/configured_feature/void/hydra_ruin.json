@@ -1,0 +1,9 @@
+{
+  "type": "integrated_superheroes:pruned_debris",
+  "config": {
+    "group": "hydra_ruin",
+    "processors": "integrated_superheroes:void/pruned",
+    "min_sink": 0.15,
+    "max_sink": 0.45
+  }
+}

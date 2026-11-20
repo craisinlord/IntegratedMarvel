@@ -1,0 +1,93 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:accelerated_man",
+      "required": false
+    },
+    {
+      "id": "thematic:barry_allen",
+      "required": false
+    },
+    {
+      "id": "thematic:flash3000",
+      "required": false
+    },
+    {
+      "id": "thematic:flash90",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_absolute_power",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_blue",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_cw",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_cw_v2",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_dceu",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_elseworlds",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_hot_pursuit",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_injustice",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_ssktjl",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_starro",
+      "required": false
+    },
+    {
+      "id": "thematic:flash_testrun",
+      "required": false
+    },
+    {
+      "id": "thematic:flashmkdc",
+      "required": false
+    },
+    {
+      "id": "thematic:johnny_quick",
+      "required": false
+    },
+    {
+      "id": "thematic:old_flash",
+      "required": false
+    },
+    {
+      "id": "thematic:red_racer",
+      "required": false
+    },
+    {
+      "id": "thematic:the_flash",
+      "required": false
+    },
+    {
+      "id": "thematic:the_flash_bn",
+      "required": false
+    },
+    {
+      "id": "thematic:the_flash_rebirth",
+      "required": false
+    }
+  ]
+}

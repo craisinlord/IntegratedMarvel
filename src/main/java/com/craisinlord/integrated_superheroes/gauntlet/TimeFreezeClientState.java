@@ -22,11 +22,20 @@ public final class TimeFreezeClientState {
     private TimeFreezeClientState() {
     }
 
-    public static void set(List<UUID> owners) {
-        TimeFreezeState.setClientOwners(owners);
+    public static void set(List<UUID> owners, double radius) {
+        TimeFreezeState.setClientOwners(owners, radius);
+        refresh();
+    }
+
+    private static void refresh() {
         Minecraft minecraft = Minecraft.getInstance();
+        LocalPlayer player = minecraft.player;
+        java.util.Set<UUID> owners = TimeFreezeState.clientOwners();
+        boolean inField = player != null && !owners.isEmpty()
+                && (owners.contains(player.getUUID()) || TimeFreezeState.inField(player, owners));
+        TimeFreezeState.setClientInField(inField);
         if (minecraft.gameRenderer == null) return;
-        if (!owners.isEmpty()) {
+        if (inField) {
             if (minecraft.gameRenderer.currentEffect() == null) {
                 minecraft.gameRenderer.loadEffect(EFFECT);
             }
@@ -39,6 +48,7 @@ public final class TimeFreezeClientState {
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
         LocalPlayer player = Minecraft.getInstance().player;
+        if (!TimeFreezeState.clientOwners().isEmpty()) refresh();
         if (player == null || !TimeFreezeState.isFrozenPlayer(player)) return;
         player.setOldPosAndRot();
         player.walkDistO = player.walkDist;
@@ -61,6 +71,6 @@ public final class TimeFreezeClientState {
 
     @SubscribeEvent
     public static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
-        if (TimeFreezeState.clientActive()) set(List.of());
+        if (!TimeFreezeState.clientOwners().isEmpty()) set(List.of(), 0.0D);
     }
 }

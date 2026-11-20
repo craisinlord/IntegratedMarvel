@@ -1,0 +1,8 @@
+{
+    "name":  "Detective Scan",
+    "category":  "thematic:ability",
+    "icon":  "thematic:batnoculars",
+    "pages":  [
+                  "Hold your view on an enemy for about a second and a half to scan it. For the next 30 seconds you can see where it is and how much health it has left, and your hits on it deal 20% more damage, or 10% on a boss. You can keep up to three scanned at once."
+              ]
+}

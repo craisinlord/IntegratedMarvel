@@ -6,6 +6,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -90,9 +91,22 @@ public final class TimeFreezeManager {
         for (ResourceKey<Level> dimension : byDimension.keySet()) {
             ServerLevel level = server.getLevel(dimension);
             if (level == null) continue;
-            for (LivingEntity living : level.getEntities(EntityTypeTest.forClass(LivingEntity.class),
-                    living -> living.invulnerableTime > 0)) {
-                if (TimeFreezeState.isFrozen(living)) living.invulnerableTime--;
+            double radius = TimeFreezeState.serverRadius();
+            if (radius <= 0.0D) {
+                for (LivingEntity living : level.getEntities(EntityTypeTest.forClass(LivingEntity.class),
+                        living -> living.invulnerableTime > 0)) {
+                    if (TimeFreezeState.isFrozen(living)) living.invulnerableTime--;
+                }
+            } else {
+                Set<LivingEntity> seen = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+                for (UUID owner : owners(dimension)) {
+                    Player freezer = level.getPlayerByUUID(owner);
+                    if (freezer == null) continue;
+                    for (LivingEntity living : level.getEntitiesOfClass(LivingEntity.class, freezer.getBoundingBox().inflate(radius),
+                            living -> living.invulnerableTime > 0)) {
+                        if (seen.add(living) && TimeFreezeState.isFrozen(living)) living.invulnerableTime--;
+                    }
+                }
             }
             for (ServerPlayer player : level.players()) {
                 if (!TimeFreezeState.isFrozenPlayer(player)) {
@@ -115,7 +129,7 @@ public final class TimeFreezeManager {
     }
 
     public static void syncPlayer(ServerPlayer player) {
-        PacketDistributor.sendToPlayer(player, new TimeFreezePayload(List.copyOf(owners(player.serverLevel().dimension()))));
+        PacketDistributor.sendToPlayer(player, new TimeFreezePayload(List.copyOf(owners(player.serverLevel().dimension())), TimeFreezeState.serverRadius()));
     }
 
     public static void clear(MinecraftServer server) {
@@ -138,7 +152,7 @@ public final class TimeFreezeManager {
     private static void sync(MinecraftServer server, ResourceKey<Level> dimension) {
         ServerLevel level = server.getLevel(dimension);
         if (level == null) return;
-        PacketDistributor.sendToPlayersInDimension(level, new TimeFreezePayload(List.copyOf(owners(dimension))));
+        PacketDistributor.sendToPlayersInDimension(level, new TimeFreezePayload(List.copyOf(owners(dimension)), TimeFreezeState.serverRadius()));
     }
 
     private static boolean isTimeFreezeHeld(ServerPlayer player) {

@@ -1,0 +1,10 @@
+{
+  "parent": "thematic:superboy",
+  "abilities": [
+    {
+      "identifier": "toggle_hood",
+      "keybind": "key.thematic.cosmetic"
+    }
+  ],
+  "suit-recipe": "thematic:alt_superboy1"
+}

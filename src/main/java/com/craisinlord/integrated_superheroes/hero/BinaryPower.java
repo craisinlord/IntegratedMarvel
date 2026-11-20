@@ -46,6 +46,7 @@ public final class BinaryPower {
     }
 
     public static HeroPower create(Supplier<Item> syringe) {
+        HeroFlight.register(ID, FLIGHT_ID);
         return new HeroPower(
                 ID,
                 "Binary (Carol Danvers)",
@@ -116,7 +117,7 @@ public final class BinaryPower {
     }
 
     private static boolean viltrumiteFlight() {
-        return ModCompat.VILTRUMITE && MarvelBalanceConfig.VILTRUMITE_CAPTAIN_MARVEL_FLIGHT.get();
+        return ModCompat.VILTRUMITE && MarvelBalanceConfig.VILTRUMITE_FLIGHT_HEROES.get().contains(ID);
     }
 
     public static void grantFlight(ServerPlayer player) {
@@ -155,7 +156,7 @@ public final class BinaryPower {
         int duration = MarvelBalanceConfig.BINARY_MODE_DURATION_TICKS.get();
         BINARY_MODE.put(player.getUUID(), duration);
         HeroAdvancements.window(player, duration, 5, "avengers/binary/binary_star");
-        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, duration, 3, false, false, true));
+        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, duration, 2, false, false, true));
         player.addEffect(new MobEffectInstance(MobEffects.GLOWING, duration, 0, false, false, false));
         player.level().playSound(null, player.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 1.5F, 0.6F);
         HeroAbilities.setActive(player, "binary_mode", true);
@@ -179,7 +180,7 @@ public final class BinaryPower {
             return;
         }
         ServerLevel level = (ServerLevel) player.level();
-        level.sendParticles(HeroAbilities.emissive(PHOTON_COLOR, 1.0F), player.getX(), player.getY() + 1.0D, player.getZ(), 6, 0.5D, 0.9D, 0.5D, 0.02D);
+        level.sendParticles(HeroAbilities.emissive(com.craisinlord.integrated_superheroes.hero.skin.SerumSkins.primary(player, PHOTON_COLOR), 1.0F), player.getX(), player.getY() + 1.0D, player.getZ(), 6, 0.5D, 0.9D, 0.5D, 0.02D);
         if (ticksLeft % 10 == 0) {
             float damage = MarvelBalanceConfig.BINARY_MODE_AURA_DAMAGE.get().floatValue();
             for (LivingEntity target : HeroAbilities.sphere(player, MarvelBalanceConfig.BINARY_MODE_AURA_RADIUS.get())) {

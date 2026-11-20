@@ -1,0 +1,58 @@
+{
+  "priority": 10,
+  "tier": 8,
+  "abilities": [
+    {
+      "identifier": "acrobatics",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "level": "2"
+        }
+      }
+    },
+    {
+      "identifier": "battle_charge",
+      "keybind": "key.thematic.utility",
+      "options": {
+        "fields": {
+          "damage_scale": "0.85"
+        }
+      }
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 1.2
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 4,
+      "maximum": 24
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 50,
+      "maximum": 70
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_knockbase_resistance",
+      "minimum": 3,
+      "maximum": 23
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 3,
+      "maximum": 23
+    }
+  ],
+  "fighting_type": []
+}

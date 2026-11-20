@@ -24,7 +24,8 @@ public final class SpeedForceAfterimages {
     public static void clientSetup(FMLClientSetupEvent event) {
         try {
             ContractionAfterimages.addActivator(SpeedForceAfterimages::isSpeeding);
-            ContractionAfterimages.addColorProvider(living -> isQuicksilver(living) ? SPEED_FORCE_BLUE : null);
+            ContractionAfterimages.addColorProvider(living -> isQuicksilver(living)
+                    ? (Integer) com.craisinlord.integrated_superheroes.hero.skin.SerumSkins.primary((Player) living, SPEED_FORCE_BLUE) : null);
         } catch (LinkageError ignored) {
         }
     }

@@ -1,0 +1,15 @@
+{
+  "suit-recipe": "thematic:alt_superwoman",
+  "cape": {
+    "partCount": 16,
+    "height": 1.3,
+    "width": 0.4,
+    "thickness": 0.001,
+    "texture": "thematic:textures/cape/superwoman_cape.png",
+    "shinyTexture": null,
+    "simulation": {
+      "type": "cape"
+    }
+  },
+  "parent": "thematic:wonder_woman"
+}

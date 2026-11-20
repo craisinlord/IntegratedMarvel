@@ -1,0 +1,69 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "marvel:cyclops_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:cyclops_astonishing_chestplate",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_2000",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_2024",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_apocalypse",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_astonishing",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_evolution",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_new",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_noir",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_pheonix",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_revolution",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_rivals",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_ultimate",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_wolverine",
+      "required": false
+    },
+    {
+      "id": "thematic:cyclops_xfactor",
+      "required": false
+    }
+  ]
+}

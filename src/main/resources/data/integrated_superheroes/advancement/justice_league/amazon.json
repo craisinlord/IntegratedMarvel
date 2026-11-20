@@ -1,0 +1,29 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    }
+  ],
+  "parent": "integrated_superheroes:justice_league/root",
+  "display": {
+    "icon": {
+      "id": "integrated_superheroes:syringe_amazon_diana_prince"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.justice_league.amazon.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.justice_league.amazon.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

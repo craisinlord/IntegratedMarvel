@@ -1,0 +1,8 @@
+{
+    "name":  "Disruptor",
+    "category":  "thematic:ability",
+    "icon":  "thematic:gadget_emp_grenade",
+    "pages":  [
+                  "Zap an enemy up to 30 blocks away. Its gun jams for 8 seconds and it can't use its special moves, and it's slowed for a moment."
+              ]
+}

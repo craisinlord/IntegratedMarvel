@@ -1,0 +1,37 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:blade",
+      "required": false
+    },
+    {
+      "id": "thematic:blade_1994",
+      "required": false
+    },
+    {
+      "id": "thematic:blade_classic",
+      "required": false
+    },
+    {
+      "id": "thematic:blade_mcu",
+      "required": false
+    },
+    {
+      "id": "thematic:blade_modern",
+      "required": false
+    },
+    {
+      "id": "thematic:blade_rivals",
+      "required": false
+    },
+    {
+      "id": "thematic:elsa_bloodstone",
+      "required": false
+    },
+    {
+      "id": "thematic:morbius",
+      "required": false
+    }
+  ]
+}

@@ -17,6 +17,7 @@ import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.TieredItem;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 
 import java.util.ArrayList;
@@ -26,8 +27,13 @@ import java.util.Map;
 import java.util.Set;
 
 public final class UnifiedCreativeTab {
-    private static final List<String> SOURCES = List.of(IntegratedSuperheroes.MODID, "marvel", "marvellegacy", "infinity_gauntlet");
+    private static final String THEMATIC = "thematic";
+    private static final List<String> SOURCES = List.of(IntegratedSuperheroes.MODID, "marvel", "marvellegacy", "infinity_gauntlet", THEMATIC);
     private static boolean harvesting;
+    public static java.util.function.Function<ItemStack, List<ItemStack>> followers = stack -> List.of();
+    public static java.util.function.Predicate<ItemStack> skip = stack -> false;
+    public static java.util.function.Supplier<List<ItemStack>> extras = List::of;
+    public static java.util.function.Predicate<ItemStack> claims = stack -> false;
 
     private UnifiedCreativeTab() {
     }
@@ -40,6 +46,11 @@ public final class UnifiedCreativeTab {
         return SOURCES.contains(BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace());
     }
 
+    private static boolean claimed(ItemStack stack) {
+        String namespace = BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace();
+        return SOURCES.contains(namespace) && (!namespace.equals(THEMATIC) || claims.test(stack));
+    }
+
     public static void fill(CreativeModeTab.ItemDisplayParameters parameters, CreativeModeTab.Output output) {
         Set<ItemStack> collected = ItemStackLinkedSet.createTypeAndComponentsSet();
         for (Map.Entry<ResourceKey<Item>, Item> entry : BuiltInRegistries.ITEM.entrySet()) {
@@ -49,8 +60,10 @@ public final class UnifiedCreativeTab {
         }
         if (unified()) {
             harvest(parameters, collected);
+            collected.addAll(extras.get());
             for (Map.Entry<ResourceKey<Item>, Item> entry : BuiltInRegistries.ITEM.entrySet()) {
-                if (SOURCES.contains(entry.getKey().location().getNamespace())) {
+                String namespace = entry.getKey().location().getNamespace();
+                if (SOURCES.contains(namespace) && !namespace.equals(THEMATIC)) {
                     collected.add(new ItemStack(entry.getValue()));
                 }
             }
@@ -58,15 +71,21 @@ public final class UnifiedCreativeTab {
         CreativeOrder order = CreativeOrder.get();
         List<Entry> entries = new ArrayList<>();
         for (ItemStack stack : collected) {
-            if (!stack.isEmpty() && !Cleanup.isHidden(stack.getItem())) {
+            if (!stack.isEmpty() && !Cleanup.isHidden(stack.getItem()) && !skip.test(stack)) {
                 ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
                 entries.add(new Entry(stack, entries.size(), order.key(id, fallbackSection(stack, id))));
             }
         }
         entries.sort(Comparator.comparing((Entry entry) -> entry.key).thenComparingInt(entry -> entry.index));
+        int added = 0;
         for (Entry entry : entries) {
             output.accept(entry.stack);
+            for (ItemStack follower : followers.apply(entry.stack)) {
+                output.accept(follower);
+                added++;
+            }
         }
+        IntegratedSuperheroes.LOGGER.info("Creative tab: {} entries, {} suit pieces", entries.size(), added);
     }
 
     private static void harvest(CreativeModeTab.ItemDisplayParameters parameters, Set<ItemStack> collected) {
@@ -102,17 +121,26 @@ public final class UnifiedCreativeTab {
         boolean unified = unified();
         List<ItemStack> drop = new ArrayList<>();
         for (ItemStack stack : event.getParentEntries()) {
-            if (Cleanup.isHidden(stack.getItem()) || unified && isSource(stack)) {
+            if (Cleanup.isHidden(stack.getItem()) || unified && claimed(stack)) {
                 drop.add(stack);
             }
         }
         for (ItemStack stack : event.getSearchEntries()) {
-            if ((Cleanup.isHidden(stack.getItem()) || unified && isSource(stack)) && !drop.contains(stack)) {
+            if ((Cleanup.isHidden(stack.getItem()) || unified && claimed(stack)) && !drop.contains(stack)) {
                 drop.add(stack);
             }
         }
         for (ItemStack stack : drop) {
             event.remove(stack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+        }
+        if (!unified) {
+            for (ItemStack stack : new ArrayList<>(event.getParentEntries())) {
+                ItemStack previous = stack;
+                for (ItemStack follower : followers.apply(stack)) {
+                    event.insertAfter(previous, follower, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+                    previous = follower;
+                }
+            }
         }
     }
 

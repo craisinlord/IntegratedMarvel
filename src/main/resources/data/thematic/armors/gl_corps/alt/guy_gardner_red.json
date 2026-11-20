@@ -1,0 +1,83 @@
+{
+  "parent": "thematic:guy_gardner",
+  "abilities": [
+    {
+      "identifier": "willpower_charge",
+      "remove": true,
+      "options": {
+        "fields": {
+          "constructs": "#green_constructs"
+        }
+      }
+    },
+    {
+      "identifier": "willpower_beam",
+      "remove": true
+    },
+    {
+      "identifier": "willpower_shield",
+      "remove": true
+    },
+    {
+      "identifier": "willpower_airstrike",
+      "remove": true
+    },
+    {
+      "identifier": "cut_the_sky_open",
+      "remove": true
+    },
+    {
+      "identifier": "rage_charge",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "level": "9",
+          "constructs": "#red_constructs"
+        }
+      }
+    },
+    {
+      "identifier": "flight",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "night_vision",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "glow",
+      "keybind": "key.thematic.cosmetic",
+      "options": {
+        "fields": {
+          "color": "#DD0000"
+        }
+      }
+    },
+    {
+      "identifier": "rage_beam",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "construct_wheel",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "rage_shield",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "rage_surge",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "rage_unleash",
+      "keybind": "key.thematic.ultimate"
+    }
+  ],
+  "tags": [
+    "lantern",
+    "red_lantern"
+  ],
+  "flight_type": "ONE_HAND_LEFT",
+  "suit-recipe": "thematic:alt_guy_gardner_red"
+}

@@ -1,0 +1,9 @@
+{
+  "priority": 1,
+  "wip": false,
+  "tier": 9,
+  "fighting_type": [
+    "BRAWLER"
+  ],
+  "suit-recipe": "thematic:invincible"
+}

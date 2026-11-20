@@ -1,0 +1,29 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:lantern_baton",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_lighter",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_shield_hope",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_bow_hope",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_light_of_hope",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_hope_bubble",
+      "required": false
+    }
+  ]
+}

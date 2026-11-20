@@ -1,0 +1,120 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:mace_windu"
+    }
+  ],
+  "type": "marvel:suit_variant",
+  "suit": {
+    "type": "neoforge:compound",
+    "children": [
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:ahsoka"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:cal_kestis"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:darth_maul"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:ezra_bridger"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:kanan"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:luke_skywalker"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:mace_windu"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:obi_wan"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:qui_gon"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:rey_skywalker"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:savage_opress"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:yoda"
+        },
+        "strict": false
+      }
+    ]
+  },
+  "results": {
+    "id": "integrated_superheroes:suit_helmet",
+    "components": {
+      "integrated_superheroes:suit": "thematic:mace_windu"
+    }
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "bat_swarm": {
+    "cooldown": 135,
+    "duration": 7,
+    "damage": 12.6,
+    "tuning": {
+      "blindness_amplifier": 0,
+      "blindness_duration": 3.5,
+      "darkness_amplifier": 0,
+      "darkness_duration": 1.25,
+      "immobile_amplifier": 0,
+      "immobile_duration": 3.5,
+      "slowness_amplifier": 0,
+      "slowness_duration": 4,
+      "stat_attack": 20,
+      "stat_defense": 5,
+      "stat_utility": 10,
+      "stun_amplifier": 0,
+      "stun_duration": 1.5,
+      "summon_count": 2,
+      "summon_scatter": 1
+    }
+  },
+  "death_run": {
+    "cooldown": 100,
+    "duration": 5,
+    "range": 6,
+    "damage": 1.35,
+    "amplifier": 2,
+    "tuning": {
+      "bleed_amplifier": 2,
+      "bleed_chance": 0.4,
+      "bleed_duration": 2,
+      "carry_distance": 2.2,
+      "carry_release": 0,
+      "hit_damage_times": 8,
+      "immobile_amplifier": 3,
+      "immobile_duration": 0.5,
+      "miss_cooldown": 0.25,
+      "push_strength": 1.9,
+      "push_strength_2": 1.6,
+      "push_vertical": 0.5,
+      "stun_amplifier": 0,
+      "stun_duration": 2.25
+    }
+  },
+  "death_skull_barrage": {
+    "cooldown": 21,
+    "duration": 4,
+    "range": 30,
+    "damage": 27.0,
+    "amplifier": 30
+  },
+  "death_spawn_hoard_death": {
+    "cooldown": 1,
+    "duration": 1,
+    "range": 1,
+    "damage": 1.5,
+    "amplifier": 0,
+    "tuning": {
+      "fire_resistance_amplifier": 0,
+      "summon_count": 4,
+      "summon_scatter": 11
+    }
+  },
+  "death_stare": {
+    "cooldown": 19.5,
+    "duration": 3,
+    "range": 45,
+    "amplifier": 2,
+    "tuning": {
+      "confusion_amplifier": 4,
+      "glowing_amplifier": 1,
+      "glowing_duration_times": 3,
+      "hunger_amplifier": 4,
+      "nausea_amplifier": 4,
+      "slowness_amplifier": 4,
+      "stun_amplifier": 0,
+      "stun_duration": 3,
+      "weakness_duration_times": 3,
+      "wither_amplifier": 1
+    }
+  },
+  "death_throw_construct": {
+    "cooldown": 90,
+    "damage": 81.0,
+    "tuning": {
+      "projectile_max_age": 100,
+      "projectile_speed": 1,
+      "projectile_spread": 2
+    }
+  },
+  "fear_incarnate": {
+    "cooldown": 96,
+    "duration": 8,
+    "range": 12,
+    "damage": 10.5,
+    "amplifier": 1,
+    "tuning": {
+      "projectile_count": 2,
+      "projectile_max_age": 3,
+      "projectile_speed": 1.6,
+      "projectile_spread": 6
+    }
+  },
+  "willpower_minigun": {
+    "cooldown": 38,
+    "duration": 15,
+    "range": 0,
+    "damage": 1.8,
+    "amplifier": 0,
+    "tuning": {
+      "give_rounds": 50
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:adam_strange",
+      "required": false
+    },
+    {
+      "id": "thematic:boba_fett",
+      "required": false
+    },
+    {
+      "id": "thematic:booster_gold",
+      "required": false
+    },
+    {
+      "id": "thematic:captain_rex",
+      "required": false
+    },
+    {
+      "id": "thematic:clone_trooper",
+      "required": false
+    },
+    {
+      "id": "thematic:commander_cody",
+      "required": false
+    },
+    {
+      "id": "thematic:cyborg",
+      "required": false
+    },
+    {
+      "id": "thematic:firefly",
+      "required": false
+    },
+    {
+      "id": "thematic:jango_fett",
+      "required": false
+    },
+    {
+      "id": "thematic:rocket_raccoon",
+      "required": false
+    },
+    {
+      "id": "thematic:star_lord",
+      "required": false
+    },
+    {
+      "id": "thematic:steel",
+      "required": false
+    },
+    {
+      "id": "thematic:stormtrooper",
+      "required": false
+    }
+  ]
+}

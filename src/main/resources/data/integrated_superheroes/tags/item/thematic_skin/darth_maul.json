@@ -1,0 +1,53 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:ahsoka",
+      "required": false
+    },
+    {
+      "id": "thematic:cal_kestis",
+      "required": false
+    },
+    {
+      "id": "thematic:darth_maul",
+      "required": false
+    },
+    {
+      "id": "thematic:ezra_bridger",
+      "required": false
+    },
+    {
+      "id": "thematic:kanan",
+      "required": false
+    },
+    {
+      "id": "thematic:luke_skywalker",
+      "required": false
+    },
+    {
+      "id": "thematic:mace_windu",
+      "required": false
+    },
+    {
+      "id": "thematic:obi_wan",
+      "required": false
+    },
+    {
+      "id": "thematic:qui_gon",
+      "required": false
+    },
+    {
+      "id": "thematic:rey_skywalker",
+      "required": false
+    },
+    {
+      "id": "thematic:savage_opress",
+      "required": false
+    },
+    {
+      "id": "thematic:yoda",
+      "required": false
+    }
+  ]
+}

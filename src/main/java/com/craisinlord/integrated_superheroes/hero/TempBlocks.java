@@ -51,7 +51,7 @@ public final class TempBlocks {
             placed.put(pos.immutable(), new Entry(existing.placed(), existing.original(), Math.max(existing.expires(), level.getGameTime() + ticks)));
             return true;
         }
-        if (player != null && !level.mayInteract(player, pos)) {
+        if (player != null && !HeroGrief.canPlace(player, level, pos)) {
             return false;
         }
         BlockState state;

@@ -1,0 +1,10 @@
+{
+  "parent": "thematic:red_hood",
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 0.98
+    }
+  ],
+  "suit-recipe": "thematic:alt_redhood_utrd"
+}

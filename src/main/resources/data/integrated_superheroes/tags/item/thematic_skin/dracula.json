@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:count_orlok",
+      "required": false
+    },
+    {
+      "id": "thematic:dracula",
+      "required": false
+    },
+    {
+      "id": "thematic:dracula_batman",
+      "required": false
+    },
+    {
+      "id": "thematic:dracula_untold",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    }
+  ],
+  "parent": "integrated_superheroes:avengers/root",
+  "display": {
+    "icon": {
+      "id": "integrated_superheroes:syringe_flora_colossus_groot"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.avengers.groot.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.avengers.groot.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

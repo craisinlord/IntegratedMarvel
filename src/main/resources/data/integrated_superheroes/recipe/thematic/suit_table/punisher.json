@@ -1,0 +1,49 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:punisher"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "minecraft:diamond_chestplate"
+  },
+  "ingredients": [
+    {
+      "item": "minecraft:name_tag"
+    },
+    {
+      "item": "thematic:kevlar"
+    },
+    {
+      "item": "thematic:kevlar"
+    },
+    {
+      "item": "marvellegacy:cloth_black"
+    },
+    {
+      "item": "marvellegacy:cloth_white"
+    },
+    {
+      "item": "thematic:carbon_fiber"
+    },
+    {
+      "item": "minecraft:gunpowder"
+    },
+    {
+      "item": "minecraft:gunpowder"
+    },
+    {
+      "item": "thematic:gadget_flash_grenade"
+    }
+  ],
+  "results": {
+    "id": "thematic:punisher"
+  }
+}

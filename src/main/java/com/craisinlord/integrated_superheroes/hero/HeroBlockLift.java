@@ -83,7 +83,7 @@ public final class HeroBlockLift {
     public static boolean movable(ServerLevel level, ServerPlayer player, BlockPos pos, Profile profile) {
         BlockState state = level.getBlockState(pos);
         return !state.isAir() && profile.filter().test(state) && !state.is(UNMOVABLE) && state.getDestroySpeed(level, pos) >= 0.0F
-                && level.mayInteract(player, pos);
+                && HeroGrief.canBreak(player, level, pos);
     }
 
     public static List<BlockPos> gather(ServerLevel level, ServerPlayer player, BlockPos start, Profile profile, boolean simpleOnly) {

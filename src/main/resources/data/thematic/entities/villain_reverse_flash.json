@@ -1,0 +1,55 @@
+{
+  "spawn_egg": { "colors": ["#E8C21A", "#B3161B"] },
+  "type": "thematic:mob",
+  "size": [
+    0.6,
+    1.95
+  ],
+  "scale": 1.0,
+  "spawn_group": "monster",
+  "track_range": 10,
+  "boss": true,
+  "attributes": {
+    "minecraft:generic.max_health": 350.0,
+    "minecraft:generic.armor": 10.0,
+    "minecraft:generic.movement_speed": 0.42,
+    "minecraft:generic.follow_range": 48.0,
+    "minecraft:generic.attack_damage": 10.0
+  },
+  "render": {
+    "kind": "worn_suit",
+    "model": "thematic:reverse_flash"
+  },
+  "suit": {
+    "id": "villain_reverse_flash",
+    "iv": 3
+  },
+  "phases": [
+    {
+      "health_below": 1.0,
+      "unlock": [
+        "lightning_clap",
+        "aerial_charge"
+      ]
+    },
+    {
+      "health_below": 0.5,
+      "unlock": [
+        "thunder_clap"
+      ]
+    }
+  ],
+  "persistent": true,
+  "morale": {
+    "break_chance": 0
+  },
+  "brain": {
+    "idle": [
+      {
+        "id": "thematic:random_walk",
+        "radius": 20,
+        "height": 6
+      }
+    ]
+  }
+}

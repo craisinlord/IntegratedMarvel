@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:ermac",
+      "required": false
+    },
+    {
+      "id": "thematic:ermac1",
+      "required": false
+    }
+  ]
+}

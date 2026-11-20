@@ -1,0 +1,29 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:sinestro",
+      "required": false
+    },
+    {
+      "id": "thematic:sinestro1",
+      "required": false
+    },
+    {
+      "id": "thematic:arkillo",
+      "required": false
+    },
+    {
+      "id": "thematic:hal_jordan_inj",
+      "required": false
+    },
+    {
+      "id": "thematic:joe_gardner",
+      "required": false
+    },
+    {
+      "id": "thematic:sinestro_batman",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "marvel:quicksilver_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:quicksilver_mcu_chestplate",
+      "required": false
+    },
+    {
+      "id": "thematic:quicksilver",
+      "required": false
+    }
+  ]
+}

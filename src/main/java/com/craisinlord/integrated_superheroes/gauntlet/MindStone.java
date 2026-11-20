@@ -1,5 +1,7 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
+import com.craisinlord.integrated_superheroes.hero.HeroAbilities;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceKey;
@@ -42,7 +44,7 @@ public final class MindStone {
             if (target != null && !thralls.contains(target)) thralls.add(target);
             int controlled = 0;
             for (LivingEntity thrall : thralls) {
-                if (GauntletAim.isProtectedEntity(thrall)) continue;
+                if (GauntletAim.isProtectedEntity(thrall) || HeroAbilities.isBoss(thrall)) continue;
                 if (MindControlManager.control(player, thrall, 1200L, controlled == 0)) {
                     controlled++;
                     GauntletFx.burst(cast.level(), thrall.getEyePosition(), "mind", 12, 0.3D);
@@ -55,6 +57,10 @@ public final class MindStone {
             GauntletFx.cast(player, "mind", SoundEvents.EVOKER_PREPARE_WOLOLO, 0.8F);
             cast.message("mind_mass_command", controlled);
             cast.cooldown();
+            return;
+        }
+        if (target != null && HeroAbilities.isBoss(target)) {
+            cast.message("boss_resists", target.getDisplayName());
             return;
         }
         if (target == null || !MindControlManager.control(player, target)) {

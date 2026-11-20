@@ -1,0 +1,10 @@
+{
+  "wip": false,
+  "tier": 9,
+  "abilities": [
+    {
+      "identifier": "banner_transform",
+      "keybind": "key.thematic.cosmetic"
+    }
+  ]
+}

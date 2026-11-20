@@ -1,0 +1,8 @@
+{
+  "name": "Aegis / Temporal Recall",
+  "category": "thematic:ability",
+  "icon": "minecraft:ender_eye",
+  "pages": [
+    "One key, two uses: raise a mobile 180-point ward and record your current position. The ward absorbs incoming damage and intercepts approaching ordinary projectiles, spending eight shield points per interception. Press the same key again within eight seconds to return to the anchor, consuming the ward and granting brief Resistance II. Recall moves position only, within the same dimension and 128 blocks, to a loaded safe destination. The base cooldown is 25 seconds after the window ends. Requires the full set."
+  ]
+}

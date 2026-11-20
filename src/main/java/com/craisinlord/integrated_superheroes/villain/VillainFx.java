@@ -109,6 +109,9 @@ public final class VillainFx {
     }
 
     public static void smoke(ServerLevel level, Vec3 at, double radius) {
+        if (HeroFx.vfx(level, at, "thick_smoke_bomb", 0, (float) radius)) {
+            return;
+        }
         level.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, at.x, at.y + 1.0D, at.z, (int) (radius * 14), radius * 0.5D, 0.8D, radius * 0.5D, 0.02D);
         level.sendParticles(ParticleTypes.LARGE_SMOKE, at.x, at.y + 1.0D, at.z, (int) (radius * 10), radius * 0.4D, 0.6D, radius * 0.4D, 0.02D);
     }

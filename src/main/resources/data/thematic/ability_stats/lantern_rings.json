@@ -1,0 +1,11 @@
+{
+  "compassion_blink": {
+    "cooldown": 10,
+    "range": 10
+  },
+  "love_crystal_prison": {
+    "cooldown": 20,
+    "duration": 4,
+    "range": 16
+  }
+}

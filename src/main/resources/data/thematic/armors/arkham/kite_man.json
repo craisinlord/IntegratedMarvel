@@ -1,0 +1,43 @@
+{
+  "priority": 10,
+  "wip": false,
+  "tier": 2,
+  "abilities": [],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 30,
+      "maximum": 40
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 10,
+      "maximum": 30
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 20,
+      "maximum": 30
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 30,
+      "maximum": 40
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 10,
+      "maximum": 20
+    }
+  ],
+  "fighting_type": [
+    "UTILITY",
+    "BRAWLER"
+  ],
+  "suit-recipe": "thematic:kite_man"
+}

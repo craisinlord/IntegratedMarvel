@@ -1,0 +1,13 @@
+{
+  "tier": 10,
+  "wip": true,
+  "fighting_type": [
+    "BRAWLER"
+  ],
+  "crafting": {
+    "force_rarity": 7,
+    "chat_message": "A UNIQUE Black Flash suit has been obtained! Only one can exist at a time.",
+    "force_shiny": false,
+    "unique_ownership": true
+  }
+}

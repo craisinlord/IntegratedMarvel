@@ -1,0 +1,32 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "S": {
+      "item": "thematic:death_shard"
+    },
+    "L": {
+      "item": "minecraft:wither_skeleton_skull"
+    },
+    "A": {
+      "item": "thematic:alien_tech"
+    },
+    "B": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "pattern": [
+    "SLS",
+    "ABA",
+    "S S"
+  ],
+  "result": {
+    "id": "thematic:black_ring"
+  }
+}

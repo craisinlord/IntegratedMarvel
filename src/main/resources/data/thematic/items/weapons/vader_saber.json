@@ -1,0 +1,14 @@
+{
+  "type": "thematic:weapon",
+  "creative_tab": "thematic:equipment",
+  "creative_order": 4600,
+  "max_count": 1,
+  "rarity": "epic",
+  "fireproof": true,
+  "attack_damage": 9.0,
+  "attack_speed": -2.4,
+  "traits": ["saber"],
+  "on_hit": [
+    { "type": "thematic:sound", "sound": "opposing_force:laser_blade_impact", "volume": 0.8 }
+  ]
+}

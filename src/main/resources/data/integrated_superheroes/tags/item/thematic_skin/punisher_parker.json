@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:punisher_parker",
+      "required": false
+    }
+  ]
+}

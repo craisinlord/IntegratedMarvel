@@ -1,0 +1,8 @@
+{
+    "name":  "Suit Overdrive",
+    "category":  "thematic:ability",
+    "icon":  "minecraft:redstone",
+    "pages":  [
+                  "Push the suit past its limits for a short time. You turn invisible while the suit boosts your strength and speed, and your jumps go higher. Landing a hit drops the cloak. When it ends, the suit lets out a shock that hurts and stuns everyone close by and throws them back."
+              ]
+}

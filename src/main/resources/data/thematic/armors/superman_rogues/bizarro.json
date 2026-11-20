@@ -1,0 +1,20 @@
+{
+  "priority": 1,
+  "wip": false,
+  "tier": 9,
+  "fighting_type": [
+    "BRAWLER"
+  ],
+  "suit-recipe": "thematic:bizarro",
+  "cape": {
+    "partCount": 16,
+    "height": 1.3,
+    "width": 0.4,
+    "thickness": 0.001,
+    "texture": "thematic:textures/cape/bizarro_cape.png",
+    "shinyTexture": "thematic:textures/cape/bizarro_cape_shiny.png",
+    "simulation": {
+      "type": "cape"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    }
+  ],
+  "parent": "integrated_superheroes:justice_league/atlantean",
+  "display": {
+    "icon": {
+      "id": "minecraft:cod"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.justice_league.atlantean.king_of_the_seas.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.justice_league.atlantean.king_of_the_seas.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -2,7 +2,16 @@ package com.craisinlord.integrated_superheroes.hero;
 
 import com.stxllarplanes.marvellegacy.data.PlayerData;
 import com.stxllarplanes.marvellegacy.power.Power;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -13,6 +22,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.tintankgames.marvel.core.particles.EmissiveDustParticleOptions;
 
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -24,6 +34,11 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 public final class HeroAbilities {
+    private static final TagKey<EntityType<?>> NO_CONTROL = TagKey.create(Registries.ENTITY_TYPE,
+            ResourceLocation.fromNamespaceAndPath("integrated_superheroes", "no_control"));
+    private static final String LIVING_VILLAIN_KEY = "integrated_superheroes_living_villain";
+    private static ResourceManager bossSource;
+    private static Set<ResourceLocation> dataBosses = Set.of();
     private static final Map<UUID, Dash> DASHES = new HashMap<>();
     private static final ThreadLocal<Boolean> ABILITY_DAMAGE = ThreadLocal.withInitial(() -> false);
 
@@ -79,10 +94,48 @@ public final class HeroAbilities {
     }
 
     public static boolean canControl(LivingEntity entity) {
-        if (entity.getType().is(net.neoforged.neoforge.common.Tags.EntityTypes.BOSSES)) {
+        if (entity.getType().is(net.neoforged.neoforge.common.Tags.EntityTypes.BOSSES) || entity.getType().is(NO_CONTROL)
+                || entity.getPersistentData().contains(LIVING_VILLAIN_KEY) || dataBoss(entity)) {
             return false;
         }
         return !(entity instanceof net.minecraft.world.entity.player.Player player) || !player.isCreative() && !player.isSpectator();
+    }
+
+    public static boolean isBoss(LivingEntity entity) {
+        return entity.getType().is(net.neoforged.neoforge.common.Tags.EntityTypes.BOSSES)
+                || entity.getPersistentData().contains(LIVING_VILLAIN_KEY)
+                || entity.getPersistentData().getBoolean(com.craisinlord.integrated_superheroes.villain.VillainBrain.MANAGED)
+                && !(entity instanceof net.tintankgames.marvel.world.entity.HydraAgent)
+                || dataBoss(entity);
+    }
+
+    private static boolean dataBoss(LivingEntity entity) {
+        if (!(entity.level() instanceof ServerLevel level)) {
+            return false;
+        }
+        ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+        if (!"thematic".equals(id.getNamespace())) {
+            return false;
+        }
+        ResourceManager manager = level.getServer().getResourceManager();
+        if (manager != bossSource) {
+            bossSource = manager;
+            Set<ResourceLocation> found = new HashSet<>();
+            for (Map.Entry<ResourceLocation, Resource> entry : manager.listResources("entities",
+                    file -> "thematic".equals(file.getNamespace()) && file.getPath().endsWith(".json")).entrySet()) {
+                try (Reader reader = entry.getValue().openAsReader()) {
+                    JsonElement json = JsonParser.parseReader(reader);
+                    if (json.isJsonObject() && json.getAsJsonObject().has("boss") && json.getAsJsonObject().get("boss").getAsBoolean()) {
+                        String path = entry.getKey().getPath();
+                        found.add(ResourceLocation.fromNamespaceAndPath(entry.getKey().getNamespace(),
+                                path.substring("entities/".length(), path.length() - ".json".length())));
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+            dataBosses = found;
+        }
+        return dataBosses.contains(id);
     }
 
     public static List<LivingEntity> cone(ServerPlayer player, double range, double halfAngleDegrees) {

@@ -1,0 +1,17 @@
+{
+  "neoforge:conditions": [ { "type": "neoforge:mod_loaded", "modid": "thematic" } ],
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "$": { "item": "thematic:blue_fabric" },
+    "#": { "item": "thematic:red_fabric" },
+    "!": { "item": "marvel:palladium_arc_reactor" },
+    "@": { "item": "thematic:fabric" }
+  },
+  "pattern": [
+    "###",
+    "@!@",
+    "$$$"
+  ],
+  "result": { "count": 1, "id": "thematic:iron_man_poster" }
+}

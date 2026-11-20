@@ -1,0 +1,401 @@
+{
+  "Version": 2,
+  "Id": "village_penguin",
+  "Display": "The Penguin",
+  "Area": "",
+  "Boss": {
+    "Entity": "thematic:penguin_boss",
+    "Suit": "the_penguin",
+    "BarColor": "BLUE",
+    "DarkenSky": true
+  },
+  "SpawnPoints": [],
+  "Objectives": [],
+  "Phases": [
+    {
+      "Type": "OBJECTIVE",
+      "Name": "Cut the charges",
+      "Entries": [
+        {
+          "entity": {
+            "id": "thematic:penguin_criminal_knife"
+          },
+          "Count": 3,
+          "SpawnPoints": []
+        },
+        {
+          "entity": {
+            "id": "thematic:penguin_criminal_smg"
+          },
+          "Count": 2,
+          "SpawnPoints": []
+        }
+      ],
+      "Transition": {
+        "Kind": "OBJECTIVES_COMPLETE",
+        "Seconds": 90,
+        "HpFraction": 0.0,
+        "ObjectivesRequired": 4,
+        "TimeoutSeconds": 90,
+        "OnTimeout": "ESCALATE"
+      },
+      "HealthMultiplier": 1.0,
+      "DamageMultiplier": 1.0,
+      "BossPresent": false,
+      "BossInvulnerable": false,
+      "BossAbilities": [],
+      "Escalation": {
+        "Entries": [
+          {
+            "entity": {
+              "id": "thematic:penguin_criminal_shotgun"
+            },
+            "Count": 2,
+            "SpawnPoints": []
+          }
+        ],
+        "MaxTimes": 2
+      },
+      "Announce": "Charges are wired around the site. Cut them!",
+      "BossHpThreshold": 0.0,
+      "GenerateCharges": 4,
+      "Dialogue": {
+        "PHASE_START": [
+          {
+            "Speaker": "The Penguin",
+            "Text": "You're early. The boys haven't finished loading.",
+            "Delay": 0,
+            "Style": "CHAT",
+            "Target": "PARTY"
+          },
+          {
+            "Speaker": "The Penguin",
+            "Text": "Cut them if you like. You won't get them all.",
+            "Delay": 50,
+            "Style": "CHAT",
+            "Target": "PARTY"
+          }
+        ],
+        "OBJECTIVE_DONE": [
+          {
+            "Speaker": "The Penguin",
+            "Text": "That's one. Congratulations.",
+            "Delay": 0,
+            "Style": "CHAT",
+            "Target": "PARTY"
+          }
+        ],
+        "ESCALATION": [
+          {
+            "Speaker": "The Penguin",
+            "Text": "Too slow. Bring up the rest of them.",
+            "Delay": 0,
+            "Style": "CHAT",
+            "Target": "PARTY"
+          }
+        ]
+      },
+      "DisguiseAs": "thematic:penguin_criminal"
+    },
+    {
+      "Type": "COMBAT",
+      "Name": "The crew",
+      "Entries": [
+        {
+          "entity": {
+            "id": "thematic:penguin_criminal"
+          },
+          "Count": 3,
+          "SpawnPoints": []
+        },
+        {
+          "entity": {
+            "id": "thematic:penguin_criminal_rifle"
+          },
+          "Count": 3,
+          "SpawnPoints": []
+        },
+        {
+          "entity": {
+            "id": "thematic:penguin_criminal_shotgun"
+          },
+          "Count": 2,
+          "SpawnPoints": []
+        }
+      ],
+      "Transition": {
+        "Kind": "ALL_MOBS_DEAD",
+        "Seconds": 0,
+        "HpFraction": 0.0,
+        "ObjectivesRequired": 0,
+        "TimeoutSeconds": 300,
+        "OnTimeout": "ADVANCE"
+      },
+      "HealthMultiplier": 1.0,
+      "DamageMultiplier": 1.0,
+      "BossPresent": false,
+      "BossInvulnerable": false,
+      "BossAbilities": [],
+      "Escalation": {
+        "Entries": [],
+        "MaxTimes": 2
+      },
+      "Announce": "The whole crew is on you.",
+      "BossHpThreshold": 0.0,
+      "GenerateCharges": 0,
+      "Dialogue": {}
+    },
+    {
+      "Type": "CINEMATIC",
+      "Name": "He's here",
+      "Entries": [],
+      "Transition": {
+        "Kind": "TIMER",
+        "Seconds": 6,
+        "HpFraction": 0.0,
+        "ObjectivesRequired": 0,
+        "TimeoutSeconds": 300,
+        "OnTimeout": "ADVANCE"
+      },
+      "HealthMultiplier": 1.0,
+      "DamageMultiplier": 1.0,
+      "BossPresent": false,
+      "BossInvulnerable": false,
+      "BossAbilities": [],
+      "Escalation": {
+        "Entries": [],
+        "MaxTimes": 2
+      },
+      "Announce": "The Penguin has arrived.",
+      "BossHpThreshold": 0.0,
+      "GenerateCharges": 0,
+      "Dialogue": {
+        "PHASE_START": [
+          {
+            "Speaker": "",
+            "Text": "The Penguin",
+            "Delay": 0,
+            "Style": "TITLE",
+            "Target": "PARTY"
+          },
+          {
+            "Speaker": "The Penguin",
+            "Text": "Enough. If you want it done properly...",
+            "Delay": 40,
+            "Style": "CHAT",
+            "Target": "PARTY",
+            "Sound": "minecraft:entity.wither.spawn"
+          }
+        ]
+      }
+    },
+    {
+      "Type": "BOSS",
+      "Name": "The Penguin",
+      "Entries": [
+        {
+          "entity": {
+            "id": "thematic:penguin_boss"
+          },
+          "Count": 1,
+          "SpawnPoints": []
+        }
+      ],
+      "Transition": {
+        "Kind": "BOSS_HP_BELOW",
+        "Seconds": 0,
+        "HpFraction": 0.5,
+        "ObjectivesRequired": 0,
+        "TimeoutSeconds": 300,
+        "OnTimeout": "ADVANCE"
+      },
+      "HealthMultiplier": 0.7,
+      "DamageMultiplier": 1.0,
+      "BossPresent": true,
+      "BossInvulnerable": false,
+      "BossAbilities": [
+        "chattering_teeth"
+      ],
+      "Escalation": {
+        "Entries": [],
+        "MaxTimes": 2
+      },
+      "Announce": "",
+      "BossHpThreshold": 0.75,
+      "GenerateCharges": 0,
+      "Dialogue": {
+        "BOSS_HP": [
+          {
+            "Speaker": "The Penguin",
+            "Text": "You're better than the last one they sent.",
+            "Delay": 0,
+            "Style": "CHAT",
+            "Target": "PARTY"
+          }
+        ]
+      }
+    },
+    {
+      "Type": "RETREAT",
+      "Name": "He's running",
+      "Entries": [
+        {
+          "entity": {
+            "id": "thematic:penguin_heavy"
+          },
+          "Count": 2,
+          "SpawnPoints": []
+        },
+        {
+          "entity": {
+            "id": "thematic:penguin_heavy_shotgun"
+          },
+          "Count": 2,
+          "SpawnPoints": []
+        },
+        {
+          "entity": {
+            "id": "thematic:penguin_heavy_lmg"
+          },
+          "Count": 1,
+          "SpawnPoints": []
+        },
+        {
+          "entity": {
+            "id": "thematic:penguin_criminal_sniper"
+          },
+          "Count": 1,
+          "SpawnPoints": []
+        }
+      ],
+      "Transition": {
+        "Kind": "ALL_MOBS_DEAD",
+        "Seconds": 0,
+        "HpFraction": 0.0,
+        "ObjectivesRequired": 0,
+        "TimeoutSeconds": 300,
+        "OnTimeout": "ADVANCE"
+      },
+      "HealthMultiplier": 1.0,
+      "DamageMultiplier": 1.0,
+      "BossPresent": false,
+      "BossInvulnerable": false,
+      "BossAbilities": [],
+      "Escalation": {
+        "Entries": [],
+        "MaxTimes": 2
+      },
+      "Announce": "The Penguin is falling back. Stop his men!",
+      "BossHpThreshold": 0.0,
+      "GenerateCharges": 0,
+      "Dialogue": {
+        "PHASE_START": [
+          {
+            "Speaker": "The Penguin",
+            "Text": "Hold them here. I have business upstairs.",
+            "Delay": 0,
+            "Style": "CHAT",
+            "Target": "PARTY"
+          }
+        ]
+      }
+    },
+    {
+      "Type": "BOSS",
+      "Name": "The Penguin returns",
+      "Entries": [
+        {
+          "entity": {
+            "id": "thematic:penguin_boss"
+          },
+          "Count": 1,
+          "SpawnPoints": []
+        },
+        {
+          "entity": {
+            "id": "thematic:penguin_criminal_rocket_launcher"
+          },
+          "Count": 2,
+          "SpawnPoints": []
+        }
+      ],
+      "Transition": {
+        "Kind": "ALL_MOBS_DEAD",
+        "Seconds": 0,
+        "HpFraction": 0.0,
+        "ObjectivesRequired": 0,
+        "TimeoutSeconds": 300,
+        "OnTimeout": "ADVANCE"
+      },
+      "HealthMultiplier": 1.6,
+      "DamageMultiplier": 1.4,
+      "BossPresent": true,
+      "BossInvulnerable": false,
+      "BossAbilities": [
+        "chattering_teeth",
+        "crowd_control"
+      ],
+      "Escalation": {
+        "Entries": [],
+        "MaxTimes": 2
+      },
+      "Announce": "The Penguin is back. And he brought the artillery.",
+      "BossHpThreshold": 0.0,
+      "GenerateCharges": 0,
+      "Dialogue": {
+        "PHASE_START": [
+          {
+            "Speaker": "The Penguin",
+            "Text": "No more games.",
+            "Delay": 0,
+            "Style": "TITLE",
+            "Target": "PARTY"
+          },
+          {
+            "Speaker": "The Penguin",
+            "Text": "You should have taken the boat.",
+            "Delay": 45,
+            "Style": "CHAT",
+            "Target": "PARTY"
+          }
+        ]
+      }
+    }
+  ],
+  "Return": {
+    "World": "",
+    "Pos": {
+      "X": 0.0,
+      "Y": 0.0,
+      "Z": 0.0
+    },
+    "Yaw": 0.0
+  },
+  "Limits": {
+    "MaxConcurrentMobs": 24,
+    "MaxPartySize": 4,
+    "MinPlayers": 1,
+    "MaxSessionMinutes": 30
+  },
+  "Arena": {},
+  "Briefing": [
+    {
+      "Speaker": "Police radio",
+      "Text": "Armed crew unloading crates near the village. Looks like Penguin's people.",
+      "Delay": 0,
+      "Style": "CHAT",
+      "Target": "PARTY"
+    },
+    {
+      "Speaker": "Police radio",
+      "Text": "They're not alone. Expect him to show once his men start dropping.",
+      "Delay": 50,
+      "Style": "CHAT",
+      "Target": "PARTY"
+    }
+  ],
+  "Cooldown": {
+    "Seconds": 7200,
+    "PerPlayer": true
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "parent": "integrated_superheroes:x_men/professor_x",
+  "display": {
+    "icon": {
+      "id": "minecraft:lead"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.x_men.professor_x.school_is_in_session.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.x_men.professor_x.school_is_in_session.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

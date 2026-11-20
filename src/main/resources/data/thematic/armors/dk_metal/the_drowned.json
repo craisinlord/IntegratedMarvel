@@ -1,0 +1,121 @@
+{
+  "wip": false,
+  "tier": 9,
+  "abilities": [
+    {
+      "identifier": "acrobatics",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "equip",
+      "keybind": "key.thematic.equip_item",
+      "options": {
+        "fields": {
+          "label": "equip_aquamantrident",
+          "items": [
+            {
+              "item": "thematic:aquamantrident",
+              "count": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "identifier": "water_breathing",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "enhanced_swimming",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "aquatic_army",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "from_the_deep",
+      "keybind": "key.thematic.ability_4"
+    },
+    {
+      "identifier": "utility_belt",
+      "keybind": "key.thematic.ability_1",
+      "options": {
+        "fields": {
+          "level": "9"
+        }
+      }
+    },
+    {
+      "identifier": "utility_use",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "battle_charge",
+      "keybind": "key.thematic.utility"
+    },
+    {
+      "identifier": "trident_rush",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "tentacle_throw",
+      "keybind": "key.thematic.ability_5"
+    },
+    {
+      "identifier": "water_vision",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "roaring_seas",
+      "keybind": "key.thematic.ultimate"
+    },
+    {
+      "identifier": "gliding",
+      "keybind": "key.thematic.passive"
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 0.98
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 50,
+      "maximum": 75
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 20,
+      "maximum": 40
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 40,
+      "maximum": 60
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 8,
+      "maximum": 25
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 10,
+      "maximum": 28
+    }
+  ],
+  "fighting_type": [
+    "DUELIST"
+  ],
+  "suit-recipe": "thematic:the_drowned",
+  "priority": 10
+}

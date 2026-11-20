@@ -1,0 +1,96 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:batman_2004"
+    }
+  ],
+  "type": "marvel:suit_variant",
+  "suit": {
+    "type": "neoforge:compound",
+    "children": [
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_2004"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_dceu"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_lords"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_redson"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:batman_who_laughs"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:dark_knight"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:grim_knight"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:murder_machine"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_helmet",
+        "components": {
+          "integrated_superheroes:suit": "thematic:the_batman"
+        },
+        "strict": false
+      }
+    ]
+  },
+  "results": {
+    "id": "integrated_superheroes:suit_helmet",
+    "components": {
+      "integrated_superheroes:suit": "thematic:batman_2004"
+    }
+  }
+}

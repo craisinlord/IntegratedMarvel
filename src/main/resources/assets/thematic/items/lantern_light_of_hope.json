@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "thematic:item/lantern_light_of_hope",
+    "model": {
+      "type": "thematic:builtin_entity"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "priority": 1,
+  "tier": 8,
+  "sounds": {
+    "land_big": [
+      "thematic:spiderman_hard_landing_1",
+      "thematic:spiderman_hard_landing_2"
+    ],
+    "land_vehicle": "thematic:spiderman_land_car",
+    "hurt": [
+      "thematic:spiderman_take_hit_1",
+      "thematic:spiderman_take_hit_2"
+    ],
+    "splash": "thematic:spiderman_splash",
+    "step": {
+      "minecraft:dirt": [
+        "thematic:spiderman_step_grass_l_1",
+        "thematic:spiderman_step_grass_r_1",
+        "thematic:spiderman_step_grass_l_2",
+        "thematic:spiderman_step_grass_r_2",
+        "thematic:spiderman_step_grass_l_3",
+        "thematic:spiderman_step_grass_r_3"
+      ]
+    }
+  },
+  "fighting_type": [
+    "BRAWLER"
+  ]
+}

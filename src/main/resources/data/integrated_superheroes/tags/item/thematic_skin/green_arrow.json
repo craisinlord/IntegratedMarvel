@@ -1,0 +1,197 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:arrow_bn",
+      "required": false
+    },
+    {
+      "id": "thematic:arrow_dtctg",
+      "required": false
+    },
+    {
+      "id": "thematic:arsenal",
+      "required": false
+    },
+    {
+      "id": "thematic:arsenal52",
+      "required": false
+    },
+    {
+      "id": "thematic:arsenal_cw",
+      "required": false
+    },
+    {
+      "id": "thematic:arsenal_dawn",
+      "required": false
+    },
+    {
+      "id": "thematic:arsenal_futures_end",
+      "required": false
+    },
+    {
+      "id": "thematic:arsenal_outsiders",
+      "required": false
+    },
+    {
+      "id": "thematic:artemis",
+      "required": false
+    },
+    {
+      "id": "thematic:connor_hawke",
+      "required": false
+    },
+    {
+      "id": "thematic:emiko_queen",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow1",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow40s",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow52",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow_2024",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow_absolute",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow_arctic",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow_bd",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow_castaway",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow_cw",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow_dawn",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow_dawn2",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow_dceased",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow_injustice",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow_injustice1",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow_jlu",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow_kc",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow_lh",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow_showcase",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow_starro",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow_tomorrowverse",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow_vampires",
+      "required": false
+    },
+    {
+      "id": "thematic:green_arrow_yj",
+      "required": false
+    },
+    {
+      "id": "thematic:hawke_absolute",
+      "required": false
+    },
+    {
+      "id": "thematic:hawke_dawn",
+      "required": false
+    },
+    {
+      "id": "thematic:hawke_lazarus",
+      "required": false
+    },
+    {
+      "id": "thematic:merlyn",
+      "required": false
+    },
+    {
+      "id": "thematic:mia_dearden",
+      "required": false
+    },
+    {
+      "id": "thematic:netherite_green_arrow",
+      "required": false
+    },
+    {
+      "id": "thematic:oliver_queen",
+      "required": false
+    },
+    {
+      "id": "thematic:red_arrow",
+      "required": false
+    },
+    {
+      "id": "thematic:red_arrow1",
+      "required": false
+    },
+    {
+      "id": "thematic:shado",
+      "required": false
+    },
+    {
+      "id": "thematic:speedy",
+      "required": false
+    },
+    {
+      "id": "thematic:speedy40s",
+      "required": false
+    },
+    {
+      "id": "thematic:speedy_dcau",
+      "required": false
+    },
+    {
+      "id": "thematic:speedy_judas",
+      "required": false
+    }
+  ]
+}

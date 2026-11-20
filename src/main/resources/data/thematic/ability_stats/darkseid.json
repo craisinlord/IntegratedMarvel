@@ -1,0 +1,34 @@
+{
+  "darkseid_omega_beams": {
+    "cooldown": 5,
+    "duration": 0,
+    "range": 48,
+    "damage": 110,
+    "disabled": false,
+    "tuning": {
+      "chain_range": 8,
+      "chain_share": 0.6
+    }
+  },
+  "darkseid_boom_tube": {
+    "cooldown": 14,
+    "duration": 0,
+    "range": 48,
+    "damage": 65,
+    "disabled": false,
+    "tuning": {
+      "shock_radius": 6
+    }
+  },
+  "darkseid_omega_sanction": {
+    "cooldown": 100,
+    "duration": 0,
+    "range": 32,
+    "damage": 240,
+    "disabled": false,
+    "tuning": {
+      "max_targets": 6,
+      "marked_multiplier": 1.5
+    }
+  }
+}

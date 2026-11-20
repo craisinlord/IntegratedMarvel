@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:hulk",
+      "required": false
+    },
+    {
+      "id": "thematic:hulk_gladiator",
+      "required": false
+    },
+    {
+      "id": "thematic:maestro",
+      "required": false
+    }
+  ]
+}

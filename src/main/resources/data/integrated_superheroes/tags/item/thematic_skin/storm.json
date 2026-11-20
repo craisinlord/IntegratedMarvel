@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:storm",
+      "required": false
+    },
+    {
+      "id": "thematic:storm_x_uniform",
+      "required": false
+    }
+  ]
+}

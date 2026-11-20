@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:kenshi",
+      "required": false
+    },
+    {
+      "id": "thematic:kenshi_mk1",
+      "required": false
+    }
+  ]
+}

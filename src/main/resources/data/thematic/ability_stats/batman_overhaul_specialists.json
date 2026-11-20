@@ -1,0 +1,136 @@
+{
+  "bat_knightfall_slam": {
+    "cooldown": 10,
+    "duration": 3,
+    "range": 6,
+    "damage": 62,
+    "amplifier": 2,
+    "tuning": {
+      "drop_bonus": 0.04,
+      "drop_cap": 20,
+      "lasts": 4,
+      "push_lift": 1.5,
+      "push_lift_2": -320,
+      "push_lift_3": 0.8,
+      "slowness_duration": 3
+    }
+  },
+  "bat_suit_overdrive": {
+    "cooldown": 120,
+    "duration": 12,
+    "range": 7,
+    "damage": 72,
+    "amplifier": 0,
+    "tuning": {
+      "invisibility_amplifier": 0,
+      "jump_amplifier": 1,
+      "push_lift": 0.4,
+      "push_strength": 1.6,
+      "speed_amplifier": 2,
+      "strength_amplifier": 2,
+      "stun_amplifier": 0,
+      "stun_duration": 2.5
+    }
+  },
+  "bat_sonar_pulse": {
+    "cooldown": 15,
+    "duration": 10,
+    "range": 48,
+    "damage": 0,
+    "amplifier": 0
+  },
+  "bat_harpoon_grapnel": {
+    "cooldown": 5,
+    "duration": 1,
+    "range": 28,
+    "damage": 17,
+    "amplifier": 0,
+    "tuning": {
+      "big_height": 2.2,
+      "fire_for": 0.25,
+      "pull_for": 1,
+      "pull_stop_within": 2,
+      "pull_strength": 0.9,
+      "reel_for": 2.5,
+      "reel_speed": 1.3,
+      "reel_stop_within": 2
+    }
+  },
+  "bat_freeze_gel": {
+    "cooldown": 12,
+    "duration": 6,
+    "range": 4,
+    "damage": 38,
+    "amplifier": 3,
+    "tuning": {
+      "frozen_amplifier": 0,
+      "frozen_duration": 2,
+      "projectile_fuse": 3,
+      "projectile_speed": 1.4,
+      "release_at": 0.3,
+      "slowness_duration": 3,
+      "zone_damage": 5,
+      "zone_every": 1
+    }
+  },
+  "bat_snow_cloak": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 24,
+    "damage": 0,
+    "amplifier": 0,
+    "tuning": {
+      "invisibility_amplifier": 6,
+      "invisibility_duration": 1,
+      "settle_time": 2
+    }
+  },
+  "bat_sunlight_flare": {
+    "cooldown": 20,
+    "duration": 8,
+    "range": 6,
+    "damage": 11,
+    "amplifier": 0,
+    "tuning": {
+      "ignite_seconds": 3,
+      "projectile_gravity": 0.04,
+      "projectile_max_age": 6,
+      "projectile_speed": 1.3,
+      "release_at": 0.3,
+      "zone_every": 1
+    }
+  },
+  "bat_undead_hunter": {
+    "cooldown": 0,
+    "duration": 0,
+    "range": 0,
+    "damage": 0,
+    "amplifier": 0,
+    "tuning": {
+      "damage_bonus_times": 0.3
+    }
+  },
+  "bat_gas_lantern": {
+    "cooldown": 18,
+    "duration": 30,
+    "range": 10,
+    "damage": 0,
+    "amplifier": 0,
+    "tuning": {
+      "blindness_duration": 4,
+      "flash_radius": 8,
+      "projectile_gravity": 0.04,
+      "projectile_max_age": 6,
+      "projectile_speed": 1.2,
+      "release_at": 0.3,
+      "slowness_amplifier": 1
+    }
+  },
+  "bat_improvised_gadget": {
+    "cooldown": 7,
+    "duration": 0,
+    "range": 0,
+    "damage": 19,
+    "amplifier": 0
+  }
+}

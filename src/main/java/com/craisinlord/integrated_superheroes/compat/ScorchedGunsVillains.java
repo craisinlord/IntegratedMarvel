@@ -24,6 +24,10 @@ public final class ScorchedGunsVillains {
         return stack.getItem() instanceof GunItem;
     }
 
+    public static LivingEntity shooter(net.minecraft.world.entity.Entity entity) {
+        return entity instanceof top.ribs.scguns.entity.projectile.ProjectileEntity projectile ? projectile.getShooter() : null;
+    }
+
     public static void reassessGunner(PathfinderMob mob) {
         try {
             GunnerMobSpawner.reassessWeaponGoal(mob);
@@ -50,6 +54,14 @@ public final class ScorchedGunsVillains {
         double ticks = 16.0D;
         grenade.setDeltaMovement(delta.x / ticks, delta.y / ticks + 0.5D * 0.05D * ticks, delta.z / ticks);
         level.addFreshEntity(grenade);
+    }
+
+    public static int fireDelay(ItemStack gun) {
+        try {
+            return Math.max(1, new ScGunsWeapon(gun).getMobAttackCooldown());
+        } catch (RuntimeException | LinkageError ignored) {
+            return 10;
+        }
     }
 
     public static void shoot(Mob mob, ItemStack gun, Vec3 at, float volume) {

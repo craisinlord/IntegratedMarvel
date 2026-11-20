@@ -1,0 +1,57 @@
+{
+  "wip": true,
+  "creative": false,
+  "boss": true,
+  "tier": 8,
+  "model": "thematic:joker",
+  "mob_tempo": {
+    "gap": 14,
+    "evaluate": 4
+  },
+  "abilities": [
+    {
+      "identifier": "flower_spray",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "fire_spray",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "crowbar_blitz",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "snake_pellets",
+      "keybind": "key.thematic.ability_4"
+    },
+    {
+      "identifier": "boxing_glove",
+      "keybind": "key.thematic.ability_5"
+    },
+    {
+      "identifier": "laughing_gas",
+      "keybind": "key.thematic.ultimate"
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 36,
+      "maximum": 50
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 50,
+      "maximum": 65
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 34,
+      "maximum": 48
+    }
+  ],
+  "fighting_type": [
+    "DUELIST"
+  ]
+}

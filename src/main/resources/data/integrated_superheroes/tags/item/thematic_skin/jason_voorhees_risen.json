@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:jason_voorhees_risen",
+      "required": false
+    }
+  ]
+}

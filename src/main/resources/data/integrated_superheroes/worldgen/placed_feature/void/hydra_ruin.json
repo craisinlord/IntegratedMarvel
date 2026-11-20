@@ -1,0 +1,23 @@
+{
+  "feature": "integrated_superheroes:void/hydra_ruin",
+  "placement": [
+    {
+      "type": "integrated_superheroes:void_tier_chance",
+      "chances": [
+        0.0,
+        0.025,
+        0.035,
+        0.045,
+        0.055,
+        0.065
+      ]
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "WORLD_SURFACE_WG"
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

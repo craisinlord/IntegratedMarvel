@@ -1,0 +1,21 @@
+{
+  "processors": [
+    {
+      "processor_type": "minecraft:jigsaw_replacement"
+    },
+    {
+      "processor_type": "integrated_superheroes:pruned_decay",
+      "erode_to": {
+        "type": "minecraft:simple_state_provider",
+        "state": {
+          "Name": "antarchy:smooth_dream_sandstone"
+        }
+      },
+      "integrity": 0.9,
+      "integrity_per_tier": 0.04,
+      "height_fade": 0.02,
+      "fade_start": 4,
+      "erode_chance": 0.12
+    }
+  ]
+}

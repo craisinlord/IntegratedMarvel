@@ -1,0 +1,46 @@
+{
+  "tier": 6,
+  "abilities": [
+    {
+      "identifier": "acrobatics",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "level": "2"
+        }
+      }
+    },
+    {
+      "identifier": "stealth",
+      "keybind": "key.thematic.passive"
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 4,
+      "maximum": 24
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 50,
+      "maximum": 70
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_knockbase_resistance",
+      "minimum": 3,
+      "maximum": 23
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 3,
+      "maximum": 23
+    }
+  ],
+  "fighting_type": []
+}

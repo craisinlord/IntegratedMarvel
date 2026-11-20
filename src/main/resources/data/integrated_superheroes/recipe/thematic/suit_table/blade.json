@@ -1,0 +1,55 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:blade"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "minecraft:diamond_chestplate"
+  },
+  "ingredients": [
+    {
+      "type": "neoforge:components",
+      "items": "minecraft:leather_chestplate",
+      "components": {
+        "minecraft:dyed_color": {
+          "rgb": 1908001
+        }
+      }
+    },
+    {
+      "item": "thematic:imbued_blood_vial"
+    },
+    {
+      "item": "marvel:villager_blood_sample"
+    },
+    {
+      "item": "thematic:kevlar"
+    },
+    {
+      "item": "marvel:titanium_ingot"
+    },
+    {
+      "item": "marvel:titanium_ingot"
+    },
+    {
+      "item": "marvellegacy:syringe_empty"
+    },
+    {
+      "item": "minecraft:glowstone"
+    },
+    {
+      "item": "minecraft:iron_sword"
+    }
+  ],
+  "results": {
+    "id": "thematic:blade"
+  }
+}

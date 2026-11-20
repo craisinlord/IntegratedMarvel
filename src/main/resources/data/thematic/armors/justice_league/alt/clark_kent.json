@@ -1,0 +1,11 @@
+{
+  "parent": "thematic:superman",
+  "fighting_type": [
+    "UTILITY",
+    "BRAWLER"
+  ],
+  "suit-recipe": "thematic:alt_clark_kent",
+  "cape": {
+    "remove": true
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:bane",
+      "required": false
+    },
+    {
+      "id": "thematic:bane_hardy",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "S": {
+      "item": "thematic:greed_shard"
+    },
+    "L": {
+      "item": "minecraft:gold_block"
+    },
+    "A": {
+      "item": "thematic:alien_tech"
+    },
+    "B": {
+      "item": "minecraft:diamond_block"
+    }
+  },
+  "pattern": [
+    "SLS",
+    "ABA",
+    "S S"
+  ],
+  "result": {
+    "id": "thematic:orange_ring"
+  }
+}

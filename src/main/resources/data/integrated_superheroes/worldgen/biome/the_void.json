@@ -1,0 +1,70 @@
+{
+  "has_precipitation": false,
+  "temperature": 0.8,
+  "downfall": 0.0,
+  "effects": {
+    "sky_color": 9208992,
+    "fog_color": 10130346,
+    "water_color": 4159204,
+    "water_fog_color": 329011,
+    "ambient_sound": {
+      "sound_id": "integrated_superheroes:ambient.void.wind"
+    },
+    "particle": {
+      "options": {
+        "type": "minecraft:warped_spore"
+      },
+      "probability": 0.005
+    },
+    "additions_sound": {
+      "sound": {
+        "sound_id": "integrated_superheroes:ambient.void.thunder"
+      },
+      "tick_chance": 0.0008
+    }
+  },
+  "spawners": {
+    "monster": [
+      {
+        "type": "marvel:hydra_agent",
+        "weight": 10,
+        "minCount": 1,
+        "maxCount": 2
+      }
+    ],
+    "creature": [],
+    "ambient": [],
+    "axolotls": [],
+    "underground_water_creature": [],
+    "water_creature": [],
+    "water_ambient": [],
+    "misc": []
+  },
+  "spawn_costs": {
+    "marvel:hydra_agent": {
+      "energy_budget": 0.12,
+      "charge": 0.7
+    }
+  },
+  "carvers": {},
+  "features": [
+    [],
+    [],
+    [
+      "integrated_superheroes:void/hydra_pillars"
+    ],
+    [],
+    [
+      "integrated_superheroes:void/pruned_debris",
+      "integrated_superheroes:void/hydra_ruin"
+    ],
+    [],
+    [],
+    [],
+    [],
+    [
+      "integrated_superheroes:void/rubble"
+    ],
+    []
+  ]
+}

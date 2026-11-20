@@ -1,0 +1,35 @@
+{
+  "priority": 10,
+  "wip": false,
+  "tier": 3,
+  "abilities": [],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 20,
+      "maximum": 30
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 30,
+      "maximum": 40
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 30,
+      "maximum": 40
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 50,
+      "maximum": 55
+    }
+  ],
+  "fighting_type": [
+    "UTILITY"
+  ],
+  "suit-recipe": "thematic:alfred",
+  "tags": [
+    "auto_reload"
+  ]
+}

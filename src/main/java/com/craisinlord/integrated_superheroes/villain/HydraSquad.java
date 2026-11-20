@@ -49,16 +49,16 @@ public final class HydraSquad {
     }
 
     public enum Role {
-        // Mob guns fire once per gun "rate" ticks, so these are copper/blackpowder picks chosen on damage per second.
         RIFLEMAN("scguns:makeshift_rifle", "minecraft:crossbow", 22, 2),
         ASSAULT("scguns:rusty_gnat", "minecraft:iron_sword", 16, 2),
-        // Every lower-tier shotgun fires about twice as fast, so the combat shotgun is still the gentlest one.
         BREACHER("scguns:combat_shotgun", "minecraft:iron_axe", 12, 2),
         SNIPER("scguns:llr_director", "minecraft:crossbow", 10, 3),
         GRENADIER("scguns:umax_pistol", "minecraft:iron_sword", 12, 2),
         TROOPER("scguns:laser_musket", "minecraft:crossbow", 10, 2),
         CROSSBOWMAN("marvel:tesseract_crossbow", "marvel:tesseract_crossbow", 10, 2),
-        OFFICER("scguns:flintlock_pistol", "minecraft:crossbow", 8, 3);
+        OFFICER("scguns:flintlock_pistol", "minecraft:crossbow", 8, 3),
+        HEAVY("scguns:gattaler", "minecraft:iron_axe", 6, 2),
+        ROCKETEER("scguns:dozier_rl", "minecraft:crossbow", 4, 2);
 
         final String gun;
         final String fallback;
@@ -87,6 +87,44 @@ public final class HydraSquad {
                 }
             }
             return null;
+        }
+    }
+
+    static void register() {
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(HydraSquad::onProjectileJoin);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(HydraSquad::onDetonate);
+    }
+
+    private static void onProjectileJoin(net.neoforged.neoforge.event.entity.EntityJoinLevelEvent event) {
+        if (event.getLevel().isClientSide() || event.loadedFromDisk() || !ModCompat.SCORCHED_GUNS || !VillainConfig.enabled()) {
+            return;
+        }
+        LivingEntity shooter = ScorchedGunsVillains.shooter(event.getEntity());
+        if (shooter instanceof HydraAgent agent && role(agent) == Role.ROCKETEER && !clearShot(agent)) {
+            event.setCanceled(true);
+        }
+    }
+
+    static boolean clearShot(HydraAgent agent) {
+        LivingEntity target = agent.getTarget();
+        double radius = VillainConfig.ROCKETEER_SAFETY_RADIUS.get();
+        if (target == null || radius <= 0.0D) {
+            return true;
+        }
+        return agent.level().getEntitiesOfClass(HydraAgent.class, target.getBoundingBox().inflate(radius),
+                e -> e != agent && e.isAlive() && e.distanceToSqr(target) <= radius * radius).isEmpty();
+    }
+
+    private static void onDetonate(net.neoforged.neoforge.event.level.ExplosionEvent.Detonate event) {
+        if (event.getLevel().isClientSide() || event.getLevel().getGameRules().getBoolean(net.minecraft.world.level.GameRules.RULE_MOBGRIEFING)) {
+            return;
+        }
+        Entity source = event.getExplosion().getIndirectSourceEntity();
+        if (source == null && ModCompat.SCORCHED_GUNS && event.getExplosion().getDirectSourceEntity() != null) {
+            source = ScorchedGunsVillains.shooter(event.getExplosion().getDirectSourceEntity());
+        }
+        if (source instanceof HydraAgent) {
+            event.getAffectedBlocks().clear();
         }
     }
 
@@ -342,6 +380,10 @@ public final class HydraSquad {
             }
             if (role == Role.GRENADIER) {
                 grenadeTick(level, now, target, sees);
+            }
+            if (role == Role.SNIPER && sees && VillainConfig.SNIPERS_HOLD.get() && agent.distanceToSqr(target) > 100.0D) {
+                agent.getNavigation().stop();
+                agent.getMoveControl().strafe(0.0F, 0.0F);
             }
         }
 

@@ -1,0 +1,29 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:lantern_scythe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_battle_axe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_butcher_knife",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_trident",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_soul_scythe",
+      "required": false
+    },
+    {
+      "id": "thematic:lantern_grasping_hand",
+      "required": false
+    }
+  ]
+}

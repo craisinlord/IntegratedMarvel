@@ -1,0 +1,200 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:fg_liu_kang"
+    }
+  ],
+  "type": "marvel:suit_variant",
+  "suit": {
+    "type": "neoforge:compound",
+    "children": [
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:black_widow"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:catwoman"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:elektra"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:fg_liu_kang"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:huntress"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:iron_fist"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:jade"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:james_bond"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:johnny_cage"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:johnny_cage_mk1"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:katana"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:kitana"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:liu_kang"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:mileena"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:mockingbird"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:nebula"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:rasalghul"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:shang_chi"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:sonya"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:talia"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:talon"
+        },
+        "strict": false
+      },
+      {
+        "type": "neoforge:components",
+        "items": "integrated_superheroes:suit_leggings",
+        "components": {
+          "integrated_superheroes:suit": "thematic:wildcat"
+        },
+        "strict": false
+      }
+    ]
+  },
+  "results": {
+    "id": "integrated_superheroes:suit_leggings",
+    "components": {
+      "integrated_superheroes:suit": "thematic:fg_liu_kang"
+    }
+  }
+}

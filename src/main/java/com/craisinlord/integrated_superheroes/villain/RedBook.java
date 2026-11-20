@@ -101,9 +101,16 @@ public final class RedBook {
         if (READINGS.containsKey(player.getUUID())) {
             return true;
         }
+        if (soldier.finishing) {
+            VillainFx.line(player, "integrated_superheroes.villains.red_book.too_late", ChatFormatting.GRAY);
+            return true;
+        }
         if (!soldier.readable()) {
             VillainFx.line(player, "integrated_superheroes.villains.red_book.not_ready", ChatFormatting.GRAY);
             return true;
+        }
+        if (soldier.dying) {
+            soldier.suspendDeath();
         }
         READINGS.put(player.getUUID(), new Reading(soldier.mob.getUUID()));
         VillainFx.line(player, "integrated_superheroes.villains.red_book.begin", ChatFormatting.DARK_RED);
@@ -130,6 +137,15 @@ public final class RedBook {
             }
         }
         return best;
+    }
+
+    static boolean isBeingRead(UUID soldier) {
+        for (Reading reading : READINGS.values()) {
+            if (reading.soldier.equals(soldier)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     static void onReaderHurt(ServerPlayer player) {

@@ -1,0 +1,9 @@
+{
+  "parent": "thematic:moon_knight",
+  "fighting_type": [
+    "DUELIST"
+  ],
+  "cape": {
+    "remove": true
+  }
+}

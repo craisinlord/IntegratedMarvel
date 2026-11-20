@@ -19,6 +19,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
@@ -45,6 +47,7 @@ public final class DaredevilPower {
     private static final DustParticleOptions CABLE = new DustParticleOptions(new Vector3f(0.85F, 0.85F, 0.85F), 0.6F);
     private static final double CLUB_SPEED = 1.4D;
     private static final Map<UUID, Club> CLUBS = new HashMap<>();
+    private static final Map<UUID, Prop> PROPS = new HashMap<>();
     private static final Map<Holder<MobEffect>, Integer> EFFECTS = Map.of(MobEffects.MOVEMENT_SPEED, 0, MobEffects.JUMP, 0);
     private static final Map<Holder<MobEffect>, HeroPower.Toggle> EFFECT_TOGGLES = Map.of(
             MobEffects.MOVEMENT_SPEED, HeroToggles.SPEED, MobEffects.JUMP, HeroToggles.SUPER_LEAP);
@@ -73,6 +76,22 @@ public final class DaredevilPower {
         }
     }
 
+    private static final class Prop {
+        private final Display.ItemDisplay display;
+        private final boolean orbit;
+        private final float spinSpeed;
+        private int ticks;
+        private float angle;
+
+        private Prop(Display.ItemDisplay display, int ticks, boolean orbit, float spinSpeed, float angle) {
+            this.display = display;
+            this.ticks = ticks;
+            this.orbit = orbit;
+            this.spinSpeed = spinSpeed;
+            this.angle = angle;
+        }
+    }
+
     public static HeroPower create(Supplier<Item> syringe) {
         return new HeroPower(
                 ID,
@@ -85,6 +104,7 @@ public final class DaredevilPower {
                         new HeroPower.Ability("billy_club", "Billy Club", DaredevilPower::billyClub),
                         new HeroPower.Ability("grapple_line", "Grapple Line", DaredevilPower::grappleLine),
                         new HeroPower.Ability("takedown", "Takedown", DaredevilPower::takedown),
+                        new HeroPower.Ability("staff_sweep", "Staff Sweep", DaredevilPower::staffSweep),
                         HeroToggles.WHEEL
                 ),
                 List.of(HeroToggles.SPEED, HeroToggles.SUPER_LEAP),
@@ -101,6 +121,7 @@ public final class DaredevilPower {
                             player.removeEffect(MobEffects.DARKNESS);
                         }
                         tickClub(player);
+                        tickProp(player);
                     }
 
                     @Override
@@ -113,6 +134,7 @@ public final class DaredevilPower {
                             }
                         });
                         dropClub(player);
+                        dropProp(player);
                         HeroGrapple.clear(player);
                     }
 
@@ -164,6 +186,58 @@ public final class DaredevilPower {
         }
     }
 
+    public static void dropProp(ServerPlayer player) {
+        Prop prop = PROPS.remove(player.getUUID());
+        if (prop != null) {
+            prop.display.discard();
+        }
+    }
+
+    private static ItemStack clubForm(String form, Item fallback) {
+        return new ItemStack(BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("thematic", form)).orElse(fallback));
+    }
+
+    private static void showProp(ServerPlayer player, ItemStack stack, int ticks, boolean orbit, float spinSpeed) {
+        dropProp(player);
+        ServerLevel level = player.serverLevel();
+        Display.ItemDisplay display = EntityType.ITEM_DISPLAY.create(level);
+        if (display == null) {
+            return;
+        }
+        ((ItemDisplayAccessor) display).integratedSuperheroes$setItemStack(stack);
+        ((DisplayAccessor) display).integratedSuperheroes$setPosRotInterpolationDuration(1);
+        display.addTag(CLUB_TAG);
+        Prop prop = new Prop(display, ticks, orbit, spinSpeed, player.getYRot());
+        Vec3 at = propPos(player, prop);
+        display.moveTo(at.x, at.y, at.z, prop.angle, 0.0F);
+        level.addFreshEntity(display);
+        PROPS.put(player.getUUID(), prop);
+    }
+
+    private static Vec3 propPos(ServerPlayer player, Prop prop) {
+        if (prop.orbit) {
+            double radians = Math.toRadians(prop.angle);
+            return player.position().add(-Math.sin(radians) * 1.1D, 1.0D, Math.cos(radians) * 1.1D);
+        }
+        Vec3 look = player.getLookAngle();
+        Vec3 right = new Vec3(-look.z, 0.0D, look.x).normalize();
+        return player.getEyePosition().subtract(0.0D, 0.45D, 0.0D).add(look.scale(0.7D)).add(right.scale(0.3D));
+    }
+
+    private static void tickProp(ServerPlayer player) {
+        Prop prop = PROPS.get(player.getUUID());
+        if (prop == null) {
+            return;
+        }
+        if (--prop.ticks <= 0 || prop.display.isRemoved() || prop.display.level() != player.level()) {
+            dropProp(player);
+            return;
+        }
+        prop.angle = prop.spinSpeed == 0.0F ? player.getYRot() : (prop.angle + prop.spinSpeed) % 360.0F;
+        Vec3 at = propPos(player, prop);
+        prop.display.moveTo(at.x, at.y, at.z, prop.angle, 0.0F);
+    }
+
     private static double radarSense(ServerPlayer player, int slot) {
         PlayerData data = HeroPowers.data(player);
         if (data.hasState(RADAR_STATE)) {
@@ -187,7 +261,7 @@ public final class DaredevilPower {
             return 0.0D;
         }
         Vec3 start = player.getEyePosition().subtract(0.0D, 0.2D, 0.0D).add(player.getLookAngle().scale(0.6D));
-        ((ItemDisplayAccessor) display).integratedSuperheroes$setItemStack(new ItemStack(Items.STICK));
+        ((ItemDisplayAccessor) display).integratedSuperheroes$setItemStack(clubForm("billy_club", Items.STICK));
         ((DisplayAccessor) display).integratedSuperheroes$setPosRotInterpolationDuration(2);
         display.addTag(CLUB_TAG);
         display.moveTo(start.x, start.y, start.z, player.getYRot(), 0.0F);
@@ -293,6 +367,7 @@ public final class DaredevilPower {
         }
         HeroAbilities.particleLine(player.serverLevel(), player.getEyePosition().subtract(0.0D, 0.3D, 0.0D), anchor, CABLE, 0.4D);
         HeroGrapple.start(player, anchor, CABLE);
+        showProp(player, clubForm("billy_club_grapple", Items.TRIPWIRE_HOOK), 14, false, 0.0F);
         HeroFx.play(player, SoundEvents.CROSSBOW_SHOOT, 0.8F, 1.3F);
         HeroAnimations.play(player, "web_shoot_r");
         return MarvelBalanceConfig.GRAPPLE_COOLDOWN.get();
@@ -316,6 +391,28 @@ public final class DaredevilPower {
         player.serverLevel().sendParticles(ParticleTypes.SWEEP_ATTACK, center.x, center.y, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
         HeroFx.play(player, SoundEvents.PLAYER_ATTACK_KNOCKBACK, 1.2F, 0.8F);
         HeroAnimations.play(player, "wolverine_pounce");
+        showProp(player, clubForm("billy_club_nunchuck", Items.CHAIN), 12, false, 60.0F);
         return MarvelBalanceConfig.TAKEDOWN_COOLDOWN.get();
+    }
+
+    private static double staffSweep(ServerPlayer player, int slot) {
+        ServerLevel level = player.serverLevel();
+        double radius = MarvelBalanceConfig.STAFF_SWEEP_RADIUS.get();
+        float damage = MarvelBalanceConfig.STAFF_SWEEP_DAMAGE.get().floatValue();
+        for (LivingEntity target : HeroAbilities.sphere(player, radius)) {
+            HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().mobAttack(player), damage));
+            SerumKit.push(target, player.position(), 1.1D, 0.35D);
+            HeroFx.play(target, SoundEvents.WOOD_HIT, 1.0F, 0.9F);
+        }
+        Vec3 center = player.position().add(0.0D, 1.0D, 0.0D);
+        for (int i = 0; i < 12; i++) {
+            double radians = Math.PI * 2.0D * i / 12.0D;
+            level.sendParticles(ParticleTypes.SWEEP_ATTACK, center.x + Math.cos(radians) * radius * 0.6D, center.y,
+                    center.z + Math.sin(radians) * radius * 0.6D, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        }
+        showProp(player, clubForm("billy_club_staff", Items.BAMBOO), 9, true, 45.0F);
+        HeroFx.play(player, SoundEvents.PLAYER_ATTACK_SWEEP, 1.2F, 0.8F);
+        HeroAnimations.play(player, "celestisynth:cs_solaris_spin");
+        return MarvelBalanceConfig.STAFF_SWEEP_COOLDOWN.get();
     }
 }

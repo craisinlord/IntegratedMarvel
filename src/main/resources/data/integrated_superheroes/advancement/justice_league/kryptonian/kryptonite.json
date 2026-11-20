@@ -1,0 +1,29 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    }
+  ],
+  "parent": "integrated_superheroes:justice_league/kryptonian",
+  "display": {
+    "icon": {
+      "id": "minecraft:lime_dye"
+    },
+    "title": {
+      "translate": "advancements.integrated_superheroes.justice_league.kryptonian.kryptonite.title"
+    },
+    "description": {
+      "translate": "advancements.integrated_superheroes.justice_league.kryptonian.kryptonite.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

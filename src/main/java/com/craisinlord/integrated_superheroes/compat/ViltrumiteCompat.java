@@ -2,7 +2,7 @@ package com.craisinlord.integrated_superheroes.compat;
 
 import com.craisinlord.integrated_superheroes.api.RogueAbsorption;
 import com.craisinlord.integrated_superheroes.api.RogueMemory;
-import com.craisinlord.integrated_superheroes.hero.BinaryPower;
+import com.craisinlord.integrated_superheroes.hero.HeroFlight;
 import com.craisinlord.integrated_superheroes.hero.HeroAdvancements;
 import com.craisinlord.integrated_superheroes.hero.HeroPower;
 import com.craisinlord.integrated_superheroes.hero.HeroPowers;
@@ -66,12 +66,16 @@ public final class ViltrumiteCompat {
         if (ViltrumiteBridge.isViltrumite(player) || ViltrumiteBridge.inFlight(player)) {
             return true;
         }
-        return binaryFlight(player);
+        return heroFlight(player);
     }
 
-    public static boolean binaryFlight(Player player) {
-        return MarvelBalanceConfig.VILTRUMITE_CAPTAIN_MARVEL_FLIGHT.get() && BinaryPower.ID.equals(HeroPowers.data(player).getPrimaryPower())
-                && HeroToggles.isOn(player, HeroToggles.FLIGHT);
+    public static boolean listed(Player player) {
+        String power = HeroPowers.data(player).getPrimaryPower();
+        return power != null && MarvelBalanceConfig.VILTRUMITE_FLIGHT_HEROES.get().contains(power);
+    }
+
+    public static boolean heroFlight(Player player) {
+        return listed(player) && HeroToggles.isOn(player, HeroToggles.FLIGHT) && HeroFlight.allowed(player);
     }
 
     public static float capThrottle(Player player, float throttle) {

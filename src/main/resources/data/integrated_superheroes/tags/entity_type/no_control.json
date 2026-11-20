@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "values": [
+    "#c:bosses",
+    "marvel:red_skull",
+    "marvel:baron_zemo",
+    "marvel:winter_soldier",
+    { "id": "thematic:villain_ultron", "required": false },
+    { "id": "thematic:villain_black_adam", "required": false },
+    { "id": "thematic:villain_reverse_flash", "required": false },
+    { "id": "thematic:villain_joker", "required": false },
+    { "id": "thematic:kryptonian_criminal", "required": false },
+    { "id": "thematic:manhunter", "required": false },
+    { "id": "thematic:rogue_ultron_sentinel_prime", "required": false }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:greenlanternring",
+      "required": false
+    },
+    {
+      "id": "thematic:yellow_ring",
+      "required": false
+    },
+    {
+      "id": "thematic:red_ring",
+      "required": false
+    },
+    {
+      "id": "thematic:blue_ring",
+      "required": false
+    },
+    {
+      "id": "thematic:orange_ring",
+      "required": false
+    },
+    {
+      "id": "thematic:indigo_ring",
+      "required": false
+    },
+    {
+      "id": "thematic:violet_ring",
+      "required": false
+    },
+    {
+      "id": "thematic:black_ring",
+      "required": false
+    },
+    {
+      "id": "thematic:white_ring",
+      "required": false
+    }
+  ]
+}

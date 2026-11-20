@@ -1,0 +1,97 @@
+{
+  "tier": 10,
+  "abilities": [
+    {
+      "identifier": "acrobatics",
+      "keybind": "key.thematic.passive",
+      "options": {
+        "fields": {
+          "level": "3"
+        }
+      }
+    },
+    {
+      "identifier": "wall_run",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "maul_force_jump",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "maul_force_leap",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "maul_saber_whirl",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "maul_force_use",
+      "keybind": "key.thematic.ability_2"
+    },
+    {
+      "identifier": "maul_force_wheel",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "maul_onslaught",
+      "keybind": "key.thematic.ultimate"
+    },
+    {
+      "identifier": "equip",
+      "keybind": "key.thematic.equip_item",
+      "options": {
+        "fields": {
+          "label": "integrated_superheroes.ability.ignite_saberstaff",
+          "items": [
+            {
+              "item": "thematic:maul_saberstaff",
+              "count": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "identifier": "taunt_no_target",
+      "keybind": "key.thematic.cosmetic"
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 85,
+      "maximum": 94
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 85,
+      "maximum": 95
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 90,
+      "maximum": 99
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 55,
+      "maximum": 65
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 50,
+      "maximum": 60
+    }
+  ],
+  "fighting_type": [
+    "DUELIST"
+  ],
+  "priority": 10
+}

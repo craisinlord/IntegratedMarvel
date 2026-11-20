@@ -1,0 +1,77 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:gambit",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_2024",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_aoa",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_death",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_evolution",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_excalibur",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_guildmaster",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_mcu",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_red",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_revolution",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_rivals",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_thief",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_tux",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_unbreakable",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_wolverine",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_x_uniform",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_xfactor",
+      "required": false
+    },
+    {
+      "id": "thematic:gambit_year_end",
+      "required": false
+    }
+  ]
+}

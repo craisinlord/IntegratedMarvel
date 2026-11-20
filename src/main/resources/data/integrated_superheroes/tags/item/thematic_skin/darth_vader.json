@@ -1,0 +1,25 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:anakin_skywalker",
+      "required": false
+    },
+    {
+      "id": "thematic:count_dooku",
+      "required": false
+    },
+    {
+      "id": "thematic:darth_vader",
+      "required": false
+    },
+    {
+      "id": "thematic:kylo_ren",
+      "required": false
+    },
+    {
+      "id": "thematic:palpatine",
+      "required": false
+    }
+  ]
+}

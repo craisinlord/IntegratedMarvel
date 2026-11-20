@@ -54,8 +54,6 @@ public final class ViltrumiteInvasions {
         }
     }
 
-    // Meteor impacts call level.explode(victim, ..., BLOCK), which ignores destroy speed, so the
-    // same protection rule has to be applied to the blast's block list here. Entity damage stays.
     private static void onExplosion(ExplosionEvent.Detonate event) {
         if (!npcExplosion(event.getExplosion().getDirectSourceEntity())) {
             return;
@@ -169,8 +167,6 @@ public final class ViltrumiteInvasions {
         return inGuard() && blocked(state, getter);
     }
 
-    // Protected blocks report -1 hardness. Their drill reads that as an impending crash and turns
-    // noclip off, so a flying NPC bumps into protected blocks instead of passing through them.
     private static boolean blocked(BlockBehaviour.BlockStateBase state, BlockGetter getter) {
         if (state.isAir()) {
             return false;

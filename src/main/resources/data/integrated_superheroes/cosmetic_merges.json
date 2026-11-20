@@ -1,0 +1,53 @@
+{
+  "serumLooks": {
+    "binary_carol_danvers": [
+      "thematic:nova"
+    ],
+    "winged_mutation_warren_worthington": [
+      "thematic:falcon",
+      "thematic:killer_moth"
+    ]
+  },
+  "suitAliases": {
+    "thematic:grievous": "thematic:darth_vader",
+    "thematic:plo_koon": "thematic:darth_vader"
+  },
+  "retiredSuits": [
+    "thematic:lara_croft"
+  ],
+  "hiddenStationProps": [
+    "thematic:stark_workbench"
+  ],
+  "wingProfiles": {
+    "angel": {
+      "geo": "thematic:geo/armor/angel.geo.json",
+      "texture": "thematic:textures/armor/angel.png",
+      "left": "wing1",
+      "right": "wing2"
+    },
+    "thematic:falcon": {
+      "geo": "thematic:geo/armor/falcon.geo.json",
+      "texture": "thematic:textures/armor/falcon.png",
+      "left": "group4",
+      "right": "group2"
+    },
+    "thematic:killer_moth": {
+      "geo": "thematic:geo/armor/killer_moth.geo.json",
+      "texture": "thematic:textures/armor/killer_moth.png",
+      "left": "wing",
+      "right": "wing2"
+    },
+    "thematic:hawkgirl": {
+      "geo": "thematic:geo/armor/hawkgirl.geo.json",
+      "texture": "thematic:textures/armor/hawkgirl.png",
+      "left": "wing1",
+      "right": "wing2"
+    },
+    "thematic:hawkman": {
+      "geo": "thematic:geo/armor/hawkman.geo.json",
+      "texture": "thematic:textures/armor/hawkman.png",
+      "left": "wing1",
+      "right": "wing2"
+    }
+  }
+}

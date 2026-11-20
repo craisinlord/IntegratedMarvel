@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:plastic_man",
+      "required": false
+    }
+  ]
+}

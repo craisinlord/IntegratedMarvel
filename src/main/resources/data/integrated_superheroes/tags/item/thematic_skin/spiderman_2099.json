@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:spiderman_2099",
+      "required": false
+    }
+  ]
+}

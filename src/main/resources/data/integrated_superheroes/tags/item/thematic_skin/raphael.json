@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:donny",
+      "required": false
+    },
+    {
+      "id": "thematic:michelangelo",
+      "required": false
+    },
+    {
+      "id": "thematic:raphael",
+      "required": false
+    }
+  ]
+}

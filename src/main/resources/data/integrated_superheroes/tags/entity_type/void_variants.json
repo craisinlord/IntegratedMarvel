@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:void_variant",
+      "required": false
+    },
+    "integrated_superheroes:variant"
+  ]
+}

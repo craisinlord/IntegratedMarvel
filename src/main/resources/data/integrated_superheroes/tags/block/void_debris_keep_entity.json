@@ -1,0 +1,11 @@
+{
+  "values": [
+    "minecraft:chest",
+    "minecraft:trapped_chest",
+    "minecraft:barrel",
+    "minecraft:decorated_pot",
+    "#minecraft:all_signs",
+    "#minecraft:banners",
+    "minecraft:lectern"
+  ]
+}

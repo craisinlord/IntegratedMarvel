@@ -125,6 +125,7 @@ public final class HeroPowers {
         if (refill) {
             player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(hero.syringe().get()));
         }
+        com.craisinlord.integrated_superheroes.hero.skin.SkinData.clear(player);
         pruneStale(player);
         PlayerData.sync(player);
     }

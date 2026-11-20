@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
+import com.craisinlord.integrated_superheroes.hero.HeroFx;
 import com.craisinlord.integrated_superheroes.hero.HealingFactor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -110,7 +111,8 @@ public final class SnapStone {
         if (GauntletConfig.SNAP_SPARE_NAMED.get() && !(living instanceof Player) && living.hasCustomName()) {
             return true;
         }
-        return GauntletConfig.SNAP_SPARE_VILLAGERS.get() && (living instanceof Npc || living.getType().is(SNAP_IMMUNE));
+        if (living.getType().is(SNAP_IMMUNE)) return true;
+        return GauntletConfig.SNAP_SPARE_VILLAGERS.get() && living instanceof Npc;
     }
 
     private static List<LivingEntity> nearestFirst(ServerPlayer player, List<LivingEntity> victims) {
@@ -224,6 +226,7 @@ public final class SnapStone {
         for (String stone : List.of("power", "space", "reality", "soul", "time", "mind")) {
             GauntletFx.burst(level, player.getEyePosition().add(player.getLookAngle()), stone, 20, 0.3D);
         }
+        HeroFx.vfx(level, player.position(), "fog_layers", 0xB0C8A060, 12.0F);
         GauntletFx.sound(level, player.position(), SoundEvents.LIGHTNING_BOLT_THUNDER, 2.0F, 1.6F);
         GauntletFx.sound(level, player.position(), SoundEvents.BEACON_DEACTIVATE, 2.0F, 0.4F);
         GauntletFx.shake(level, player.position(), 2.5F, 40, 128.0F);

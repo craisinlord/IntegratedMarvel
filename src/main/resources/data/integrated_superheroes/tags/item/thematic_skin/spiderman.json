@@ -1,0 +1,33 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "marvellegacy:spiderman_classic_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvellegacy:spiderman_original_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvellegacy:spiderman_tasmii_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:spider_man_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:spider_man_mcu_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:spider_man_insomniac_chestplate",
+      "required": false
+    },
+    {
+      "id": "thematic:spiderman",
+      "required": false
+    }
+  ]
+}

@@ -83,6 +83,7 @@ public final class KittyPower {
                             meter = Math.max(0.0F, meter - step);
                             if (meter <= 0.0F) {
                                 endPhase(player);
+                                HeroAbilities.setCooldown(player, PHASE, MarvelBalanceConfig.PHASE_COOLDOWN.get());
                                 player.displayClientMessage(Component.literal("§7You can't hold the phase any longer."), true);
                             }
                         } else {
@@ -236,6 +237,11 @@ public final class KittyPower {
         }
     }
 
+    public static void timedPhase(ServerPlayer player, int ticks) {
+        GUESTS.put(player.getUUID(), player.level().getGameTime() + ticks);
+        startPhase(player);
+    }
+
     private static void startPhase(ServerPlayer player) {
         HeroPowers.data(player).addState(PHASING_STATE);
         PlayerData.sync(player);
@@ -342,7 +348,7 @@ public final class KittyPower {
     private static double phase(ServerPlayer player, int slot) {
         if (isPhasing(player)) {
             endPhase(player);
-            return 1.0D;
+            return Math.max(1.0D, MarvelBalanceConfig.PHASE_COOLDOWN.get());
         }
         if (METER.getOrDefault(player.getUUID(), 1.0F) < 0.1F) {
             player.displayClientMessage(Component.literal("§7You need a moment before phasing again."), true);

@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "marvel:captain_marvel_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:captain_marvel_838_chestplate",
+      "required": false
+    },
+    {
+      "id": "thematic:captain_marvel",
+      "required": false
+    }
+  ]
+}

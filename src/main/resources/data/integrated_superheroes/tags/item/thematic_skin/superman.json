@@ -1,0 +1,165 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:clark_kent",
+      "required": false
+    },
+    {
+      "id": "thematic:composite_superman",
+      "required": false
+    },
+    {
+      "id": "thematic:cyborg_superman",
+      "required": false
+    },
+    {
+      "id": "thematic:kong_kenan",
+      "required": false
+    },
+    {
+      "id": "thematic:superman",
+      "required": false
+    },
+    {
+      "id": "thematic:superman1",
+      "required": false
+    },
+    {
+      "id": "thematic:superman14",
+      "required": false
+    },
+    {
+      "id": "thematic:superman3000",
+      "required": false
+    },
+    {
+      "id": "thematic:superman52",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_1997",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_authority",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_beyond",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_blacksuit",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_bn",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_cw",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_dcau",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_dceu",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_dcu",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_dkos",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_flashpoint",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_frontier",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_future",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_gam",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_godfall",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_hereafter",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_hunterprey",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_injustice",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_injustice1",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_justice_lords",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_new_krypton",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_redson",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_skies",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_ssktjl",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_starro",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_tomorrowverse",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_val",
+      "required": false
+    },
+    {
+      "id": "thematic:superman_war",
+      "required": false
+    },
+    {
+      "id": "thematic:supermankc",
+      "required": false
+    },
+    {
+      "id": "thematic:supermanmaws",
+      "required": false
+    },
+    {
+      "id": "thematic:ultraman",
+      "required": false
+    }
+  ]
+}

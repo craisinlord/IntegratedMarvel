@@ -1,0 +1,59 @@
+{
+  "tier": 10,
+  "abilities": [
+    {
+      "identifier": "darkseid_omega_beams",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "darkseid_boom_tube",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "darkseid_omega_sanction",
+      "keybind": "key.thematic.ultimate"
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 1.3
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 90,
+      "maximum": 99
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 85,
+      "maximum": 95
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 40,
+      "maximum": 50
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 30,
+      "maximum": 40
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 65,
+      "maximum": 75
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 90,
+      "maximum": 99
+    }
+  ],
+  "fighting_type": [
+    "BRAWLER"
+  ],
+  "priority": 10
+}

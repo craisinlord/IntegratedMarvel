@@ -1,0 +1,140 @@
+{
+  "texture_size": [
+    32,
+    32
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        91,
+        33,
+        -10
+      ],
+      "translation": [
+        -13.75,
+        13,
+        -20.25
+      ],
+      "scale": [
+        2.56,
+        2.56,
+        2.56
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        91,
+        33,
+        -10
+      ],
+      "translation": [
+        -8.5,
+        14.25,
+        -20.25
+      ],
+      "scale": [
+        2.56,
+        2.56,
+        2.56
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        10,
+        48,
+        0
+      ],
+      "translation": [
+        -8.75,
+        -9.25,
+        4.25
+      ],
+      "scale": [
+        1.45,
+        1.45,
+        1.45
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        10,
+        48,
+        0
+      ],
+      "translation": [
+        -6.5,
+        -9,
+        -1
+      ],
+      "scale": [
+        1.45,
+        1.45,
+        1.45
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        -12.75,
+        0
+      ],
+      "scale": [
+        1.25,
+        1.25,
+        1.25
+      ]
+    },
+    "gui": {
+      "rotation": [
+        99.05,
+        46.46,
+        -109
+      ],
+      "translation": [
+        -8.75,
+        -13.25,
+        0
+      ],
+      "scale": [
+        1.85,
+        1.85,
+        1.85
+      ]
+    },
+    "head": {
+      "rotation": [
+        -66,
+        0,
+        0
+      ],
+      "translation": [
+        -3.5,
+        4.75,
+        17.25
+      ],
+      "scale": [
+        1.71,
+        1.71,
+        1.71
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        77.33,
+        -52.08,
+        79.94
+      ],
+      "translation": [
+        11.25,
+        -17.25,
+        -4.75
+      ],
+      "scale": [
+        2.22,
+        2.22,
+        2.22
+      ]
+    }
+  },
+  "parent": "builtin/entity"
+}

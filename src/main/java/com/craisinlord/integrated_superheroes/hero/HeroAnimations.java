@@ -23,6 +23,7 @@ public final class HeroAnimations {
             Map.entry("kick", 14),
             Map.entry("slide", 0),
             Map.entry("wolverine_pounce", 0),
+            Map.entry("claw_climb", 0),
             Map.entry("bettercombat:one_handed_slam", 20),
             Map.entry("bettercombat:two_handed_slam", 20),
             Map.entry("celestisynth:cs_breezebreaker_jump", 40),

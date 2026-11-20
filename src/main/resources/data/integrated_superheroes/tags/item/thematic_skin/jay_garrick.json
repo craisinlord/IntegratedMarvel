@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:jay_garrick",
+      "required": false
+    },
+    {
+      "id": "thematic:jay_garrick_cw",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "priority": 10,
+  "wip": false,
+  "tier": 5,
+  "abilities": [
+    {
+      "identifier": "blood_transform",
+      "keybind": "key.thematic.cosmetic"
+    },
+    {
+      "identifier": "fireball",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "flamethrower",
+      "keybind": "key.thematic.ability_1",
+      "options": {
+        "fields": {
+          "name": "pyrokinesis"
+        }
+      }
+    },
+    {
+      "identifier": "eldritch_blast",
+      "keybind": "key.thematic.equip_item"
+    },
+    {
+      "identifier": "psionic_push",
+      "keybind": "key.thematic.ability_3"
+    },
+    {
+      "identifier": "magic_shield",
+      "keybind": "key.thematic.ability_4"
+    },
+    {
+      "identifier": "wing_evade",
+      "keybind": "key.thematic.utility",
+      "options": {
+        "fields": {
+          "name": "Evade",
+          "showParticles": "false"
+        }
+      }
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 1.05
+    }
+  ],
+  "tags": [
+    "tank_i"
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 45,
+      "maximum": 50
+    }
+  ]
+}

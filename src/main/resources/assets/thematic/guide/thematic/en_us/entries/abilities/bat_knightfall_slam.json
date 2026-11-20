@@ -1,0 +1,8 @@
+{
+    "name":  "Knightfall Slam",
+    "category":  "thematic:ability",
+    "icon":  "thematic:gadget_netherite_batarang",
+    "pages":  [
+                  "Jump high, then drive yourself back into the ground. Everyone near the impact takes heavy damage, gets thrown up and is slowed for a few seconds. The further you fall before landing, the harder it hits. You take no fall damage from it."
+              ]
+}

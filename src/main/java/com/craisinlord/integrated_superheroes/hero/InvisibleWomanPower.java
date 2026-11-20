@@ -79,7 +79,9 @@ public final class InvisibleWomanPower {
                         if (hasBubble(player) && !event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
                             event.setAmount(event.getAmount() * MarvelBalanceConfig.BUBBLE_DAMAGE_MULTIPLIER.get().floatValue());
                             Vec3 at = player.position().add(0.0D, 1.0D, 0.0D);
-                            player.serverLevel().sendParticles(FORCE, at.x, at.y, at.z, 10, 0.8D, 0.8D, 0.8D, 0.0D);
+                            if (!HeroFx.vfx(player.serverLevel(), player.position(), "invisible_woman/force_ripple", 0)) {
+                                player.serverLevel().sendParticles(FORCE, at.x, at.y, at.z, 10, 0.8D, 0.8D, 0.8D, 0.0D);
+                            }
                             HeroFx.play(player, SoundEvents.AMETHYST_BLOCK_HIT, 1.0F, 1.4F);
                         }
                     }
@@ -124,7 +126,7 @@ public final class InvisibleWomanPower {
         }
     }
 
-    private static void loseMobs(ServerPlayer player) {
+    public static void loseMobs(ServerPlayer player) {
         for (Mob mob : player.serverLevel().getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(48.0D),
                 mob -> mob.getTarget() == player)) {
             mob.setTarget(null);
@@ -176,7 +178,10 @@ public final class InvisibleWomanPower {
         if (placed == 0) {
             return 0.0D;
         }
-        level.sendParticles(FORCE, origin.x, origin.y + 1.5D, origin.z, 30, 1.5D, 1.0D, 1.5D, 0.0D);
+        Vec3 pane = origin.add(0.0D, 1.5D, 0.0D);
+        if (!HeroFx.beam(level, pane, pane.add(flat), "invisible_woman/force_pane", 0)) {
+            level.sendParticles(FORCE, origin.x, origin.y + 1.5D, origin.z, 30, 1.5D, 1.0D, 1.5D, 0.0D);
+        }
         HeroFx.play(player, SoundEvents.AMETHYST_BLOCK_RESONATE, 1.0F, 1.2F);
         HeroAnimations.play(player, "web_shoot_both");
         return MarvelBalanceConfig.FORCE_FIELD_COOLDOWN.get();
@@ -191,6 +196,7 @@ public final class InvisibleWomanPower {
         data.addState(BUBBLE_STATE);
         PlayerData.sync(player);
         BUBBLE_UNTIL.put(player.getUUID(), player.serverLevel().getGameTime() + (long) (MarvelBalanceConfig.BUBBLE_SECONDS.get() * 20.0D));
+        HeroFx.vfx(player.serverLevel(), player.position(), "invisible_woman/force_bubble", 0, MarvelBalanceConfig.BUBBLE_RADIUS.get().floatValue());
         HeroFx.play(player, SoundEvents.BEACON_ACTIVATE, 0.8F, 1.6F);
         return 0.5D;
     }
@@ -224,12 +230,17 @@ public final class InvisibleWomanPower {
                 if (motion.dot(out) < 0.0D) {
                     projectile.setDeltaMovement(motion.subtract(out.scale(2.0D * motion.dot(out))).scale(0.6D));
                     projectile.hurtMarked = true;
-                    level.sendParticles(FORCE, entity.getX(), entity.getY(), entity.getZ(), 4, 0.1D, 0.1D, 0.1D, 0.0D);
+                    if (!HeroFx.vfx(level, entity.position(), "invisible_woman/force_ripple", 0, 0.8F)) {
+                        level.sendParticles(FORCE, entity.getX(), entity.getY(), entity.getZ(), 4, 0.1D, 0.1D, 0.1D, 0.0D);
+                    }
                 }
             } else if (entity instanceof LivingEntity living && living.isAlive()) {
                 living.setDeltaMovement(out.x * 0.6D, 0.2D, out.z * 0.6D);
                 living.hurtMarked = true;
             }
+        }
+        if (HeroFx.thematic() && (player.tickCount % 18 != 0 || HeroFx.vfx(level, player.position(), "invisible_woman/force_bubble", 0, (float) radius))) {
+            return;
         }
         if (player.tickCount % 3 == 0) {
             for (int i = 0; i < 14; i++) {
@@ -254,10 +265,12 @@ public final class InvisibleWomanPower {
             target.hurtMarked = true;
         }
         Vec3 start = player.getEyePosition().subtract(0.0D, 0.3D, 0.0D);
-        for (int i = 1; i <= (int) range; i++) {
-            Vec3 at = start.add(look.scale(i));
-            double spread = i * 0.15D;
-            level.sendParticles(FORCE, at.x, at.y, at.z, 4, spread, spread, spread, 0.0D);
+        if (!HeroFx.beam(level, player.position(), player.position().add(look.scale(range)), "invisible_woman/force_wave", 0)) {
+            for (int i = 1; i <= (int) range; i++) {
+                Vec3 at = start.add(look.scale(i));
+                double spread = i * 0.15D;
+                level.sendParticles(FORCE, at.x, at.y, at.z, 4, spread, spread, spread, 0.0D);
+            }
         }
         HeroFx.play(player, SoundEvents.BREEZE_WIND_CHARGE_BURST.value(), 1.0F, 1.2F);
         HeroFx.play(player, SoundEvents.AMETHYST_BLOCK_RESONATE, 1.0F, 0.8F);

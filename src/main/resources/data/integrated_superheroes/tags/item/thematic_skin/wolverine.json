@@ -1,0 +1,129 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "marvellegacy:wolverine_classic_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvellegacy:wolverine_original_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:wolverine_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:wolverine_sleeveless_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:wolverine_brown_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:wolverine_brown_sleeveless_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:wolverine_x_force_chestplate",
+      "required": false
+    },
+    {
+      "id": "marvel:wolverine_x_force_sleeveless_chestplate",
+      "required": false
+    },
+    {
+      "id": "thematic:logan",
+      "required": false
+    },
+    {
+      "id": "thematic:old_man_logan",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_1",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_2000",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_2024",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_ablation",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_ageofultron",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_aoa",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_brown",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_classic",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_dofp",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_dp",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_evolution",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_fang",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_logan",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_midnight",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_patch",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_rivals",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_strike_force",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_ultimate",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_x",
+      "required": false
+    },
+    {
+      "id": "thematic:wolverine_x_uniform",
+      "required": false
+    }
+  ]
+}

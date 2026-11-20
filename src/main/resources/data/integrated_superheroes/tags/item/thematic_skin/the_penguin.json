@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:the_penguin",
+      "required": false
+    }
+  ]
+}

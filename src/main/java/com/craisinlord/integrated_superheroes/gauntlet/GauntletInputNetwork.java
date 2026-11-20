@@ -50,7 +50,7 @@ public final class GauntletInputNetwork {
                 .playToClient(MindControllerPayload.TYPE, MindControllerPayload.STREAM_CODEC,
                         (payload, context) -> context.enqueueWork(() -> MindControlClientState.setControlling(payload.active())))
                 .playToClient(TimeFreezePayload.TYPE, TimeFreezePayload.STREAM_CODEC,
-                        (payload, context) -> context.enqueueWork(() -> TimeFreezeClientState.set(payload.owners())))
+                        (payload, context) -> context.enqueueWork(() -> TimeFreezeClientState.set(payload.owners(), payload.radius())))
                 .playToServer(SpaceDestinationPayload.TYPE, SpaceDestinationPayload.STREAM_CODEC,
                         (payload, context) -> context.enqueueWork(() -> {
                             if (context.player() instanceof ServerPlayer player) SpaceDestinationManager.select(player, payload);

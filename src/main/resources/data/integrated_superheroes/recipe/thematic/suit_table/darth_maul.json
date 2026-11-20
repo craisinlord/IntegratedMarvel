@@ -1,0 +1,49 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:darth_maul"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "minecraft:netherite_chestplate"
+  },
+  "ingredients": [
+    {
+      "item": "minecraft:netherite_ingot"
+    },
+    {
+      "item": "minecraft:netherite_ingot"
+    },
+    {
+      "item": "thematic:ruby"
+    },
+    {
+      "item": "thematic:ruby"
+    },
+    {
+      "item": "thematic:fear_shard"
+    },
+    {
+      "item": "thematic:advanced_technology"
+    },
+    {
+      "item": "minecraft:goat_horn"
+    },
+    {
+      "item": "marvellegacy:cloth_black"
+    },
+    {
+      "item": "marvellegacy:cloth_red"
+    }
+  ],
+  "results": {
+    "id": "thematic:darth_maul"
+  }
+}

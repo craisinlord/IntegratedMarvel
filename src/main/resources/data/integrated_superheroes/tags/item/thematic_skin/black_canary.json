@@ -1,0 +1,45 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:black_canary",
+      "required": false
+    },
+    {
+      "id": "thematic:black_canary1985",
+      "required": false
+    },
+    {
+      "id": "thematic:black_canary52",
+      "required": false
+    },
+    {
+      "id": "thematic:black_canary_bombshell",
+      "required": false
+    },
+    {
+      "id": "thematic:black_canary_bop",
+      "required": false
+    },
+    {
+      "id": "thematic:black_canary_injustice",
+      "required": false
+    },
+    {
+      "id": "thematic:black_canary_rebirth",
+      "required": false
+    },
+    {
+      "id": "thematic:black_canary_yj",
+      "required": false
+    },
+    {
+      "id": "thematic:black_canarycw",
+      "required": false
+    },
+    {
+      "id": "thematic:green_canary",
+      "required": false
+    }
+  ]
+}

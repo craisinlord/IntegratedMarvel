@@ -1,0 +1,113 @@
+{
+  "tier": 10,
+  "abilities": [
+    {
+      "identifier": "toggle_brood",
+      "keybind": "key.thematic.cosmetic"
+    },
+    {
+      "identifier": "water_breathing",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "immunity_poison",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "vader_presence",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "vader_force_use",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "vader_force_wheel",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "vader_crushing_grip",
+      "keybind": "key.thematic.ultimate"
+    },
+    {
+      "identifier": "detective_work",
+      "keybind": "key.thematic.utility",
+      "options": {
+        "fields": {
+          "name": "integrated_superheroes.ability.sense_the_force"
+        }
+      }
+    },
+    {
+      "identifier": "equip",
+      "keybind": "key.thematic.equip_item",
+      "options": {
+        "fields": {
+          "label": "integrated_superheroes.ability.ignite_saber",
+          "items": [
+            {
+              "item": "thematic:vader_saber",
+              "count": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "identifier": "taunt_no_target",
+      "keybind": "key.thematic.cosmetic"
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 90,
+      "maximum": 99
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 92,
+      "maximum": 99
+    },
+    {
+      "identifier": "thematic:base_knockbase_resistance",
+      "minimum": 90,
+      "maximum": 99
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 85,
+      "maximum": 95
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 50,
+      "maximum": 60
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 25,
+      "maximum": 32
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 40,
+      "maximum": 50
+    }
+  ],
+  "fighting_type": [
+    "BRAWLER"
+  ],
+  "cape": {
+    "partCount": 16,
+    "height": 1.3,
+    "width": 0.5,
+    "thickness": 0.001,
+    "texture": "thematic:textures/cape/dooku_cape.png",
+    "shinyTexture": "thematic:textures/cape/dooku_cape.png",
+    "simulation": {
+      "type": "cape"
+    }
+  },
+  "priority": 10
+}

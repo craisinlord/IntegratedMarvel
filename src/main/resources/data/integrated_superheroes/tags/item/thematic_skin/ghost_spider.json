@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "marvel:spider_gwen_chestplate",
+      "required": false
+    },
+    {
+      "id": "thematic:ghost_spider",
+      "required": false
+    }
+  ]
+}

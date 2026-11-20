@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:x23",
+      "required": false
+    },
+    {
+      "id": "thematic:x23_wolverine",
+      "required": false
+    }
+  ]
+}

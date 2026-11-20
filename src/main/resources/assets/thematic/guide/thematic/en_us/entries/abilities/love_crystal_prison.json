@@ -1,0 +1,8 @@
+{
+  "name": "Crystal Prison",
+  "category": "thematic:ability",
+  "icon": "thematic:violet_ring",
+  "pages": [
+    "Lock whoever you're looking at inside a violet crystal for a few seconds. They can't move, and nothing can hurt them while it lasts. It works on friends too."
+  ]
+}

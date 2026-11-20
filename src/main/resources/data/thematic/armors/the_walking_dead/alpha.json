@@ -1,0 +1,64 @@
+{
+  "tier": 6,
+  "abilities": [
+    {
+      "identifier": "equip",
+      "keybind": "key.thematic.equip_item",
+      "options": {
+        "fields": {
+          "label": "equip_twd_michonne",
+          "items": [
+            {
+              "item": "pointblank:m1911a1",
+              "count": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "identifier": "stealth",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "toggle_hood",
+      "keybind": "key.thematic.cosmetic"
+    },
+    {
+      "identifier": "reload",
+      "keybind": "key.thematic.ability_0"
+    },
+    {
+      "identifier": "grenade",
+      "keybind": "key.thematic.utility"
+    },
+    {
+      "identifier": "flashbang",
+      "keybind": "key.thematic.ability_1"
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 0.98
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 50,
+      "maximum": 70
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 3,
+      "maximum": 23
+    }
+  ],
+  "fighting_type": []
+}

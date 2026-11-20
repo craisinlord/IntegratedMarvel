@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:scorpion",
+      "required": false
+    },
+    {
+      "id": "thematic:scorpion1",
+      "required": false
+    },
+    {
+      "id": "thematic:scorpion_mk1",
+      "required": false
+    }
+  ]
+}

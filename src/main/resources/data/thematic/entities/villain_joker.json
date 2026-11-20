@@ -1,0 +1,63 @@
+{
+  "spawn_egg": { "colors": ["#5B2C83", "#3FA34D"] },
+  "type": "thematic:mob",
+  "size": [
+    0.6,
+    1.95
+  ],
+  "scale": 1.0,
+  "spawn_group": "monster",
+  "track_range": 10,
+  "boss": true,
+  "attributes": {
+    "minecraft:generic.max_health": 400.0,
+    "minecraft:generic.armor": 8.0,
+    "minecraft:generic.movement_speed": 0.34,
+    "minecraft:generic.follow_range": 48.0,
+    "minecraft:generic.attack_damage": 9.0
+  },
+  "render": {
+    "kind": "worn_suit",
+    "model": "thematic:joker"
+  },
+  "suit": {
+    "id": "villain_joker",
+    "iv": 3
+  },
+  "phases": [
+    {
+      "health_below": 1.0,
+      "unlock": [
+        "flower_spray",
+        "crowbar_blitz",
+        "boxing_glove"
+      ]
+    },
+    {
+      "health_below": 0.6,
+      "unlock": [
+        "snake_pellets",
+        "fire_spray"
+      ]
+    },
+    {
+      "health_below": 0.3,
+      "unlock": [
+        "laughing_gas"
+      ]
+    }
+  ],
+  "persistent": true,
+  "morale": {
+    "break_chance": 0
+  },
+  "brain": {
+    "idle": [
+      {
+        "id": "thematic:random_walk",
+        "radius": 16,
+        "height": 6
+      }
+    ]
+  }
+}

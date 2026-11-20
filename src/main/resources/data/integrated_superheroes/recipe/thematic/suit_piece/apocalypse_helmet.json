@@ -1,0 +1,37 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "thematic"
+    },
+    {
+      "type": "neoforge:item_exists",
+      "item": "thematic:apocalypse"
+    }
+  ],
+  "type": "marvel:suit_upgrading",
+  "consume_suit": true,
+  "suit": {
+    "item": "minecraft:netherite_helmet"
+  },
+  "ingredients": [
+    {
+      "item": "marvel:x_genes"
+    },
+    {
+      "item": "thematic:alien_tech"
+    },
+    {
+      "item": "marvel:adamantium_ingot"
+    },
+    {
+      "item": "minecraft:lapis_block"
+    }
+  ],
+  "results": {
+    "id": "integrated_superheroes:suit_helmet",
+    "components": {
+      "integrated_superheroes:suit": "thematic:apocalypse"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:daredevil",
+      "required": false
+    },
+    {
+      "id": "thematic:daredevil_homemade",
+      "required": false
+    },
+    {
+      "id": "thematic:daredevil_mcu",
+      "required": false
+    },
+    {
+      "id": "thematic:daredevil_rivals",
+      "required": false
+    },
+    {
+      "id": "thematic:king_daredevil",
+      "required": false
+    },
+    {
+      "id": "thematic:matt_murdock",
+      "required": false
+    }
+  ]
+}

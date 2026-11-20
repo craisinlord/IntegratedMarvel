@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.hero;
 
+import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import com.stxllarplanes.marvellegacy.data.PlayerData;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
@@ -8,6 +9,8 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,6 +29,16 @@ public final class HeroToggles {
     private static final Set<String> SPIDER_TOGGLES = Set.of("wall_crawling", "super_jump", "spider_sense");
 
     private HeroToggles() {
+    }
+
+    public static List<HeroPower.Toggle> flying(HeroPower.Toggle... others) {
+        List<HeroPower.Toggle> toggles = new ArrayList<>();
+        toggles.add(FLIGHT);
+        if (ModCompat.VILTRUMITE) {
+            toggles.add(SUPERSONIC);
+        }
+        toggles.addAll(List.of(others));
+        return List.copyOf(toggles);
     }
 
     public static boolean isOn(Player player, HeroPower.Toggle toggle) {

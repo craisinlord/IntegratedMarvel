@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "thematic:black_hand",
+      "required": false
+    },
+    {
+      "id": "thematic:hal_jordan_bn",
+      "required": false
+    },
+    {
+      "id": "thematic:nekron",
+      "required": false
+    }
+  ]
+}

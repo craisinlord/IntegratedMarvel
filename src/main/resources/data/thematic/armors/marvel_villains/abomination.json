@@ -1,0 +1,91 @@
+{
+  "priority": 10,
+  "tier": 9,
+  "abilities": [
+    {
+      "identifier": "rampage",
+      "keybind": "key.thematic.ability_0",
+      "options": {
+        "fields": {
+          "damage": "220"
+        }
+      }
+    },
+    {
+      "identifier": "ground_pound",
+      "keybind": "key.thematic.ability_1",
+      "options": {
+        "fields": {
+          "damage": "200"
+        }
+      }
+    },
+    {
+      "identifier": "thunder_clap",
+      "keybind": "key.thematic.ability_2",
+      "options": {
+        "fields": {
+          "damage": "160"
+        }
+      }
+    },
+    {
+      "identifier": "cripple",
+      "keybind": "key.thematic.ability_3",
+      "options": {
+        "fields": {
+          "damage": "150"
+        }
+      }
+    },
+    {
+      "identifier": "tenacity",
+      "keybind": "key.thematic.passive"
+    },
+    {
+      "identifier": "immunity_fall",
+      "keybind": "key.thematic.passive"
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 75,
+      "maximum": 98
+    },
+    {
+      "identifier": "thematic:base_regen",
+      "minimum": 80,
+      "maximum": 99
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 45,
+      "maximum": 55
+    },
+    {
+      "identifier": "thematic:base_utility",
+      "minimum": 40,
+      "maximum": 45
+    },
+    {
+      "identifier": "thematic:base_combat",
+      "minimum": 20,
+      "maximum": 40
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 80,
+      "maximum": 99
+    }
+  ],
+  "attributes": [
+    {
+      "identifier": "pehkui:base",
+      "effect": 1.5
+    }
+  ],
+  "fighting_type": [
+    "BRAWLER"
+  ]
+}

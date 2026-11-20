@@ -30,6 +30,13 @@ public final class ViltrumiteBridge {
         return entity instanceof ViltrumiteFlightPlayer flight && flight.getFlightState() != FlightState.NONE;
     }
 
+    public static void stopFlight(Player player) {
+        ViltrumiteFlightPlayer flight = (ViltrumiteFlightPlayer) player;
+        if (flight.getFlightState() != FlightState.NONE) {
+            flight.stopFlight();
+        }
+    }
+
     public static boolean isNpc(Entity entity) {
         return entity instanceof ViltrumiteFakePlayer;
     }

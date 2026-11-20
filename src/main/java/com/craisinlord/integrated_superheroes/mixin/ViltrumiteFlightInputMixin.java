@@ -18,7 +18,7 @@ public abstract class ViltrumiteFlightInputMixin {
     @ModifyExpressionValue(method = "onClientTick", at = @At(value = "FIELD", target = "Lnet/minecraft/world/entity/player/Abilities;mayfly:Z"))
     private static boolean integratedSuperheroes$onlyViltrumiteTakeoff(boolean mayfly) {
         LocalPlayer player = Minecraft.getInstance().player;
-        return (mayfly || player != null && (player.mayFly() || ViltrumiteCompat.binaryFlight(player))) && ViltrumiteCompat.mayUseFlight(player);
+        return (mayfly || player != null && (player.mayFly() || ViltrumiteCompat.heroFlight(player))) && ViltrumiteCompat.mayUseFlight(player);
     }
 
     @WrapWithCondition(method = "onClientTick", at = @At(value = "INVOKE",

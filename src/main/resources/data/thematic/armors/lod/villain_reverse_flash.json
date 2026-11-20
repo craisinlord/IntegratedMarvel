@@ -1,0 +1,57 @@
+{
+  "wip": true,
+  "creative": false,
+  "boss": true,
+  "tier": 8,
+  "model": "thematic:reverse_flash",
+  "mob_tempo": {
+    "gap": 16,
+    "evaluate": 4
+  },
+  "mob_dodge": {
+    "projectiles": true,
+    "beams": true,
+    "chance": 0.6,
+    "cooldown": 1.5,
+    "blink_every": 3
+  },
+  "abilities": [
+    {
+      "identifier": "lightning_clap",
+      "keybind": "key.thematic.ability_0",
+      "options": {
+        "fields": {
+          "color": "#FF0016"
+        }
+      }
+    },
+    {
+      "identifier": "aerial_charge",
+      "keybind": "key.thematic.ability_1"
+    },
+    {
+      "identifier": "thunder_clap",
+      "keybind": "key.thematic.ability_3"
+    }
+  ],
+  "stats": [
+    {
+      "identifier": "thematic:base_generic_attack",
+      "minimum": 32,
+      "maximum": 48
+    },
+    {
+      "identifier": "thematic:base_generic_speed",
+      "minimum": 80,
+      "maximum": 99
+    },
+    {
+      "identifier": "thematic:base_defense",
+      "minimum": 30,
+      "maximum": 48
+    }
+  ],
+  "fighting_type": [
+    "BRAWLER"
+  ]
+}
