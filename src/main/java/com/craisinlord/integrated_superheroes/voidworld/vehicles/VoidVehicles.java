@@ -202,13 +202,13 @@ public final class VoidVehicles {
 
     @Nullable
     static Vec3 groundSpot(ServerLevel level, Vec3 around, double min, double max) {
-        for (int attempt = 0; attempt < 20; attempt++) {
+        for (int attempt = 0; attempt < 48; attempt++) {
             double angle = level.random.nextDouble() * Math.PI * 2.0D;
             double distance = min + level.random.nextDouble() * (max - min);
             int x = Mth.floor(around.x + Math.cos(angle) * distance);
             int z = Mth.floor(around.z + Math.sin(angle) * distance);
             Integer y = groundAt(level, x, z);
-            if (y != null && flat(level, x, y, z, 2)) {
+            if (y != null && flat(level, x, y, z, 1)) {
                 return new Vec3(x + 0.5D, y, z + 0.5D);
             }
         }
@@ -226,7 +226,7 @@ public final class VoidVehicles {
         }
         BlockPos pos = new BlockPos(x, y, z);
         if (!level.getBlockState(pos.below()).getFluidState().isEmpty() || level.getBlockState(pos.below()).isAir()
-                || !level.getBlockState(pos).isAir() || !level.getBlockState(pos.above()).isAir() || !level.getBlockState(pos.above(2)).isAir()) {
+                || !level.getBlockState(pos).isAir() || !level.getBlockState(pos.above()).isAir()) {
             return null;
         }
         return y;
@@ -236,7 +236,7 @@ public final class VoidVehicles {
         for (int dx = -radius; dx <= radius; dx += radius) {
             for (int dz = -radius; dz <= radius; dz += radius) {
                 Integer h = groundAt(level, x + dx, z + dz);
-                if (h == null || Math.abs(h - y) > 1) {
+                if (h == null || Math.abs(h - y) > 3) {
                     return false;
                 }
             }
@@ -246,10 +246,11 @@ public final class VoidVehicles {
 
     static boolean runway(ServerLevel level, Vec3 from, Vec3 facing, int length) {
         int y = Mth.floor(from.y);
+        int misses = 0;
         for (int step = 3; step <= length; step += 3) {
             Vec3 at = from.add(facing.scale(step));
             Integer h = groundAt(level, Mth.floor(at.x), Mth.floor(at.z));
-            if (h == null || Math.abs(h - y) > 1) {
+            if ((h == null || Math.abs(h - y) > 4) && ++misses > 1) {
                 return false;
             }
         }

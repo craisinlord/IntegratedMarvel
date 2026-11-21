@@ -91,7 +91,7 @@ public record PrunedPiece(ResourceLocation id, Rotation rotation, Mirror mirror,
                 base = Math.min(base, height);
             }
         }
-        return overVoid >= 2 ? Integer.MIN_VALUE : base;
+        return overVoid >= 4 ? Integer.MIN_VALUE : base;
     }
 
     private static boolean loaded(ServerLevel level, int x, int z) {

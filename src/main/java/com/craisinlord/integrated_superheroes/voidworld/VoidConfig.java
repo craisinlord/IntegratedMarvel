@@ -119,7 +119,7 @@ public final class VoidConfig {
                 .define("enabled", true);
         PRUNE_INTERVALS = builder
                 .comment("Average seconds between pruned pieces falling near each player, by that player's tier, tier 0 first.")
-                .defineList("intervalSeconds", List.of(420, 330, 250, 180, 130, 90), () -> 300, value -> value instanceof Integer i && i >= 10);
+                .defineList("intervalSeconds", List.of(150, 120, 100, 80, 65, 50), () -> 300, value -> value instanceof Integer i && i >= 10);
         PRUNE_JITTER = builder
                 .comment("Random spread on each interval, as a share of it.")
                 .defineInRange("intervalJitter", 0.25D, 0.0D, 0.9D);
@@ -154,16 +154,16 @@ public final class VoidConfig {
                 .define("enabled", true);
         VEHICLE_CHECK_SECONDS = builder
                 .comment("Seconds between vehicle checks for each player.")
-                .defineInRange("checkSeconds", 30, 1, 3600);
+                .defineInRange("checkSeconds", 20, 1, 3600);
         VEHICLE_CHANCE = builder
                 .comment("Chance a check places a vehicle near that player.")
-                .defineInRange("chancePerCheck", 0.06D, 0.0D, 1.0D);
+                .defineInRange("chancePerCheck", 0.12D, 0.0D, 1.0D);
         VEHICLE_CHANCE_PER_TIER = builder
                 .comment("Extra chance per check for each Void tier the player is at.")
                 .defineInRange("chancePerTier", 0.01D, 0.0D, 1.0D);
         VEHICLE_TEAR_CHANCE = builder
                 .comment("Share of vehicles that arrive through a tear, already rolling, instead of sitting on the ground.")
-                .defineInRange("tearChance", 0.3D, 0.0D, 1.0D);
+                .defineInRange("tearChance", 0.7D, 0.0D, 1.0D);
         VEHICLE_MAX_LOADED = builder
                 .comment("Most unclaimed vehicles loaded in the Void at once. Vehicles a player has driven no longer count.")
                 .defineInRange("maxLoaded", 6, 0, 64);

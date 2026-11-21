@@ -31,6 +31,9 @@ public final class HeroMoves {
         SerumMoves.register(MOVES);
         SuitMoves.register(MOVES);
         StreetMoves.register(MOVES);
+        com.craisinlord.integrated_superheroes.voidrealm.variant.moves.hero.MarvelKitMoves.register(MOVES);
+        com.craisinlord.integrated_superheroes.voidrealm.variant.moves.hero.DcKitMoves.register(MOVES);
+        com.craisinlord.integrated_superheroes.voidrealm.variant.moves.hero.IconKitMoves.register(MOVES);
         serum("kryptonian_clark_kent", Flight.SWOOP, "heat_vision", "freeze_breath", "flying_punch", "thunder_clap");
         serum("compound_v_homelander", Flight.SWOOP, "heat_vision", "flying_punch", "thunder_clap");
         serum("martian_jonn_jonzz", Flight.SWOOP, "heat_vision", "psychic_blast", "flying_punch");
@@ -93,6 +96,7 @@ public final class HeroMoves {
         }
         return switch (profile.kind()) {
             case SERUM, VILTRUMITE -> SERUM_KITS.getOrDefault(profile.family(), List.of());
+            case THEMATIC -> ThematicKits.kitFor(profile.family(), profile.look());
             case MARVEL -> suitKit(profile.family());
             default -> List.of();
         };

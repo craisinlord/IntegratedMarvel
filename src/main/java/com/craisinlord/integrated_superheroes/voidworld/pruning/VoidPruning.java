@@ -33,7 +33,7 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 
 public final class VoidPruning {
-    private static final int[] DEFAULT_INTERVALS = {420, 330, 250, 180, 130, 90};
+    private static final int[] DEFAULT_INTERVALS = {150, 120, 100, 80, 65, 50};
     private static final DustParticleOptions RING = new DustParticleOptions(new Vector3f(1.0F, 0.42F, 0.05F), 2.5F);
     private static final DustParticleOptions RING_INNER = new DustParticleOptions(new Vector3f(1.0F, 0.75F, 0.25F), 1.6F);
     private static final double RING_VISIBLE = 192.0D;
@@ -167,7 +167,7 @@ public final class VoidPruning {
                 continue;
             }
             if (start(level, player, false) == null) {
-                rt.next.put(id, now + 200L);
+                rt.next.put(id, now + 60L);
                 continue;
             }
             long interval = interval(VoidTier.forPlayer(player), level.random);
@@ -205,15 +205,16 @@ public final class VoidPruning {
         if (pick == null) {
             return null;
         }
+        int failedPrepares = 0;
         int radius = pick.radius();
-        for (int attempt = 0; attempt < 16; attempt++) {
+        for (int attempt = 0; attempt < 48; attempt++) {
             double angle = random.nextDouble() * Math.PI * 2.0D;
             double distance = here
                     ? radius + 3.0D + random.nextDouble() * 2.0D
                     : minDistance() + radius * 0.5D + random.nextDouble() * Math.max(1.0D, maxDistance() - minDistance());
             int x = Mth.floor(player.getX() + Math.cos(angle) * distance);
             int z = Mth.floor(player.getZ() + Math.sin(angle) * distance);
-            if (!clearOfPlayers(level, x, z, radius + 3) || !clearOfDrops(rt, x, z, radius)) {
+            if (!clearOfPlayers(level, x, z, here ? radius : radius + 1) || !clearOfDrops(rt, x, z, radius)) {
                 continue;
             }
             int ground = PrunedPiece.groundAt(level, x, z, radius);
@@ -222,7 +223,16 @@ public final class VoidPruning {
             }
             PrunedPiece piece = PrunedPiece.prepare(level, pick, tier, new BlockPos(x, ground, z), ground);
             if (piece == null) {
-                return null;
+                if (++failedPrepares >= 4) {
+                    return null;
+                }
+                PrunedPiece.Pick next = PrunedPiece.pick(level, tier, random);
+                if (next == null) {
+                    return null;
+                }
+                pick = next;
+                radius = pick.radius();
+                continue;
             }
             begin(level, rt, piece, ground, random);
             return piece;

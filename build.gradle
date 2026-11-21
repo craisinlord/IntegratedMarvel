@@ -70,6 +70,9 @@ dependencies {
 
 sourceSets.test.compileClasspath += sourceSets.main.compileClasspath
 
+// src/test holds main-method verifiers run by the verify* tasks below, not JUnit tests.
+tasks.named('test') { failOnNoDiscoveredTests = false }
+
 tasks.register('verifyDoom', JavaExec) {
     dependsOn testClasses
     classpath = sourceSets.test.output + sourceSets.main.output + sourceSets.main.compileClasspath

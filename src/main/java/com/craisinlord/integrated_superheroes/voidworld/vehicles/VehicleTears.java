@@ -140,8 +140,8 @@ final class VehicleTears {
 
     @Nullable
     static Vec3 open(ServerLevel level, ServerPlayer player, int tier, boolean aircraft, double fuel, boolean driver, boolean launch) {
-        for (int attempt = 0; attempt < 16; attempt++) {
-            Vec3 ground = VoidVehicles.groundSpot(level, player.position(), 16.0D, 30.0D);
+        for (int attempt = 0; attempt < 32; attempt++) {
+            Vec3 ground = VoidVehicles.groundSpot(level, player.position(), 12.0D, 40.0D);
             if (ground == null) {
                 return null;
             }
@@ -151,7 +151,7 @@ final class VehicleTears {
             }
             double turn = Math.toRadians((25.0D + level.random.nextDouble() * 25.0D) * (level.random.nextBoolean() ? 1.0D : -1.0D));
             Vec3 facing = toward.normalize().yRot((float) turn);
-            if (!VoidVehicles.runway(level, ground, facing, 12)) {
+            if (!VoidVehicles.runway(level, ground, facing, 6)) {
                 continue;
             }
             long now = level.getGameTime();

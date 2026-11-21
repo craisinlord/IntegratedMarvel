@@ -66,6 +66,7 @@ public final class VariantPool {
 
     private static VariantPool build(MinecraftServer server) {
         VariantPool pool = new VariantPool(VariantPoolData.load(server.getResourceManager()));
+        com.craisinlord.integrated_superheroes.voidrealm.variant.moves.ThematicKits.load(server.getResourceManager());
         if (ModCompat.THEMATIC) {
             try {
                 ThematicVariants.applyAllowlist(pool.data);
