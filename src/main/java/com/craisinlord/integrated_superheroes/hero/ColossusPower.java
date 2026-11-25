@@ -34,9 +34,9 @@ public final class ColossusPower {
     public static final String ID = "organic_steel_piotr_rasputin";
     public static final String STEEL_STATE = "integrated_superheroes_steel";
     private static final String STEEL_FORM = "steel_form";
-    private static final Map<UUID, Long> FASTBALL = new HashMap<>();
-    private static final Map<UUID, Integer> LAVA_TICKS = new HashMap<>();
-    private static final Map<UUID, UUID> FASTBALL_HELD = new HashMap<>();
+    private static final Map<UUID, Long> FASTBALL = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Integer> LAVA_TICKS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, UUID> FASTBALL_HELD = ServerState.map(new HashMap<>());
 
     private ColossusPower() {
     }
@@ -50,9 +50,9 @@ public final class ColossusPower {
                 List.of(),
                 List.of(
                         new HeroPower.Ability(STEEL_FORM, "Steel Form", ColossusPower::steelForm),
-                        new HeroPower.Ability("fastball_special", "Fastball Special", ColossusPower::fastball),
-                        new HeroPower.Ability("steel_charge", "Steel Charge", ColossusPower::steelCharge),
-                        new HeroPower.Ability("iron_slam", "Iron Slam", ColossusPower::ironSlam)
+                        HeroPower.Ability.of("fastball_special", "Fastball Special", ColossusPower::fastball),
+                        HeroPower.Ability.of("steel_charge", "Steel Charge", ColossusPower::steelCharge),
+                        HeroPower.Ability.of("iron_slam", "Iron Slam", ColossusPower::ironSlam)
                 ),
                 List.of(),
                 new HeroPower.Hooks() {
@@ -171,7 +171,10 @@ public final class ColossusPower {
         }
     }
 
-    private static boolean requireSteel(ServerPlayer player) {
+    private static boolean requireSteel(LivingEntity caster) {
+        if (!(caster instanceof ServerPlayer player)) {
+            return true;
+        }
         if (isSteel(player)) {
             return true;
         }
@@ -213,16 +216,16 @@ public final class ColossusPower {
         return 0.0D;
     }
 
-    private static double fastball(ServerPlayer player, int slot) {
+    private static double fastball(LivingEntity player, int slot) {
         if (HeroGrip.isHolding(player)) {
             UUID held = FASTBALL_HELD.remove(player.getUUID());
-            boolean ally = held != null && player.serverLevel().getEntity(held) instanceof ServerPlayer;
+            boolean ally = held != null && player instanceof ServerPlayer && HeroCaster.level(player).getEntity(held) instanceof ServerPlayer;
             float damage = ally ? 0.0F : MarvelBalanceConfig.FASTBALL_THROW_DAMAGE.get().floatValue();
             HeroGrip.release(player, MarvelBalanceConfig.FASTBALL_SPEED.get(), damage);
-            if (ally && player.serverLevel().getEntity(held) instanceof ServerPlayer thrown) {
+            if (ally && player instanceof ServerPlayer owner && HeroCaster.level(player).getEntity(held) instanceof ServerPlayer thrown) {
                 FASTBALL.put(thrown.getUUID(), player.level().getGameTime() + 60L);
                 thrown.displayClientMessage(Component.literal("§bFastball Special!"), true);
-                HeroAdvancements.award(player, "x_men/colossus/fastball_special");
+                HeroAdvancements.award(owner, "x_men/colossus/fastball_special");
                 HeroAdvancements.award(thrown, "x_men/colossus/special_delivery");
             }
             HeroAnimations.play(player, "celestisynth:cs_crescentia_throw");
@@ -242,7 +245,7 @@ public final class ColossusPower {
         return 0.0D;
     }
 
-    private static double steelCharge(ServerPlayer player, int slot) {
+    private static double steelCharge(LivingEntity player, int slot) {
         if (!requireSteel(player)) {
             return 0.0D;
         }
@@ -251,19 +254,19 @@ public final class ColossusPower {
         double damage = MarvelBalanceConfig.STEEL_CHARGE_DAMAGE.get();
         HeroAdvancements.cast(player).hits(8, "x_men/colossus/unstoppable_object")
                 .run(() -> HeroAbilities.startDash(player, direction.scale(1.6D).add(0.0D, 0.1D, 0.0D), 8, damage, 1.6D));
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         BlockPos origin = player.blockPosition();
-        for (int step = 1; step <= 8; step++) {
+        for (int step = 1; step <= 8 && player instanceof ServerPlayer breaker; step++) {
             Vec3 at = player.position().add(direction.scale(step));
             for (int y = 0; y <= 2; y++) {
                 BlockPos pos = BlockPos.containing(at.x, origin.getY() + y, at.z);
                 BlockState state = level.getBlockState(pos);
-                if (state.isAir() || !level.mayInteract(player, pos)) {
+                if (state.isAir() || !level.mayInteract(breaker, pos)) {
                     continue;
                 }
                 if (state.is(BlockTags.LEAVES) || state.is(Tags.Blocks.GLASS_BLOCKS) || state.is(Tags.Blocks.GLASS_PANES)
                         || state.canBeReplaced() && state.getFluidState().isEmpty()) {
-                    HeroGrief.tryBreak(player, level, pos, true);
+                    HeroGrief.tryBreak(breaker, level, pos, true);
                 }
             }
         }
@@ -273,7 +276,7 @@ public final class ColossusPower {
         return MarvelBalanceConfig.STEEL_CHARGE_COOLDOWN.get();
     }
 
-    private static double ironSlam(ServerPlayer player, int slot) {
+    private static double ironSlam(LivingEntity player, int slot) {
         if (!requireSteel(player)) {
             return 0.0D;
         }
@@ -286,7 +289,7 @@ public final class ColossusPower {
         HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().mobAttack(player), damage));
         target.setDeltaMovement(0.0D, -1.5D, 0.0D);
         target.hurtMarked = true;
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         BlockState ground = level.getBlockState(target.blockPosition().below());
         if (HeroFx.vfx(level, target.position(), "slam_fracture", 0, 2.0F)) {
             HeroFx.vfx(level, target.position().add(0.0D, target.getBbHeight() * 0.5D, 0.0D), "impact_starburst", STEEL_WHITE);

@@ -1,6 +1,7 @@
 package com.craisinlord.integrated_superheroes.mixin;
 
 import com.craisinlord.integrated_superheroes.hero.HeroAbilities;
+import com.craisinlord.integrated_superheroes.hero.HeroHits;
 import com.craisinlord.integrated_superheroes.hero.IronManSuits;
 import com.craisinlord.integrated_superheroes.suit.SuitStates;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,11 +31,14 @@ public abstract class IronManUnibeamMixin {
         if (stats == null || stats.unibeamDamage().get() <= 0.0D || entityHit.getEntity() == player) {
             return hit;
         }
-        if (entityHit.getEntity() instanceof LivingEntity living) {
-            living.invulnerableTime = 0;
-        }
         float damage = (float) (stats.unibeamDamage().get() * overcharge);
-        HeroAbilities.runAsAbilityDamage(() -> entityHit.getEntity().hurt(player.damageSources().playerAttack(player), damage));
+        HeroAbilities.runAsSuitDamage(() -> {
+            if (entityHit.getEntity() instanceof LivingEntity living) {
+                HeroHits.force(player, living, player.damageSources().playerAttack(player), damage);
+            } else {
+                entityHit.getEntity().hurt(player.damageSources().playerAttack(player), damage);
+            }
+        });
         return hit;
     }
 }

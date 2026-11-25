@@ -44,11 +44,12 @@ public final class RoguePower {
     public static final HeroPower.Toggle GLOVES = new HeroPower.Toggle("integrated_superheroes_off_gloves", "Gloves", () -> Items.LEATHER);
     public static final int SLOTS = 3;
     private static final String[] MEMORY_ABILITIES = {"rogue_memory_1", "rogue_memory_2", "rogue_memory_3"};
+    private static final String BORROWED_KEY = "integrated_superheroes_rogue_borrowed_states";
     private static final String SAVE_KEY = "integrated_superheroes_rogue_memories";
     private static final String BORROWED = "borrowed/";
-    private static final Map<UUID, Held[]> STATES = new HashMap<>();
-    private static final Map<UUID, Long> ABSORB_COOLDOWNS = new HashMap<>();
-    private static final Map<UUID, java.util.Set<String>> BORROWED_STATES = new HashMap<>();
+    private static final Map<UUID, Held[]> STATES = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> ABSORB_COOLDOWNS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, java.util.Set<String>> BORROWED_STATES = ServerState.map(new HashMap<>());
     private static final Map<String, java.util.function.ToDoubleFunction<ServerPlayer>> BORROW_ADAPTERS = new java.util.concurrent.ConcurrentHashMap<>();
     private static final java.util.Set<String> BORROW_EXCLUDED = java.util.concurrent.ConcurrentHashMap.newKeySet();
 
@@ -78,7 +79,7 @@ public final class RoguePower {
             int index = i;
             abilities.add(new HeroPower.Ability(MEMORY_ABILITIES[i], "Empty Memory", (player, slot) -> useMemory(player, index)));
         }
-        abilities.add(new HeroPower.Ability("siphon_touch", "Siphon Touch", RoguePower::siphonTouch));
+        abilities.add(HeroPower.Ability.of("siphon_touch", "Siphon Touch", RoguePower::siphonTouch));
         abilities.add(HeroToggles.WHEEL);
         return new HeroPower(
                 ID,
@@ -93,6 +94,7 @@ public final class RoguePower {
                     public void tick(ServerPlayer player) {
                         Held[] held = state(player);
                         RogueKit.tick(player);
+                        HeroGrip.tick(player);
                         long now = player.level().getGameTime();
                         boolean changed = false;
                         for (int i = 0; i < SLOTS; i++) {
@@ -124,6 +126,7 @@ public final class RoguePower {
                         }
                         player.getPersistentData().remove(SAVE_KEY);
                         clearBorrowedStates(player);
+                        HeroGrip.clear(player);
                         RogueKit.clear(player);
                     }
 
@@ -274,7 +277,11 @@ public final class RoguePower {
         return true;
     }
 
-    private static boolean onCooldown(ServerPlayer player, LivingEntity target) {
+    private static boolean affects(LivingEntity caster, LivingEntity target) {
+        return caster instanceof ServerPlayer player ? RogueKit.affects(player, target) : HeroCaster.foe(caster, target);
+    }
+
+    private static boolean onCooldown(LivingEntity player, LivingEntity target) {
         long now = player.level().getGameTime();
         Long until = ABSORB_COOLDOWNS.get(target.getUUID());
         if (until != null && until > now) {
@@ -285,15 +292,28 @@ public final class RoguePower {
     }
 
     public static void absorb(ServerPlayer player, LivingEntity target) {
-        if (onCooldown(player, target)) {
+        drain(player, target);
+    }
+
+    private static void drain(LivingEntity caster, LivingEntity target) {
+        if (onCooldown(caster, target)) {
             return;
         }
-        drainFx(player, target);
-        target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, MarvelBalanceConfig.DRAIN_WEAKEN_TICKS.get(), 1), player);
+        drainFx(caster, target);
+        target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, MarvelBalanceConfig.DRAIN_WEAKEN_TICKS.get(), 1), caster);
         if (HeroAbilities.canControl(target)) {
-            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, MarvelBalanceConfig.DRAIN_WEAKEN_TICKS.get(), 0), player);
+            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, MarvelBalanceConfig.DRAIN_WEAKEN_TICKS.get(), 0), caster);
         }
-        player.heal(MarvelBalanceConfig.DRAIN_HEAL.get().floatValue());
+        caster.heal(MarvelBalanceConfig.DRAIN_HEAL.get().floatValue());
+        if (!(caster instanceof ServerPlayer player)) {
+            if (target instanceof ServerPlayer victim && MarvelBalanceConfig.ABSORB_PLAYERS.get()
+                    && !(ModCompat.VILTRUMITE && ViltrumiteBridge.isNpc(victim))) {
+                shutdown(victim, MarvelBalanceConfig.VICTIM_SHUTDOWN_SECONDS.get());
+                victim.displayClientMessage(Component.literal("§2Rogue drained your powers!"), true);
+                HeroFx.play(victim, SoundEvents.WARDEN_HEARTBEAT, 1.2F, 1.0F);
+            }
+            return;
+        }
         if (target instanceof ServerPlayer victim && !(ModCompat.VILTRUMITE && ViltrumiteBridge.isNpc(victim))) {
             absorbPlayer(player, victim);
             return;
@@ -428,14 +448,25 @@ public final class RoguePower {
         for (String state : data.getStates()) {
             if (!before.contains(state)) {
                 BORROWED_STATES.computeIfAbsent(player.getUUID(), ignored -> new java.util.HashSet<>()).add(state);
+                ListTag saved = player.getPersistentData().getList(BORROWED_KEY, Tag.TAG_STRING);
+                saved.add(net.minecraft.nbt.StringTag.valueOf(state));
+                player.getPersistentData().put(BORROWED_KEY, saved);
             }
         }
         return cooldown;
     }
 
     private static void clearBorrowedStates(ServerPlayer player) {
-        java.util.Set<String> states = BORROWED_STATES.remove(player.getUUID());
-        if (states == null || states.isEmpty()) {
+        java.util.Set<String> states = new java.util.HashSet<>();
+        java.util.Set<String> borrowed = BORROWED_STATES.remove(player.getUUID());
+        if (borrowed != null) {
+            states.addAll(borrowed);
+        }
+        if (player.getPersistentData().contains(BORROWED_KEY, Tag.TAG_LIST)) {
+            player.getPersistentData().getList(BORROWED_KEY, Tag.TAG_STRING).forEach(tag -> states.add(tag.getAsString()));
+            player.getPersistentData().remove(BORROWED_KEY);
+        }
+        if (states.isEmpty()) {
             return;
         }
         PlayerData data = HeroPowers.data(player);
@@ -459,14 +490,14 @@ public final class RoguePower {
         return cooldown * MarvelBalanceConfig.MEMORY_COOLDOWN_MULTIPLIER.get();
     }
 
-    private static double siphonTouch(ServerPlayer player, int slot) {
+    private static double siphonTouch(LivingEntity player, int slot) {
         double range = MarvelBalanceConfig.SIPHON_RANGE.get();
         LivingEntity target = HeroAbilities.cone(player, range, 30.0D).stream()
-                .filter(entity -> RogueKit.affects(player, entity))
+                .filter(entity -> affects(player, entity))
                 .min(Comparator.comparingDouble(entity -> entity.distanceToSqr(player)))
                 .orElse(null);
         if (target == null) {
-            player.displayClientMessage(Component.literal("§7Nothing in reach."), true);
+            HeroCaster.message(player, Component.literal("§7Nothing in reach."));
             return 0.5D;
         }
         Vec3 toward = target.position().subtract(player.position());
@@ -474,9 +505,10 @@ public final class RoguePower {
             player.setDeltaMovement(toward.normalize().scale(0.6D).add(0.0D, 0.1D, 0.0D));
             player.hurtMarked = true;
         }
-        HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), MarvelBalanceConfig.SIPHON_DAMAGE.get().floatValue()));
+        HeroAbilities.runAsAbilityDamage(() -> target.hurt(player instanceof Player attacker ? player.damageSources().playerAttack(attacker)
+                : player.damageSources().mobAttack(player), MarvelBalanceConfig.SIPHON_DAMAGE.get().floatValue()));
         ABSORB_COOLDOWNS.remove(target.getUUID());
-        absorb(player, target);
+        drain(player, target);
         HeroAnimations.play(player, "uppercut");
         return MarvelBalanceConfig.SIPHON_COOLDOWN.get();
     }
@@ -490,8 +522,8 @@ public final class RoguePower {
         drainFx(player, attacker);
     }
 
-    private static void drainFx(ServerPlayer player, LivingEntity target) {
-        ServerLevel level = player.serverLevel();
+    private static void drainFx(LivingEntity player, LivingEntity target) {
+        ServerLevel level = HeroCaster.level(player);
         Vec3 from = target.getBoundingBox().getCenter();
         Vec3 to = player.getBoundingBox().getCenter();
         HeroAbilities.particleLine(level, from, to, HeroAbilities.emissive(RogueKit.GREEN, 0.8F), 0.35D);
@@ -556,6 +588,9 @@ public final class RoguePower {
     private static void onClone(PlayerEvent.Clone event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             STATES.remove(player.getUUID());
+            if (!event.isWasDeath() && event.getOriginal().getPersistentData().contains(BORROWED_KEY)) {
+                player.getPersistentData().put(BORROWED_KEY, event.getOriginal().getPersistentData().get(BORROWED_KEY).copy());
+            }
             if (event.isWasDeath()) {
                 player.getPersistentData().remove(SAVE_KEY);
             } else if (event.getOriginal().getPersistentData().contains(SAVE_KEY)) {

@@ -1,0 +1,47 @@
+{
+  "moves": {
+    "power:amazon_diana_prince/lasso_of_truth": { "min_range": 3, "max_range": 20, "weight": 12, "cast_ticks": 8 },
+    "power:amazon_diana_prince/bracelet_clash": { "min_range": 0, "max_range": 6, "weight": 12, "cast_ticks": 8 },
+    "power:amazon_diana_prince/bracelets_up": { "min_range": 0, "max_range": 14, "weight": 6, "cast_ticks": 4, "active_ticks": 80 },
+
+    "power:atlantean_arthur_curry/trident_throw": { "min_range": 4, "max_range": 30, "weight": 14, "cast_ticks": 8 },
+    "power:atlantean_arthur_curry/missile_squids": { "min_range": 4, "max_range": 24, "weight": 10, "cast_ticks": 8 },
+    "power:atlantean_arthur_curry/octopus_bomb": { "min_range": 3, "max_range": 16, "weight": 8, "cast_ticks": 8 },
+    "power:atlantean_arthur_curry/call_sea_life": { "min_range": 0, "max_range": 5, "weight": 8, "cast_ticks": 8 },
+
+    "power:acrobatics_hank_mccoy/beast_pounce": { "min_range": 2, "max_range": 10, "weight": 14, "cast_ticks": 2, "active_ticks": 24 },
+    "power:acrobatics_hank_mccoy/beast_weighted_sweep": { "min_range": 0, "max_range": 4, "weight": 10, "cast_ticks": 6 },
+
+    "power:binary_carol_danvers/photon_blast": { "min_range": 4, "max_range": 40, "weight": 14, "cast_ticks": 24, "active_ticks": 24 },
+    "power:binary_carol_danvers/binary_mode": { "min_range": 0, "max_range": 16, "weight": 6, "cast_ticks": 10 },
+    "power:binary_carol_danvers/cosmic_dash": { "min_range": 3, "max_range": 16, "weight": 10, "cast_ticks": 2, "active_ticks": 12 },
+
+    "power:organic_steel_piotr_rasputin/fastball_special": { "mode": "state", "min_range": 0, "max_range": 4, "weight": 10, "cast_ticks": 10, "state_ticks": 25 },
+    "power:organic_steel_piotr_rasputin/steel_charge": { "min_range": 2, "max_range": 10, "weight": 12, "cast_ticks": 2, "active_ticks": 10 },
+    "power:organic_steel_piotr_rasputin/iron_slam": { "min_range": 0, "max_range": 4, "weight": 12, "cast_ticks": 8 },
+
+    "power:optic_blasts_scott_summers/optic_blast": { "min_range": 3, "max_range": 40, "weight": 14, "cast_ticks": 20, "active_ticks": 20 },
+    "power:optic_blasts_scott_summers/wide_blast": { "min_range": 2, "max_range": 16, "weight": 10, "cast_ticks": 14, "active_ticks": 14 },
+
+    "power:radar_sense_matt_murdock/billy_club": { "min_range": 3, "max_range": 24, "weight": 12, "cast_ticks": 6 },
+    "power:radar_sense_matt_murdock/takedown": { "min_range": 0, "max_range": 6, "weight": 12, "cast_ticks": 6 },
+    "power:radar_sense_matt_murdock/staff_sweep": { "min_range": 0, "max_range": 3.5, "weight": 10, "cast_ticks": 8 },
+
+    "power:weapon_x_wade_wilson/unload": { "min_range": 3, "max_range": 24, "weight": 14, "cast_ticks": 4, "active_ticks": 20 },
+    "power:weapon_x_wade_wilson/pull_the_pin": { "min_range": 4, "max_range": 16, "weight": 10, "cast_ticks": 8 },
+    "power:weapon_x_wade_wilson/retcon": { "min_range": 0, "max_range": 16, "weight": 3, "cast_ticks": 4 },
+
+    "power:kinetic_charge_remy_lebeau/kinetic_throw": { "min_range": 3, "max_range": 24, "weight": 12, "cast_ticks": 6 },
+    "power:kinetic_charge_remy_lebeau/card_fan": { "min_range": 2, "max_range": 16, "weight": 12, "cast_ticks": 6 },
+    "power:kinetic_charge_remy_lebeau/charge_touch": { "min_range": 0, "max_range": 6, "weight": 8, "cast_ticks": 6 },
+    "power:kinetic_charge_remy_lebeau/bo_vault": { "min_range": 2, "max_range": 8, "weight": 4, "cast_ticks": 2, "active_ticks": 20 },
+    "power:kinetic_charge_remy_lebeau/full_house": { "min_range": 4, "max_range": 32, "weight": 14, "cast_ticks": 10, "active_ticks": 30 },
+
+    "power:spirit_of_vengeance_johnny_blaze/ghost_rider_hellchain": { "min_range": 2, "max_range": 10, "weight": 12, "cast_ticks": 6 },
+    "power:spirit_of_vengeance_johnny_blaze/ghost_rider_penance_stare": { "min_range": 0, "max_range": 8, "weight": 10, "cast_ticks": 24, "active_ticks": 24 },
+
+    "power:flora_colossus_groot/groot_branch_arm": { "min_range": 2, "max_range": 10, "weight": 12, "cast_ticks": 6 },
+    "power:flora_colossus_groot/grow_skewer": { "min_range": 2, "max_range": 12, "weight": 12, "cast_ticks": 8 },
+    "power:flora_colossus_groot/grow_thorn_burst": { "min_range": 0, "max_range": 4, "weight": 10, "cast_ticks": 8 }
+  }
+}

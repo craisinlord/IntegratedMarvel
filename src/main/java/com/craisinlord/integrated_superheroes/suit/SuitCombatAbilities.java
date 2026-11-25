@@ -1,5 +1,7 @@
 package com.craisinlord.integrated_superheroes.suit;
 
+import com.craisinlord.integrated_superheroes.gauntlet.GauntletFx;
+import com.craisinlord.integrated_superheroes.hero.HeroCaster;
 import com.craisinlord.integrated_superheroes.hero.HeroGrief;
 import com.craisinlord.integrated_superheroes.hero.HeroFx;
 import com.craisinlord.integrated_superheroes.compat.FallbackGrenade;
@@ -12,7 +14,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
@@ -49,15 +50,15 @@ public final class SuitCombatAbilities {
         return entity.getType().is(BOSSES);
     }
 
-    static void loseTrackOf(ServerPlayer player, double range) {
+    static void loseTrackOf(LivingEntity player, double range) {
         for (Mob mob : player.level().getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(range), mob -> mob.getTarget() == player)) {
             mob.setTarget(null);
         }
     }
 
     static SuitAbility.Result flares(SuitContext context) {
-        ServerPlayer player = context.player();
-        ServerLevel level = player.serverLevel();
+        LivingEntity player = context.caster();
+        ServerLevel level = HeroCaster.level(player);
         double radius = SuitAbilityConfig.FLARES_RADIUS.get();
         for (Projectile projectile : level.getEntitiesOfClass(Projectile.class, player.getBoundingBox().inflate(radius), projectile -> {
             Entity owner = projectile.getOwner();
@@ -88,14 +89,14 @@ public final class SuitCombatAbilities {
     }
 
     static SuitAbility.Result laserRing(SuitContext context) {
-        ServerPlayer player = context.player();
-        ServerLevel level = player.serverLevel();
+        LivingEntity player = context.caster();
+        ServerLevel level = HeroCaster.level(player);
         float damage = context.damage(SuitAbilityConfig.LASER_RING);
         double radius = SuitAbilityConfig.LASER_RING_RADIUS.get();
         for (LivingEntity target : HeroAbilities.sphere(player, radius)) {
             if (SuitTargeting.canHit(player, target)) {
                 target.invulnerableTime = 0;
-                HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+                HeroAbilities.runAsSuitDamage(() -> target.hurt(SuitTargeting.attack(player), damage));
             }
         }
         double y = player.getY() + 1.1D;
@@ -106,16 +107,12 @@ public final class SuitCombatAbilities {
             return SuitAbility.Result.FIRED;
         }
         var laser = SuitFx.particle(SuitFx.SMALL_LASER, ParticleTypes.ELECTRIC_SPARK);
+        Vec3 center = new Vec3(player.getX(), y, player.getZ());
         for (double r = 1.0D; r <= radius; r += 1.0D) {
             int points = (int) (r * 12);
-            for (int i = 0; i < points; i++) {
-                double angle = Math.PI * 2.0D * i / points;
-                double x = player.getX() + Math.cos(angle) * r;
-                double z = player.getZ() + Math.sin(angle) * r;
-                level.sendParticles(HeroAbilities.emissive(RING_COLOR, 1.2F), x, y, z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
-                if (r == Math.floor(radius)) {
-                    level.sendParticles(laser, x, y, z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
-                }
+            GauntletFx.ring(level, HeroAbilities.emissive(RING_COLOR, 1.2F), center, r, points);
+            if (r == Math.floor(radius)) {
+                GauntletFx.ring(level, laser, center, r, points);
             }
         }
         SuitFx.burst(level, SuitFx.PLASMA_RING, ParticleTypes.FLASH, new Vec3(player.getX(), y, player.getZ()), 1, 0.0D, 0.0D);
@@ -124,31 +121,31 @@ public final class SuitCombatAbilities {
     }
 
     static SuitAbility.Result stealth(SuitContext context) {
-        ServerPlayer player = context.player();
+        LivingEntity player = context.caster();
         int ticks = SuitAbilityConfig.STEALTH_TICKS.get();
         player.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, ticks, 0, false, false, true));
         SuitStates.get(player).stealthUntil = player.level().getGameTime() + ticks;
         loseTrackOf(player, 32.0D);
-        player.serverLevel().sendParticles(ParticleTypes.SMOKE, player.getX(), player.getY() + 1.0D, player.getZ(), 30, 0.4D, 0.8D, 0.4D, 0.02D);
+        HeroCaster.level(player).sendParticles(ParticleTypes.SMOKE, player.getX(), player.getY() + 1.0D, player.getZ(), 30, 0.4D, 0.8D, 0.4D, 0.02D);
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.8F, 1.6F);
         return SuitAbility.Result.FIRED;
     }
 
     static SuitAbility.Result overcharge(SuitContext context) {
-        ServerPlayer player = context.player();
+        LivingEntity player = context.caster();
         SuitStates.State state = SuitStates.get(player);
         if (state.overchargeArmed) {
-            player.displayClientMessage(Component.literal("§eUnibeam already overcharged"), true);
+            HeroCaster.message(player, Component.literal("§eUnibeam already overcharged"));
             return SuitAbility.Result.FAILED;
         }
         state.overchargeArmed = true;
-        player.displayClientMessage(Component.literal("§bUnibeam overcharged: next shot drains the suit"), true);
+        HeroCaster.message(player, Component.literal("§bUnibeam overcharged: next shot drains the suit"));
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), MarvelSoundEvents.IRON_MAN_UNIBEAM_CHARGE.get(), SoundSource.PLAYERS, 1.0F, 0.7F);
         return SuitAbility.Result.FIRED;
     }
 
     static SuitAbility.Result brace(SuitContext context) {
-        ServerPlayer player = context.player();
+        LivingEntity player = context.caster();
         int ticks = SuitAbilityConfig.BRACE_TICKS.get();
         player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, ticks, 2, false, false, true));
         player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, ticks, 4, false, false, true));
@@ -158,8 +155,8 @@ public final class SuitCombatAbilities {
     }
 
     static SuitAbility.Result hydraulicPunch(SuitContext context) {
-        ServerPlayer player = context.player();
-        ServerLevel level = player.serverLevel();
+        LivingEntity player = context.caster();
+        ServerLevel level = HeroCaster.level(player);
         Vec3 look = player.getLookAngle();
         Vec3 center = player.getEyePosition().add(look.scale(2.5D));
         AABB area = new AABB(center, center).inflate(1.5D);
@@ -167,14 +164,14 @@ public final class SuitCombatAbilities {
         int stun = SuitAbilityConfig.HYDRAULIC_PUNCH_STUN_TICKS.get();
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, area, entity -> SuitTargeting.canHit(player, entity))) {
             target.invulnerableTime = 0;
-            HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+            HeroAbilities.runAsSuitDamage(() -> target.hurt(SuitTargeting.attack(player), damage));
             target.knockback(1.6D, -look.x, -look.z);
             if (stun > 0) {
                 HeroFx.effect("alexscaves:stunned").ifPresentOrElse(effect -> target.addEffect(new MobEffectInstance(effect, stun, 0)),
                         () -> target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, stun, 9)));
             }
         }
-        if (level.getGameRules().getBoolean(MarvelGameRules.RULE_SUPERPOWERGRIEFING)) {
+        if (level.getGameRules().getBoolean(MarvelGameRules.RULE_SUPERPOWERGRIEFING) && HeroCaster.griefs(player)) {
             double maxHardness = SuitAbilityConfig.HYDRAULIC_PUNCH_MAX_HARDNESS.get();
             BlockPos origin = BlockPos.containing(center);
             for (BlockPos pos : BlockPos.betweenClosed(origin.offset(-1, -1, -1), origin.offset(1, 1, 1))) {
@@ -198,10 +195,10 @@ public final class SuitCombatAbilities {
     }
 
     static SuitAbility.Result grapple(SuitContext context) {
-        ServerPlayer player = context.player();
+        LivingEntity player = context.caster();
         LivingEntity target = SuitTargeting.crosshair(player, SuitAbilityConfig.GRAPPLE_RANGE.get());
         if (target == null || isBoss(target)) {
-            player.displayClientMessage(Component.literal(target == null ? "§cNo target" : "§cToo heavy to grapple"), true);
+            HeroCaster.message(player, Component.literal(target == null ? "§cNo target" : "§cToo heavy to grapple"));
             return SuitAbility.Result.FAILED;
         }
         Vec3 pull = player.position().subtract(target.position());
@@ -212,15 +209,15 @@ public final class SuitCombatAbilities {
         if (ModCompat.SCORCHED_GUNS) {
             ScorchedGunsWeapons.traumaHook(player, hand, target.getBoundingBox().getCenter());
         } else {
-            HeroAbilities.particleLine(player.serverLevel(), hand, target.getBoundingBox().getCenter(), ParticleTypes.ENCHANTED_HIT, 0.25D);
+            HeroAbilities.particleLine(HeroCaster.level(player), hand, target.getBoundingBox().getCenter(), ParticleTypes.ENCHANTED_HIT, 0.25D);
         }
-        HeroAbilities.particleLine(player.serverLevel(), hand, target.getBoundingBox().getCenter(), ParticleTypes.CRIT, 0.4D);
+        HeroAbilities.particleLine(HeroCaster.level(player), hand, target.getBoundingBox().getCenter(), ParticleTypes.CRIT, 0.4D);
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.CHAIN_PLACE, SoundSource.PLAYERS, 1.0F, 0.7F);
         return SuitAbility.Result.FIRED;
     }
 
     static SuitAbility.Result heavyThrow(SuitContext context) {
-        ServerPlayer player = context.player();
+        LivingEntity player = context.caster();
         if (SuitStates.isCarrying(player)) {
             SuitStates.throwCarried(player);
             player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_KNOCKBACK, SoundSource.PLAYERS, 1.0F, 0.6F);
@@ -231,7 +228,7 @@ public final class SuitCombatAbilities {
                 .min(Comparator.comparingDouble(entity -> entity.distanceToSqr(player)))
                 .orElse(null);
         if (target == null) {
-            player.displayClientMessage(Component.literal("§cNothing to grab"), true);
+            HeroCaster.message(player, Component.literal("§cNothing to grab"));
             return SuitAbility.Result.FAILED;
         }
         SuitStates.grab(player, target, context.damage(SuitAbilityConfig.HEAVY_THROW));
@@ -240,8 +237,8 @@ public final class SuitCombatAbilities {
     }
 
     static SuitAbility.Result rally(SuitContext context) {
-        ServerPlayer player = context.player();
-        ServerLevel level = player.serverLevel();
+        LivingEntity player = context.caster();
+        ServerLevel level = HeroCaster.level(player);
         int ticks = SuitAbilityConfig.RALLY_TICKS.get();
         double radius = SuitAbilityConfig.RALLY_RADIUS.get();
         for (LivingEntity ally : level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(radius), entity -> isAlly(player, entity))) {
@@ -253,25 +250,28 @@ public final class SuitCombatAbilities {
         return SuitAbility.Result.FIRED;
     }
 
-    private static boolean isAlly(ServerPlayer player, LivingEntity entity) {
+    private static boolean isAlly(LivingEntity player, LivingEntity entity) {
         if (entity == player || player.isAlliedTo(entity)) {
             return true;
         }
         if (entity instanceof OwnableEntity owned && player.getUUID().equals(owned.getOwnerUUID())) {
             return true;
         }
+        if (!HeroCaster.isPlayer(player)) {
+            return !(entity instanceof Player) && !HeroCaster.foe(player, entity);
+        }
         return entity instanceof Player && !SuitTargeting.canHit(player, entity);
     }
 
     static SuitAbility.Result protonCannon(SuitContext context) {
-        ServerPlayer player = context.player();
+        LivingEntity player = context.caster();
         SuitStates.State state = SuitStates.get(player);
         if (state.protonTicks > 0) {
             return SuitAbility.Result.FAILED;
         }
         state.protonTicks = SuitAbilityConfig.PROTON_CANNON_TICKS.get();
         state.protonDamage = (float) (context.unibeam() * SuitAbilityConfig.PROTON_CANNON.damageMultiplier().get());
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         if (HeroFx.vfx(level, beamOrigin(player), "impact_starburst", PROTON_COLOR)) {
             HeroFx.cue(player, "thematic:ultron.encephalo_cutin", 1.2F, 1.0F);
             HeroFx.cue(player, "thematic:ultron.encephalo_shot", 1.2F, 1.0F);
@@ -282,12 +282,12 @@ public final class SuitCombatAbilities {
         return SuitAbility.Result.FIRED;
     }
 
-    private static Vec3 beamOrigin(ServerPlayer player) {
+    private static Vec3 beamOrigin(LivingEntity player) {
         return player.getEyePosition().add(player.getLookAngle().scale(0.7D)).subtract(0.0D, 0.35D, 0.0D);
     }
 
-    static void protonPulse(ServerPlayer player, int ticksLeft, float damage) {
-        ServerLevel level = player.serverLevel();
+    static void protonPulse(LivingEntity player, int ticksLeft, float damage) {
+        ServerLevel level = HeroCaster.level(player);
         Vec3 start = beamOrigin(player);
         Vec3 look = player.getLookAngle();
         double range = SuitAbilityConfig.PROTON_CANNON_RANGE.get();
@@ -307,9 +307,9 @@ public final class SuitCombatAbilities {
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, new AABB(start, end).inflate(1.0D),
                 entity -> SuitTargeting.canHit(player, entity) && entity.getBoundingBox().inflate(0.6D).clip(start, finalEnd).isPresent())) {
             target.invulnerableTime = 0;
-            HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+            HeroAbilities.runAsSuitDamage(() -> target.hurt(SuitTargeting.attack(player), damage));
         }
-        if (block.getType() != HitResult.Type.MISS && level.getGameRules().getBoolean(MarvelGameRules.RULE_SUPERPOWERGRIEFING)) {
+        if (block.getType() != HitResult.Type.MISS && level.getGameRules().getBoolean(MarvelGameRules.RULE_SUPERPOWERGRIEFING) && HeroCaster.griefs(player)) {
             BlockPos pos = block.getBlockPos();
             BlockState state = level.getBlockState(pos);
             float hardness = state.getDestroySpeed(level, pos);

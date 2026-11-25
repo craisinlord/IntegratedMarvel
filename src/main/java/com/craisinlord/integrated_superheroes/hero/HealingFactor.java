@@ -36,7 +36,7 @@ import java.util.UUID;
 public final class HealingFactor {
     public static final String WOLVERINE = "weapon_x_logan";
     private static final ResourceLocation DOWNED_MODIFIER = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "healing_factor_downed");
-    private static final Map<UUID, State> STATES = new HashMap<>();
+    private static final Map<UUID, State> STATES = ServerState.map(new HashMap<>());
     private static final ThreadLocal<Boolean> SNAPPING = ThreadLocal.withInitial(() -> false);
 
     private HealingFactor() {
@@ -246,7 +246,16 @@ public final class HealingFactor {
         }
     }
 
+    private static void regenerate(ServerPlayer player) {
+        if (player.tickCount % 20 != 0 || !player.isAlive() || player.getHealth() >= player.getMaxHealth() || regenPaused(player)
+                || !WOLVERINE.equals(HeroPowers.data(player).getPrimaryPower())) {
+            return;
+        }
+        player.heal((float) (player.getMaxHealth() * MarvelBalanceConfig.WOLVERINE_REGEN_PERCENT_PER_SECOND.get()));
+    }
+
     public static void tick(ServerPlayer player) {
+        regenerate(player);
         State state = STATES.get(player.getUUID());
         if (state == null || !state.downed) {
             return;
@@ -300,10 +309,9 @@ public final class HealingFactor {
         if (!announce) {
             return;
         }
-        boolean last = state.stacks >= maxRevives(player);
-        DeadpoolNarration.say(player, last ? "last_revive" : "stand");
+        DeadpoolNarration.say(player, player.getRandom().nextInt(5) < 2 ? "last_revive" : "stand");
         DeadpoolAdvancements.award(player, DeadpoolAdvancements.UNALIVE);
-        if (last) {
+        if (DeadpoolPower.countRevive(player) >= 10) {
             DeadpoolAdvancements.award(player, DeadpoolAdvancements.REGENERATING_DEGENERATE);
         }
     }

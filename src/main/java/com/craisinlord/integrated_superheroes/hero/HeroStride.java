@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public final class HeroStride {
-    private static final Map<UUID, Stride> STRIDE = new HashMap<>();
+    private static final Map<UUID, Stride> STRIDE = ServerState.map(new HashMap<>());
 
     private HeroStride() {
     }
@@ -22,7 +22,7 @@ public final class HeroStride {
     private record Stride(Vec3 last, double distance) {
     }
 
-    public static void tick(ServerPlayer player, double length, SoundEvent sound, float volume, float pitch, int dust, float shake) {
+    public static void tick(net.minecraft.world.entity.LivingEntity player, double length, SoundEvent sound, float volume, float pitch, int dust, float shake) {
         if (!player.onGround() || player.isCrouching() || player.isPassenger()) {
             STRIDE.remove(player.getUUID());
             return;
@@ -41,7 +41,7 @@ public final class HeroStride {
             return;
         }
         STRIDE.put(player.getUUID(), new Stride(now, 0.0D));
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = (ServerLevel) player.level();
         BlockPos below = player.blockPosition().below();
         BlockState ground = level.getBlockState(below);
         if (!ground.isAir() && dust > 0) {
@@ -54,7 +54,7 @@ public final class HeroStride {
         }
     }
 
-    public static void clear(ServerPlayer player) {
+    public static void clear(net.minecraft.world.entity.LivingEntity player) {
         STRIDE.remove(player.getUUID());
     }
 }

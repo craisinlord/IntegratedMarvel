@@ -19,6 +19,7 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -45,10 +46,14 @@ public final class SkinCommand {
         List<String> options = new ArrayList<>();
         options.add(SkinData.DEFAULT);
         options.add(SkinData.OFF);
-        String power = context.getSource().getEntity() instanceof ServerPlayer player ? SkinData.power(player) : "";
+        ServerPlayer player = context.getSource().getEntity() instanceof ServerPlayer found ? found : null;
+        String power = player == null ? "" : SkinData.power(player);
         Collection<SerumSkin> skins = power.isEmpty() ? SerumSkins.all() : SerumSkins.forPower(power);
         skins.forEach(skin -> options.add(skin.id()));
         SerumLooks.forPower(power).forEach(look -> options.add(look.id()));
+        if (player != null) {
+            options.addAll(WornSuits.variants(player).keySet());
+        }
         return SharedSuggestionProvider.suggest(options, builder);
     }
 
@@ -59,16 +64,20 @@ public final class SkinCommand {
 
     private static int list(CommandSourceStack source, ServerPlayer player) {
         String power = SkinData.power(player);
-        if (power.isEmpty()) {
+        Map<String, String> suits = WornSuits.variants(player);
+        if (power.isEmpty() && suits.isEmpty()) {
             source.sendFailure(Component.translatable(KEY + "no_serum"));
             return 0;
         }
-        List<SerumSkin> skins = SkinData.enabled() ? SerumSkins.forPower(power) : List.of();
-        List<SerumLooks.Look> looks = looks(power);
+        List<SerumSkin> skins = !power.isEmpty() && SkinData.enabled() ? SerumSkins.forPower(power) : List.of();
+        List<SerumLooks.Look> looks = power.isEmpty() ? List.of() : looks(power);
         String look = SkinData.lookId(player);
-        String current = SkinData.costumeOff(player) ? SkinData.OFF : !look.isEmpty() ? look
+        String suitLook = SkinData.suitLook(player);
+        String current = suits.containsValue(suitLook) ? suits.entrySet().stream().filter(entry -> entry.getValue().equals(suitLook))
+                .map(Map.Entry::getKey).findFirst().orElse(SkinData.DEFAULT)
+                : SkinData.costumeOff(player) ? SkinData.OFF : !look.isEmpty() ? look
                 : SkinData.get(player).isEmpty() ? SkinData.DEFAULT : SkinData.get(player);
-        if (skins.isEmpty() && looks.isEmpty()) {
+        if (skins.isEmpty() && looks.isEmpty() && suits.isEmpty()) {
             source.sendSuccess(() -> Component.translatable(KEY + "only_default"), false);
             return 1;
         }
@@ -80,7 +89,10 @@ public final class SkinCommand {
             ids.add(skin.id());
             looks.stream().filter(value -> value.skin().equals(skin.id())).forEach(value -> ids.add(value.id()));
         }
-        ids.add(SkinData.OFF);
+        suits.keySet().stream().filter(id -> !ids.contains(id)).forEach(ids::add);
+        if (!power.isEmpty()) {
+            ids.add(SkinData.OFF);
+        }
         for (int i = 0; i < ids.size(); i++) {
             String id = ids.get(i);
             if (i > 0) {
@@ -88,8 +100,10 @@ public final class SkinCommand {
             }
             Optional<SerumSkin> skin = SerumSkins.byId(id);
             Optional<SerumLooks.Look> option = SerumLooks.byId(power, id);
+            Optional<String> suit = Optional.ofNullable(suits.get(id));
             Component hover = skin.<Component>map(value -> Component.translatable(value.nameKey()))
                     .or(() -> option.map(SerumLooks.Look::name))
+                    .or(() -> suit.map(SerumLooks::name))
                     .orElseGet(() -> Component.translatable(KEY + "hover_" + id));
             options.append(Component.literal(id).withStyle(style -> style
                     .withColor(id.equals(current) ? ChatFormatting.GREEN : ChatFormatting.YELLOW)
@@ -105,6 +119,24 @@ public final class SkinCommand {
         for (ServerPlayer target : targets) {
             boolean self = target == source.getEntity();
             String power = SkinData.power(target);
+            String suitLook = WornSuits.variants(target).get(id);
+            boolean serumOption = SerumSkins.byId(id).isPresent() || SerumLooks.byId(power, id).isPresent();
+            if (suitLook != null && !serumOption) {
+                SkinData.setSuitLook(target, suitLook);
+                Component name = SerumLooks.name(suitLook);
+                target.sendSystemMessage(Component.translatable(KEY + "set", name));
+                if (!self) {
+                    source.sendSuccess(() -> Component.translatable(KEY + "set_other", target.getDisplayName(), name), true);
+                }
+                changed++;
+                continue;
+            }
+            if (power.isEmpty() && SkinData.DEFAULT.equals(id) && !SkinData.suitLook(target).isEmpty()) {
+                SkinData.setSuitLook(target, "");
+                target.sendSystemMessage(Component.translatable(KEY + "default"));
+                changed++;
+                continue;
+            }
             if (power.isEmpty()) {
                 source.sendFailure(self ? Component.translatable(KEY + "no_serum")
                         : Component.translatable(KEY + "no_serum_other", target.getDisplayName()));

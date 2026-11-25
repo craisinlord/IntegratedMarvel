@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
+import net.minecraft.Util;
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -27,6 +28,8 @@ public final class TimeFreezeClientState {
         refresh();
     }
 
+    private static long nextShaderTry;
+
     private static void refresh() {
         Minecraft minecraft = Minecraft.getInstance();
         LocalPlayer player = minecraft.player;
@@ -36,7 +39,8 @@ public final class TimeFreezeClientState {
         TimeFreezeState.setClientInField(inField);
         if (minecraft.gameRenderer == null) return;
         if (inField) {
-            if (minecraft.gameRenderer.currentEffect() == null) {
+            if (minecraft.gameRenderer.currentEffect() == null && Util.getMillis() >= nextShaderTry) {
+                nextShaderTry = Util.getMillis() + 1000L;
                 minecraft.gameRenderer.loadEffect(EFFECT);
             }
         } else if (minecraft.gameRenderer.currentEffect() != null

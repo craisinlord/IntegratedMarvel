@@ -50,6 +50,7 @@ public final class BlockEditQueue {
         private int applied;
         private int denied;
         private boolean keepUndo = true;
+        private final Set<Long> allowedSections = new HashSet<>();
 
         private Job(ResourceKey<Level> dimension, Collection<Edit> edits, String stone, int flags) {
             this.dimension = dimension;
@@ -120,7 +121,7 @@ public final class BlockEditQueue {
                 Edit edit = job.edits.poll();
                 budget--;
                 if (!level.isLoaded(edit.pos())) continue;
-                if (job.guard != null && (guard == null || !GauntletGrief.canEdit(guard, level, edit.pos()))) {
+                if (job.guard != null && (guard == null || !GauntletGrief.canEditCached(guard, level, edit.pos(), job.allowedSections))) {
                     job.denied++;
                     continue;
                 }

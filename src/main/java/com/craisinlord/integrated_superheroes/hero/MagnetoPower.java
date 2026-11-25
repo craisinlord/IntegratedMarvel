@@ -56,8 +56,8 @@ public final class MagnetoPower {
             () -> HeroFx.item("alexscaves:scarlet_magnet"));
     public static final HeroPower.Toggle MAGNETIC_WALK = new HeroPower.Toggle("integrated_superheroes_off_magnetic_walk", "Magnetic Walk",
             () -> HeroFx.item("alexscaves:scarlet_neodymium_pillar"));
-    private static final Map<UUID, Long> SWARM_UNTIL = new HashMap<>();
-    private static final Map<UUID, Direction> WALL_FACE = new HashMap<>();
+    private static final Map<UUID, Long> SWARM_UNTIL = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Direction> WALL_FACE = ServerState.map(new HashMap<>());
 
     private MagnetoPower() {
     }
@@ -70,8 +70,8 @@ public final class MagnetoPower {
                 MarvelBalanceConfig.MAGNETO,
                 List.of(),
                 List.of(
-                        new HeroPower.Ability(GRIP, "Magnetic Grip", MagnetoPower::grip),
-                        new HeroPower.Ability("magnetic_crush", "Magnetic Crush", MagnetoPower::crush),
+                        HeroPower.Ability.of(GRIP, "Magnetic Grip", MagnetoPower::grip),
+                        HeroPower.Ability.of("magnetic_crush", "Magnetic Crush", MagnetoPower::crush),
                         new HeroPower.Ability("weapon_swarm", "Weapon Swarm", MagnetoPower::swarm),
                         HeroToggles.WHEEL
                 ),
@@ -255,14 +255,15 @@ public final class MagnetoPower {
         return false;
     }
 
-    private static double grip(ServerPlayer player, int slot) {
-        if (HeroGrip.isHolding(player) || HeroBlockLift.isLifting(player)) {
+    private static double grip(LivingEntity player, int slot) {
+        ServerPlayer lifter = player instanceof ServerPlayer serverPlayer ? serverPlayer : null;
+        if (HeroGrip.isHolding(player) || lifter != null && HeroBlockLift.isLifting(lifter)) {
             if (HeroGrip.isHolding(player)) {
                 float damage = MarvelBalanceConfig.GRIP_THROW_DAMAGE.get().floatValue();
                 HeroGrip.release(player, MarvelBalanceConfig.GRIP_THROW_SPEED.get(), damage);
                 HeroFx.play(player, HeroFx.sound("alexscaves:galena_gauntlet_stop", SoundEvents.ANVIL_LAND), 1.0F, 0.8F);
             } else {
-                HeroBlockLift.throwHeld(player);
+                HeroBlockLift.throwHeld(lifter);
             }
             HeroAnimations.play(player, "celestisynth:cs_crescentia_throw");
             return MarvelBalanceConfig.GRIP_COOLDOWN.get();
@@ -272,7 +273,7 @@ public final class MagnetoPower {
         LivingEntity target = beam.targets().isEmpty() ? null : beam.targets().get(0);
         if (target != null && isMetal(target)) {
             boolean grabbed = HeroGrip.grab(player, target, MarvelBalanceConfig.GRIP_HOLD_TICKS.get(), null, held -> {
-                ServerLevel level = player.serverLevel();
+                ServerLevel level = HeroCaster.level(player);
                 Vec3 center = held.getBoundingBox().getCenter();
                 if (player.tickCount % 2 == 0) {
                     orbit(level, center.x, center.y - held.getBbHeight() * 0.5D, center.z, center, 3);
@@ -289,17 +290,17 @@ public final class MagnetoPower {
             }
             return 0.0D;
         }
-        if (HeroBlockLift.lift(player, metalLift())) {
+        if (lifter != null && HeroBlockLift.lift(lifter, metalLift())) {
             HeroAnimations.play(player, "web_shoot_both");
             return 0.0D;
         }
         if (target != null) {
-            player.displayClientMessage(Component.literal("\u00a77There's no metal on it to grab."), true);
+            HeroCaster.message(player, Component.literal("\u00a77There's no metal on it to grab."));
         }
         return 0.0D;
     }
 
-    private static double crush(ServerPlayer player, int slot) {
+    private static double crush(LivingEntity player, int slot) {
         HeroAbilities.Beam beam = HeroAbilities.beam(player, player.getLookAngle(), MarvelBalanceConfig.CRUSH_RANGE.get(), 1);
         if (beam.targets().isEmpty()) {
             return 0.0D;
@@ -307,10 +308,10 @@ public final class MagnetoPower {
         LivingEntity target = beam.targets().get(0);
         double damage = MarvelBalanceConfig.CRUSH_BASE_DAMAGE.get() + MarvelBalanceConfig.CRUSH_PER_ARMOR_DAMAGE.get() * target.getArmorValue();
         HeroAdvancements.cast(player).kills(entity -> entity instanceof IronGolem, "x_men/magneto/iron_deficiency")
-                .run(() -> target.hurt(player.damageSources().mobAttack(player), (float) damage));
+                .run(() -> HeroHits.hurt(player, target, player.damageSources().mobAttack(player), (float) damage));
         HeroFx.effect("alexscaves:magnetizing").ifPresent(effect -> target.addEffect(new MobEffectInstance(effect, 80, 0)));
         target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 80, 1));
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         Vec3 center = target.getBoundingBox().getCenter();
         level.sendParticles(particle("alexscaves:magnet_lightning"), center.x, center.y, center.z, 2, 0.3D, 0.3D, 0.3D, 0.0D);
         orbit(level, center.x, center.y - target.getBbHeight() * 0.5D, center.z, center, 8);
@@ -375,7 +376,7 @@ public final class MagnetoPower {
 
     private static void tickSwarm(ServerPlayer player) {
         Long until = SWARM_UNTIL.get(player.getUUID());
-        if (until == null || player.level().getGameTime() < until) {
+        if (until == null ? !HeroPowers.data(player).hasState(SWARM_STATE) : player.level().getGameTime() < until) {
             return;
         }
         SWARM_UNTIL.remove(player.getUUID());

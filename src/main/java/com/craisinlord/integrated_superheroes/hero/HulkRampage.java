@@ -44,9 +44,9 @@ public final class HulkRampage {
     public static final int UNSTOPPABLE = 3;
     private static final double[] TUBE = {0.0D, 0.5D, 0.75D, 1.0D};
     private static final int MAX_PENDING = 20000;
-    private static final List<Pending> PENDING = new ArrayList<>();
-    private static final Map<UUID, Long> LAST_CRUNCH = new HashMap<>();
-    private static final Map<UUID, Long> LAST_SWING = new HashMap<>();
+    private static final List<Pending> PENDING = ServerState.all(new ArrayList<>());
+    private static final Map<UUID, Long> LAST_CRUNCH = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> LAST_SWING = ServerState.map(new HashMap<>());
     private static long clock;
 
     private HulkRampage() {

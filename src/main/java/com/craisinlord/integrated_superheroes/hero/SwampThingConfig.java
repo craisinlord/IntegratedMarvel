@@ -8,7 +8,7 @@ public final class SwampThingConfig {
     public static MarvelBalanceConfig.HeroStats STATS;
     public static ModConfigSpec.DoubleValue ENTANGLE_RANGE;
     public static ModConfigSpec.DoubleValue ENTANGLE_RADIUS;
-    public static ModConfigSpec.DoubleValue ENTANGLE_DAMAGE_MULTIPLIER;
+    public static ModConfigSpec.DoubleValue ENTANGLE_DAMAGE;
     public static ModConfigSpec.IntValue ENTANGLE_BIND_TICKS;
     public static ModConfigSpec.IntValue ENTANGLE_BIND_IMMUNITY_TICKS;
     public static ModConfigSpec.IntValue ENTANGLE_SLOW_TICKS;
@@ -21,7 +21,7 @@ public final class SwampThingConfig {
     public static ModConfigSpec.IntValue MENDING_INTERVAL_TICKS;
     public static ModConfigSpec.IntValue MENDING_COMBAT_PAUSE_TICKS;
     public static ModConfigSpec.DoubleValue ROGUE_RADIUS;
-    public static ModConfigSpec.DoubleValue ROGUE_DAMAGE_MULTIPLIER;
+    public static ModConfigSpec.DoubleValue ROGUE_DAMAGE;
     public static ModConfigSpec.DoubleValue ROGUE_COOLDOWN;
 
     private SwampThingConfig() {
@@ -29,14 +29,14 @@ public final class SwampThingConfig {
 
     static void define(ModConfigSpec.Builder builder) {
         builder.push("swampThing");
-        STATS = new MarvelBalanceConfig.HeroStats(builder, 22.0D, 8.0D, 0.3D, 0.0D, 0.0D, 14.0D, 0,
+        STATS = new MarvelBalanceConfig.HeroStats(builder, 24.0D, 3.0D, 0.3D, 0.0D, 0.0D, 14.0D, 0,
                 List.of("minecraft:generic.knockback_resistance;0.3;ADD_VALUE", "minecraft:generic.movement_speed;-0.05;ADD_MULTIPLIED_TOTAL"));
         ENTANGLE_RANGE = builder.comment("How far away you can aim Entangle at the ground.")
                 .defineInRange("entangleRange", 16.0D, 2.0D, 48.0D);
         ENTANGLE_RADIUS = builder.comment("Radius of the patch of roots Entangle raises.")
                 .defineInRange("entangleRadius", 3.5D, 1.0D, 12.0D);
-        ENTANGLE_DAMAGE_MULTIPLIER = builder.comment("Entangle damage per creature as a fraction of Iceman's cryogenesisDamage.")
-                .defineInRange("entangleDamageMultiplier", 0.45D, 0.0D, 10.0D);
+        ENTANGLE_DAMAGE = builder.comment("Entangle damage per creature.")
+                .defineInRange("entangleDamage", 55.0D, 0.0D, 10000.0D);
         ENTANGLE_BIND_TICKS = builder.comment("How long ordinary creatures are held in place by the roots.")
                 .defineInRange("entangleBindTicks", 20, 0, 200);
         ENTANGLE_BIND_IMMUNITY_TICKS = builder.comment("After being bound, no Swamp Thing roots can bind that creature again for this long. Slowness still applies.")
@@ -57,8 +57,8 @@ public final class SwampThingConfig {
                 .defineInRange("mendingCombatPauseTicks", 100, 0, 1200);
         builder.push("rogue");
         ROGUE_RADIUS = builder.defineInRange("borrowedRootPulseRadius", 3.0D, 1.0D, 12.0D);
-        ROGUE_DAMAGE_MULTIPLIER = builder.comment("Borrowed root pulse damage as a fraction of Iceman's cryogenesisDamage.")
-                .defineInRange("borrowedRootPulseDamageMultiplier", 0.35D, 0.0D, 10.0D);
+        ROGUE_DAMAGE = builder.comment("Borrowed root pulse damage per creature, before Rogue's memory multiplier.")
+                .defineInRange("borrowedRootPulseDamage", 40.0D, 0.0D, 10000.0D);
         ROGUE_COOLDOWN = builder.defineInRange("borrowedRootPulseCooldownSeconds", 14.0D, 0.0D, 600.0D);
         builder.pop();
         builder.pop();

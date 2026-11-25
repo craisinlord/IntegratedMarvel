@@ -9,6 +9,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -36,11 +37,13 @@ public final class TelekineticFormation {
     private static final int MAX_SLOTS = 3;
     private static final int BLOCKED_RELEASE_TICKS = 20;
     private static final int THROW_TICKS = 40;
-    private static final Map<UUID, List<Hold>> OWNERS = new HashMap<>();
-    private static final Map<UUID, UUID> HELD = new HashMap<>();
-    private static final Map<UUID, Long> IMMUNE = new HashMap<>();
-    private static final Map<UUID, Long> FALL_GRACE = new HashMap<>();
-    private static final Map<UUID, Flight> THROWN = new HashMap<>();
+    private static final Map<UUID, List<Hold>> OWNERS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, UUID> HELD = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> IMMUNE = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> FALL_GRACE = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Flight> THROWN = ServerState.map(new HashMap<>());
+    private static final Map<UUID, LivingEntity> MOB_OWNERS = ServerState.map(new HashMap<>());
+    private static final List<Runnable> CRUSHES = ServerState.all(new ArrayList<>());
     private static MinecraftServer server;
     private static boolean registered;
 
@@ -123,12 +126,36 @@ public final class TelekineticFormation {
         return isHeld(entity) || HeroGrip.isHeld(entity) || MartianPower.isThrall(entity) || PsychicLinks.isLinked(entity);
     }
 
-    static int count(ServerPlayer owner) {
+    private static LivingEntity owner(UUID id) {
+        ServerPlayer player = server == null ? null : server.getPlayerList().getPlayer(id);
+        if (player != null) {
+            return player;
+        }
+        LivingEntity mob = MOB_OWNERS.get(id);
+        return mob == null || mob.isRemoved() ? null : mob;
+    }
+
+    private static DamageSource attack(LivingEntity owner) {
+        return owner instanceof Player player ? owner.damageSources().playerAttack(player) : owner.damageSources().mobAttack(owner);
+    }
+
+    static boolean affects(LivingEntity owner, LivingEntity entity) {
+        if (owner instanceof ServerPlayer player) {
+            return KineticBurst.affects(player, entity);
+        }
+        return !entity.isSpectator() && HeroCaster.foe(owner, entity);
+    }
+
+    private static boolean suppressed(LivingEntity owner) {
+        return owner instanceof Player player && (VillainWorld.suppressed(player) || HealingFactor.isDowned(player));
+    }
+
+    static int count(LivingEntity owner) {
         List<Hold> holds = OWNERS.get(owner.getUUID());
         return holds == null ? 0 : holds.size();
     }
 
-    static boolean holding(ServerPlayer owner, Entity entity) {
+    static boolean holding(LivingEntity owner, Entity entity) {
         return owner.getUUID().equals(HELD.get(entity.getUUID()));
     }
 
@@ -141,13 +168,16 @@ public final class TelekineticFormation {
         return until != null && now() < until;
     }
 
-    static Result hold(ServerPlayer owner, LivingEntity target, int ticks, boolean willing, float expireDamage, int maxHeld, Style style) {
+    static Result hold(LivingEntity owner, LivingEntity target, int ticks, boolean willing, float expireDamage, int maxHeld, Style style) {
         return hold(owner, target, ticks, willing, expireDamage, 0.0F, maxHeld, style);
     }
 
-    static Result hold(ServerPlayer owner, LivingEntity target, int ticks, boolean willing, float expireDamage, float crush, int maxHeld, Style style) {
+    static Result hold(LivingEntity owner, LivingEntity target, int ticks, boolean willing, float expireDamage, float crush, int maxHeld, Style style) {
         if (server == null) {
-            server = owner.server;
+            server = owner.getServer();
+        }
+        if (!(owner instanceof ServerPlayer)) {
+            MOB_OWNERS.put(owner.getUUID(), owner);
         }
         if (target == owner || !target.isAlive() || target.isRemoved() || !HeroAbilities.canControl(target)) {
             return Result.INELIGIBLE;
@@ -189,7 +219,7 @@ public final class TelekineticFormation {
         return false;
     }
 
-    static void setDownAll(ServerPlayer owner) {
+    static void setDownAll(LivingEntity owner) {
         List<Hold> holds = OWNERS.remove(owner.getUUID());
         if (holds == null) {
             return;
@@ -199,7 +229,7 @@ public final class TelekineticFormation {
         }
     }
 
-    static int throwAll(ServerPlayer owner, Vec3 direction, double speed, double perTarget, double cap) {
+    static int throwAll(LivingEntity owner, Vec3 direction, double speed, double perTarget, double cap) {
         List<Hold> holds = OWNERS.remove(owner.getUUID());
         if (holds == null) {
             return 0;
@@ -241,7 +271,7 @@ public final class TelekineticFormation {
         }
     }
 
-    private static void finish(Hold hold, ServerPlayer slam) {
+    private static void finish(Hold hold, LivingEntity slam) {
         HELD.remove(hold.target);
         IMMUNE.put(hold.target, now() + JeanGreyConfig.CONTROL_IMMUNITY_TICKS.get());
         Entity entity = find(hold.target, hold.dimension);
@@ -254,7 +284,7 @@ public final class TelekineticFormation {
         entity.hurtMarked = true;
         if (slam != null && hold.expireDamage > 0.0F && entity instanceof LivingEntity living && living.isAlive()) {
             entity.setDeltaMovement(0.0D, -1.2D, 0.0D);
-            HeroAbilities.runAsAbilityDamage(() -> living.hurt(slam.damageSources().playerAttack(slam), hold.expireDamage));
+            HeroAbilities.runAsAbilityDamage(() -> living.hurt(attack(slam), hold.expireDamage));
             if (entity.level() instanceof ServerLevel level) {
                 Vec3 center = entity.getBoundingBox().getCenter();
                 level.sendParticles(ParticleTypes.CRIT, center.x, center.y, center.z, 10, 0.3D, 0.3D, 0.3D, 0.2D);
@@ -302,13 +332,12 @@ public final class TelekineticFormation {
         if (!OWNERS.isEmpty()) {
             List<Hold> ended = new ArrayList<>();
             List<Hold> expired = new ArrayList<>();
-            List<ServerPlayer> slammers = new ArrayList<>();
+            List<LivingEntity> slammers = new ArrayList<>();
             Iterator<Map.Entry<UUID, List<Hold>>> owners = OWNERS.entrySet().iterator();
             while (owners.hasNext()) {
                 Map.Entry<UUID, List<Hold>> entry = owners.next();
-                ServerPlayer owner = server.getPlayerList().getPlayer(entry.getKey());
-                boolean dropAll = owner == null || !owner.isAlive() || owner.isRemoved() || owner.isSpectator()
-                        || VillainWorld.suppressed(owner) || HealingFactor.isDowned(owner);
+                LivingEntity owner = owner(entry.getKey());
+                boolean dropAll = owner == null || !owner.isAlive() || owner.isRemoved() || owner.isSpectator() || suppressed(owner);
                 Iterator<Hold> holds = entry.getValue().iterator();
                 while (holds.hasNext()) {
                     Hold hold = holds.next();
@@ -326,6 +355,9 @@ public final class TelekineticFormation {
                     owners.remove();
                 }
             }
+            List<Runnable> crushes = List.copyOf(CRUSHES);
+            CRUSHES.clear();
+            crushes.forEach(Runnable::run);
             for (int i = 0; i < expired.size(); i++) {
                 finish(expired.get(i), slammers.get(i));
             }
@@ -337,14 +369,17 @@ public final class TelekineticFormation {
         if (now % 200L == 0L) {
             IMMUNE.values().removeIf(until -> until < now);
             FALL_GRACE.values().removeIf(until -> until < now);
+            MOB_OWNERS.entrySet().removeIf(entry -> (entry.getValue().isRemoved() || !entry.getValue().isAlive())
+                    && !OWNERS.containsKey(entry.getKey()));
         }
     }
 
-    private static int tickHold(ServerPlayer owner, Hold hold, long now) {
+    private static int tickHold(LivingEntity owner, Hold hold, long now) {
         if (owner.level().dimension() != hold.dimension) {
             return 1;
         }
-        Entity entity = owner.serverLevel().getEntity(hold.target);
+        ServerLevel level = (ServerLevel) owner.level();
+        Entity entity = level.getEntity(hold.target);
         if (!(entity instanceof LivingEntity target) || !target.isAlive() || target.isRemoved()) {
             return 1;
         }
@@ -365,7 +400,6 @@ public final class TelekineticFormation {
                 return 1;
             }
         }
-        ServerLevel level = owner.serverLevel();
         if (!level.noCollision(target, target.getBoundingBox().deflate(0.05D))) {
             return 1;
         }
@@ -400,13 +434,10 @@ public final class TelekineticFormation {
             if (phoenix) {
                 target.igniteForSeconds(3.0F);
             }
-            HeroAbilities.runAsAbilityDamage(() -> target.hurt(owner.damageSources().playerAttack(owner), squeeze));
+            CRUSHES.add(() -> HeroAbilities.runAsAbilityDamage(() -> target.hurt(attack(owner), squeeze)));
             Vec3 center = target.getBoundingBox().getCenter();
             level.sendParticles(phoenix ? ParticleTypes.FLAME : ParticleTypes.CRIT, center.x, center.y, center.z, 6,
                     target.getBbWidth() * 0.4D, target.getBbHeight() * 0.4D, target.getBbWidth() * 0.4D, 0.05D);
-            if (!target.isAlive()) {
-                return 1;
-            }
         }
         if (owner.tickCount % 2 == 0) {
             Vec3 hand = owner.getEyePosition().add(owner.getLookAngle().scale(0.6D)).subtract(0.0D, 0.3D, 0.0D);
@@ -421,7 +452,7 @@ public final class TelekineticFormation {
         return 0;
     }
 
-    private static Vec3 goal(ServerPlayer owner, LivingEntity target, Hold hold, long now) {
+    private static Vec3 goal(LivingEntity owner, LivingEntity target, Hold hold, long now) {
         Vec3 eye = owner.getEyePosition();
         Vec3 look = owner.getLookAngle();
         Vec3 reference = Math.abs(look.y) > 0.95D ? new Vec3(1.0D, 0.0D, 0.0D) : new Vec3(0.0D, 1.0D, 0.0D);
@@ -440,14 +471,14 @@ public final class TelekineticFormation {
             Vec3 center = eye.add(look.scale(option[0])).add(ring.scale(option[1]));
             Vec3 position = center.subtract(0.0D, target.getBbHeight() * 0.5D, 0.0D);
             AABB moved = box.move(position.subtract(target.position()));
-            if (!moved.intersects(self) && owner.serverLevel().noCollision(target, moved) && clearOfOthers(owner, target, moved)) {
+            if (!moved.intersects(self) && owner.level().noCollision(target, moved) && clearOfOthers(owner, target, moved)) {
                 return position;
             }
         }
         return null;
     }
 
-    private static boolean clearOfOthers(ServerPlayer owner, LivingEntity target, AABB moved) {
+    private static boolean clearOfOthers(LivingEntity owner, LivingEntity target, AABB moved) {
         List<Hold> holds = OWNERS.get(owner.getUUID());
         if (holds == null) {
             return true;
@@ -456,7 +487,7 @@ public final class TelekineticFormation {
             if (other.target.equals(target.getUUID())) {
                 continue;
             }
-            Entity entity = owner.serverLevel().getEntity(other.target);
+            Entity entity = ((ServerLevel) owner.level()).getEntity(other.target);
             if (entity != null && entity.getBoundingBox().intersects(moved)) {
                 return false;
             }
@@ -475,7 +506,7 @@ public final class TelekineticFormation {
             flight.age++;
             ServerLevel level = server.getLevel(flight.dimension);
             Entity entity = level == null ? null : level.getEntity(entry.getKey());
-            ServerPlayer owner = server.getPlayerList().getPlayer(flight.owner);
+            LivingEntity owner = owner(flight.owner);
             if (!(entity instanceof LivingEntity target) || !target.isAlive() || owner == null || flight.age > THROW_TICKS) {
                 iterator.remove();
                 continue;
@@ -483,13 +514,13 @@ public final class TelekineticFormation {
             boolean impact = target.horizontalCollision || target.verticalCollision && flight.age > 3;
             for (LivingEntity other : level.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(0.4D),
                     candidate -> candidate != target && candidate != owner && candidate.isAlive() && !flight.hit.contains(candidate.getUUID())
-                            && KineticBurst.affects(owner, candidate))) {
+                            && affects(owner, candidate))) {
                 flight.hit.add(other.getUUID());
-                HeroAbilities.runAsAbilityDamage(() -> other.hurt(owner.damageSources().playerAttack(owner), flight.damage));
+                HeroAbilities.runAsAbilityDamage(() -> other.hurt(attack(owner), flight.damage));
                 impact = true;
             }
             if (impact) {
-                HeroAbilities.runAsAbilityDamage(() -> target.hurt(owner.damageSources().playerAttack(owner), flight.damage));
+                HeroAbilities.runAsAbilityDamage(() -> target.hurt(attack(owner), flight.damage));
                 Vec3 center = target.getBoundingBox().getCenter();
                 level.sendParticles(ParticleTypes.CRIT, center.x, center.y, center.z, 12, 0.3D, 0.3D, 0.3D, 0.25D);
                 if (flight.phoenix) {
@@ -543,5 +574,7 @@ public final class TelekineticFormation {
         IMMUNE.clear();
         FALL_GRACE.clear();
         THROWN.clear();
+        MOB_OWNERS.clear();
+        server = null;
     }
 }

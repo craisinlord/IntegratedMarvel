@@ -63,6 +63,7 @@ public final class SuitAbilityConfig {
     public static Settings GRENADE_LAUNCHER;
     public static ModConfigSpec.IntValue GRENADE_LAUNCHER_GRENADES;
     public static ModConfigSpec.DoubleValue GRENADE_LAUNCHER_RADIUS;
+    public static ModConfigSpec.DoubleValue SHOULDER_TURRET_DAMAGE;
 
     public static Settings HELLFIRE_BOMB;
 
@@ -197,6 +198,11 @@ public final class SuitAbilityConfig {
         GRENADE_LAUNCHER = settings(builder, 12.0D, 10.0D, 1.5D);
         GRENADE_LAUNCHER_GRENADES = builder.defineInRange("grenades", 3, 1, 16);
         GRENADE_LAUNCHER_RADIUS = builder.comment("Each Scorched Guns grenade's blast radius.").defineInRange("radius", 2.5D, 0.0D, 16.0D);
+        builder.pop();
+
+        builder.push("shoulderTurret");
+        SHOULDER_TURRET_DAMAGE = builder.comment("Damage of the Shoulder Turret's Scorched Guns rounds, as a multiple of the gun each round comes from.")
+                .defineInRange("damageMultiplier", 0.75D, 0.0D, 1000.0D);
         builder.pop();
 
         builder.push("hellfireBomb");

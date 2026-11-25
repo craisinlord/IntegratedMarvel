@@ -1,5 +1,12 @@
 package com.craisinlord.integrated_superheroes.voidworld;
 
+import com.craisinlord.integrated_superheroes.hero.ServerState;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.server.level.TicketType;
+import java.util.UUID;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Comparator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
@@ -22,6 +29,9 @@ public final class VoidTravel {
     private static final int MIN_GROUND = 40;
     private static final int SEARCH_RADIUS = 32;
     private static final int SEARCH_STEP = 4;
+    private static final TicketType<ChunkPos> WARM_TICKET = TicketType.create("integrated_superheroes_void_arrival",
+            Comparator.comparingLong(ChunkPos::toLong), 600);
+    private static final Map<UUID, BlockPos> WARMED = ServerState.map(new HashMap<>());
 
     private VoidTravel() {
     }
@@ -38,6 +48,29 @@ public final class VoidTravel {
         if (player == null) {
             return false;
         }
+        BlockPos spot = WARMED.remove(player.getUUID());
+        if (spot == null) {
+            spot = roll(player);
+        }
+        return sendTo(player, spot.getX(), spot.getZ());
+    }
+
+    public static void warm(ServerPlayer player) {
+        ServerLevel level = level(player);
+        if (level == null || WARMED.containsKey(player.getUUID())) {
+            return;
+        }
+        BlockPos spot = roll(player);
+        WARMED.put(player.getUUID(), spot);
+        ChunkPos chunk = new ChunkPos(spot);
+        level.getChunkSource().addRegionTicket(WARM_TICKET, chunk, 2, chunk);
+    }
+
+    public static void forget(ServerPlayer player) {
+        WARMED.remove(player.getUUID());
+    }
+
+    private static BlockPos roll(ServerPlayer player) {
         RandomSource random = player.getRandom();
         int min = VoidConfig.SPEC.isLoaded() ? VoidConfig.ARRIVAL_MIN_RADIUS.get() : 64;
         int max = VoidConfig.SPEC.isLoaded() ? VoidConfig.ARRIVAL_MAX_RADIUS.get() : 256;
@@ -46,7 +79,7 @@ public final class VoidTravel {
         }
         double angle = random.nextDouble() * Math.PI * 2.0;
         double radius = min + random.nextDouble() * (max - min);
-        return sendTo(player, Mth.floor(Math.cos(angle) * radius), Mth.floor(Math.sin(angle) * radius));
+        return new BlockPos(Mth.floor(Math.cos(angle) * radius), 0, Mth.floor(Math.sin(angle) * radius));
     }
 
     public static boolean sendTo(ServerPlayer player, int x, int z) {

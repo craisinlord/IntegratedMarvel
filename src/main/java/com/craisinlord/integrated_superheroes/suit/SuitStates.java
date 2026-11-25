@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.suit;
 
+import com.craisinlord.integrated_superheroes.hero.ServerState;
 import com.craisinlord.integrated_superheroes.hero.HeroAbilities;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -9,6 +10,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.phys.Vec3;
+import com.craisinlord.integrated_superheroes.hero.HeroCaster;
+import com.craisinlord.integrated_superheroes.voidrealm.variant.VoidVariants;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -24,7 +27,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public final class SuitStates {
-    private static final Map<UUID, State> STATES = new HashMap<>();
+    private static final Map<UUID, State> STATES = ServerState.map(new HashMap<>());
 
     private SuitStates() {
     }
@@ -61,16 +64,16 @@ public final class SuitStates {
         }
     }
 
-    static State get(ServerPlayer player) {
+    static State get(LivingEntity player) {
         return STATES.computeIfAbsent(player.getUUID(), uuid -> new State());
     }
 
-    static boolean isMidAbility(ServerPlayer player, String ability) {
+    static boolean isMidAbility(LivingEntity player, String ability) {
         State state = STATES.get(player.getUUID());
         return state != null && SuitAbilities.HEAVY_THROW.equals(ability) && state.carried != null;
     }
 
-    static void noFall(ServerPlayer player) {
+    static void noFall(LivingEntity player) {
         State state = get(player);
         state.noFall = true;
         state.noFallGrace = 5;
@@ -83,9 +86,13 @@ public final class SuitStates {
         NeoForge.EVENT_BUS.addListener(SuitStates::onIncomingDamage);
         NeoForge.EVENT_BUS.addListener(SuitStates::onEffectApplicable);
         NeoForge.EVENT_BUS.addListener(SuitStates::onLogout);
+        HeroCaster.onTick(SuitStates::tick);
+        HeroCaster.onTick(SuitPassives::tick);
+        SuitVariantMoves.register();
+        HeroCaster.onCleanup(entity -> STATES.remove(entity.getUUID()));
     }
 
-    public static void tick(ServerPlayer player) {
+    public static void tick(LivingEntity player) {
         State state = STATES.get(player.getUUID());
         if (state == null) {
             return;
@@ -112,7 +119,7 @@ public final class SuitStates {
         }
     }
 
-    private static void tickLanding(ServerPlayer player, State state) {
+    private static void tickLanding(LivingEntity player, State state) {
         if (!state.landingArmed) {
             return;
         }
@@ -126,7 +133,7 @@ public final class SuitStates {
         }
     }
 
-    private static void tickStarboost(ServerPlayer player, State state) {
+    private static void tickStarboost(LivingEntity player, State state) {
         if (state.starboostTicks <= 0) {
             return;
         }
@@ -134,23 +141,23 @@ public final class SuitStates {
         Vec3 motion = player.getDeltaMovement();
         player.setDeltaMovement(motion.x, Math.max(motion.y, 0.8D + 0.04D * elapsed), motion.z);
         player.hurtMarked = true;
-        player.serverLevel().sendParticles(ParticleTypes.FLAME, player.getX(), player.getY(), player.getZ(), 4, 0.15D, 0.05D, 0.15D, 0.02D);
+        HeroCaster.level(player).sendParticles(ParticleTypes.FLAME, player.getX(), player.getY(), player.getZ(), 4, 0.15D, 0.05D, 0.15D, 0.02D);
         state.starboostTicks--;
     }
 
-    private static void tickCarry(ServerPlayer player, State state, long now) {
+    private static void tickCarry(LivingEntity player, State state, long now) {
         if (state.carried == null) {
             return;
         }
-        Entity entity = player.serverLevel().getEntity(state.carried);
+        Entity entity = HeroCaster.level(player).getEntity(state.carried);
         if (!(entity instanceof LivingEntity living) || !living.isAlive() || living.level() != player.level()) {
             state.carried = null;
-            HeroAbilities.setCooldown(player, SuitAbilities.HEAVY_THROW, SuitAbilityConfig.HEAVY_THROW.cooldownSeconds().get());
+            heavyThrowCooldown(player);
             return;
         }
         if (now >= state.carryUntil) {
             throwCarried(player);
-            HeroAbilities.setCooldown(player, SuitAbilities.HEAVY_THROW, SuitAbilityConfig.HEAVY_THROW.cooldownSeconds().get());
+            heavyThrowCooldown(player);
             return;
         }
         Vec3 hold = player.getEyePosition().add(player.getLookAngle().scale(1.5D + living.getBbWidth() * 0.5D)).subtract(0.0D, living.getBbHeight() * 0.5D, 0.0D);
@@ -162,21 +169,27 @@ public final class SuitStates {
         }
     }
 
-    static void grab(ServerPlayer player, LivingEntity target, float damage) {
+    private static void heavyThrowCooldown(LivingEntity caster) {
+        if (caster instanceof ServerPlayer player) {
+            HeroAbilities.setCooldown(player, SuitAbilities.HEAVY_THROW, SuitAbilityConfig.HEAVY_THROW.cooldownSeconds().get());
+        }
+    }
+
+    static void grab(LivingEntity player, LivingEntity target, float damage) {
         State state = get(player);
         state.carried = target.getUUID();
         state.carryUntil = player.level().getGameTime() + SuitAbilityConfig.HEAVY_THROW_HOLD_TICKS.get();
         state.carryDamage = damage;
     }
 
-    static boolean isCarrying(ServerPlayer player) {
+    static boolean isCarrying(LivingEntity player) {
         State state = STATES.get(player.getUUID());
         return state != null && state.carried != null;
     }
 
-    static void throwCarried(ServerPlayer player) {
+    static void throwCarried(LivingEntity player) {
         State state = get(player);
-        Entity entity = state.carried == null ? null : player.serverLevel().getEntity(state.carried);
+        Entity entity = state.carried == null ? null : HeroCaster.level(player).getEntity(state.carried);
         state.carried = null;
         if (entity instanceof LivingEntity living && living.isAlive()) {
             living.setDeltaMovement(player.getLookAngle().scale(2.2D).add(0.0D, 0.3D, 0.0D));
@@ -185,39 +198,38 @@ public final class SuitStates {
         }
     }
 
-    private static void tickThrown(ServerPlayer player, State state) {
+    private static void tickThrown(LivingEntity player, State state) {
         Iterator<Thrown> iterator = state.thrown.iterator();
         while (iterator.hasNext()) {
             Thrown thrown = iterator.next();
             thrown.ticks++;
-            Entity entity = player.serverLevel().getEntity(thrown.entity);
+            Entity entity = HeroCaster.level(player).getEntity(thrown.entity);
             if (!(entity instanceof LivingEntity living) || !living.isAlive() || thrown.ticks > 60) {
                 iterator.remove();
                 continue;
             }
             if (thrown.ticks > 2 && (living.horizontalCollision || living.verticalCollision || living.onGround())) {
-                living.invulnerableTime = 0;
-                HeroAbilities.runAsAbilityDamage(() -> living.hurt(player.damageSources().playerAttack(player), thrown.damage));
-                player.serverLevel().sendParticles(ParticleTypes.EXPLOSION, living.getX(), living.getY(), living.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+                SuitTargeting.hit(player, living, thrown.damage);
+                HeroCaster.level(player).sendParticles(ParticleTypes.EXPLOSION, living.getX(), living.getY(), living.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
                 iterator.remove();
             }
         }
     }
 
-    public static double consumeOvercharge(ServerPlayer player) {
+    public static double consumeOvercharge(LivingEntity player) {
         State state = STATES.get(player.getUUID());
         if (state == null || !state.overchargeArmed) {
             return 1.0D;
         }
         state.overchargeArmed = false;
-        double energy = SuitEnergy.drainAll(player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST));
-        player.serverLevel().sendParticles(ParticleTypes.ELECTRIC_SPARK, player.getX(), player.getY() + 1.2D, player.getZ(), 40, 0.4D, 0.4D, 0.4D, 0.2D);
+        double energy = player instanceof ServerPlayer ? SuitEnergy.drainAll(player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST)) : 100.0D;
+        HeroCaster.level(player).sendParticles(ParticleTypes.ELECTRIC_SPARK, player.getX(), player.getY() + 1.2D, player.getZ(), 40, 0.4D, 0.4D, 0.4D, 0.2D);
         return 1.0D + SuitAbilityConfig.OVERCHARGE_MAX_BONUS.get() * (energy / 100.0D);
     }
 
     private static void onFall(LivingFallEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            State state = STATES.get(player.getUUID());
+        if (!event.getEntity().level().isClientSide) {
+            State state = STATES.get(event.getEntity().getUUID());
             if (state != null && state.noFall) {
                 event.setCanceled(true);
             }
@@ -225,7 +237,8 @@ public final class SuitStates {
     }
 
     private static void onKnockBack(LivingKnockBackEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
+        if (!event.getEntity().level().isClientSide) {
+            LivingEntity player = event.getEntity();
             State state = STATES.get(player.getUUID());
             if (state != null && state.braceUntil > player.level().getGameTime()) {
                 event.setCanceled(true);
@@ -234,7 +247,7 @@ public final class SuitStates {
     }
 
     private static void onIncomingDamage(LivingIncomingDamageEvent event) {
-        if (event.getSource().getEntity() instanceof ServerPlayer attacker) {
+        if (event.getSource().getEntity() instanceof LivingEntity attacker && !attacker.level().isClientSide) {
             State state = STATES.get(attacker.getUUID());
             if (state != null && state.stealthUntil > attacker.level().getGameTime()) {
                 state.stealthUntil = 0L;
@@ -245,7 +258,7 @@ public final class SuitStates {
             event.setCanceled(true);
             return;
         }
-        if (event.getEntity() instanceof ServerPlayer target && SuitPassives.blocksDamage(target, event.getSource())) {
+        if (suited(event.getEntity()) && SuitPassives.blocksDamage(event.getEntity(), event.getSource())) {
             event.setCanceled(true);
             return;
         }
@@ -253,12 +266,16 @@ public final class SuitStates {
     }
 
     private static void onEffectApplicable(MobEffectEvent.Applicable event) {
-        if (event.getEntity() instanceof ServerPlayer player && SuitPassives.blocksEffect(player, event.getEffectInstance().getEffect())) {
+        if (suited(event.getEntity()) && SuitPassives.blocksEffect(event.getEntity(), event.getEffectInstance().getEffect())) {
             event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
         }
     }
 
-    static boolean irradiatedImmune(ServerPlayer player) {
+    private static boolean suited(LivingEntity entity) {
+        return !entity.level().isClientSide && (entity instanceof ServerPlayer || VoidVariants.isVariant(entity));
+    }
+
+    static boolean irradiatedImmune(LivingEntity player) {
         State state = STATES.get(player.getUUID());
         return state != null && state.irradiatedImmuneUntil > player.level().getGameTime();
     }

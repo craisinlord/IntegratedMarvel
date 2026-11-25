@@ -31,7 +31,7 @@ public final class ProfessorXConfig {
 
     static void define(ModConfigSpec.Builder builder) {
         builder.push("professorX");
-        STATS = new MarvelBalanceConfig.HeroStats(builder, 12.0D, 4.0D, 0.0D, 0.0D, 0.0D, 2.8D, 0, List.of());
+        STATS = new MarvelBalanceConfig.HeroStats(builder, 12.0D, 2.0D, 0.0D, 0.0D, 0.0D, 2.8D, 0, List.of());
         LINK_RANGE = builder.comment("How far away a creature can be when you start a Link.")
                 .defineInRange("linkRange", 12.0D, 2.0D, 48.0D);
         LINK_CHANNEL_TICKS = builder.comment("How long you have to keep your eyes on a creature before the Link takes hold.")

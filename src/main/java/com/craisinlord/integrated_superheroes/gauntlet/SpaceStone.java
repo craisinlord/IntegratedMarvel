@@ -33,6 +33,11 @@ public final class SpaceStone {
     private static final Map<UUID, FoldChain> FOLD_CHAINS = new ConcurrentHashMap<>();
     private static final Map<UUID, Long> PULLING_RIFTS = new ConcurrentHashMap<>();
     private static final List<Singularity> SINGULARITIES = new ArrayList<>();
+    private static final int BANISH_TIMEOUT = 160;
+    private static final Map<UUID, Banishing> BANISHING = new ConcurrentHashMap<>();
+
+    private record Banishing(ResourceKey<Level> dimension, BlockPos preferred, long deadline) {
+    }
 
     private SpaceStone() {
     }
@@ -161,8 +166,9 @@ public final class SpaceStone {
             double angle = level.random.nextDouble() * Math.PI * 2.0D;
             BlockPos preferred = BlockPos.containing(target.getX() + Math.cos(angle) * distance, target.getY(),
                     target.getZ() + Math.sin(angle) * distance);
-            Vec3 arrival = SpaceTravel.arrivalPosition(target, level, preferred);
-            moved = SpaceTravel.teleport(target, level, arrival, target.getYRot());
+            SpaceTravel.keepLoaded(level, preferred);
+            BANISHING.put(target.getUUID(), new Banishing(level.dimension(), preferred, player.server.overworld().getGameTime() + BANISH_TIMEOUT));
+            moved = true;
         }
         if (!moved) {
             cast.message("space_arrival_failed");
@@ -188,6 +194,7 @@ public final class SpaceStone {
                 GauntletAbilityController.addAbilityCooldown(player, "space", 0, ability.cooldownTicks(entry.getValue().infinity()));
             }
         }
+        tickBanishing(server, now);
         PULLING_RIFTS.entrySet().removeIf(entry -> now >= entry.getValue());
         for (UUID owner : PULLING_RIFTS.keySet()) {
             for (SpacePortalManager.Opening opening : SpacePortalManager.openings(owner)) {
@@ -208,6 +215,21 @@ public final class SpaceStone {
                 continue;
             }
             tickSingularity(server, level, singularity, now);
+        }
+    }
+
+    private static void tickBanishing(MinecraftServer server, long now) {
+        for (Map.Entry<UUID, Banishing> entry : BANISHING.entrySet()) {
+            Banishing banishing = entry.getValue();
+            ServerLevel level = server.getLevel(banishing.dimension());
+            Entity target = level == null ? null : level.getEntity(entry.getKey());
+            if (target == null || !target.isAlive()) {
+                BANISHING.remove(entry.getKey(), banishing);
+                continue;
+            }
+            if (!SpaceTravel.isLoaded(level, banishing.preferred()) && now < banishing.deadline()) continue;
+            BANISHING.remove(entry.getKey(), banishing);
+            SpaceTravel.teleport(target, level, SpaceTravel.arrivalPosition(target, level, banishing.preferred()), target.getYRot());
         }
     }
 
@@ -279,6 +301,7 @@ public final class SpaceStone {
         FOLD_CHAINS.clear();
         PULLING_RIFTS.clear();
         SINGULARITIES.clear();
+        BANISHING.clear();
     }
 
     private record FoldChain(int used, long windowEnd, boolean infinity) {

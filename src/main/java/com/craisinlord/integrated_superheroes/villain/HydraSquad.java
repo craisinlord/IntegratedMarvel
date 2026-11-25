@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.villain;
 
+import com.craisinlord.integrated_superheroes.hero.ServerState;
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import com.craisinlord.integrated_superheroes.compat.ScorchedGunsVillains;
 import com.craisinlord.integrated_superheroes.hero.HeroFx;
@@ -39,8 +40,8 @@ public final class HydraSquad {
     private static final String KEY_FORCED_ROLE = "integrated_superheroes_hydra_forced_role";
     private static final String KEY_NO_OFFICER = "integrated_superheroes_hydra_no_officer";
     private static final String TAG_PREFIX = "integrated_superheroes_hydra_";
-    private static final Map<UUID, Disarm> DISARMED = new HashMap<>();
-    private static final Map<UUID, Long> OFFICER_COOLDOWN = new HashMap<>();
+    private static final Map<UUID, Disarm> DISARMED = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> OFFICER_COOLDOWN = ServerState.map(new HashMap<>());
 
     private HydraSquad() {
     }
@@ -360,7 +361,7 @@ public final class HydraSquad {
             long now = level.getGameTime();
             restoreDisarm(level, now);
             LivingEntity target = agent.getTarget();
-            boolean sees = target instanceof Player player && Villains.validTarget(player) && agent.hasLineOfSight(target);
+            boolean sees = target instanceof Player player && Villains.validTarget(player) && agent.getSensing().hasLineOfSight(target);
             if (sees) {
                 if (sightStart == 0L) {
                     sightStart = now;

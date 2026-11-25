@@ -1,5 +1,7 @@
 package com.craisinlord.integrated_superheroes.compat;
 
+import com.craisinlord.integrated_superheroes.hero.HeroCaster;
+
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -83,8 +85,8 @@ public class FallbackGrenade extends PrimedTnt {
             flash(level);
             return;
         }
-        boolean griefing = level.getGameRules().getBoolean(MarvelGameRules.RULE_SUPERPOWERGRIEFING);
-        level.explode(this, null, NO_ENTITY_DAMAGE, getX(), getY(0.0625D), getZ(), radius, fire,
+        boolean griefing = level.getGameRules().getBoolean(MarvelGameRules.RULE_SUPERPOWERGRIEFING) && HeroCaster.griefs(getOwner());
+        level.explode(this, null, NO_ENTITY_DAMAGE, getX(), getY(0.0625D), getZ(), radius, fire && HeroCaster.griefs(getOwner()),
                 griefing ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
         if (damage <= 0.0F) {
             return;

@@ -37,11 +37,11 @@ public final class ThingPower {
     public static final String ID = "rock_hide_ben_grimm";
     public static final String BRACE_STATE = "integrated_superheroes_brace";
     private static final BlockState ROCK = Blocks.TERRACOTTA.defaultBlockState();
-    private static final Map<UUID, Long> LAST_HURT = new HashMap<>();
-    private static final Map<UUID, Combo> COMBOS = new HashMap<>();
-    private static final Map<UUID, Wrestle> WRESTLES = new HashMap<>();
-    private static final Map<UUID, Long> SERVER_LEAPS = new HashMap<>();
-    private static final Map<UUID, Long> CLIENT_LEAPS = new HashMap<>();
+    private static final Map<UUID, Long> LAST_HURT = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Combo> COMBOS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Wrestle> WRESTLES = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> SERVER_LEAPS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> CLIENT_LEAPS = ClientState.map(new HashMap<>());
     public static final HeroPower.Toggle ROCK_LEAP = new HeroPower.Toggle("integrated_superheroes_off_jump", "Super Jump", () -> Items.TUFF);
 
     private ThingPower() {
@@ -59,7 +59,19 @@ public final class ThingPower {
         }
     }
 
+    private static final java.util.Set<UUID> MOB_BRACE = ServerState.all(new java.util.HashSet<>());
+    private static boolean registered;
+
     public static HeroPower create(Supplier<Item> syringe) {
+        if (!registered) {
+            registered = true;
+            NeoForge.EVENT_BUS.addListener(ThingPower::onMobHurt);
+            HeroCaster.onTick(ThingPower::tickMob);
+            HeroCaster.onCleanup(caster -> {
+                WRESTLES.remove(caster.getUUID());
+                MOB_BRACE.remove(caster.getUUID());
+            });
+        }
         return new HeroPower(
                 ID,
                 "Rock Hide (Ben Grimm)",
@@ -67,10 +79,10 @@ public final class ThingPower {
                 MarvelBalanceConfig.THING,
                 List.of(),
                 List.of(
-                        new HeroPower.Ability("clobberin_time", "It's Clobberin' Time!", ThingPower::clobber),
-                        new HeroPower.Ability("wrestle", "Wrestle", ThingPower::wrestle),
+                        HeroPower.Ability.of("clobberin_time", "It's Clobberin' Time!", ThingPower::clobber),
+                        HeroPower.Ability.of("wrestle", "Wrestle", ThingPower::wrestle),
                         new HeroPower.Ability("rip_and_toss", "Rip and Toss", ThingPower::ripAndToss),
-                        new HeroPower.Ability("brace", "Brace", ThingPower::brace),
+                        HeroPower.Ability.of("brace", "Brace", ThingPower::brace),
                         HeroToggles.WHEEL
                 ),
                 List.of(ROCK_LEAP),
@@ -179,6 +191,31 @@ public final class ThingPower {
         return HeroPowers.data(player).hasState(BRACE_STATE);
     }
 
+    private static net.minecraft.world.damagesource.DamageSource attack(LivingEntity caster) {
+        return caster instanceof Player player ? caster.damageSources().playerAttack(player) : caster.damageSources().mobAttack(caster);
+    }
+
+    private static void tickMob(LivingEntity caster) {
+        tickWrestle(caster);
+        if (MOB_BRACE.contains(caster.getUUID()) && caster.tickCount % 10 == 0) {
+            caster.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 1, true, false, false));
+        }
+    }
+
+    private static void onMobHurt(LivingIncomingDamageEvent event) {
+        LivingEntity mob = event.getEntity();
+        if (mob instanceof Player || MOB_BRACE.isEmpty() || !MOB_BRACE.contains(mob.getUUID())) {
+            return;
+        }
+        event.setAmount(event.getAmount() * MarvelBalanceConfig.BRACE_DAMAGE_MULTIPLIER.get().floatValue());
+        if (event.getSource().getDirectEntity() instanceof LivingEntity attacker && attacker != mob) {
+            Vec3 push = attacker.position().subtract(mob.position()).normalize().scale(1.4D);
+            attacker.setDeltaMovement(push.x, 0.4D, push.z);
+            attacker.hurtMarked = true;
+            HeroFx.play(mob, SoundEvents.ANVIL_LAND, 0.5F, 1.5F);
+        }
+    }
+
     private static void leap(Player player) {
         if (!isThing(player) || !player.isCrouching() || !HeroToggles.isOn(player, ROCK_LEAP)) {
             return;
@@ -279,44 +316,45 @@ public final class ThingPower {
         HeroFx.play(player, SoundEvents.GENERIC_EXPLODE.value(), 0.8F, 0.6F);
     }
 
-    private static void launch(ServerPlayer player, LivingEntity target, double horizontal, double vertical) {
+    private static void launch(LivingEntity player, LivingEntity target, double horizontal, double vertical) {
         Vec3 push = target.position().subtract(player.position());
         Vec3 flat = new Vec3(push.x, 0.0D, push.z);
         flat = flat.lengthSqr() < 1.0E-4D ? player.getLookAngle() : flat.normalize();
         target.setDeltaMovement(flat.x * horizontal, vertical, flat.z * horizontal);
         target.hurtMarked = true;
         Vec3 at = target.position().add(0.0D, target.getBbHeight() * 0.5D, 0.0D);
-        if (HeroFx.vfx(player.serverLevel(), at, "impact_starburst", ROCK_ORANGE)) {
-            HeroFx.vfx(player.serverLevel(), at, "punch_pressure_wave", 0);
+        ServerLevel level = HeroCaster.level(player);
+        if (HeroFx.vfx(level, at, "impact_starburst", ROCK_ORANGE)) {
+            HeroFx.vfx(level, at, "punch_pressure_wave", 0);
         } else {
-            player.serverLevel().sendParticles(ParticleTypes.EXPLOSION, at.x, at.y, at.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+            level.sendParticles(ParticleTypes.EXPLOSION, at.x, at.y, at.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
         }
     }
 
-    private static LivingEntity reach(ServerPlayer player, double range) {
+    private static LivingEntity reach(LivingEntity player, double range) {
         HeroAbilities.Beam beam = HeroAbilities.beam(player, player.getLookAngle(), range, 1);
         return beam.targets().isEmpty() ? null : beam.targets().get(0);
     }
 
-    private static double clobber(ServerPlayer player, int slot) {
+    private static double clobber(LivingEntity player, int slot) {
         LivingEntity target = reach(player, 4.5D);
         if (target == null) {
             return 0.0D;
         }
         float damage = MarvelBalanceConfig.CLOBBER_DAMAGE.get().floatValue();
-        HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+        HeroAbilities.runAsAbilityDamage(() -> target.hurt(attack(player), damage));
         launch(player, target, 2.6D, 1.0D);
-        HeroFx.shake(player.serverLevel(), target.position(), 12.0D, 0.7F, 10);
+        HeroFx.shake(HeroCaster.level(player), target.position(), 12.0D, 0.7F, 10);
         HeroFx.play(player, SoundEvents.GENERIC_EXPLODE.value(), 0.7F, 1.2F);
         HeroFx.play(player, SoundEvents.PLAYER_ATTACK_CRIT, 1.2F, 0.6F);
         if (!ViltrumiteAnimations.play(player, ViltrumiteAnimations.PUNCH)) {
             HeroAnimations.play(player, "uppercut");
         }
-        player.displayClientMessage(Component.literal("§6It's clobberin' time!"), true);
+        HeroCaster.message(player, Component.literal("§6It's clobberin' time!"));
         return MarvelBalanceConfig.CLOBBER_COOLDOWN.get();
     }
 
-    private static double wrestle(ServerPlayer player, int slot) {
+    private static double wrestle(LivingEntity player, int slot) {
         if (WRESTLES.containsKey(player.getUUID())) {
             return 0.0D;
         }
@@ -331,7 +369,11 @@ public final class ThingPower {
         return MarvelBalanceConfig.WRESTLE_COOLDOWN.get();
     }
 
-    private static void tickWrestle(ServerPlayer player) {
+    public static void clear(ServerPlayer player) {
+        WRESTLES.remove(player.getUUID());
+    }
+
+    private static void tickWrestle(LivingEntity player) {
         Wrestle wrestle = WRESTLES.get(player.getUUID());
         if (wrestle == null) {
             return;
@@ -355,8 +397,8 @@ public final class ThingPower {
         target.setDeltaMovement(0.0D, -1.5D, 0.0D);
         target.hurtMarked = true;
         float damage = MarvelBalanceConfig.WRESTLE_DAMAGE.get().floatValue();
-        HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
-        ServerLevel level = player.serverLevel();
+        HeroAbilities.runAsAbilityDamage(() -> target.hurt(attack(player), damage));
+        ServerLevel level = HeroCaster.level(player);
         BlockState ground = level.getBlockState(BlockPos.containing(behind).below());
         if (!ground.isAir()) {
             level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, ground), behind.x, behind.y, behind.z, 30, 0.8D, 0.1D, 0.8D, 0.2D);
@@ -395,7 +437,16 @@ public final class ThingPower {
         return 0.0D;
     }
 
-    private static double brace(ServerPlayer player, int slot) {
+    private static double brace(LivingEntity caster, int slot) {
+        if (!(caster instanceof ServerPlayer player)) {
+            if (MOB_BRACE.remove(caster.getUUID())) {
+                caster.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+            } else {
+                MOB_BRACE.add(caster.getUUID());
+                HeroFx.play(caster, SoundEvents.ANVIL_PLACE, 0.6F, 0.6F);
+            }
+            return 0.5D;
+        }
         PlayerData data = HeroPowers.data(player);
         if (data.hasState(BRACE_STATE)) {
             data.removeState(BRACE_STATE);

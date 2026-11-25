@@ -43,19 +43,20 @@ public final class ScarletWitchPower {
     private static final DustParticleOptions HEX_RED = new DustParticleOptions(new Vector3f(0.86F, 0.05F, 0.16F), 1.4F);
     private static final double BOLT_SPEED = 1.1D;
 
-    private static DustParticleOptions hex(net.minecraft.world.entity.player.Player player) {
-        return player == null ? HEX_RED : com.craisinlord.integrated_superheroes.hero.skin.SkinColors.primaryDust(player, HEX_RED);
+    private static DustParticleOptions hex(LivingEntity caster) {
+        return caster instanceof net.minecraft.world.entity.player.Player player
+                ? com.craisinlord.integrated_superheroes.hero.skin.SkinColors.primaryDust(player, HEX_RED) : HEX_RED;
     }
     private static final List<EntityType<? extends Mob>> HARMLESS = List.of(EntityType.CHICKEN, EntityType.RABBIT, EntityType.SHEEP,
             EntityType.PIG, EntityType.COD, EntityType.BAT);
     public static final HeroPower.Toggle HEX_FIELD = new HeroPower.Toggle("integrated_superheroes_off_hex_field", "Hex Field",
             () -> HeroFx.item("witchery:happenstance_oil", net.minecraft.world.item.Items.DRAGON_BREATH));
-    private static final Map<UUID, List<Bolt>> BOLTS = new HashMap<>();
-    private static final Map<Integer, Curse> MISFIRE = new HashMap<>();
-    private static final Map<Integer, Curse> BAD_LUCK = new HashMap<>();
-    private static final Map<Integer, Curse> TURNED = new HashMap<>();
-    private static final Map<UUID, Float> LAST_HEALTH = new HashMap<>();
-    private static final Map<UUID, Long> PROBABILITY_READY = new HashMap<>();
+    private static final Map<UUID, List<Bolt>> BOLTS = ServerState.map(new HashMap<>());
+    private static final Map<Integer, Curse> MISFIRE = ServerState.map(new HashMap<>());
+    private static final Map<Integer, Curse> BAD_LUCK = ServerState.map(new HashMap<>());
+    private static final Map<Integer, Curse> TURNED = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Float> LAST_HEALTH = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> PROBABILITY_READY = ServerState.map(new HashMap<>());
 
     private ScarletWitchPower() {
     }
@@ -78,7 +79,14 @@ public final class ScarletWitchPower {
     private record Curse(UUID wanda, long expires) {
     }
 
+    private static boolean registered;
+
     public static HeroPower create(Supplier<Item> syringe) {
+        if (!registered) {
+            registered = true;
+            HeroCaster.onTick(ScarletWitchPower::tickBolts);
+            HeroCaster.onCleanup(caster -> BOLTS.remove(caster.getUUID()));
+        }
         return new HeroPower(
                 ID,
                 "Chaos Magic (Wanda Maximoff)",
@@ -86,8 +94,8 @@ public final class ScarletWitchPower {
                 MarvelBalanceConfig.SCARLET_WITCH,
                 List.of(),
                 List.of(
-                        new HeroPower.Ability("hex_bolt", "Hex Bolt", ScarletWitchPower::hexBolt),
-                        new HeroPower.Ability("telekinesis", "Telekinesis", ScarletWitchPower::telekinesis),
+                        HeroPower.Ability.of("hex_bolt", "Hex Bolt", ScarletWitchPower::hexBolt),
+                        HeroPower.Ability.of("telekinesis", "Telekinesis", ScarletWitchPower::telekinesis),
                         new HeroPower.Ability("reality_warp", "Reality Warp", ScarletWitchPower::realityWarp),
                         HeroToggles.WHEEL
                 ),
@@ -155,7 +163,11 @@ public final class ScarletWitchPower {
         );
     }
 
-    private static double hexBolt(ServerPlayer player, int slot) {
+    private static boolean struck(LivingEntity caster, LivingEntity entity) {
+        return entity != caster && entity.isAlive() && (HeroCaster.isPlayer(caster) || HeroCaster.foe(caster, entity));
+    }
+
+    private static double hexBolt(LivingEntity player, int slot) {
         float damage = MarvelBalanceConfig.HEX_BOLT_DAMAGE.get().floatValue();
         int maxAge = (int) Math.ceil(MarvelBalanceConfig.HEX_BOLT_RANGE.get() / BOLT_SPEED);
         Vec3 start = player.getEyePosition().add(player.getLookAngle().scale(0.8D)).subtract(0.0D, 0.2D, 0.0D);
@@ -165,18 +177,18 @@ public final class ScarletWitchPower {
         return MarvelBalanceConfig.HEX_BOLT_COOLDOWN.get();
     }
 
-    private static void tickBolts(ServerPlayer player) {
+    private static void tickBolts(LivingEntity player) {
         List<Bolt> bolts = BOLTS.get(player.getUUID());
         if (bolts == null || bolts.isEmpty()) {
             return;
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         Iterator<Bolt> iterator = bolts.iterator();
         while (iterator.hasNext()) {
             Bolt bolt = iterator.next();
             Bolt current = bolt;
             LivingEntity seek = level.getEntitiesOfClass(LivingEntity.class, new AABB(bolt.pos, bolt.pos).inflate(6.0D),
-                            entity -> entity != player && entity.isAlive() && entity.getBoundingBox().getCenter().subtract(current.pos).dot(current.velocity) > 0.0D)
+                            entity -> struck(player, entity) && entity.getBoundingBox().getCenter().subtract(current.pos).dot(current.velocity) > 0.0D)
                     .stream().min(Comparator.comparingDouble(entity -> entity.distanceToSqr(current.pos))).orElse(null);
             if (seek != null) {
                 Vec3 want = seek.getBoundingBox().getCenter().subtract(bolt.pos).normalize().scale(BOLT_SPEED);
@@ -186,7 +198,7 @@ public final class ScarletWitchPower {
             HitResult blockHit = level.clip(new ClipContext(bolt.pos, next, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
             Vec3 end = blockHit.getType() == HitResult.Type.MISS ? next : blockHit.getLocation();
             LivingEntity victim = level.getEntitiesOfClass(LivingEntity.class, new AABB(bolt.pos, end).inflate(0.4D),
-                            entity -> entity != player && entity.isAlive() && entity.getBoundingBox().inflate(0.4D).clip(current.pos, end).isPresent())
+                            entity -> struck(player, entity) && entity.getBoundingBox().inflate(0.4D).clip(current.pos, end).isPresent())
                     .stream().min(Comparator.comparingDouble(entity -> entity.distanceToSqr(current.pos))).orElse(null);
             HeroAbilities.particleLine(level, bolt.pos, end, hex(player), 0.35D);
             if (victim != null) {
@@ -203,10 +215,10 @@ public final class ScarletWitchPower {
         }
     }
 
-    private static void hit(ServerPlayer player, LivingEntity target, float damage) {
-        target.hurt(player.damageSources().indirectMagic(player, player), damage);
+    private static void hit(LivingEntity player, LivingEntity target, float damage) {
+        HeroHits.hurt(player, target, player.damageSources().indirectMagic(player, player), damage);
         Vec3 center = target.getBoundingBox().getCenter();
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         if (!HeroFx.vfx(level, target.position(), "void_twist", WANDA_RED, (float) Math.max(1.0D, target.getBbWidth()))) {
             level.sendParticles(ParticleTypes.WITCH, center.x, center.y, center.z, 20, 0.3D, 0.4D, 0.3D, 0.05D);
             level.sendParticles(hex(player), center.x, center.y, center.z, 20, 0.4D, 0.5D, 0.4D, 0.0D);
@@ -247,11 +259,14 @@ public final class ScarletWitchPower {
                 return;
             }
         }
-        player.displayClientMessage(Component.literal("§cHex: " + label(hex)), true);
-        HeroAdvancements.flag(player, "hex_" + hex);
+        if (!(player instanceof ServerPlayer wanda)) {
+            return;
+        }
+        wanda.displayClientMessage(Component.literal("§cHex: " + label(hex)), true);
+        HeroAdvancements.flag(wanda, "hex_" + hex);
         if (java.util.stream.Stream.of("jinxed", "misfire", "turned", "pratfall", "bad_luck", "unravel", "dazed")
-                .allMatch(name -> HeroAdvancements.flagged(player, "hex_" + name))) {
-            HeroAdvancements.award(player, "avengers/scarlet_witch/hex_roulette");
+                .allMatch(name -> HeroAdvancements.flagged(wanda, "hex_" + name))) {
+            HeroAdvancements.award(wanda, "avengers/scarlet_witch/hex_roulette");
         }
     }
 
@@ -285,6 +300,9 @@ public final class ScarletWitchPower {
             Map.Entry<Integer, Curse> entry = iterator.next();
             Entity entity = level.getEntity(entry.getKey());
             if (entity == null) {
+                if (HeroAbilities.gone(level, entry.getKey())) {
+                    iterator.remove();
+                }
                 continue;
             }
             if (!(entity instanceof Mob mob) || !mob.isAlive() || now >= entry.getValue().expires()) {
@@ -328,12 +346,13 @@ public final class ScarletWitchPower {
         }
     }
 
-    private static double telekinesis(ServerPlayer player, int slot) {
-        if (HeroGrip.isHolding(player) || HeroBlockLift.isLifting(player)) {
+    private static double telekinesis(LivingEntity player, int slot) {
+        ServerPlayer lifter = player instanceof ServerPlayer serverPlayer ? serverPlayer : null;
+        if (HeroGrip.isHolding(player) || lifter != null && HeroBlockLift.isLifting(lifter)) {
             if (HeroGrip.isHolding(player)) {
                 HeroGrip.release(player, MarvelBalanceConfig.TELEKINESIS_THROW_SPEED.get(), MarvelBalanceConfig.TELEKINESIS_THROW_DAMAGE.get().floatValue());
             } else {
-                HeroBlockLift.throwHeld(player);
+                HeroBlockLift.throwHeld(lifter);
             }
             HeroAnimations.play(player, "celestisynth:cs_crescentia_throw");
             HeroFx.play(player, SoundEvents.ILLUSIONER_CAST_SPELL, 1.0F, 0.8F);
@@ -341,7 +360,7 @@ public final class ScarletWitchPower {
         }
         HeroAbilities.Beam beam = HeroAbilities.beam(player, player.getLookAngle(), MarvelBalanceConfig.TELEKINESIS_RANGE.get(), 1);
         if (beam.targets().isEmpty()) {
-            if (HeroBlockLift.lift(player, blockLift())) {
+            if (lifter != null && HeroBlockLift.lift(lifter, blockLift())) {
                 HeroAnimations.play(player, "web_shoot_both");
             }
             return 0.0D;
@@ -350,7 +369,7 @@ public final class ScarletWitchPower {
                 held -> held.addEffect(new MobEffectInstance(MobEffects.GLOWING, 5, 0, false, false)));
         if (grabbed) {
             LivingEntity held = beam.targets().get(0);
-            HeroFx.vfx(player.serverLevel(), held.position(), "invisible_woman/levitation_field", WANDA_RED, (float) Math.max(1.2D, held.getBbWidth() + 0.6D));
+            HeroFx.vfx(HeroCaster.level(player), held.position(), "invisible_woman/levitation_field", WANDA_RED, (float) Math.max(1.2D, held.getBbWidth() + 0.6D));
             HeroAnimations.play(player, "web_shoot_both");
             HeroFx.play(player, SoundEvents.ILLUSIONER_CAST_SPELL, 1.0F, 1.2F);
         }

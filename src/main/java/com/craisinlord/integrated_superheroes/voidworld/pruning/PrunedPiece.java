@@ -1,5 +1,7 @@
 package com.craisinlord.integrated_superheroes.voidworld.pruning;
 
+import net.minecraft.server.packs.resources.ResourceManager;
+import java.util.Collections;
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import com.craisinlord.integrated_superheroes.voidworld.PrunedDebrisPool;
 import com.craisinlord.integrated_superheroes.voidworld.VoidWorld;
@@ -42,7 +44,7 @@ public record PrunedPiece(ResourceLocation id, Rotation rotation, Mirror mirror,
     public static final int MIN_GROUND = 40;
     public static final int MAX_SPAN = 32;
     private static final String LOOT_PREFIX = IntegratedSuperheroes.MODID + ":chests/void_debris/";
-    private static final Map<StructureTemplate, List<List<StructureTemplate.StructureBlockInfo>>> RAW = new WeakHashMap<>();
+    private static final Map<StructureTemplate, List<List<StructureTemplate.StructureBlockInfo>>> RAW = Collections.synchronizedMap(new WeakHashMap<>());
 
     public record Pick(ResourceLocation id, StructureTemplate template, Rotation rotation, Mirror mirror, long seed) {
         public int radius() {
@@ -54,16 +56,17 @@ public record PrunedPiece(ResourceLocation id, Rotation rotation, Mirror mirror,
     public record Grid(int sizeX, int sizeY, int sizeZ, int[] palette, int[] cells) {
     }
 
-    public static Pick pick(ServerLevel level, int tier, RandomSource random) {
+    public static Pick pick(ResourceManager manager, int tier, RandomSource random) {
         for (int attempt = 0; attempt < 4; attempt++) {
             ResourceLocation id = PrunedDebrisPool.pick(PrunedDebrisPool.DEFAULT_GROUP, tier, random);
             if (id == null) {
                 return null;
             }
-            StructureTemplate template = PrunedDebrisPool.template(level.getServer().getResourceManager(), id);
+            StructureTemplate template = PrunedDebrisPool.template(manager, id);
             if (template != null) {
                 Rotation rotation = Rotation.getRandom(random);
                 Mirror mirror = Mirror.values()[random.nextInt(Mirror.values().length)];
+                palettes(template);
                 return new Pick(id, template, rotation, mirror, random.nextLong());
             }
         }
@@ -133,7 +136,7 @@ public record PrunedPiece(ResourceLocation id, Rotation rotation, Mirror mirror,
         float sink = 0.12F + random.nextFloat() * 0.14F;
         int y = Mth.clamp(ground - Math.max(1, Math.round(height * sink)), level.getMinBuildHeight() + 1, level.getMaxBuildHeight() - height - 1);
         BlockPos origin = new BlockPos(offsetX, y - local.minY(), offsetZ);
-        List<List<StructureTemplate.StructureBlockInfo>> palettes = RAW.computeIfAbsent(template, PrunedPiece::rawPalettes);
+        List<List<StructureTemplate.StructureBlockInfo>> palettes = palettes(template);
         if (palettes.isEmpty()) {
             return null;
         }
@@ -173,6 +176,15 @@ public record PrunedPiece(ResourceLocation id, Rotation rotation, Mirror mirror,
         blocks.sort(Comparator.comparingInt(info -> info.pos().getY()));
         return new PrunedPiece(pick.id(), pick.rotation(), pick.mirror(), pick.seed(), tier,
                 new BoundingBox(minX, minY, minZ, maxX, maxY, maxZ), List.copyOf(blocks));
+    }
+
+    private static List<List<StructureTemplate.StructureBlockInfo>> palettes(StructureTemplate template) {
+        List<List<StructureTemplate.StructureBlockInfo>> cached = RAW.get(template);
+        if (cached == null) {
+            cached = rawPalettes(template);
+            RAW.put(template, cached);
+        }
+        return cached;
     }
 
     private static List<List<StructureTemplate.StructureBlockInfo>> rawPalettes(StructureTemplate template) {

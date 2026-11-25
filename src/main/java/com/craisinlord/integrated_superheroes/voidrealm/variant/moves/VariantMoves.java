@@ -51,7 +51,11 @@ public final class VariantMoves {
 
     public static Move get(String id) {
         Move move = MOVES.get(id);
-        return move != null ? move : HeroMoves.get(id);
+        if (move != null) {
+            return move;
+        }
+        Move real = RealMoves.get(id);
+        return real != null ? real : HeroMoves.get(id);
     }
 
     public static List<String> fallbackFor(VariantKind kind, List<String> style, int count) {
@@ -95,16 +99,32 @@ public final class VariantMoves {
         List<Move> ready = new ArrayList<>();
         for (String id : ids) {
             Move move = get(id);
-            if (move != null && distance >= move.minRange() && distance <= move.maxRange()) {
+            if (move != null && distance >= move.minRange() && distance <= move.maxRange() && RealMoves.ready(mob, id)) {
                 ready.add(move);
             }
         }
         if (ready.isEmpty()) {
             return false;
         }
-        Move move = ready.get(random.nextInt(ready.size()));
+        int total = 0;
+        for (Move candidate : ready) {
+            total += weight(candidate);
+        }
+        int roll = random.nextInt(Math.max(1, total));
+        Move move = ready.get(ready.size() - 1);
+        for (Move candidate : ready) {
+            roll -= weight(candidate);
+            if (roll < 0) {
+                move = candidate;
+                break;
+            }
+        }
         move.runner().run(level, mob, target);
-        return true;
+        return !RealMoves.consumeFailed(mob);
+    }
+
+    private static int weight(Move move) {
+        return Math.max(1, RealMoves.isReal(move.id()) ? RealMoves.tuning(move.id()).weight() : 10);
     }
 
     private static float damage(Mob mob, double scale) {

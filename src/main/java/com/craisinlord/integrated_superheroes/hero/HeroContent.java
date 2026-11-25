@@ -22,6 +22,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraft.tags.DamageTypeTags;
@@ -159,6 +160,7 @@ public final class HeroContent {
         NeoForge.EVENT_BUS.addListener(HeroContent::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(HeroContent::onAnyPlayerTick);
         NeoForge.EVENT_BUS.addListener(HeroContent::onServerTick);
+        NeoForge.EVENT_BUS.addListener(HeroContent::onLevelTickStart);
         NeoForge.EVENT_BUS.addListener(HeroContent::onLevelTick);
         NeoForge.EVENT_BUS.addListener(HeroContent::onLogin);
         NeoForge.EVENT_BUS.addListener(HeroContent::onLogout);
@@ -168,18 +170,24 @@ public final class HeroContent {
         NeoForge.EVENT_BUS.addListener(HeroContent::onDeath);
         NeoForge.EVENT_BUS.addListener(HeroContent::onJump);
         NeoForge.EVENT_BUS.addListener(HeroContent::onJoinLevel);
+        NeoForge.EVENT_BUS.addListener(TempBlocks::onServerStopping);
+        NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, ServerState::onServerStopped);
         HealingFactor.register();
         DeadpoolPower.registerEvents();
         NightcrawlerPower.registerEvents();
         NeoForge.EVENT_BUS.addListener(TempBlocks::onBreak);
         NeoForge.EVENT_BUS.addListener(KittyPower::onAttack);
+        NeoForge.EVENT_BUS.addListener(KittyPower::onUseItem);
+        NeoForge.EVENT_BUS.addListener(KittyPower::onJoin);
+        if (com.craisinlord.integrated_superheroes.compat.ModCompat.SCORCHED_GUNS) {
+            com.craisinlord.integrated_superheroes.compat.ScorchedGunsPhase.register();
+        }
         NeoForge.EVENT_BUS.addListener(KittyPower::onUseBlock);
         NeoForge.EVENT_BUS.addListener(KittyPower::onUseEntity);
         NeoForge.EVENT_BUS.addListener(KittyPower::onBreakSpeed);
         NeoForge.EVENT_BUS.addListener(KittyPower::onBreak);
         NeoForge.EVENT_BUS.addListener(KittyPower::onPlace);
         NeoForge.EVENT_BUS.addListener(KittyPower::onTarget);
-        NeoForge.EVENT_BUS.addListener(KittyPower::onProjectile);
         NeoForge.EVENT_BUS.addListener(HumanTorchPower::onImpact);
         NeoForge.EVENT_BUS.addListener(IcemanPower::onProjectile);
         NeoForge.EVENT_BUS.addListener(GambitPower::onImpact);
@@ -262,12 +270,19 @@ public final class HeroContent {
         RoguePower.tickServer(event.getServer());
     }
 
+    private static void onLevelTickStart(LevelTickEvent.Pre event) {
+        if (event.getLevel() instanceof ServerLevel level) {
+            StormZones.startTick(level);
+        }
+    }
+
     private static void onLevelTick(LevelTickEvent.Post event) {
         if (event.getLevel() instanceof ServerLevel level) {
             TempBlocks.tick(level);
             HeroGrip.tickThrown(level);
             HeroBlockLift.tickThrown(level);
             ScarletWitchPower.tickLevel(level);
+            StormZones.endTick();
             StormZones.tick(level);
             HeroStun.tick(level);
         }
@@ -279,18 +294,32 @@ public final class HeroContent {
             HeroPowers.syncStats(player);
             SuitAbilityTracker.sync(player);
             KittyPower.onLogin(player);
+            SonicPower.clearStale(player);
+            IcemanPower.clearStale(player);
+            BinaryPower.clearStale(player);
+            ProfessorXPower.clearStale(player);
             HeroPowers.pruneStale(player);
         }
     }
 
     private static void onChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
+            HeroGrip.clear(player);
+            AtlanteanPower.leave(player);
             StormZones.syncTo(player);
         }
     }
 
     private static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
+            HeroBeams.stopAll(player);
+            HeroAbilities.clearDash(player);
+            HumanTorchPower.clear(player);
+            MartianPower.releaseThralls(player);
+            AtlanteanPower.leave(player);
+            ThingPower.clear(player);
+            StormPower.clear(player);
+            ReedShapes.clear(player);
             HeroGrip.clear(player);
             HeroBlockLift.drop(player);
             HeroGrapple.clear(player);
@@ -315,6 +344,10 @@ public final class HeroContent {
             return;
         }
         JubileePower.onAnyDamage(event);
+        if (event.isCanceled()) {
+            return;
+        }
+        KittyPower.onDealDamage(event);
         if (event.isCanceled()) {
             return;
         }
@@ -360,6 +393,9 @@ public final class HeroContent {
 
     private static void onJoinLevel(EntityJoinLevelEvent event) {
         HeroStun.onJoin(event);
+        if (!event.getLevel().isClientSide()) {
+            HeroGrip.onJoin(event.getEntity());
+        }
         DaredevilPower.onJoin(event);
         JubileePower.onJoin(event);
         GambitPower.onJoin(event);

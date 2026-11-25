@@ -40,7 +40,7 @@ public final class AngelConfig {
 
     static void define(ModConfigSpec.Builder builder) {
         builder.push("angel");
-        ANGEL = new MarvelBalanceConfig.HeroStats(builder, 20.0D, 6.0D, 0.5D, 0.0D, 0.0D, 16.0D, 1, List.of());
+        ANGEL = new MarvelBalanceConfig.HeroStats(builder, 22.0D, 2.0D, 0.5D, 0.0D, 0.0D, 16.0D, 1, List.of());
         FLY_SPEED = builder.comment("Flying speed while Wingbeat is on. Sprinting doubles it like normal flight.")
                 .defineInRange("flySpeed", 0.07D, 0.01D, 1.0D);
         LIFT_MAX = builder.defineInRange("liftMax", 100.0D, 1.0D, 10000.0D);

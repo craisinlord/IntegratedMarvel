@@ -25,8 +25,8 @@ import java.util.UUID;
 public final class HellchainController {
     public static final String ABILITY = "ghost_rider_hellchain";
     private static final int LASH_TICKS = 6;
-    private static final Map<UUID, Chain> CHAINS = new HashMap<>();
-    private static final Map<UUID, Pull> PULLS = new HashMap<>();
+    private static final Map<UUID, Chain> CHAINS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Pull> PULLS = ServerState.map(new HashMap<>());
     private static final Map<Integer, int[]> CLIENT = new HashMap<>();
 
     private HellchainController() {
@@ -60,7 +60,7 @@ public final class HellchainController {
         return CHAINS.containsKey(player.getUUID());
     }
 
-    public static double press(ServerPlayer player, boolean borrowed) {
+    public static double press(LivingEntity player, boolean borrowed) {
         if (!borrowed && CHAINS.containsKey(player.getUUID())) {
             LivingEntity held = resolve(player, CHAINS.get(player.getUUID()));
             if (held != null && clearLine(player, held)) {
@@ -72,15 +72,15 @@ public final class HellchainController {
         HeroAbilities.Beam beam = HeroAbilities.beam(player, player.getLookAngle(), GhostRiderConfig.CHAIN_RANGE.get(), 1);
         LivingEntity target = beam.targets().isEmpty() ? null : beam.targets().get(0);
         if (target == null || !HellfireZones.harmable(player, target) || !clearLine(player, target)) {
-            player.displayClientMessage(Component.literal("§7Nothing in reach to chain."), true);
+            HeroCaster.message(player, Component.literal("§7Nothing in reach to chain."));
             HeroFx.play(player, SoundEvents.CHAIN_FALL, 0.8F, 0.8F);
             return GhostRiderConfig.CHAIN_MISS_COOLDOWN.get();
         }
         double base = MarvelBalanceConfig.CLAW_SWIPE_DAMAGE.get() * GhostRiderConfig.CHAIN_DAMAGE_SCALE.get();
         float damage = borrowed ? RogueKit.dmg(base) : (float) base;
-        target.invulnerableTime = 0;
-        HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
-        ServerLevel level = player.serverLevel();
+        HeroAbilities.runAsAbilityDamage(() -> HeroHits.force(player, target, player instanceof Player user ? player.damageSources().playerAttack(user)
+                : player.damageSources().mobAttack(player), damage));
+        ServerLevel level = HeroCaster.level(player);
         Vec3 center = target.getBoundingBox().getCenter();
         level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, center.x, center.y, center.z, 12,
                 target.getBbWidth() * 0.4D, target.getBbHeight() * 0.4D, target.getBbWidth() * 0.4D, 0.03D);
@@ -105,7 +105,7 @@ public final class HellchainController {
         return 0.25D;
     }
 
-    public static void tick(ServerPlayer player) {
+    public static void tick(LivingEntity player) {
         tickPull(player);
         Chain chain = CHAINS.get(player.getUUID());
         if (chain == null) {
@@ -119,7 +119,7 @@ public final class HellchainController {
         double distance = player.distanceTo(target);
         if (distance > GhostRiderConfig.CHAIN_BREAK_DISTANCE.get() || !clearLine(player, target)) {
             HeroFx.play(target, SoundEvents.CHAIN_BREAK, 1.0F, 1.2F);
-            player.displayClientMessage(Component.literal("§7The chain snapped."), true);
+            HeroCaster.message(player, Component.literal("§7The chain snapped."));
             end(player, true);
             return;
         }
@@ -139,7 +139,7 @@ public final class HellchainController {
         }
     }
 
-    private static void yank(ServerPlayer player, LivingEntity target) {
+    private static void yank(LivingEntity player, LivingEntity target) {
         Vec3 toward = player.position().subtract(target.position());
         double distance = toward.length();
         if (distance < 1.0E-3D) {
@@ -156,12 +156,12 @@ public final class HellchainController {
         HeroAnimations.play(player, "celestisynth:cs_crescentia_throw");
     }
 
-    private static void tickPull(ServerPlayer player) {
+    private static void tickPull(LivingEntity player) {
         Pull pull = PULLS.get(player.getUUID());
         if (pull == null) {
             return;
         }
-        Entity entity = player.serverLevel().getEntity(pull.target);
+        Entity entity = HeroCaster.level(player).getEntity(pull.target);
         if (!(entity instanceof LivingEntity target) || !target.isAlive() || --pull.ticksLeft <= 0) {
             PULLS.remove(player.getUUID());
             return;
@@ -174,32 +174,32 @@ public final class HellchainController {
         }
     }
 
-    private static LivingEntity resolve(ServerPlayer player, Chain chain) {
-        if (player.serverLevel().dimension() != chain.dimension || !player.isAlive()) {
+    private static LivingEntity resolve(LivingEntity player, Chain chain) {
+        if (HeroCaster.level(player).dimension() != chain.dimension || !player.isAlive()) {
             return null;
         }
-        Entity entity = player.serverLevel().getEntity(chain.target);
+        Entity entity = HeroCaster.level(player).getEntity(chain.target);
         return entity instanceof LivingEntity living && living.isAlive() ? living : null;
     }
 
-    private static boolean clearLine(ServerPlayer player, LivingEntity target) {
+    private static boolean clearLine(LivingEntity player, LivingEntity target) {
         Vec3 from = player.getEyePosition();
         Vec3 to = target.getBoundingBox().getCenter();
         return player.level().clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player)).getType() == HitResult.Type.MISS;
     }
 
-    private static void end(ServerPlayer player, boolean cooldown) {
+    private static void end(LivingEntity player, boolean cooldown) {
         Chain chain = CHAINS.remove(player.getUUID());
         if (chain == null) {
             return;
         }
         send(player, -1, 0);
-        if (cooldown) {
-            HeroAbilities.setCooldown(player, ABILITY, GhostRiderConfig.CHAIN_COOLDOWN.get());
+        if (cooldown && player instanceof ServerPlayer user) {
+            HeroAbilities.setCooldown(user, ABILITY, GhostRiderConfig.CHAIN_COOLDOWN.get());
         }
     }
 
-    public static void clear(ServerPlayer player) {
+    public static void clear(LivingEntity player) {
         if (CHAINS.remove(player.getUUID()) != null) {
             send(player, -1, 0);
         }
@@ -211,7 +211,7 @@ public final class HellchainController {
         PULLS.clear();
     }
 
-    private static void send(ServerPlayer player, int targetId, int ticks) {
+    private static void send(LivingEntity player, int targetId, int ticks) {
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, new HellchainPayload(player.getId(), targetId, ticks));
     }
 

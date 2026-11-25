@@ -1,0 +1,44 @@
+{
+  "moves": {
+    "power:heart_shaped_herb_tchalla/panther_pounce": { "min_range": 3, "max_range": 12, "weight": 10, "cast_ticks": 4, "active_ticks": 20 },
+    "power:heart_shaped_herb_tchalla/claw_swipe": { "min_range": 0, "max_range": 4, "weight": 14, "cast_ticks": 6 },
+
+    "power:telepathy_charles_xavier/professor_x_cerebro": { "mode": "skip" },
+
+    "power:super_speed_pietro_maximoff/speed_force": { "mode": "state", "min_range": 0, "max_range": 24, "weight": 8, "cast_ticks": 0, "active_ticks": 0, "state_ticks": 200 },
+    "power:super_speed_pietro_maximoff/bullet_time": { "min_range": 0, "max_range": 20, "weight": 4, "cast_ticks": 10 },
+    "power:super_speed_pietro_maximoff/sonic_boom": { "min_range": 0, "max_range": 5, "weight": 10, "cast_ticks": 6 },
+
+    "power:absorption_anna_marie/siphon_touch": { "min_range": 0, "max_range": 4, "weight": 12, "cast_ticks": 6 },
+
+    "power:chaos_magic_wanda_maximoff/hex_bolt": { "min_range": 4, "max_range": 28, "weight": 14, "cast_ticks": 8, "active_ticks": 10 },
+    "power:chaos_magic_wanda_maximoff/telekinesis": { "mode": "state", "min_range": 2, "max_range": 12, "weight": 8, "cast_ticks": 10, "active_ticks": 40, "state_ticks": 40 },
+
+    "power:shazam_billy_batson/say_the_word": { "mode": "state", "min_range": 0, "max_range": 24, "weight": 12, "cast_ticks": 10, "state_ticks": 600 },
+    "power:shazam_billy_batson/lightning_call": { "min_range": 4, "max_range": 36, "weight": 12, "cast_ticks": 10 },
+    "power:shazam_billy_batson/thunder_dash": { "min_range": 3, "max_range": 10, "weight": 10, "cast_ticks": 4, "active_ticks": 16 },
+
+    "power:power_cosmic_norrin_radd/silver_surfer_cosmic_lance": { "min_range": 3, "max_range": 40, "weight": 12, "cast_ticks": 10 },
+
+    "power:sonic_dinah_lance/canary_cry": { "min_range": 2, "max_range": 16, "weight": 10, "cast_ticks": 60, "active_ticks": 60 },
+    "power:sonic_dinah_lance/sonic_burst": { "min_range": 0, "max_range": 5, "weight": 10, "cast_ticks": 8 },
+    "power:sonic_dinah_lance/sonic_lift": { "min_range": 0, "max_range": 3, "weight": 4, "cast_ticks": 4 },
+
+    "power:squirrel_powers_doreen_green/call_swarm": { "mode": "state", "min_range": 0, "max_range": 24, "weight": 12, "cast_ticks": 10, "state_ticks": 400 },
+    "power:squirrel_powers_doreen_green/sic_em": { "min_range": 2, "max_range": 30, "weight": 8, "cast_ticks": 6 },
+    "power:squirrel_powers_doreen_green/squirrel_pile": { "min_range": 0, "max_range": 20, "weight": 8, "cast_ticks": 6 },
+
+    "power:weather_manipulation_ororo_munroe/lightning_strike": { "min_range": 4, "max_range": 40, "weight": 14, "cast_ticks": 10 },
+    "power:weather_manipulation_ororo_munroe/gale": { "min_range": 2, "max_range": 14, "weight": 10, "cast_ticks": 8 },
+
+    "power:super_soldier_steve_rogers/shield_charge": { "min_range": 3, "max_range": 12, "weight": 12, "cast_ticks": 4, "active_ticks": 10 },
+    "power:super_soldier_steve_rogers/rally": { "min_range": 0, "max_range": 16, "weight": 5, "cast_ticks": 10 },
+
+    "power:avatar_of_the_green_alec_holland/swamp_thing_entangle": { "min_range": 3, "max_range": 16, "weight": 12, "cast_ticks": 10 },
+    "power:avatar_of_the_green_alec_holland/swamp_thing_root_step": { "min_range": 6, "max_range": 16, "weight": 6, "cast_ticks": 4 },
+
+    "power:rock_hide_ben_grimm/clobberin_time": { "min_range": 0, "max_range": 4.5, "weight": 12, "cast_ticks": 8 },
+    "power:rock_hide_ben_grimm/wrestle": { "min_range": 0, "max_range": 4, "weight": 8, "cast_ticks": 14, "active_ticks": 14 },
+    "power:rock_hide_ben_grimm/brace": { "mode": "state", "min_range": 0, "max_range": 10, "weight": 6, "cast_ticks": 4, "state_ticks": 100 }
+  }
+}

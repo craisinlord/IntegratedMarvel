@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.tintankgames.marvel.sounds.MarvelSoundEvents;
 
@@ -38,8 +39,8 @@ public final class CyclopsPower {
                 MarvelBalanceConfig.CYCLOPS,
                 List.of(),
                 List.of(
-                        new HeroPower.Ability("optic_blast", "Optic Blast", CyclopsPower::opticBlast),
-                        new HeroPower.Ability("wide_blast", "Wide Blast", CyclopsPower::wideBlast),
+                        HeroPower.Ability.of("optic_blast", "Optic Blast", CyclopsPower::opticBlast),
+                        HeroPower.Ability.of("wide_blast", "Wide Blast", CyclopsPower::wideBlast),
                         new HeroPower.Ability(CLOSE_EYES, "Close / Open Eyes", CyclopsPower::toggleEyes)
                 ),
                 List.of(),
@@ -67,7 +68,7 @@ public final class CyclopsPower {
                             return;
                         }
                         if (!HeroBeams.isFiring(player, UNCONTROLLED)) {
-                            HeroBeams.fire(player, UNCONTROLLED, uncontrolledSpec());
+                            HeroBeams.fire(player, UNCONTROLLED, uncontrolledSpec(true));
                             player.level().playSound(null, player.blockPosition(), MarvelSoundEvents.CYCLOPS_OPTIC_BLAST.get(), SoundSource.PLAYERS, 0.6F, 0.8F);
                         }
                     }
@@ -86,8 +87,9 @@ public final class CyclopsPower {
         if (head.is(VISOR)) {
             return true;
         }
-        boolean bare = head.isEmpty() || ResourceLocation.DEFAULT_NAMESPACE.equals(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(head.getItem()).getNamespace());
-        return bare && !com.craisinlord.integrated_superheroes.hero.skin.SkinData.costume(player).isEmpty();
+        boolean bare = !com.craisinlord.integrated_superheroes.hero.skin.SerumLooks.ownLook(head);
+        return bare && (!com.craisinlord.integrated_superheroes.hero.skin.SkinData.shownCostume(player).isEmpty()
+                || !com.craisinlord.integrated_superheroes.hero.skin.SkinData.serumCostume(player).isEmpty());
     }
 
     private static double toggleEyes(ServerPlayer player, int slot) {
@@ -108,29 +110,36 @@ public final class CyclopsPower {
         return 0.25D;
     }
 
-    private static double opticBlast(ServerPlayer player, int slot) {
-        if (!hasVisor(player)) {
-            player.displayClientMessage(Component.literal("§cYou can't control your eyes without your visor."), true);
-            HeroAdvancements.award(player, "x_men/cyclops/visor_malfunction");
+    private static boolean controlled(LivingEntity caster) {
+        if (!(caster instanceof ServerPlayer player) || hasVisor(player)) {
+            return true;
+        }
+        player.displayClientMessage(Component.literal("§cYou can't control your eyes without your visor."), true);
+        HeroAdvancements.award(player, "x_men/cyclops/visor_malfunction");
+        return false;
+    }
+
+    private static double opticBlast(LivingEntity player, int slot) {
+        if (!controlled(player)) {
             return 0.0D;
         }
+        boolean griefs = HeroCaster.griefs(player);
         HeroBeams.fire(player, NARROW, spec(MarvelBalanceConfig.OPTIC_BLAST_RANGE.get(), MarvelBalanceConfig.OPTIC_BLAST_DURATION_TICKS.get(),
-                MarvelBalanceConfig.OPTIC_BLAST_DAMAGE.get(), 1.0F, 2.0F, 0.0F, 0.0F, 1));
+                MarvelBalanceConfig.OPTIC_BLAST_DAMAGE.get(), 1.0F, 2.0F, 0.0F, 0.0F, 1, griefs));
         player.level().playSound(null, player.blockPosition(), MarvelSoundEvents.CYCLOPS_OPTIC_BLAST.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
         opticImpact(player, MarvelBalanceConfig.OPTIC_BLAST_RANGE.get());
         return MarvelBalanceConfig.OPTIC_BLAST_COOLDOWN.get();
     }
 
-    private static double wideBlast(ServerPlayer player, int slot) {
-        if (!hasVisor(player)) {
-            player.displayClientMessage(Component.literal("§cYou can't control your eyes without your visor."), true);
-            HeroAdvancements.award(player, "x_men/cyclops/visor_malfunction");
+    private static double wideBlast(LivingEntity player, int slot) {
+        if (!controlled(player)) {
             return 0.0D;
         }
+        boolean griefs = HeroCaster.griefs(player);
         HeroAdvancements.cast(player).hits(6, "x_men/cyclops/wide_open").run(() -> {
             for (int i = 0; i < WIDE_ANGLES.length; i++) {
                 HeroBeams.fire(player, WIDE_FIRST + i, spec(MarvelBalanceConfig.WIDE_BLAST_RANGE.get(), MarvelBalanceConfig.WIDE_BLAST_DURATION_TICKS.get(),
-                        MarvelBalanceConfig.WIDE_BLAST_DAMAGE.get(), 0.9F, 1.8F, WIDE_ANGLES[i], 0.0F, 1));
+                        MarvelBalanceConfig.WIDE_BLAST_DAMAGE.get(), 0.9F, 1.8F, WIDE_ANGLES[i], 0.0F, 1, griefs));
             }
         });
         player.level().playSound(null, player.blockPosition(), MarvelSoundEvents.CYCLOPS_OPTIC_BLAST_BIG.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
@@ -138,23 +147,23 @@ public final class CyclopsPower {
         return MarvelBalanceConfig.WIDE_BLAST_COOLDOWN.get();
     }
 
-    private static void opticImpact(ServerPlayer player, double range) {
+    private static void opticImpact(LivingEntity player, double range) {
         net.minecraft.world.phys.Vec3 at = player.pick(range, 0.0F, false).getLocation();
-        if (HeroFx.vfx(player.serverLevel(), at, "impact_starburst", 0xFFFF3030, 2.2F)) {
+        if (HeroFx.vfx(HeroCaster.level(player), at, "impact_starburst", 0xFFFF3030, 2.2F)) {
             HeroFx.cue(player, "thematic:optic_blast", 1.0F, 1.0F);
         }
     }
 
-    private static HeroBeams.Spec uncontrolledSpec() {
-        return spec(MarvelBalanceConfig.UNCONTROLLED_RANGE.get(), 100, MarvelBalanceConfig.UNCONTROLLED_DAMAGE.get(), 0.8F, 1.6F, 0.0F, 4.0F, 2);
+    private static HeroBeams.Spec uncontrolledSpec(boolean griefs) {
+        return spec(MarvelBalanceConfig.UNCONTROLLED_RANGE.get(), 100, MarvelBalanceConfig.UNCONTROLLED_DAMAGE.get(), 0.8F, 1.6F, 0.0F, 4.0F, 2, griefs);
     }
 
     private static HeroBeams.Spec spec(double range, int duration, double damage, float pathRadius, float impactRadius, float yaw,
-                                       float wobble, int terrainInterval) {
+                                       float wobble, int terrainInterval, boolean griefs) {
         BeamSettings settings = HeroBeams.settings(range, duration, pathRadius, impactRadius, damage, 0.6F, terrainInterval,
-                MarvelBalanceConfig.OPTIC_TERRAIN_RADIUS.get(), MarvelBalanceConfig.OPTIC_BLOCK_DROP_CHANCE.get(),
+                griefs ? MarvelBalanceConfig.OPTIC_TERRAIN_RADIUS.get() : 0.0D, MarvelBalanceConfig.OPTIC_BLOCK_DROP_CHANCE.get(),
                 MarvelBalanceConfig.OPTIC_MAX_BLOCK_RESISTANCE.get());
-        return new HeroBeams.Spec(HeroBeams.QUEEN_RED, settings, BeamTerrainMode.DESTROY, yaw, 0.6D, 0.0D,
+        return new HeroBeams.Spec(HeroBeams.QUEEN_RED, settings, griefs ? BeamTerrainMode.DESTROY : BeamTerrainMode.NONE, yaw, 0.6D, 0.0D,
                 MarvelBalanceConfig.OPTIC_FIRE_SECONDS.get(), wobble);
     }
 }

@@ -1,11 +1,13 @@
 package com.craisinlord.integrated_superheroes.hero;
 
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
+import com.craisinlord.integrated_superheroes.voidworld.client.sky.ShaderPacks;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.Mth;
@@ -70,7 +72,7 @@ public final class EyeBeamClient {
 
     @SubscribeEvent
     public static void onRender(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES || BEAMS.isEmpty()) {
+        if (BEAMS.isEmpty() || event.getStage() != ShaderPacks.glowStage()) {
             return;
         }
         Minecraft minecraft = Minecraft.getInstance();
@@ -146,7 +148,8 @@ public final class EyeBeamClient {
             return;
         }
         Vec3 direction = delta.scale(1.0D / length);
-        VertexConsumer vertices = buffers.getBuffer(RenderType.lightning());
+        RenderType type = RenderType.lightning();
+        VertexConsumer vertices = buffers.getBuffer(type);
         poses.pushPose();
         poses.translate(from.x, from.y, from.z);
         poses.mulPose(Axis.YP.rotation((float) Math.atan2(direction.x, direction.z)));
@@ -161,21 +164,26 @@ public final class EyeBeamClient {
             plane(vertices, poses.last().pose(), 0.06F * scale + 0.04F * scale * i, l, glow, opacity * (0.5F - i * 0.1F));
         }
         poses.popPose();
-        buffers.endBatch(RenderType.lightning());
+        buffers.endBatch(type);
     }
 
     private static void plane(VertexConsumer vertices, Matrix4f pose, float width, float length, int color, float alpha) {
         float red = (color >> 16 & 255) / 255.0F;
         float green = (color >> 8 & 255) / 255.0F;
         float blue = (color & 255) / 255.0F;
-        vertices.addVertex(pose, -width, 0.0F, 0.0F).setColor(red, green, blue, alpha);
-        vertices.addVertex(pose, -width, 0.0F, length).setColor(red, green, blue, 0.0F);
-        vertices.addVertex(pose, width, 0.0F, length).setColor(red, green, blue, 0.0F);
-        vertices.addVertex(pose, width, 0.0F, 0.0F).setColor(red, green, blue, alpha);
-        vertices.addVertex(pose, width, 0.0F, 0.0F).setColor(red, green, blue, alpha);
-        vertices.addVertex(pose, width, 0.0F, length).setColor(red, green, blue, 0.0F);
-        vertices.addVertex(pose, -width, 0.0F, length).setColor(red, green, blue, 0.0F);
-        vertices.addVertex(pose, -width, 0.0F, 0.0F).setColor(red, green, blue, alpha);
+        vertex(vertices, pose, -width, 0.0F, red, green, blue, alpha);
+        vertex(vertices, pose, -width, length, red, green, blue, 0.0F);
+        vertex(vertices, pose, width, length, red, green, blue, 0.0F);
+        vertex(vertices, pose, width, 0.0F, red, green, blue, alpha);
+        vertex(vertices, pose, width, 0.0F, red, green, blue, alpha);
+        vertex(vertices, pose, width, length, red, green, blue, 0.0F);
+        vertex(vertices, pose, -width, length, red, green, blue, 0.0F);
+        vertex(vertices, pose, -width, 0.0F, red, green, blue, alpha);
+    }
+
+    private static void vertex(VertexConsumer vertices, Matrix4f pose, float x, float z, float red, float green, float blue, float alpha) {
+        vertices.addVertex(pose, x, 0.0F, z).setColor(red, green, blue, alpha).setUv(0.0F, 0.0F)
+                .setLight(LightTexture.FULL_BRIGHT).setNormal(0.0F, 1.0F, 0.0F);
     }
 
     private static final class Beam {

@@ -24,6 +24,11 @@ public class SuitPieceItem extends ArmorItem {
     }
 
     @Override
+    public boolean isEnchantable(ItemStack stack) {
+        return stack.getMaxStackSize() == 1;
+    }
+
+    @Override
     public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
         if (SuitPieces.suit(stack) instanceof CharacterItem suit && SuitPieces.costume(suit)) {
             return ItemAttributeModifiers.EMPTY;

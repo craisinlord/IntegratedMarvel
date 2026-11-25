@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.hero;
 
+import com.craisinlord.integrated_superheroes.gauntlet.GauntletFx;
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ColorParticleOption;
@@ -54,7 +55,7 @@ public final class KineticBurst {
         };
     }
 
-    public static boolean affects(ServerPlayer owner, LivingEntity entity) {
+    public static boolean affects(LivingEntity owner, LivingEntity entity) {
         if (!entity.isAlive() || entity.isSpectator()) {
             return false;
         }
@@ -64,11 +65,14 @@ public final class KineticBurst {
         if (entity == owner) {
             return false;
         }
+        if (!(owner instanceof Player player)) {
+            return HeroCaster.foe(owner, entity);
+        }
         if (entity instanceof TamableAnimal tamable && tamable.isTame() && owner.getUUID().equals(tamable.getOwnerUUID())) {
             return false;
         }
         if (entity instanceof Player other) {
-            return owner.canHarmPlayer(other) && !other.isCreative();
+            return player.canHarmPlayer(other) && !other.isCreative();
         }
         return !owner.isAlliedTo(entity);
     }
@@ -86,12 +90,13 @@ public final class KineticBurst {
         level.sendParticles(ParticleTypes.REVERSE_PORTAL, at.x, at.y, at.z, 1, 0.05D, 0.05D, 0.05D, 0.01D);
     }
 
-    public static void burst(ServerLevel level, Vec3 at, Entity source, ServerPlayer owner, float damage, float radius, int kinds, ItemStack stack) {
+    public static void burst(ServerLevel level, Vec3 at, Entity source, LivingEntity owner, float damage, float radius, int kinds, ItemStack stack) {
         burst(level, at, source, owner, damage, radius, kinds, stack, true);
     }
 
-    public static void burst(ServerLevel level, Vec3 at, Entity source, ServerPlayer owner, float damage, float radius, int kinds, ItemStack stack, boolean breakBlocks) {
-        boolean griefing = breakBlocks && MarvelBalanceConfig.KINETIC_BLOCK_DAMAGE.get() && level.getGameRules().getBoolean(MarvelGameRules.RULE_SUPERPOWERGRIEFING);
+    public static void burst(ServerLevel level, Vec3 at, Entity source, LivingEntity owner, float damage, float radius, int kinds, ItemStack stack, boolean breakBlocks) {
+        boolean griefing = breakBlocks && (owner == null || HeroCaster.griefs(owner)) && MarvelBalanceConfig.KINETIC_BLOCK_DAMAGE.get()
+                && level.getGameRules().getBoolean(MarvelGameRules.RULE_SUPERPOWERGRIEFING);
         boolean fire = (kinds & GambitItems.FIRE) != 0;
         ParticleOptions small = blast(PURPLE);
         ParticleOptions large = radius >= 2.0F ? blastEmitter(PURPLE) : small;
@@ -104,7 +109,7 @@ public final class KineticBurst {
         effects(level, at, owner, radius, kinds, stack);
     }
 
-    private static void hurt(ServerLevel level, Vec3 at, Entity source, ServerPlayer owner, float damage, float radius, int kinds) {
+    private static void hurt(ServerLevel level, Vec3 at, Entity source, LivingEntity owner, float damage, float radius, int kinds) {
         float reach = radius + 0.5F;
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, new net.minecraft.world.phys.AABB(at, at).inflate(reach),
                 entity -> affects(owner, entity))) {
@@ -113,8 +118,7 @@ public final class KineticBurst {
                 continue;
             }
             float scaled = damage * (float) Math.max(0.3D, 1.0D - distance / reach);
-            target.invulnerableTime = 0;
-            target.hurt(level.damageSources().explosion(source != null ? source : owner, owner), scaled);
+            HeroHits.force(owner, target, level.damageSources().explosion(source != null ? source : owner, owner), scaled);
             if ((kinds & GambitItems.FIRE) != 0) {
                 target.igniteForSeconds(5.0F);
             }
@@ -128,27 +132,16 @@ public final class KineticBurst {
                 });
             }
             if ((kinds & GambitItems.LIGHTNING) != 0) {
-                target.invulnerableTime = 0;
-                target.hurt(level.damageSources().lightningBolt(), scaled * 0.5F);
+                HeroHits.force(owner, target, level.damageSources().lightningBolt(), scaled * 0.5F);
             }
         }
     }
 
     public static void visuals(ServerLevel level, Vec3 at, float radius, int kinds) {
         int ring = Math.min(40, Math.max(16, (int) (radius * 10)));
-        for (int i = 0; i < ring; i++) {
-            double theta = Math.PI * 2.0D * i / ring;
-            double phi = Math.acos(1.0D - 2.0D * (i + 0.5D) / ring);
-            Vec3 direction = new Vec3(Math.cos(theta) * Math.sin(phi), Math.cos(phi), Math.sin(theta) * Math.sin(phi));
-            Vec3 point = at.add(direction.scale(radius * 0.6D));
-            level.sendParticles(HeroAbilities.emissive(i % 3 == 0 ? PINK : PURPLE, 1.2F), point.x, point.y, point.z, 0,
-                    direction.x, direction.y, direction.z, 0.35D);
-        }
-        for (int i = 0; i < 16; i++) {
-            double angle = Math.PI * 2.0D * i / 16.0D;
-            Vec3 point = at.add(Math.cos(angle) * radius, 0.1D, Math.sin(angle) * radius);
-            level.sendParticles(HeroAbilities.emissive(DEEP_PURPLE, 1.0F), point.x, point.y, point.z, 1, 0.0D, 0.05D, 0.0D, 0.0D);
-        }
+        GauntletFx.burst(level, HeroAbilities.emissive(PURPLE, 1.2F), at, radius * 0.6D, ring * 2 / 3, 0.35D);
+        GauntletFx.burst(level, HeroAbilities.emissive(PINK, 1.2F), at, radius * 0.6D, ring / 3, 0.35D);
+        GauntletFx.ring(level, HeroAbilities.emissive(DEEP_PURPLE, 1.0F), at.add(0.0D, 0.1D, 0.0D), radius, 16);
         level.sendParticles(ParticleTypes.END_ROD, at.x, at.y, at.z, (int) (radius * 8), 0.2D, 0.2D, 0.2D, 0.25D);
         level.sendParticles(ParticleTypes.REVERSE_PORTAL, at.x, at.y, at.z, (int) (radius * 20), radius * 0.4D, radius * 0.4D, radius * 0.4D, 0.4D);
         level.sendParticles(ParticleTypes.WITCH, at.x, at.y, at.z, (int) (radius * 10), radius * 0.5D, radius * 0.4D, radius * 0.5D, 0.1D);
@@ -184,7 +177,7 @@ public final class KineticBurst {
         }
     }
 
-    private static void effects(ServerLevel level, Vec3 at, ServerPlayer owner, float radius, int kinds, ItemStack stack) {
+    private static void effects(ServerLevel level, Vec3 at, LivingEntity owner, float radius, int kinds, ItemStack stack) {
         if ((kinds & GambitItems.LIGHTNING) != 0) {
             LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(level);
             if (bolt != null) {
@@ -217,7 +210,7 @@ public final class KineticBurst {
                 level.addFreshEntity(cloud);
             }
         }
-        if ((kinds & GambitItems.FIREWORK) != 0 && owner != null) {
+        if ((kinds & GambitItems.FIREWORK) != 0 && owner instanceof ServerPlayer player) {
             Fireworks fireworks = stack.get(DataComponents.FIREWORKS);
             FireworkExplosion single = stack.get(DataComponents.FIREWORK_EXPLOSION);
             ItemStack rocket;
@@ -230,7 +223,7 @@ public final class KineticBurst {
             } else {
                 rocket = JubileePower.rocket(level.random, JubileePower.Palette.GAMBIT.colors(), FireworkExplosion.Shape.LARGE_BALL, 0, true, true);
             }
-            JubileePower.burst(owner, at, rocket, MarvelBalanceConfig.KINETIC_DAMAGE.get().floatValue() * 0.3F);
+            JubileePower.burst(player, at, rocket, MarvelBalanceConfig.KINETIC_DAMAGE.get().floatValue() * 0.3F);
         }
     }
 }

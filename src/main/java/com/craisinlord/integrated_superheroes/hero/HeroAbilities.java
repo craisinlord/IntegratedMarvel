@@ -1,5 +1,7 @@
 package com.craisinlord.integrated_superheroes.hero;
 
+import net.minecraft.world.level.Level;
+import com.craisinlord.integrated_superheroes.gauntlet.GauntletFx;
 import com.stxllarplanes.marvellegacy.data.PlayerData;
 import com.stxllarplanes.marvellegacy.power.Power;
 import com.google.gson.JsonElement;
@@ -37,10 +39,16 @@ public final class HeroAbilities {
     private static final TagKey<EntityType<?>> NO_CONTROL = TagKey.create(Registries.ENTITY_TYPE,
             ResourceLocation.fromNamespaceAndPath("integrated_superheroes", "no_control"));
     private static final String LIVING_VILLAIN_KEY = "integrated_superheroes_living_villain";
+    private static final int MAX_LINE_POINTS = 256;
     private static ResourceManager bossSource;
     private static Set<ResourceLocation> dataBosses = Set.of();
-    private static final Map<UUID, Dash> DASHES = new HashMap<>();
+    private static final Map<UUID, Dash> DASHES = ServerState.map(new HashMap<>());
     private static final ThreadLocal<Boolean> ABILITY_DAMAGE = ThreadLocal.withInitial(() -> false);
+    private static final ThreadLocal<Boolean> SUIT_DAMAGE = ThreadLocal.withInitial(() -> false);
+
+    static {
+        ServerState.onStop(() -> bossSource = null);
+    }
 
     private HeroAbilities() {
     }
@@ -55,41 +63,61 @@ public final class HeroAbilities {
         }
     }
 
+    public static void runAsSuitDamage(Runnable action) {
+        boolean previous = SUIT_DAMAGE.get();
+        SUIT_DAMAGE.set(true);
+        try {
+            runAsAbilityDamage(action);
+        } finally {
+            SUIT_DAMAGE.set(previous);
+        }
+    }
+
+    public static boolean isSuitDamage() {
+        return SUIT_DAMAGE.get();
+    }
+
     public static boolean isAbilityDamage() {
         return ABILITY_DAMAGE.get();
     }
 
-    public static void startDash(ServerPlayer player, Vec3 velocity, int ticks, double damage, double knockback) {
+    public static void startDash(LivingEntity player, Vec3 velocity, int ticks, double damage, double knockback) {
         startDash(player, velocity, ticks, damage, knockback, entity -> true);
     }
 
-    public static void startDash(ServerPlayer player, Vec3 velocity, int ticks, double damage, double knockback, Predicate<LivingEntity> canHit) {
+    public static void startDash(LivingEntity player, Vec3 velocity, int ticks, double damage, double knockback, Predicate<LivingEntity> canHit) {
         player.setDeltaMovement(velocity);
         player.hurtMarked = true;
-        DASHES.put(player.getUUID(), new Dash(ticks, damage, knockback, new HashSet<>(), canHit, HeroAdvancements.current()));
+        DASHES.put(player.getUUID(), new Dash(ticks, damage, knockback, new HashSet<>(), canHit, HeroAdvancements.current(), isSuitDamage()));
     }
 
-    public static void tickDash(ServerPlayer player) {
+    public static void tickDash(LivingEntity player) {
         Dash dash = DASHES.get(player.getUUID());
         if (dash == null) {
             return;
         }
         Vec3 motion = player.getDeltaMovement();
         for (LivingEntity target : player.level().getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(0.8D),
-                entity -> entity != player && entity.isAlive() && !dash.hit().contains(entity.getUUID()) && dash.canHit().test(entity))) {
+                entity -> HeroCaster.foe(player, entity) && !dash.hit().contains(entity.getUUID()) && dash.canHit().test(entity))) {
             dash.hit().add(target.getUUID());
-            HeroAdvancements.within(dash.cast(), () -> target.hurt(player.damageSources().mobAttack(player), (float) dash.damage()));
+            HeroAdvancements.within(dash.cast(), () -> {
+                if (dash.suit()) {
+                    runAsSuitDamage(() -> HeroHits.hurt(player, target, player.damageSources().mobAttack(player), (float) dash.damage()));
+                } else {
+                    HeroHits.hurt(player, target, player.damageSources().mobAttack(player), (float) dash.damage());
+                }
+            });
             Vec3 push = motion.lengthSqr() > 1.0E-4D ? motion.normalize() : player.getLookAngle();
             target.knockback(dash.knockback(), -push.x, -push.z);
         }
         if (dash.ticksLeft() <= 1) {
             DASHES.remove(player.getUUID());
         } else {
-            DASHES.put(player.getUUID(), new Dash(dash.ticksLeft() - 1, dash.damage(), dash.knockback(), dash.hit(), dash.canHit(), dash.cast()));
+            DASHES.put(player.getUUID(), new Dash(dash.ticksLeft() - 1, dash.damage(), dash.knockback(), dash.hit(), dash.canHit(), dash.cast(), dash.suit()));
         }
     }
 
-    public static void clearDash(ServerPlayer player) {
+    public static void clearDash(LivingEntity player) {
         DASHES.remove(player.getUUID());
     }
 
@@ -138,12 +166,12 @@ public final class HeroAbilities {
         return dataBosses.contains(id);
     }
 
-    public static List<LivingEntity> cone(ServerPlayer player, double range, double halfAngleDegrees) {
+    public static List<LivingEntity> cone(LivingEntity player, double range, double halfAngleDegrees) {
         Vec3 eye = player.getEyePosition();
         Vec3 look = player.getLookAngle();
         double minDot = Math.cos(Math.toRadians(halfAngleDegrees));
         return player.level().getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(range), entity -> {
-            if (entity == player || !entity.isAlive()) {
+            if (!HeroCaster.foe(player, entity)) {
                 return false;
             }
             Vec3 to = entity.getBoundingBox().getCenter().subtract(eye);
@@ -152,12 +180,12 @@ public final class HeroAbilities {
         });
     }
 
-    public static List<LivingEntity> sphere(ServerPlayer player, double radius) {
+    public static List<LivingEntity> sphere(LivingEntity player, double radius) {
         return player.level().getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(radius),
-                entity -> entity != player && entity.isAlive() && entity.distanceToSqr(player) <= radius * radius);
+                entity -> HeroCaster.foe(player, entity) && entity.distanceToSqr(player) <= radius * radius);
     }
 
-    public static Beam beam(ServerPlayer player, Vec3 direction, double range, int maxTargets) {
+    public static Beam beam(LivingEntity player, Vec3 direction, double range, int maxTargets) {
         Vec3 start = player.getEyePosition();
         Vec3 end = start.add(direction.scale(range));
         HitResult blockHit = player.level().clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
@@ -167,7 +195,7 @@ public final class HeroAbilities {
         Vec3 finalEnd = end;
         AABB area = new AABB(start, end).inflate(1.0D);
         List<Entity> candidates = new ArrayList<>(player.level().getEntities(player, area,
-                entity -> entity instanceof LivingEntity && entity.isAlive()
+                entity -> HeroCaster.foe(player, entity)
                         && entity.getBoundingBox().inflate(0.3D).clip(start, finalEnd).isPresent()));
         candidates.sort(Comparator.comparingDouble(entity -> entity.distanceToSqr(start)));
         List<LivingEntity> targets = new ArrayList<>();
@@ -183,11 +211,22 @@ public final class HeroAbilities {
 
     public static void particleLine(ServerLevel level, Vec3 from, Vec3 to, ParticleOptions particle, double spacing) {
         double length = from.distanceTo(to);
-        Vec3 step = to.subtract(from).normalize();
-        for (double d = 0.0D; d < length; d += spacing) {
-            Vec3 point = from.add(step.scale(d));
-            level.sendParticles(particle, point.x, point.y, point.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        if (length < 1.0E-4D) {
+            return;
         }
+        GauntletFx.line(level, particle, from, to, Math.min(MAX_LINE_POINTS, (int) (length / spacing)), 0.0F);
+    }
+
+    public static boolean gone(ServerLevel level, int entityId) {
+        if (level.dimension() != Level.OVERWORLD) {
+            return false;
+        }
+        for (ServerLevel other : level.getServer().getAllLevels()) {
+            if (other.getEntity(entityId) != null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static ParticleOptions emissive(int color, float size) {
@@ -219,10 +258,18 @@ public final class HeroAbilities {
         }
     }
 
+    public static void clearActive(ServerPlayer player, String abilityName) {
+        Power power = slotPower(player, abilityName);
+        if (power != null && power.isActive()) {
+            power.setActive(false);
+            PlayerData.sync(player);
+        }
+    }
+
     public record Beam(Vec3 start, Vec3 end, List<LivingEntity> targets, boolean hitBlock) {
     }
 
     private record Dash(int ticksLeft, double damage, double knockback, Set<UUID> hit, Predicate<LivingEntity> canHit,
-                        HeroAdvancements.Cast cast) {
+                        HeroAdvancements.Cast cast, boolean suit) {
     }
 }

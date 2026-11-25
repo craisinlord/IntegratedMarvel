@@ -38,11 +38,17 @@ public final class ProfessorXPower {
     public static final HeroPower.Toggle TETHERS = new HeroPower.Toggle("integrated_superheroes_off_psychic_tethers", "Link Tethers",
             () -> Items.LEAD);
     private static final int MIND_COLOR = 0xB57CFF;
-    private static final Map<UUID, Channel> CHANNELS = new HashMap<>();
+    private static final Map<UUID, Channel> CHANNELS = ServerState.map(new HashMap<>());
     private static RogueMemory rogue;
     private static boolean registered;
 
     private record Channel(UUID target, long start, long end) {
+    }
+
+    public static void clearStale(ServerPlayer player) {
+        if (!CHANNELS.containsKey(player.getUUID())) {
+            HeroAbilities.clearActive(player, LINK);
+        }
     }
 
     private ProfessorXPower() {
@@ -67,7 +73,7 @@ public final class ProfessorXPower {
                 List.of(),
                 List.of(
                         new HeroPower.Ability(LINK, "Link", ProfessorXPower::link),
-                        new HeroPower.Ability(CEREBRO, "Cerebro", ProfessorXPower::cerebro),
+                        HeroPower.Ability.of(CEREBRO, "Cerebro", ProfessorXPower::cerebro),
                         new HeroPower.Ability(ASTRAL, "Astral Projection", ProfessorXPower::astral),
                         HeroToggles.WHEEL
                 ),
@@ -109,7 +115,7 @@ public final class ProfessorXPower {
         return HeroToggles.isOn(player, TETHERS);
     }
 
-    private static ParticleOptions glow(ServerPlayer player, float size) {
+    private static ParticleOptions glow(LivingEntity player, float size) {
         return SerumKit.glow(player, MIND_COLOR, size);
     }
 
@@ -142,13 +148,13 @@ public final class ProfessorXPower {
         return 0.0D;
     }
 
-    private static double cerebro(ServerPlayer player, int slot) {
-        ServerLevel level = player.serverLevel();
+    private static double cerebro(LivingEntity player, int slot) {
+        ServerLevel level = HeroCaster.level(player);
         double radius = ProfessorXConfig.CEREBRO_RADIUS.get();
         int ticks = ProfessorXConfig.CEREBRO_GLOW_TICKS.get();
         List<LivingEntity> minds = level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(radius),
                 entity -> entity != player && entity.isAlive() && !(entity instanceof ArmorStand) && !entity.isSpectator()
-                        && entity.distanceToSqr(player) <= radius * radius);
+                        && entity.distanceToSqr(player) <= radius * radius && (HeroCaster.isPlayer(player) || HeroCaster.foe(player, entity)));
         int dangerous = 0;
         for (LivingEntity mind : minds) {
             mind.addEffect(new MobEffectInstance(MobEffects.GLOWING, ticks, 0, false, false), player);
@@ -169,7 +175,7 @@ public final class ProfessorXPower {
         if (dangerous > 0) {
             found += dangerous == 1 ? " §cOne feels dangerous." : " §c" + dangerous + " feel dangerous.";
         }
-        player.displayClientMessage(Component.literal(found), true);
+        HeroCaster.message(player, Component.literal(found));
         return ProfessorXConfig.CEREBRO_COOLDOWN.get();
     }
 

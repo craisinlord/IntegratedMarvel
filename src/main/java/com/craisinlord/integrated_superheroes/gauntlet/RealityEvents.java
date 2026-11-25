@@ -50,7 +50,7 @@ public final class RealityEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onBreak(BlockEvent.BreakEvent event) {
-        if (RealityStone.dissolveTemporary(event.getLevel(), event.getPos())) event.setCanceled(true);
+        if (!GauntletGrief.probing() && RealityStone.dissolveTemporary(event.getLevel(), event.getPos())) event.setCanceled(true);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)

@@ -1,4 +1,5 @@
 {
+  "attribute.name.integrated_superheroes.ability_damage": "Serum Ability Damage",
   "advancements.integrated_superheroes.avengers.ant_man.anthony.description": "Shrink down and ride Anthony",
   "advancements.integrated_superheroes.avengers.ant_man.anthony.title": "Anthony!",
   "advancements.integrated_superheroes.avengers.ant_man.description": "Command ants or wasps from a Pym helmet",
@@ -101,7 +102,7 @@
   "advancements.integrated_superheroes.deadpool.okay_fine.title": "Okay, Fine",
   "advancements.integrated_superheroes.deadpool.oops.description": "Blow yourself up",
   "advancements.integrated_superheroes.deadpool.oops.title": "Oops",
-  "advancements.integrated_superheroes.deadpool.regenerating_degenerate.description": "Use all 3 revives in one window",
+  "advancements.integrated_superheroes.deadpool.regenerating_degenerate.description": "Get back up from 10 killing blows",
   "advancements.integrated_superheroes.deadpool.regenerating_degenerate.title": "Regenerating Degenerate",
   "advancements.integrated_superheroes.deadpool.self_inflicted_combo.description": "Kill something with your own fumble",
   "advancements.integrated_superheroes.deadpool.self_inflicted_combo.title": "Self-Inflicted Combo",
@@ -362,6 +363,8 @@
   "tooltip.integrated_superheroes.storm_command_block.command": "Holds: %s",
   "message.integrated_superheroes.storm_command_block.disabled": "This block won't take a command.",
   "message.integrated_superheroes.storm_command_block.not_owner": "Only whoever placed this can change it.",
+  "message.integrated_superheroes.storm_command_block.blocked": "The storm won't run /%s.",
+  "message.integrated_superheroes.storm_command_block.blocked_text": "The storm won't run anything with %s in it.",
   "item.integrated_superheroes.variant_spawn_egg": "Variant Spawn Egg",
   "hud.integrated_superheroes.gauntlet.clipboard": "Clipboard: %s",
   "hud.integrated_superheroes.gauntlet.clipboard_empty": "Clipboard empty",
@@ -992,5 +995,6 @@
   "message.integrated_superheroes.fate_mantle_broken": "The Mantle of Order has been depleted.",
   "message.integrated_superheroes.darkseid_recharging": "The Omega Effect is recharging.",
   "message.integrated_superheroes.darkseid_no_target": "No visible target in your sights.",
-  "message.integrated_superheroes.darkseid_tube_failed": "Boom Tube failed: aim at safe, supported ground in loaded terrain."
+  "message.integrated_superheroes.darkseid_tube_failed": "Boom Tube failed: aim at safe, supported ground in loaded terrain.",
+  "biome.integrated_superheroes.the_void": "The Void"
 }

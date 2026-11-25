@@ -43,8 +43,8 @@ public class KineticCharge extends ThrowableItemProjectile {
         super(HeroEntities.KINETIC_CHARGE.get(), owner, level);
     }
 
-    public static KineticCharge create(ServerPlayer owner, ItemStack stack, GambitItems.Profile profile, float impactDamage, boolean dropBack) {
-        KineticCharge charge = new KineticCharge(owner.serverLevel(), owner);
+    public static KineticCharge create(LivingEntity owner, ItemStack stack, GambitItems.Profile profile, float impactDamage, boolean dropBack) {
+        KineticCharge charge = new KineticCharge(owner.level(), owner);
         charge.setItem(stack.isEmpty() ? new ItemStack(defaultCard()) : stack);
         charge.entityData.set(KINDS, profile.kinds());
         charge.damage = profile.damage();
@@ -134,7 +134,7 @@ public class KineticCharge extends ThrowableItemProjectile {
             return;
         }
         Entity hit = result.getEntity();
-        ServerPlayer owner = this.getOwner() instanceof ServerPlayer player ? player : null;
+        LivingEntity owner = this.getOwner() instanceof LivingEntity caster ? caster : null;
         if (hit instanceof LivingEntity living && KineticBurst.affects(owner, living) && this.impactDamage > 0.0F) {
             HeroAbilities.runAsAbilityDamage(() -> living.hurt(this.damageSources().thrown(this, owner), this.impactDamage));
         }
@@ -156,13 +156,13 @@ public class KineticCharge extends ThrowableItemProjectile {
             return;
         }
         this.detonated = true;
-        ServerPlayer owner = this.getOwner() instanceof ServerPlayer player ? player : null;
+        LivingEntity owner = this.getOwner() instanceof LivingEntity caster ? caster : null;
         ItemStack stack = this.getItem().copy();
         KineticBurst.burst(level, at, this, owner, this.damage, this.radius, kinds(), stack);
         if (this.dropBack && !stack.isEmpty()) {
             int cost = MarvelBalanceConfig.RETURN_DURABILITY_COST.get();
             if (cost > 0 && stack.isDamageableItem()) {
-                stack.hurtAndBreak(cost, level, owner, item -> {
+                stack.hurtAndBreak(cost, level, owner instanceof ServerPlayer player ? player : null, item -> {
                 });
             }
             if (!stack.isEmpty()) {

@@ -18,7 +18,7 @@ import java.util.UUID;
 public final class HeroStun {
     public static final String STUN_TAG = "integrated_superheroes_stunned";
     public static final String SINK_TAG = "integrated_superheroes_sunk";
-    private static final Map<ResourceKey<Level>, Map<UUID, Stun>> STUNNED = new HashMap<>();
+    private static final Map<ResourceKey<Level>, Map<UUID, Stun>> STUNNED = ServerState.map(new HashMap<>());
 
     private HeroStun() {
     }
@@ -102,6 +102,12 @@ public final class HeroStun {
         if (event.loadedFromDisk() && !event.getLevel().isClientSide
                 && (event.getEntity().getTags().contains(STUN_TAG) || event.getEntity().getTags().contains(SINK_TAG))) {
             release(event.getEntity(), Double.NaN);
+        } else if (!event.loadedFromDisk() && !event.getLevel().isClientSide && event.getEntity() instanceof Mob mob && mob.getTags().contains(STUN_TAG)) {
+            Map<UUID, Stun> stunned = STUNNED.get(event.getLevel().dimension());
+            if (stunned == null || !stunned.containsKey(mob.getUUID())) {
+                mob.removeTag(SINK_TAG);
+                release(mob, Double.NaN);
+            }
         }
     }
 }

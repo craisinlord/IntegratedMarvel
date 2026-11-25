@@ -46,11 +46,12 @@ public final class DaredevilPower {
     private static final String CLUB_TAG = "integrated_superheroes_club";
     private static final DustParticleOptions CABLE = new DustParticleOptions(new Vector3f(0.85F, 0.85F, 0.85F), 0.6F);
     private static final double CLUB_SPEED = 1.4D;
-    private static final Map<UUID, Club> CLUBS = new HashMap<>();
-    private static final Map<UUID, Prop> PROPS = new HashMap<>();
+    private static final Map<UUID, Club> CLUBS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Prop> PROPS = ServerState.map(new HashMap<>());
     private static final Map<Holder<MobEffect>, Integer> EFFECTS = Map.of(MobEffects.MOVEMENT_SPEED, 0, MobEffects.JUMP, 0);
     private static final Map<Holder<MobEffect>, HeroPower.Toggle> EFFECT_TOGGLES = Map.of(
             MobEffects.MOVEMENT_SPEED, HeroToggles.SPEED, MobEffects.JUMP, HeroToggles.SUPER_LEAP);
+    private static boolean registered;
     private static final String[] SPRINT_FLIPS = {"flip_high_1", "flip_high_2", "flip_high_3", "flip_high_4", "flip_both_1", "flip_both_2"};
 
     private DaredevilPower() {
@@ -93,6 +94,17 @@ public final class DaredevilPower {
     }
 
     public static HeroPower create(Supplier<Item> syringe) {
+        if (!registered) {
+            registered = true;
+            HeroCaster.onTick(caster -> {
+                tickClub(caster);
+                tickProp(caster);
+            });
+            HeroCaster.onCleanup(caster -> {
+                dropClub(caster);
+                dropProp(caster);
+            });
+        }
         return new HeroPower(
                 ID,
                 "Radar Sense (Matt Murdock)",
@@ -101,10 +113,10 @@ public final class DaredevilPower {
                 List.of("agility"),
                 List.of(
                         new HeroPower.Ability("radar_sense", "Radar Sense", DaredevilPower::radarSense),
-                        new HeroPower.Ability("billy_club", "Billy Club", DaredevilPower::billyClub),
+                        HeroPower.Ability.of("billy_club", "Billy Club", DaredevilPower::billyClub),
                         new HeroPower.Ability("grapple_line", "Grapple Line", DaredevilPower::grappleLine),
-                        new HeroPower.Ability("takedown", "Takedown", DaredevilPower::takedown),
-                        new HeroPower.Ability("staff_sweep", "Staff Sweep", DaredevilPower::staffSweep),
+                        HeroPower.Ability.of("takedown", "Takedown", DaredevilPower::takedown),
+                        HeroPower.Ability.of("staff_sweep", "Staff Sweep", DaredevilPower::staffSweep),
                         HeroToggles.WHEEL
                 ),
                 List.of(HeroToggles.SPEED, HeroToggles.SUPER_LEAP),
@@ -179,14 +191,14 @@ public final class DaredevilPower {
         }
     }
 
-    public static void dropClub(ServerPlayer player) {
+    public static void dropClub(LivingEntity player) {
         Club club = CLUBS.remove(player.getUUID());
         if (club != null) {
             club.display.discard();
         }
     }
 
-    public static void dropProp(ServerPlayer player) {
+    public static void dropProp(LivingEntity player) {
         Prop prop = PROPS.remove(player.getUUID());
         if (prop != null) {
             prop.display.discard();
@@ -197,9 +209,9 @@ public final class DaredevilPower {
         return new ItemStack(BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("thematic", form)).orElse(fallback));
     }
 
-    private static void showProp(ServerPlayer player, ItemStack stack, int ticks, boolean orbit, float spinSpeed) {
+    private static void showProp(LivingEntity player, ItemStack stack, int ticks, boolean orbit, float spinSpeed) {
         dropProp(player);
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         Display.ItemDisplay display = EntityType.ITEM_DISPLAY.create(level);
         if (display == null) {
             return;
@@ -214,7 +226,7 @@ public final class DaredevilPower {
         PROPS.put(player.getUUID(), prop);
     }
 
-    private static Vec3 propPos(ServerPlayer player, Prop prop) {
+    private static Vec3 propPos(LivingEntity player, Prop prop) {
         if (prop.orbit) {
             double radians = Math.toRadians(prop.angle);
             return player.position().add(-Math.sin(radians) * 1.1D, 1.0D, Math.cos(radians) * 1.1D);
@@ -224,7 +236,7 @@ public final class DaredevilPower {
         return player.getEyePosition().subtract(0.0D, 0.45D, 0.0D).add(look.scale(0.7D)).add(right.scale(0.3D));
     }
 
-    private static void tickProp(ServerPlayer player) {
+    private static void tickProp(LivingEntity player) {
         Prop prop = PROPS.get(player.getUUID());
         if (prop == null) {
             return;
@@ -251,11 +263,11 @@ public final class DaredevilPower {
         return 0.5D;
     }
 
-    private static double billyClub(ServerPlayer player, int slot) {
+    private static double billyClub(LivingEntity player, int slot) {
         if (CLUBS.containsKey(player.getUUID())) {
             return 0.0D;
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         Display.ItemDisplay display = EntityType.ITEM_DISPLAY.create(level);
         if (display == null) {
             return 0.0D;
@@ -275,12 +287,12 @@ public final class DaredevilPower {
         return MarvelBalanceConfig.BILLY_CLUB_COOLDOWN.get();
     }
 
-    private static void tickClub(ServerPlayer player) {
+    private static void tickClub(LivingEntity player) {
         Club club = CLUBS.get(player.getUUID());
         if (club == null) {
             return;
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         club.age++;
         if (club.age > 200 || club.display.isRemoved() || club.display.level() != level) {
             dropClub(player);
@@ -320,7 +332,8 @@ public final class DaredevilPower {
                 return;
             }
             for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class, new AABB(club.pos, next).inflate(0.6D),
-                    entity -> entity != player && entity.isAlive() && !club.hit.contains(entity.getId()))) {
+                    entity -> entity != player && entity.isAlive() && !club.hit.contains(entity.getId())
+                            && (player instanceof ServerPlayer || HeroCaster.foe(player, entity)))) {
                 strike(player, club, victim);
                 if (club.returning) {
                     break;
@@ -335,10 +348,10 @@ public final class DaredevilPower {
         }
     }
 
-    private static void strike(ServerPlayer player, Club club, LivingEntity victim) {
+    private static void strike(LivingEntity player, Club club, LivingEntity victim) {
         club.hit.add(victim.getId());
-        if (club.hit.size() >= 3) {
-            HeroAdvancements.award(player, "street_level/daredevil/bank_shot");
+        if (club.hit.size() >= 3 && player instanceof ServerPlayer user) {
+            HeroAdvancements.award(user, "street_level/daredevil/bank_shot");
         }
         HeroAbilities.runAsAbilityDamage(() -> victim.hurt(player.damageSources().mobAttack(player), club.damage));
         HeroFx.play(victim, SoundEvents.WOOD_HIT, 1.2F, 1.0F);
@@ -352,9 +365,9 @@ public final class DaredevilPower {
         }
     }
 
-    private static LivingEntity next(ServerPlayer player, Club club) {
-        return player.serverLevel().getEntitiesOfClass(LivingEntity.class, new AABB(club.pos, club.pos).inflate(8.0D),
-                        entity -> entity instanceof Enemy && entity.isAlive() && !club.hit.contains(entity.getId()) && entity.hasLineOfSight(club.display))
+    private static LivingEntity next(LivingEntity player, Club club) {
+        return HeroCaster.level(player).getEntitiesOfClass(LivingEntity.class, new AABB(club.pos, club.pos).inflate(8.0D),
+                        entity -> (player instanceof ServerPlayer ? entity instanceof Enemy : HeroCaster.foe(player, entity)) && entity.isAlive() && !club.hit.contains(entity.getId()) && entity.hasLineOfSight(club.display))
                 .stream()
                 .min(Comparator.comparingDouble(entity -> entity.distanceToSqr(club.pos)))
                 .orElse(null);
@@ -373,7 +386,7 @@ public final class DaredevilPower {
         return MarvelBalanceConfig.GRAPPLE_COOLDOWN.get();
     }
 
-    private static double takedown(ServerPlayer player, int slot) {
+    private static double takedown(LivingEntity player, int slot) {
         HeroAbilities.Beam beam = HeroAbilities.beam(player, player.getLookAngle(), 6.0D, 1);
         if (beam.targets().isEmpty()) {
             return 0.0D;
@@ -388,15 +401,15 @@ public final class DaredevilPower {
             HeroStun.stun(target, MarvelBalanceConfig.TAKEDOWN_STUN_TICKS.get());
         }
         Vec3 center = target.getBoundingBox().getCenter();
-        player.serverLevel().sendParticles(ParticleTypes.SWEEP_ATTACK, center.x, center.y, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        HeroCaster.level(player).sendParticles(ParticleTypes.SWEEP_ATTACK, center.x, center.y, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
         HeroFx.play(player, SoundEvents.PLAYER_ATTACK_KNOCKBACK, 1.2F, 0.8F);
         HeroAnimations.play(player, "wolverine_pounce");
         showProp(player, clubForm("billy_club_nunchuck", Items.CHAIN), 12, false, 60.0F);
         return MarvelBalanceConfig.TAKEDOWN_COOLDOWN.get();
     }
 
-    private static double staffSweep(ServerPlayer player, int slot) {
-        ServerLevel level = player.serverLevel();
+    private static double staffSweep(LivingEntity player, int slot) {
+        ServerLevel level = HeroCaster.level(player);
         double radius = MarvelBalanceConfig.STAFF_SWEEP_RADIUS.get();
         float damage = MarvelBalanceConfig.STAFF_SWEEP_DAMAGE.get().floatValue();
         for (LivingEntity target : HeroAbilities.sphere(player, radius)) {

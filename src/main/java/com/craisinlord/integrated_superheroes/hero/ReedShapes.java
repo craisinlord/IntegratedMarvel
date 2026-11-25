@@ -66,14 +66,14 @@ public final class ReedShapes {
             new HeroWheels.Option(POGO, "Pogo Stick", () -> Items.PISTON),
             new HeroWheels.Option(STILTS, "Stilts", () -> Items.BAMBOO)
     );
-    private static final Map<UUID, Vec3> ANCHORS = new HashMap<>();
-    private static final Map<UUID, String> SELECTED = new HashMap<>();
-    private static final Map<UUID, Long> BALL_UNTIL = new HashMap<>();
-    private static final Map<UUID, Integer> SLINGS = new HashMap<>();
-    private static final Map<UUID, FantasticSeat> SEATS = new HashMap<>();
-    private static final Map<UUID, Bridge> BRIDGES = new HashMap<>();
-    private static final Map<Integer, Long> LAST_HIT = new HashMap<>();
-    private static final Map<UUID, Vec3> CLIENT_LAST_MOTION = new HashMap<>();
+    private static final Map<UUID, Vec3> ANCHORS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, String> SELECTED = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> BALL_UNTIL = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Integer> SLINGS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, FantasticSeat> SEATS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Bridge> BRIDGES = ServerState.map(new HashMap<>());
+    private static final Map<Integer, Long> LAST_HIT = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Vec3> CLIENT_LAST_MOTION = ClientState.map(new HashMap<>());
 
     private ReedShapes() {
     }

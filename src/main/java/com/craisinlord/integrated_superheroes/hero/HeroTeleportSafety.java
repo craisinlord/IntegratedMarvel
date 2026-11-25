@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -27,7 +28,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public final class HeroTeleportSafety {
-    private static final Map<UUID, Long> FAILED_AT = new HashMap<>();
+    private static final Map<UUID, Long> FAILED_AT = ServerState.map(new HashMap<>());
     private static final Map<Integer, List<BlockPos>> OFFSETS = new HashMap<>();
 
     private HeroTeleportSafety() {
@@ -40,16 +41,16 @@ public final class HeroTeleportSafety {
         }
     }
 
-    public static boolean throttled(ServerPlayer player, Policy policy) {
+    public static boolean throttled(LivingEntity player, Policy policy) {
         Long failed = FAILED_AT.get(player.getUUID());
-        return failed != null && player.server.overworld().getGameTime() - failed < policy.failureCooldownTicks();
+        return failed != null && player.getServer().overworld().getGameTime() - failed < policy.failureCooldownTicks();
     }
 
-    public static void failed(ServerPlayer player) {
-        FAILED_AT.put(player.getUUID(), player.server.overworld().getGameTime());
+    public static void failed(LivingEntity player) {
+        FAILED_AT.put(player.getUUID(), player.getServer().overworld().getGameTime());
     }
 
-    public static void forget(ServerPlayer player) {
+    public static void forget(LivingEntity player) {
         FAILED_AT.remove(player.getUUID());
     }
 
@@ -57,12 +58,12 @@ public final class HeroTeleportSafety {
         FAILED_AT.clear();
     }
 
-    public static boolean canStart(ServerPlayer player) {
+    public static boolean canStart(LivingEntity player) {
         return player.isAlive() && !player.isSpectator() && !player.isPassenger() && !player.isVehicle() && !player.isSleeping()
-                && !player.isChangingDimension();
+                && !(player instanceof ServerPlayer serverPlayer && serverPlayer.isChangingDimension());
     }
 
-    public static Optional<Vec3> aimed(ServerPlayer player, Policy policy) {
+    public static Optional<Vec3> aimed(LivingEntity player, Policy policy) {
         Level level = player.level();
         Vec3 eye = player.getEyePosition();
         Vec3 look = player.getLookAngle();
@@ -210,7 +211,7 @@ public final class HeroTeleportSafety {
         });
     }
 
-    public static boolean move(ServerPlayer player, Vec3 feet, float yRot, float xRot, Policy policy) {
+    public static boolean move(LivingEntity player, Vec3 feet, float yRot, float xRot, Policy policy) {
         if (!canStart(player)) {
             return false;
         }
@@ -223,8 +224,14 @@ public final class HeroTeleportSafety {
                 || target.distanceTo(player.position()) > policy.range() + 2.0D)) {
             return false;
         }
-        ServerLevel level = player.serverLevel();
-        player.teleportTo(level, target.x, target.y, target.z, yRot, xRot);
+        if (player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.teleportTo(serverPlayer.serverLevel(), target.x, target.y, target.z, yRot, xRot);
+        } else {
+            player.teleportTo(target.x, target.y, target.z);
+            player.setYRot(yRot);
+            player.setXRot(xRot);
+            player.setYHeadRot(yRot);
+        }
         return player.position().distanceToSqr(target) < 0.01D;
     }
 }

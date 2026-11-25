@@ -35,7 +35,7 @@ public final class SilverSurferConfig {
 
     static void define(ModConfigSpec.Builder builder) {
         builder.push("silverSurfer");
-        STATS = new MarvelBalanceConfig.HeroStats(builder, 45.0D, 14.0D, 1.0D, 0.0D, 0.0D, 35.0D, 1, List.of());
+        STATS = new MarvelBalanceConfig.HeroStats(builder, 47.0D, 6.0D, 1.0D, 0.0D, 0.0D, 35.0D, 1, List.of());
         CRUISE_MAX_SPEED = builder.comment("Top board speed in Cruise handling, in blocks per tick.")
                 .defineInRange("cruiseMaxSpeed", 1.4D, 0.1D, 3.0D);
         PRECISION_MAX_SPEED = builder.comment("Top board speed with Precision Handling on, in blocks per tick.")

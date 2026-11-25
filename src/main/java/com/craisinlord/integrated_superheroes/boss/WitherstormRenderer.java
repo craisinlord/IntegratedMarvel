@@ -19,7 +19,7 @@ public class WitherstormRenderer extends GeoEntityRenderer<WitherstormEntity> {
     private static final int DEBRIS = 64;
     private static final float SPIN_PER_TICK = (float) (Math.PI * 2.0D / 80.0D);
 
-    private final MultiBufferSource.BufferSource ownBuffer = MultiBufferSource.immediate(new ByteBufferBuilder(1 << 21));
+    private static MultiBufferSource.BufferSource ownBuffer;
 
     public WitherstormRenderer(EntityRendererProvider.Context context) {
         super(context, new WitherstormModel());
@@ -37,14 +37,17 @@ public class WitherstormRenderer extends GeoEntityRenderer<WitherstormEntity> {
             return;
         }
         this.shadowRadius = 0.0F;
+        if (ownBuffer == null) {
+            ownBuffer = MultiBufferSource.immediate(new ByteBufferBuilder(1 << 21));
+        }
         float fogStart = RenderSystem.getShaderFogStart();
         float fogEnd = RenderSystem.getShaderFogEnd();
         RenderSystem.setShaderFogStart(Math.max(fogStart, FOG_START));
         RenderSystem.setShaderFogEnd(Math.max(fogEnd, FOG_END));
         try {
-            super.render(entity, entityYaw, partialTick, poseStack, this.ownBuffer, packedLight);
+            super.render(entity, entityYaw, partialTick, poseStack, ownBuffer, packedLight);
             this.renderDebris(entity, partialTick, poseStack, packedLight, scale);
-            this.ownBuffer.endBatch();
+            ownBuffer.endBatch();
         } finally {
             RenderSystem.setShaderFogStart(fogStart);
             RenderSystem.setShaderFogEnd(fogEnd);
@@ -84,7 +87,7 @@ public class WitherstormRenderer extends GeoEntityRenderer<WitherstormEntity> {
             poseStack.mulPose(Axis.ZP.rotation(time * 0.02F * (0.5F + a)));
             poseStack.scale(size, size, size);
             poseStack.translate(-0.5F, -0.5F, -0.5F);
-            blocks.renderSingleBlock(states[i % states.length], poseStack, this.ownBuffer, packedLight, OverlayTexture.NO_OVERLAY);
+            blocks.renderSingleBlock(states[i % states.length], poseStack, ownBuffer, packedLight, OverlayTexture.NO_OVERLAY);
             poseStack.popPose();
         }
         poseStack.popPose();

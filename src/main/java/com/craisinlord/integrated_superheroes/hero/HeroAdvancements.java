@@ -44,11 +44,11 @@ public final class HeroAdvancements {
     private static final Map<String, String> BRANCHES = new HashMap<>();
     private static final Set<String> LEGACY_POWERS = Set.of("spider_powers_peter_parker", "weapon_x_logan");
     private static final ThreadLocal<Cast> CURRENT = new ThreadLocal<>();
-    private static final Map<UUID, Tagged> TAGGED = new HashMap<>();
-    private static final Map<UUID, List<Window>> WINDOWS = new HashMap<>();
-    private static final Map<String, Vec3> LAST_POSITIONS = new HashMap<>();
-    private static final Map<UUID, Integer> CEILING_TICKS = new HashMap<>();
-    private static final Map<UUID, Boolean> SWINGING = new HashMap<>();
+    private static final Map<UUID, Tagged> TAGGED = ServerState.map(new HashMap<>());
+    private static final Map<UUID, List<Window>> WINDOWS = ServerState.map(new HashMap<>());
+    private static final Map<String, Vec3> LAST_POSITIONS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Integer> CEILING_TICKS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Boolean> SWINGING = ServerState.map(new HashMap<>());
 
     static {
         branch("x_men/cyclops", CyclopsPower.ID);
@@ -179,8 +179,8 @@ public final class HeroAdvancements {
         }
     }
 
-    public static Cast cast(ServerPlayer player) {
-        return new Cast(player);
+    public static Cast cast(LivingEntity caster) {
+        return new Cast(caster instanceof ServerPlayer player ? player : null);
     }
 
     public static Cast current() {
@@ -248,7 +248,7 @@ public final class HeroAdvancements {
         }
 
         public void hit(LivingEntity target) {
-            if (target == this.player) {
+            if (this.player == null || target == this.player) {
                 return;
             }
             TAGGED.put(target.getUUID(), new Tagged(this, this.player.server.getTickCount() + this.memoryTicks));
@@ -258,7 +258,7 @@ public final class HeroAdvancements {
         }
 
         private void killed(LivingEntity target) {
-            if (this.killPath == null || !this.killFilter.test(target)) {
+            if (this.player == null || this.killPath == null || !this.killFilter.test(target)) {
                 return;
             }
             this.kills++;

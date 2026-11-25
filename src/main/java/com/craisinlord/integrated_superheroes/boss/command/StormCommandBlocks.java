@@ -2,6 +2,7 @@ package com.craisinlord.integrated_superheroes.boss.command;
 
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import com.craisinlord.integrated_superheroes.boss.command.client.StormCommandBlockClient;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -123,6 +124,10 @@ public final class StormCommandBlocks {
         entity.applyEdit(command, payload.trackOutput(), payload.automatic());
         if (!StringUtil.isNullOrEmpty(command)) {
             player.sendSystemMessage(Component.translatable("advMode.setCommand.success", command));
+            Component blocked = entity.blockedCommand();
+            if (blocked != null) {
+                player.sendSystemMessage(blocked.copy().withStyle(ChatFormatting.RED));
+            }
         }
     }
 }

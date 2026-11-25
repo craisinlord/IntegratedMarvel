@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.compat.thematic;
 
+import com.craisinlord.integrated_superheroes.hero.ServerState;
 import bond.thematic.api.content.ability.state.NumberSpec;
 import bond.thematic.api.content.action.ActionContext;
 import bond.thematic.api.content.action.Actions;
@@ -41,8 +42,8 @@ import org.joml.Vector3f;
 
 public final class SithActions {
     private static final DustParticleOptions RED = new DustParticleOptions(new Vector3f(0.75F, 0.02F, 0.02F), 0.9F);
-    private static final Map<UUID, List<Grip>> GRIPS = new HashMap<>();
-    private static final List<Slam> SLAMS = new ArrayList<>();
+    private static final Map<UUID, List<Grip>> GRIPS = ServerState.map(new HashMap<>());
+    private static final List<Slam> SLAMS = ServerState.all(new ArrayList<>());
     private static boolean registered;
 
     private SithActions() {

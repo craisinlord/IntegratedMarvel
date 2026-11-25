@@ -1,5 +1,7 @@
 package com.craisinlord.integrated_superheroes.mixin;
 
+import net.minecraft.server.level.ServerPlayer;
+import com.craisinlord.integrated_superheroes.gauntlet.GauntletAbilityController;
 import com.craisinlord.anthology.beam.BeamController;
 import com.craisinlord.anthology.beam.BeamSettings;
 import com.craisinlord.integrated_superheroes.hero.HeroGrief;
@@ -30,6 +32,10 @@ public abstract class AnthologyBeamGriefMixin {
                 || existing.getDestroySpeed(level, pos) < 0.0F
                 || existing.getBlock().getExplosionResistance() > settings.maxTerrainResistance()
                 || existing.getCollisionShape(level, pos).isEmpty()) {
+            return;
+        }
+        if (owner instanceof ServerPlayer player && GauntletAbilityController.firingBeam(player)) {
+            if (!GauntletAbilityController.beamMayBreak(player, serverLevel, pos)) ci.cancel();
             return;
         }
         if (!HeroGrief.allowBreak(HeroGrief.responsiblePlayer(owner), serverLevel, pos)) ci.cancel();

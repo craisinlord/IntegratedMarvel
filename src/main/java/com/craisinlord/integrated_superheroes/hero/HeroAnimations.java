@@ -6,6 +6,7 @@ import com.stxllarplanes.marvellegacy.network.packet.PlayAnimationPacket;
 import com.stxllarplanes.marvellegacy.network.packet.StopAnimationPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -33,7 +34,7 @@ public final class HeroAnimations {
             Map.entry("celestisynth:cs_rainfall_aim_right", 20),
             Map.entry("celestisynth:cs_solaris_spin", 60)
     );
-    private static final Map<UUID, Long> STOP_AT = new HashMap<>();
+    private static final Map<UUID, Long> STOP_AT = ServerState.map(new HashMap<>());
 
     private HeroAnimations() {
     }
@@ -49,7 +50,10 @@ public final class HeroAnimations {
         }
     }
 
-    public static void play(ServerPlayer player, String animation) {
+    public static void play(LivingEntity caster, String animation) {
+        if (!(caster instanceof ServerPlayer player)) {
+            return;
+        }
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, new PlayAnimationPacket(player.getId(), id(animation), AnimationLayerType.BODY));
         int hold = HOLD_TICKS.getOrDefault(animation, 20);
         if (hold > 0) {
@@ -59,7 +63,10 @@ public final class HeroAnimations {
         }
     }
 
-    public static void stop(ServerPlayer player) {
+    public static void stop(LivingEntity caster) {
+        if (!(caster instanceof ServerPlayer player)) {
+            return;
+        }
         STOP_AT.remove(player.getUUID());
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, new StopAnimationPacket(player.getId(), AnimationLayerType.BODY));
     }

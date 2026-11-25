@@ -54,6 +54,7 @@ public final class IntegratedSuperheroes {
         ModSounds.register(modEventBus);
         ModCreativeTab.register(modEventBus);
         HeroContent.register(modEventBus);
+        com.craisinlord.integrated_superheroes.hero.AbilityDamage.register(modEventBus);
         SuitEntities.register(modEventBus);
         HeroEntities.register(modEventBus);
         com.craisinlord.integrated_superheroes.boss.WitherstormContent.register(modEventBus);
@@ -62,6 +63,9 @@ public final class IntegratedSuperheroes {
         com.craisinlord.integrated_superheroes.voidrealm.variant.VoidVariants.register(modEventBus, modContainer);
         GauntletContent.register(modEventBus);
         IronManEnergy.register(modEventBus);
+        if (com.craisinlord.integrated_superheroes.compat.ModCompat.SCORCHED_GUNS) {
+            com.craisinlord.integrated_superheroes.compat.ScorchedGunsTurret.register();
+        }
         CleanupEvents.register(modEventBus);
         NeoForge.EVENT_BUS.register(InfinityGauntletTestEntityBlocker.class);
         Villains.register();

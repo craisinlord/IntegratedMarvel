@@ -367,7 +367,10 @@ public final class DoomActions {
                 storm(player, systems);
                 inCombat(player);
             }
-            player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 2, 1, false, false));
+            MobEffectInstance resistance = player.getEffect(MobEffects.DAMAGE_RESISTANCE);
+            if (resistance == null || resistance.getAmplifier() < 1 || resistance.endsWithin(2)) {
+                player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, (int) Math.min(22L, systems.ascendantUntil - time + 2L), 1, false, false));
+            }
         }
     }
 

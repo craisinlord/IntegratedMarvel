@@ -36,7 +36,7 @@ public final class PantherPower {
     private PantherPower() {
     }
 
-    private static final Map<java.util.UUID, long[]> FIGHTS = new java.util.HashMap<>();
+    private static final Map<java.util.UUID, long[]> FIGHTS = ServerState.map(new java.util.HashMap<>());
 
     public static HeroPower create(Supplier<Item> syringe) {
         return new HeroPower(
@@ -46,8 +46,8 @@ public final class PantherPower {
                 MarvelBalanceConfig.PANTHER,
                 List.of("agility"),
                 List.of(
-                        new HeroPower.Ability("panther_pounce", "Panther Pounce", PantherPower::pounce),
-                        new HeroPower.Ability("claw_swipe", "Claw Swipe", PantherPower::clawSwipe),
+                        HeroPower.Ability.of("panther_pounce", "Panther Pounce", PantherPower::pounce),
+                        HeroPower.Ability.of("claw_swipe", "Claw Swipe", PantherPower::clawSwipe),
                         new HeroPower.Ability(ANCESTRAL_PLANE, "Ancestral Plane", PantherPower::ancestralPlaneInfo),
                         HeroToggles.WHEEL
                 ),
@@ -63,7 +63,10 @@ public final class PantherPower {
                             double radius = MarvelBalanceConfig.SENSES_RADIUS.get();
                             for (LivingEntity hostile : player.level().getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(radius),
                                     entity -> entity instanceof Enemy && entity.isAlive())) {
-                                hostile.addEffect(new MobEffectInstance(MobEffects.GLOWING, 30, 0, true, false));
+                                MobEffectInstance glow = hostile.getEffect(MobEffects.GLOWING);
+                                if (glow == null || glow.endsWithin(25)) {
+                                    hostile.addEffect(new MobEffectInstance(MobEffects.GLOWING, 70, 0, true, false));
+                                }
                             }
                             net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new com.craisinlord.integrated_superheroes.api.HeroSensesEvent(player, radius));
                         }
@@ -116,7 +119,7 @@ public final class PantherPower {
         );
     }
 
-    private static double pounce(ServerPlayer player, int slot) {
+    private static double pounce(LivingEntity player, int slot) {
         Vec3 look = player.getLookAngle();
         Vec3 velocity = new Vec3(look.x * 1.4D, Math.max(0.6D, look.y + 0.4D), look.z * 1.4D);
         double damage = MarvelBalanceConfig.POUNCE_DAMAGE.get();
@@ -127,10 +130,10 @@ public final class PantherPower {
         return MarvelBalanceConfig.POUNCE_COOLDOWN.get();
     }
 
-    private static double clawSwipe(ServerPlayer player, int slot) {
+    private static double clawSwipe(LivingEntity player, int slot) {
         double damage = MarvelBalanceConfig.CLAW_SWIPE_DAMAGE.get();
         for (LivingEntity target : HeroAbilities.cone(player, 4.0D, 60.0D)) {
-            target.hurt(player.damageSources().mobAttack(player), (float) damage);
+            HeroHits.hurt(player, target, player.damageSources().mobAttack(player), (float) damage);
             target.knockback(0.6D, player.getX() - target.getX(), player.getZ() - target.getZ());
             target.addEffect(new MobEffectInstance(EffectRegistry.BLEED_EFFECT, MarvelBalanceConfig.CLAW_BLEED_TICKS.get(), 1));
         }

@@ -1,5 +1,7 @@
 package com.craisinlord.integrated_superheroes.compat.thematic;
 
+import com.craisinlord.integrated_superheroes.hero.ClientState;
+import com.craisinlord.integrated_superheroes.hero.ServerState;
 import bond.thematic.api.registries.armors.armor.ArmorDisplayOrder;
 import bond.thematic.api.registries.armors.armor.ArmorRegistry;
 import bond.thematic.api.registries.armors.armor.CharacterAltItem;
@@ -72,8 +74,8 @@ public final class SuitPieces {
 
     private static final Map<Item, ResourceLocation> GROUPS = new ConcurrentHashMap<>();
     private static final Map<Item, ItemStack> STAND_INS = new ConcurrentHashMap<>();
-    private static final Map<Integer, Check> CLIENT_CHECKS = new ConcurrentHashMap<>();
-    private static final Map<Integer, Check> SERVER_CHECKS = new ConcurrentHashMap<>();
+    private static final Map<Integer, Check> CLIENT_CHECKS = ClientState.map(new ConcurrentHashMap<>());
+    private static final Map<Integer, Check> SERVER_CHECKS = ServerState.map(new ConcurrentHashMap<>());
 
     private record Check(int tick, Item suit, boolean complete) {
     }
@@ -184,11 +186,15 @@ public final class SuitPieces {
 
     @SuppressWarnings("deprecation")
     public static boolean costume(CharacterItem suit) {
-        return PowerOwnership.costume(BuiltInRegistries.ITEM.getKey(suit).toString())
+        return PowerOwnership.costume(suit)
                 || suit.builtInRegistryHolder().is(COSTUME) || suit.getAbilities().isEmpty();
     }
 
     @SuppressWarnings("deprecation")
+    public static boolean characterItem(Item item) {
+        return item instanceof CharacterItem;
+    }
+
     public static boolean helmetless(Item suit) {
         return suit.builtInRegistryHolder().is(HELMETLESS);
     }

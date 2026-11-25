@@ -1,10 +1,12 @@
 package com.craisinlord.integrated_superheroes.suit;
 
+import com.craisinlord.integrated_superheroes.mixin.MobPersistenceAccessor;
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import com.craisinlord.integrated_superheroes.compat.AntarchyColony;
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import com.craisinlord.integrated_superheroes.hero.HeroAbilities;
 import com.craisinlord.integrated_superheroes.hero.HeroAdvancements;
+import com.craisinlord.integrated_superheroes.hero.HeroCaster;
 import com.craisinlord.integrated_superheroes.hero.HeroFx;
 import com.craisinlord.integrated_superheroes.hero.HeroGnaw;
 import com.craisinlord.integrated_superheroes.hero.HeroStun;
@@ -81,6 +83,7 @@ public final class PymColony {
     private static final String OWNER = "owner";
     private static final String ROLE = "role";
     private static final String KIND = "kind";
+    private static final String PERSISTENT = "Persistent";
     private static final ResourceLocation ANTHONY_SCALE = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "anthony_scale");
     private static final Map<Mob, Member> MEMBERS = new WeakHashMap<>();
     private static final Map<UUID, Colony> COLONIES = new HashMap<>();
@@ -132,12 +135,15 @@ public final class PymColony {
             return this.overrun != null || this.dive != null || this.mob.isVehicle();
         }
 
-        ServerPlayer owner() {
+        LivingEntity owner() {
             if (!(this.mob.level() instanceof ServerLevel level)) {
                 return null;
             }
             ServerPlayer player = level.getServer().getPlayerList().getPlayer(this.owner);
-            return player != null && player.level() == level && player.isAlive() ? player : null;
+            if (player != null) {
+                return player.level() == level && player.isAlive() ? player : null;
+            }
+            return level.getEntity(this.owner) instanceof LivingEntity living && living.isAlive() ? living : null;
         }
 
         String order() {
@@ -178,11 +184,16 @@ public final class PymColony {
         NeoForge.EVENT_BUS.addListener(PymColony::onServerStopped);
     }
 
+    public static LivingEntity ownerOf(Entity entity) {
+        Member member = member(entity);
+        return member == null ? null : member.owner();
+    }
+
     static Member member(Entity entity) {
         return entity instanceof Mob mob ? MEMBERS.get(mob) : null;
     }
 
-    static List<Member> members(ServerPlayer player, boolean withAnthony) {
+    static List<Member> members(LivingEntity player, boolean withAnthony) {
         List<Member> found = new ArrayList<>();
         for (Member member : MEMBERS.values()) {
             if (member.owner.equals(player.getUUID()) && member.mob.isAlive() && member.mob.level() == player.level()
@@ -203,7 +214,7 @@ public final class PymColony {
         return found;
     }
 
-    private static long count(ServerPlayer player, Role role) {
+    private static long count(LivingEntity player, Role role) {
         return members(player, true).stream().filter(member -> member.role == role).count();
     }
 
@@ -228,22 +239,31 @@ public final class PymColony {
         if (target instanceof OwnableEntity ownable && member.owner.equals(ownable.getOwnerUUID())) {
             return false;
         }
+        LivingEntity owner = member.owner();
+        if (owner instanceof Mob && !HeroCaster.foe(owner, target)) {
+            return false;
+        }
         if (target instanceof Player player) {
             if (player.isCreative() || player.isSpectator()) {
                 return false;
             }
-            ServerPlayer owner = member.owner();
-            return owner == null || owner.canHarmPlayer(player);
+            return !(owner instanceof ServerPlayer ownerPlayer) || ownerPlayer.canHarmPlayer(player);
         }
         return true;
     }
 
-    static LivingEntity pickTarget(Member member, ServerPlayer owner) {
+    static LivingEntity pickTarget(Member member, LivingEntity owner) {
         if (member.focus != null) {
             if (allowed(member, member.focus) && member.focus.level() == member.mob.level()) {
                 return member.focus;
             }
             member.focus = null;
+        }
+        if (!(owner instanceof Player)) {
+            LivingEntity wanted = HeroCaster.target(owner);
+            if (wanted != null && allowed(member, wanted) && wanted.level() == member.mob.level()) {
+                return wanted;
+            }
         }
         String order = member.order();
         if (STAY.equals(order) && member.guard == null) {
@@ -310,7 +330,7 @@ public final class PymColony {
         }
     }
 
-    private static Colony colony(ServerPlayer player, PymHelmets.Kind kind) {
+    private static Colony colony(LivingEntity player, PymHelmets.Kind kind) {
         Colony colony = COLONIES.get(player.getUUID());
         if (colony == null || colony.kind != kind) {
             colony = new Colony(kind);
@@ -319,7 +339,33 @@ public final class PymColony {
         return colony;
     }
 
-    private static void tickSummons(ServerPlayer player, Colony colony, long now) {
+    static void tickMob(LivingEntity caster) {
+        if (!ModCompat.ANTARCHY || caster instanceof Player) {
+            return;
+        }
+        Colony colony = COLONIES.get(caster.getUUID());
+        if (colony == null) {
+            return;
+        }
+        if (caster.tickCount % 5 == 0) {
+            tickSummons(caster, colony, caster.level().getGameTime());
+        }
+        if (caster.tickCount % 20 == 0) {
+            tickStrays(caster);
+        }
+    }
+
+    static void cleanupMob(LivingEntity caster) {
+        if (!(caster instanceof Player) && COLONIES.containsKey(caster.getUUID())) {
+            disband(caster, true);
+        }
+    }
+
+    static PymHelmets.Kind kindOf(LivingEntity caster) {
+        return PymConfig.ENABLED.get() ? PymHelmets.of(caster) : null;
+    }
+
+    private static void tickSummons(LivingEntity player, Colony colony, long now) {
         if (!colony.out || now < colony.nextSummon) {
             return;
         }
@@ -357,7 +403,7 @@ public final class PymColony {
         bind(mob, player, Role.ANTHONY, PymHelmets.Kind.ANT);
     }
 
-    private static void tickStrays(ServerPlayer player) {
+    private static void tickStrays(LivingEntity player) {
         for (Member member : everywhere(player.getUUID())) {
             if (member.role != Role.RECRUITED && member.mob.level() != player.level()) {
                 vanish(member);
@@ -367,6 +413,10 @@ public final class PymColony {
 
     private static void tickChew(ServerPlayer player, Colony colony) {
         if (colony.chew == null) {
+            return;
+        }
+        if (colony.chew.lost(player)) {
+            setOrder(player, colony, DEFEND);
             return;
         }
         List<Member> termites = members(player, false).stream().filter(member -> AntarchyColony.isTermite(member.mob)).toList();
@@ -431,7 +481,7 @@ public final class PymColony {
         return kind == PymHelmets.Kind.ANT ? PymConfig.ANT_RECRUIT_CAP.get() : PymConfig.WASP_RECRUIT_CAP.get();
     }
 
-    private static String antType(ServerPlayer player) {
+    private static String antType(LivingEntity player) {
         int brown = PymConfig.BROWN_WEIGHT.get();
         int red = PymConfig.RED_WEIGHT.get();
         int termite = PymConfig.TERMITE_WEIGHT.get();
@@ -446,7 +496,7 @@ public final class PymColony {
         return roll < brown + red ? "antarchy:red_ant" : "antarchy:termite";
     }
 
-    private static void summon(ServerPlayer player, PymHelmets.Kind kind, boolean dramatic) {
+    private static void summon(LivingEntity player, PymHelmets.Kind kind, boolean dramatic) {
         PathfinderMob mob = kind == PymHelmets.Kind.ANT
                 ? spawn(player, antType(player), kind, PymConfig.ANT_HEALTH.get(), PymConfig.ANT_DAMAGE.get(), dramatic)
                 : spawn(player, "antarchy:wasp", kind, PymConfig.WASP_HEALTH.get(), PymConfig.WASP_DAMAGE.get(), dramatic);
@@ -455,8 +505,8 @@ public final class PymColony {
         }
     }
 
-    private static PathfinderMob spawn(ServerPlayer player, String typeId, PymHelmets.Kind kind, double health, double damage, boolean dramatic) {
-        ServerLevel level = player.serverLevel();
+    private static PathfinderMob spawn(LivingEntity player, String typeId, PymHelmets.Kind kind, double health, double damage, boolean dramatic) {
+        ServerLevel level = HeroCaster.level(player);
         EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.parse(typeId)).orElse(null);
         if (type == null || !(type.create(level) instanceof PathfinderMob mob)) {
             return null;
@@ -490,8 +540,8 @@ public final class PymColony {
         return mob;
     }
 
-    private static BlockPos groundNear(ServerPlayer player) {
-        ServerLevel level = player.serverLevel();
+    private static BlockPos groundNear(LivingEntity player) {
+        ServerLevel level = HeroCaster.level(player);
         BlockPos origin = player.blockPosition();
         for (int attempt = 0; attempt < 12; attempt++) {
             double angle = level.random.nextDouble() * Math.PI * 2.0D;
@@ -508,8 +558,8 @@ public final class PymColony {
         return origin;
     }
 
-    private static BlockPos airNear(ServerPlayer player) {
-        ServerLevel level = player.serverLevel();
+    private static BlockPos airNear(LivingEntity player) {
+        ServerLevel level = HeroCaster.level(player);
         BlockPos origin = player.blockPosition();
         for (int attempt = 0; attempt < 12; attempt++) {
             BlockPos pos = origin.offset(level.random.nextInt(5) - 2, 1 + level.random.nextInt(2), level.random.nextInt(5) - 2);
@@ -520,11 +570,13 @@ public final class PymColony {
         return origin.above();
     }
 
-    private static void bind(PathfinderMob mob, ServerPlayer player, Role role, PymHelmets.Kind kind) {
+    private static void bind(PathfinderMob mob, LivingEntity player, Role role, PymHelmets.Kind kind) {
         CompoundTag tag = new CompoundTag();
         tag.putUUID(OWNER, player.getUUID());
         tag.putString(ROLE, role.name());
         tag.putString(KIND, kind.name());
+        CompoundTag old = mob.getPersistentData().getCompound(TAG);
+        tag.putBoolean(PERSISTENT, old.contains(PERSISTENT) ? old.getBoolean(PERSISTENT) : mob.isPersistenceRequired());
         mob.getPersistentData().put(TAG, tag);
         mob.setPersistenceRequired();
         mob.setTarget(null);
@@ -542,6 +594,10 @@ public final class PymColony {
         PymGoals.uninstall(member);
         MEMBERS.remove(member.mob);
         dropCarried(member);
+        CompoundTag tag = member.mob.getPersistentData().getCompound(TAG);
+        if (tag.contains(PERSISTENT) && !tag.getBoolean(PERSISTENT)) {
+            ((MobPersistenceAccessor) member.mob).integratedSuperheroes$setPersistenceRequired(false);
+        }
         member.mob.getPersistentData().remove(TAG);
         member.mob.setNoGravity(false);
         member.mob.setTarget(null);
@@ -567,7 +623,7 @@ public final class PymColony {
         }
     }
 
-    private static void disband(ServerPlayer player, boolean releaseRecruits) {
+    private static void disband(LivingEntity player, boolean releaseRecruits) {
         for (Member member : everywhere(player.getUUID())) {
             if (member.role != Role.RECRUITED) {
                 vanish(member);
@@ -577,7 +633,7 @@ public final class PymColony {
         }
         Colony colony = COLONIES.remove(player.getUUID());
         if (colony != null && colony.chew != null) {
-            colony.chew.stop(player.serverLevel());
+            colony.chew.stop();
         }
     }
 
@@ -590,16 +646,19 @@ public final class PymColony {
         return count == 1 ? word : word + "s";
     }
 
-    private static void buzz(ServerPlayer player, PymHelmets.Kind kind, float pitch) {
+    private static void buzz(LivingEntity player, PymHelmets.Kind kind, float pitch) {
         HeroFx.play(player, kind == PymHelmets.Kind.ANT ? SoundEvents.SILVERFISH_AMBIENT : SoundEvents.BEE_LOOP_AGGRESSIVE, 0.8F, pitch);
     }
 
-    static double callColony(ServerPlayer player, PymHelmets.Kind kind) {
+    static double callColony(LivingEntity player, PymHelmets.Kind kind) {
         Colony colony = colony(player, kind);
         if (colony.out) {
+            if (!(player instanceof Player)) {
+                return PymConfig.SUMMON_COOLDOWN.get();
+            }
             colony.out = false;
             members(player, false).stream().filter(member -> member.role == Role.SUMMONED).forEach(PymColony::vanish);
-            player.displayClientMessage(Component.literal("§6The " + colonyWord(kind) + " disperses."), true);
+            HeroCaster.message(player, Component.literal("§6The " + colonyWord(kind) + " disperses."));
             buzz(player, kind, 0.8F);
         } else {
             colony.out = true;
@@ -607,10 +666,12 @@ public final class PymColony {
             for (long i = 0; i < missing; i++) {
                 summon(player, kind, true);
             }
-            colony.nextSummon = player.serverLevel().getGameTime() + (long) (PymConfig.RESPAWN_SECONDS.get() * 20.0D);
-            player.displayClientMessage(Component.literal(kind == PymHelmets.Kind.ANT ? "§6Colony, assemble!" : "§6Hive, swarm!"), true);
+            colony.nextSummon = player.level().getGameTime() + (long) (PymConfig.RESPAWN_SECONDS.get() * 20.0D);
+            HeroCaster.message(player, Component.literal(kind == PymHelmets.Kind.ANT ? "§6Colony, assemble!" : "§6Hive, swarm!"));
             buzz(player, kind, 1.2F);
-            HeroAdvancements.award(player, "avengers/ant_man");
+            if (player instanceof ServerPlayer serverPlayer) {
+                HeroAdvancements.award(serverPlayer, "avengers/ant_man");
+            }
         }
         return PymConfig.SUMMON_COOLDOWN.get();
     }
@@ -674,15 +735,20 @@ public final class PymColony {
         }
     }
 
-    private static boolean needSwarm(ServerPlayer player, PymHelmets.Kind kind, List<Member> swarm) {
+    private static boolean needSwarm(LivingEntity player, PymHelmets.Kind kind, List<Member> swarm) {
         if (!swarm.isEmpty()) {
             return true;
         }
-        player.displayClientMessage(Component.literal("§7Call or recruit your " + colonyWord(kind) + " first."), true);
+        HeroCaster.message(player, Component.literal("§7Call or recruit your " + colonyWord(kind) + " first."));
         return false;
     }
 
-    private static LivingEntity aimed(ServerPlayer player) {
+    private static LivingEntity aimed(LivingEntity player) {
+        if (!(player instanceof Player)) {
+            LivingEntity target = HeroCaster.target(player);
+            double range = PymConfig.COMMAND_RANGE.get();
+            return target != null && HeroCaster.foe(player, target) && target.distanceToSqr(player) <= range * range ? target : null;
+        }
         return HeroAbilities.beam(player, player.getLookAngle(), PymConfig.COMMAND_RANGE.get(), 8).targets().stream()
                 .filter(entity -> {
                     Member member = member(entity);
@@ -692,7 +758,7 @@ public final class PymColony {
                 .orElse(null);
     }
 
-    static double sicEm(ServerPlayer player, PymHelmets.Kind kind) {
+    static double sicEm(LivingEntity player, PymHelmets.Kind kind) {
         List<Member> swarm = members(player, false);
         if (!needSwarm(player, kind, swarm)) {
             return 0.0D;
@@ -705,8 +771,10 @@ public final class PymColony {
                 command(member, target);
             });
             Vec3 top = target.position().add(0.0D, target.getBbHeight() + 0.3D, 0.0D);
-            player.serverLevel().sendParticles(ParticleTypes.ANGRY_VILLAGER, top.x, top.y, top.z, 3, 0.3D, 0.2D, 0.3D, 0.0D);
-            player.displayClientMessage(Component.literal("§6Sic 'em!"), true);
+            HeroCaster.level(player).sendParticles(ParticleTypes.ANGRY_VILLAGER, top.x, top.y, top.z, 3, 0.3D, 0.2D, 0.3D, 0.0D);
+            HeroCaster.message(player, Component.literal("§6Sic 'em!"));
+        } else if (!(player instanceof Player)) {
+            return 0.0D;
         } else {
             Vec3 eye = player.getEyePosition();
             BlockHitResult hit = player.level().clip(new ClipContext(eye, eye.add(player.getLookAngle().scale(PymConfig.COMMAND_RANGE.get())),
@@ -722,22 +790,22 @@ public final class PymColony {
                 member.mob.setTarget(null);
                 member.mob.getNavigation().stop();
             });
-            player.serverLevel().sendParticles(ParticleTypes.HAPPY_VILLAGER, guard.getX() + 0.5D, guard.getY() + 0.3D, guard.getZ() + 0.5D,
+            HeroCaster.level(player).sendParticles(ParticleTypes.HAPPY_VILLAGER, guard.getX() + 0.5D, guard.getY() + 0.3D, guard.getZ() + 0.5D,
                     8, 0.4D, 0.2D, 0.4D, 0.0D);
-            player.displayClientMessage(Component.literal("§6Guard that spot!"), true);
+            HeroCaster.message(player, Component.literal("§6Guard that spot!"));
         }
         buzz(player, kind, 1.5F);
         return PymConfig.SIC_EM_COOLDOWN.get();
     }
 
-    static double overrun(ServerPlayer player) {
+    static double overrun(LivingEntity player) {
         List<Member> swarm = members(player, false);
         if (!needSwarm(player, PymHelmets.Kind.ANT, swarm)) {
             return 0.0D;
         }
         LivingEntity target = aimed(player);
         if (target == null) {
-            player.displayClientMessage(Component.literal("§7Look at something to overrun."), true);
+            HeroCaster.message(player, Component.literal("§7Look at something to overrun."));
             return 0.0D;
         }
         int ticks = PymConfig.OVERRUN_TICKS.get();
@@ -753,22 +821,22 @@ public final class PymColony {
         if (HeroAbilities.canControl(target)) {
             HeroStun.stun(target, ticks);
         }
-        if (sorted.size() >= PymConfig.ANT_SUMMON_CAP.get()) {
-            HeroAdvancements.award(player, "avengers/ant_man/picnic_ruined");
+        if (sorted.size() >= PymConfig.ANT_SUMMON_CAP.get() && player instanceof ServerPlayer serverPlayer) {
+            HeroAdvancements.award(serverPlayer, "avengers/ant_man/picnic_ruined");
         }
         HeroFx.play(target, SoundEvents.SILVERFISH_HURT, 1.2F, 0.8F);
-        player.displayClientMessage(Component.literal("§6Overrun!"), true);
+        HeroCaster.message(player, Component.literal("§6Overrun!"));
         return PymConfig.OVERRUN_COOLDOWN.get();
     }
 
-    static double stingStorm(ServerPlayer player) {
+    static double stingStorm(LivingEntity player) {
         List<Member> swarm = members(player, false);
         if (!needSwarm(player, PymHelmets.Kind.WASP, swarm)) {
             return 0.0D;
         }
         LivingEntity target = aimed(player);
         if (target == null) {
-            player.displayClientMessage(Component.literal("§7Look at something to sting."), true);
+            HeroCaster.message(player, Component.literal("§7Look at something to sting."));
             return 0.0D;
         }
         int stagger = PymConfig.STING_STORM_STAGGER_TICKS.get();
@@ -781,11 +849,11 @@ public final class PymColony {
             member.diveDelay = i * stagger;
             member.diveTicks = 0;
         }
-        if (sorted.size() >= PymConfig.WASP_SUMMON_CAP.get()) {
-            HeroAdvancements.award(player, "avengers/ant_man/sting_operation");
+        if (sorted.size() >= PymConfig.WASP_SUMMON_CAP.get() && player instanceof ServerPlayer serverPlayer) {
+            HeroAdvancements.award(serverPlayer, "avengers/ant_man/sting_operation");
         }
         buzz(player, PymHelmets.Kind.WASP, 1.6F);
-        player.displayClientMessage(Component.literal("§6Sting Storm!"), true);
+        HeroCaster.message(player, Component.literal("§6Sting Storm!"));
         return PymConfig.STING_STORM_COOLDOWN.get();
     }
 
@@ -795,7 +863,7 @@ public final class PymColony {
         }
         Colony colony = colony(player, kind);
         if (colony.chew != null) {
-            colony.chew.stop(player.serverLevel());
+            colony.chew.stop();
             colony.chew = null;
         }
         String option = choice;
@@ -826,7 +894,7 @@ public final class PymColony {
 
     private static void setOrder(ServerPlayer player, Colony colony, String option) {
         if (!CHEW.equals(option) && colony.chew != null) {
-            colony.chew.stop(player.serverLevel());
+            colony.chew.stop();
             colony.chew = null;
         }
         colony.order = option;
@@ -937,6 +1005,9 @@ public final class PymColony {
     }
 
     private static void onDeath(LivingDeathEvent event) {
+        if (event.getEntity().level().isClientSide()) {
+            return;
+        }
         Member member = member(event.getEntity());
         if (member == null) {
             return;

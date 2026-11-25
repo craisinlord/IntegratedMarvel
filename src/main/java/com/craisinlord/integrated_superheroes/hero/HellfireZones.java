@@ -25,9 +25,9 @@ import java.util.Map;
 import java.util.UUID;
 
 public final class HellfireZones {
-    private static final Map<UUID, List<Zone>> ZONES = new HashMap<>();
-    private static final Map<UUID, Burn> BURNS = new HashMap<>();
-    private static final Map<UUID, Map<UUID, Long>> LAST_HIT = new HashMap<>();
+    private static final Map<UUID, List<Zone>> ZONES = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Burn> BURNS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Map<UUID, Long>> LAST_HIT = ServerState.map(new HashMap<>());
 
     private HellfireZones() {
     }
@@ -47,18 +47,21 @@ public final class HellfireZones {
         }
     }
 
-    public static boolean harmable(ServerPlayer owner, Entity entity) {
+    public static boolean harmable(LivingEntity owner, Entity entity) {
         if (!(entity instanceof LivingEntity living) || living == owner || !living.isAlive() || living instanceof ArmorStand) {
             return false;
         }
         if (HellrideHorse.isHellride(living)) {
             return false;
         }
+        if (!(owner instanceof Player rider)) {
+            return HeroCaster.foe(owner, living);
+        }
         if (living instanceof OwnableEntity ownable && owner.getUUID().equals(ownable.getOwnerUUID())) {
             return false;
         }
         if (living instanceof Player other) {
-            return !other.isCreative() && !other.isSpectator() && owner.canHarmPlayer(other);
+            return !other.isCreative() && !other.isSpectator() && rider.canHarmPlayer(other);
         }
         return !living.isAlliedTo(owner);
     }
@@ -96,8 +99,7 @@ public final class HellfireZones {
             return false;
         }
         float amount = (float) damage;
-        victim.invulnerableTime = 0;
-        HeroAbilities.runAsAbilityDamage(() -> victim.hurt(owner.damageSources().playerAttack(owner), amount));
+        HeroAbilities.runAsAbilityDamage(() -> HeroHits.force(owner, victim, owner.damageSources().playerAttack(owner), amount));
         Vec3 center = victim.getBoundingBox().getCenter();
         owner.serverLevel().sendParticles(ParticleTypes.SOUL_FIRE_FLAME, center.x, center.y, center.z, 4,
                 victim.getBbWidth() * 0.4D, victim.getBbHeight() * 0.4D, victim.getBbWidth() * 0.4D, 0.01D);
@@ -136,19 +138,20 @@ public final class HellfireZones {
     }
 
     private static void tickBurns(MinecraftServer server) {
-        Iterator<Map.Entry<UUID, Burn>> iterator = BURNS.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<UUID, Burn> entry = iterator.next();
+        for (Map.Entry<UUID, Burn> entry : List.copyOf(BURNS.entrySet())) {
             Burn burn = entry.getValue();
+            if (BURNS.get(entry.getKey()) != burn) {
+                continue;
+            }
             ServerLevel level = server.getLevel(burn.dimension);
             ServerPlayer owner = server.getPlayerList().getPlayer(burn.owner);
             if (level == null || owner == null || owner.level() != level || level.getGameTime() > burn.until) {
-                iterator.remove();
+                BURNS.remove(entry.getKey());
                 continue;
             }
             Entity entity = level.getEntity(entry.getKey());
             if (!(entity instanceof LivingEntity victim) || !victim.isAlive() || victim.isInWaterRainOrBubble()) {
-                iterator.remove();
+                BURNS.remove(entry.getKey());
                 continue;
             }
             if (level.getGameTime() % 4 == 0) {
@@ -161,22 +164,26 @@ public final class HellfireZones {
 
     private static void tickZones(MinecraftServer server) {
         double radius = GhostRiderConfig.TRAIL_RADIUS.get();
-        Iterator<Map.Entry<UUID, List<Zone>>> iterator = ZONES.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<UUID, List<Zone>> entry = iterator.next();
+        for (Map.Entry<UUID, List<Zone>> entry : List.copyOf(ZONES.entrySet())) {
+            if (ZONES.get(entry.getKey()) != entry.getValue()) {
+                continue;
+            }
             ServerPlayer owner = server.getPlayerList().getPlayer(entry.getKey());
             if (owner == null) {
-                iterator.remove();
+                ZONES.remove(entry.getKey());
                 continue;
             }
             ServerLevel level = owner.serverLevel();
             long now = level.getGameTime();
             entry.getValue().removeIf(zone -> zone.dimension() != level.dimension() || now > zone.until());
             if (entry.getValue().isEmpty()) {
-                iterator.remove();
+                ZONES.remove(entry.getKey());
                 continue;
             }
-            for (Zone zone : entry.getValue()) {
+            for (Zone zone : List.copyOf(entry.getValue())) {
+                if (ZONES.get(entry.getKey()) != entry.getValue()) {
+                    break;
+                }
                 Vec3 c = zone.center();
                 if (now % 3 == 0) {
                     level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, c.x, c.y + 0.1D, c.z, 2, radius * 0.4D, 0.05D, radius * 0.4D, 0.01D);

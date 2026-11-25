@@ -17,6 +17,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -34,6 +35,7 @@ import net.minecraft.world.item.component.FireworkExplosion;
 import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.LightBlock;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
@@ -54,10 +56,14 @@ public final class JubileePower {
     public static final HeroPower.Toggle LIGHT_SHOW = new HeroPower.Toggle("integrated_superheroes_off_light_show", "Light Show", () -> Items.GLOWSTONE_DUST);
     public static final String ROCKET_TAG = "integrated_superheroes_jubilee";
     private static final String DAMAGE_KEY = "integrated_superheroes_jubilee_damage";
+    private static final String VOLLEY_TAG = "integrated_superheroes_jubilee_volley";
     private static final String PALETTE_KEY = "integrated_superheroes_jubilee_palette";
-    private static final Map<UUID, Homing> HOMING = new HashMap<>();
-    private static final Map<UUID, Finale> FINALES = new HashMap<>();
-    private static final Map<UUID, Integer> LEAPING = new HashMap<>();
+    private static final Map<UUID, Homing> HOMING = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Finale> FINALES = ServerState.map(new HashMap<>());
+    private static final Map<UUID, BlockPos> LIGHTS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Integer> LEAPING = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Finale> MOB_FINALES = ServerState.map(new HashMap<>());
+    private static boolean registered;
 
     private static final List<HeroWheels.Option> OPTIONS = java.util.Arrays.stream(Palette.values())
             .map(palette -> new HeroWheels.Option(palette.id, palette.label, palette.icon))
@@ -116,6 +122,21 @@ public final class JubileePower {
 
     public static HeroPower create(Supplier<Item> syringe) {
         HeroWheels.register(new HeroWheels.Wheel(PALETTE_ABILITY, OPTIONS, (player, option) -> true, JubileePower::choosePalette));
+        if (!registered) {
+            registered = true;
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(JubileePower::onMobFall);
+            HeroCaster.onTick(caster -> {
+                tickLeap(caster);
+                Finale finale = MOB_FINALES.get(caster.getUUID());
+                if (finale != null && (caster.level().dimension() != finale.dimension || tickFinale(caster, finale))) {
+                    MOB_FINALES.remove(caster.getUUID());
+                }
+            });
+            HeroCaster.onCleanup(caster -> {
+                LEAPING.remove(caster.getUUID());
+                MOB_FINALES.remove(caster.getUUID());
+            });
+        }
         return new HeroPower(
                 ID,
                 "Pyrotechnics (Jubilation Lee)",
@@ -123,11 +144,11 @@ public final class JubileePower {
                 MarvelBalanceConfig.JUBILEE,
                 List.of("agility"),
                 List.of(
-                        new HeroPower.Ability("paff", "Paff", JubileePower::paff),
-                        new HeroPower.Ability("firework_volley", "Firework Volley", JubileePower::volley),
-                        new HeroPower.Ability("flashbang", "Flashbang", JubileePower::flashbang),
-                        new HeroPower.Ability("pyro_jump", "Pyro Jump", JubileePower::pyroJump),
-                        new HeroPower.Ability("grand_finale", "Grand Finale", JubileePower::grandFinale),
+                        HeroPower.Ability.of("paff", "Paff", JubileePower::paff),
+                        HeroPower.Ability.of("firework_volley", "Firework Volley", JubileePower::volley),
+                        HeroPower.Ability.of("flashbang", "Flashbang", JubileePower::flashbang),
+                        HeroPower.Ability.of("pyro_jump", "Pyro Jump", JubileePower::pyroJump),
+                        HeroPower.Ability.of("grand_finale", "Grand Finale", JubileePower::grandFinale),
                         new HeroPower.Ability(PALETTE_ABILITY, "Palette", (player, slot) -> 0.0D),
                         HeroToggles.WHEEL
                 ),
@@ -165,7 +186,17 @@ public final class JubileePower {
         FINALES.remove(player.getUUID());
     }
 
-    public static Palette palette(Player player) {
+    private static void onMobFall(LivingIncomingDamageEvent event) {
+        if (!(event.getEntity() instanceof Player) && event.getSource().is(DamageTypeTags.IS_FALL) && LEAPING.containsKey(event.getEntity().getUUID())) {
+            event.setCanceled(true);
+        }
+    }
+
+    private static DamageSource attack(LivingEntity caster) {
+        return caster instanceof Player player ? caster.damageSources().playerAttack(player) : caster.damageSources().mobAttack(caster);
+    }
+
+    public static Palette palette(Entity player) {
         return Palette.byId(player.getPersistentData().getString(PALETTE_KEY));
     }
 
@@ -186,9 +217,12 @@ public final class JubileePower {
         }
     }
 
-    private static boolean affects(ServerPlayer player, LivingEntity entity) {
-        if (entity == player || !entity.isAlive() || entity.isSpectator()) {
+    private static boolean affects(LivingEntity caster, LivingEntity entity) {
+        if (entity == caster || !entity.isAlive() || entity.isSpectator()) {
             return false;
+        }
+        if (!(caster instanceof ServerPlayer player)) {
+            return HeroCaster.foe(caster, entity);
         }
         if (entity instanceof TamableAnimal tamable && tamable.isTame() && player.getUUID().equals(tamable.getOwnerUUID())) {
             return false;
@@ -199,9 +233,9 @@ public final class JubileePower {
         return !player.isAlliedTo(entity);
     }
 
-    private static boolean hostile(ServerPlayer player, LivingEntity entity) {
+    private static boolean hostile(LivingEntity player, LivingEntity entity) {
         return affects(player, entity) && (entity instanceof Enemy || entity instanceof Mob mob && mob.getTarget() == player
-                || entity instanceof Player);
+                || entity instanceof Player || !(player instanceof ServerPlayer));
     }
 
     public static ItemStack rocket(RandomSource random, int[] colors, FireworkExplosion.Shape shape, int flight, boolean trail, boolean twinkle) {
@@ -224,8 +258,8 @@ public final class JubileePower {
         return shapes[random.nextInt(shapes.length)];
     }
 
-    private static FireworkRocketEntity launch(ServerPlayer player, Vec3 from, Vec3 direction, double speed, ItemStack stack, float damage, int lifetime) {
-        ServerLevel level = player.serverLevel();
+    private static FireworkRocketEntity launch(LivingEntity player, Vec3 from, Vec3 direction, double speed, ItemStack stack, float damage, int lifetime) {
+        ServerLevel level = HeroCaster.level(player);
         FireworkRocketEntity rocket = new FireworkRocketEntity(level, stack, player, from.x, from.y, from.z, true);
         rocket.shoot(direction.x, direction.y, direction.z, (float) speed, 0.0F);
         rocket.addTag(ROCKET_TAG);
@@ -235,8 +269,8 @@ public final class JubileePower {
         return rocket;
     }
 
-    public static void burst(ServerPlayer player, Vec3 at, ItemStack stack, float damage) {
-        ServerLevel level = player.serverLevel();
+    public static void burst(LivingEntity player, Vec3 at, ItemStack stack, float damage) {
+        ServerLevel level = HeroCaster.level(player);
         FireworkRocketEntity rocket = new FireworkRocketEntity(level, stack, player, at.x, at.y, at.z, true);
         rocket.addTag(ROCKET_TAG);
         rocket.getPersistentData().putFloat(DAMAGE_KEY, damage);
@@ -259,21 +293,25 @@ public final class JubileePower {
         }
     }
 
-    private static double paff(ServerPlayer player, int slot) {
+    static boolean isVolleyRocket(Entity entity) {
+        return entity instanceof FireworkRocketEntity && entity.getTags().contains(VOLLEY_TAG);
+    }
+
+    private static double paff(LivingEntity player, int slot) {
         Palette palette = palette(player);
         Vec3 look = player.getLookAngle();
         Vec3 from = player.getEyePosition().add(look.scale(0.6D)).subtract(0.0D, 0.15D, 0.0D);
         launch(player, from, look, MarvelBalanceConfig.PAFF_SPEED.get(),
                 rocket(player.getRandom(), palette.colors, randomShape(player.getRandom(), false), 0, false, player.getRandom().nextBoolean()),
                 MarvelBalanceConfig.PAFF_DAMAGE.get().floatValue(), 30);
-        sparkle(player.serverLevel(), palette, from, 6, 0.1D);
+        sparkle(HeroCaster.level(player), palette, from, 6, 0.1D);
         HeroFx.play(player, SoundEvents.FIREWORK_ROCKET_SHOOT, 0.8F, 1.6F);
         HeroAnimations.play(player, "web_shoot_r");
         return MarvelBalanceConfig.PAFF_COOLDOWN.get();
     }
 
-    private static double volley(ServerPlayer player, int slot) {
-        ServerLevel level = player.serverLevel();
+    private static double volley(LivingEntity player, int slot) {
+        ServerLevel level = HeroCaster.level(player);
         Palette palette = palette(player);
         double range = MarvelBalanceConfig.VOLLEY_RANGE.get();
         List<LivingEntity> targets = new ArrayList<>(HeroAbilities.cone(player, range, 60.0D).stream()
@@ -292,6 +330,7 @@ public final class JubileePower {
             Vec3 from = player.getEyePosition().add(direction.scale(0.8D));
             FireworkRocketEntity rocket = launch(player, from, direction, 0.9D,
                     rocket(player.getRandom(), palette.colors, randomShape(player.getRandom(), false), 1, true, true), damage, 80);
+            rocket.addTag(VOLLEY_TAG);
             if (!targets.isEmpty()) {
                 LivingEntity target = targets.get(i % targets.size());
                 HOMING.put(rocket.getUUID(), new Homing(player.getUUID(), target.getUUID(), level.dimension()));
@@ -304,8 +343,8 @@ public final class JubileePower {
         return MarvelBalanceConfig.VOLLEY_COOLDOWN.get();
     }
 
-    private static double flashbang(ServerPlayer player, int slot) {
-        ServerLevel level = player.serverLevel();
+    private static double flashbang(LivingEntity player, int slot) {
+        ServerLevel level = HeroCaster.level(player);
         Palette palette = palette(player);
         Vec3 center = player.getEyePosition().add(player.getLookAngle().scale(1.2D));
         burst(player, center, rocket(player.getRandom(), palette.colors, FireworkExplosion.Shape.LARGE_BALL, 0, true, true), 0.0F);
@@ -319,7 +358,7 @@ public final class JubileePower {
                 continue;
             }
             if (damage > 0.0F) {
-                target.hurt(player.damageSources().playerAttack(player), damage);
+                HeroHits.hurt(player, target, attack(player), damage);
             }
             target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, ticks, 0), player);
             target.addEffect(new MobEffectInstance(MobEffects.DARKNESS, ticks, 0), player);
@@ -337,8 +376,8 @@ public final class JubileePower {
         return MarvelBalanceConfig.FLASHBANG_COOLDOWN.get();
     }
 
-    private static double pyroJump(ServerPlayer player, int slot) {
-        ServerLevel level = player.serverLevel();
+    private static double pyroJump(LivingEntity player, int slot) {
+        ServerLevel level = HeroCaster.level(player);
         Palette palette = palette(player);
         if (player.isFallFlying()) {
             ItemStack stack = rocket(player.getRandom(), palette.colors, FireworkExplosion.Shape.BURST, MarvelBalanceConfig.PYRO_JUMP_ELYTRA_FLIGHT.get(), true, false);
@@ -360,7 +399,7 @@ public final class JubileePower {
         return MarvelBalanceConfig.PYRO_JUMP_COOLDOWN.get();
     }
 
-    private static void tickLeap(ServerPlayer player) {
+    private static void tickLeap(LivingEntity player) {
         Integer ticks = LEAPING.get(player.getUUID());
         if (ticks == null) {
             return;
@@ -371,7 +410,7 @@ public final class JubileePower {
         }
         LEAPING.put(player.getUUID(), ticks + 1);
         if (ticks < 20) {
-            ServerLevel level = player.serverLevel();
+            ServerLevel level = HeroCaster.level(player);
             level.sendParticles(ParticleTypes.FIREWORK, player.getX(), player.getY(), player.getZ(), 3, 0.15D, 0.05D, 0.15D, 0.02D);
             if (ticks % 2 == 0) {
                 level.sendParticles((HeroFx.thematic() ? HeroFx.particle("thematic:shock_particle", ParticleTypes.ELECTRIC_SPARK) : ParticleTypes.ELECTRIC_SPARK), player.getX(), player.getY(), player.getZ(), 2, 0.2D, 0.1D, 0.2D, 0.05D);
@@ -379,11 +418,11 @@ public final class JubileePower {
         }
     }
 
-    private static double grandFinale(ServerPlayer player, int slot) {
-        ServerLevel level = player.serverLevel();
+    private static double grandFinale(LivingEntity player, int slot) {
+        ServerLevel level = HeroCaster.level(player);
         Palette palette = palette(player);
         Finale finale = new Finale(level.dimension(), player.position());
-        FINALES.put(player.getUUID(), finale);
+        (player instanceof ServerPlayer ? FINALES : MOB_FINALES).put(player.getUUID(), finale);
         for (int i = 0; i < 10; i++) {
             Vec3 direction = Vec3.directionFromRotation(-75.0F, 36.0F * i);
             launch(player, player.position().add(direction.x, 1.0D, direction.z), direction, 0.8D,
@@ -392,13 +431,13 @@ public final class JubileePower {
         sparkle(level, palette, player.position().add(0.0D, 1.0D, 0.0D), 50, 1.0D);
         HeroFx.play(player, SoundEvents.FIREWORK_ROCKET_LAUNCH, 2.0F, 0.7F);
         HeroFx.play(player, SoundEvents.FIREWORK_ROCKET_LARGE_BLAST_FAR, 2.0F, 0.8F);
-        player.displayClientMessage(Component.literal("§dGrand Finale!"), true);
+        HeroCaster.message(player, Component.literal("§dGrand Finale!"));
         HeroAnimations.play(player, "web_shoot_both");
         return MarvelBalanceConfig.FINALE_COOLDOWN.get();
     }
 
-    private static void tickFinale(ServerPlayer player, Finale finale) {
-        ServerLevel level = player.serverLevel();
+    private static boolean tickFinale(LivingEntity player, Finale finale) {
+        ServerLevel level = HeroCaster.level(player);
         int total = MarvelBalanceConfig.FINALE_TICKS.get();
         int rockets = MarvelBalanceConfig.FINALE_ROCKETS.get();
         finale.ticks++;
@@ -428,9 +467,7 @@ public final class JubileePower {
             level.playSound(null, finale.center.x, finale.center.y + 10.0D, finale.center.z, SoundEvents.FIREWORK_ROCKET_BLAST_FAR,
                     net.minecraft.sounds.SoundSource.PLAYERS, 2.0F, 0.8F + random.nextFloat() * 0.4F);
         }
-        if (finale.ticks >= total) {
-            FINALES.remove(player.getUUID());
-        }
+        return finale.ticks >= total;
     }
 
     private static void tickLightShow(ServerPlayer player) {
@@ -448,8 +485,18 @@ public final class JubileePower {
         }
         if (player.tickCount % 5 == 0) {
             BlockPos pos = BlockPos.containing(player.getEyePosition());
+            if (level.getBrightness(LightLayer.SKY, pos) - level.getSkyDarken() >= 10) {
+                LIGHTS.remove(player.getUUID());
+                return;
+            }
+            BlockPos last = LIGHTS.get(player.getUUID());
+            if (last != null && last.distManhattan(pos) <= 3 && level.isLoaded(last) && level.getBlockState(last).is(Blocks.LIGHT)) {
+                pos = last;
+            }
             if (level.getBlockState(pos).isAir() || level.getBlockState(pos).is(Blocks.LIGHT)) {
-                TempBlocks.place(level, player, pos, Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL, MarvelBalanceConfig.LIGHT_SHOW_LEVEL.get()), 12);
+                if (TempBlocks.place(level, player, pos, Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL, MarvelBalanceConfig.LIGHT_SHOW_LEVEL.get()), 12)) {
+                    LIGHTS.put(player.getUUID(), pos);
+                }
             }
         }
     }
@@ -483,7 +530,9 @@ public final class JubileePower {
                     FINALES.remove(entry.getKey());
                     continue;
                 }
-                tickFinale(player, entry.getValue());
+                if (tickFinale(player, entry.getValue())) {
+                    FINALES.remove(entry.getKey());
+                }
             }
         }
     }
@@ -493,7 +542,7 @@ public final class JubileePower {
                 || !rocket.getTags().contains(ROCKET_TAG)) {
             return;
         }
-        if (!(rocket.getOwner() instanceof ServerPlayer owner) || !affects(owner, event.getEntity())) {
+        if (!(rocket.getOwner() instanceof LivingEntity owner) || !affects(owner, event.getEntity())) {
             event.setCanceled(true);
             return;
         }
@@ -506,7 +555,7 @@ public final class JubileePower {
         int explosions = fireworks == null ? 1 : Math.max(1, fireworks.explosions().size());
         float vanilla = 5.0F + explosions * 2.0F;
         float ratio = Math.max(0.25F, Math.min(1.0F, event.getAmount() / vanilla));
-        event.setAmount(stored * ratio);
+        event.setAmount(stored * ratio * AbilityDamage.scale(owner, event.getEntity()));
     }
 
     public static void onJoin(EntityJoinLevelEvent event) {

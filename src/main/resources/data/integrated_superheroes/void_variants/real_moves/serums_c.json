@@ -1,0 +1,52 @@
+{
+  "moves": {
+    "power:gamma_mutation_bruce_banner/thunderclap": { "min_range": 0, "max_range": 10, "weight": 12, "cast_ticks": 10 },
+    "power:gamma_mutation_bruce_banner/hulk_smash": { "min_range": 0, "max_range": 8, "weight": 10, "cast_ticks": 12 },
+
+    "power:flame_on_johnny_storm/fireball": { "min_range": 3, "max_range": 24, "weight": 14, "cast_ticks": 4 },
+    "power:flame_on_johnny_storm/flame_cage": { "min_range": 2, "max_range": 20, "weight": 8, "cast_ticks": 6 },
+    "power:flame_on_johnny_storm/nova_flare": { "min_range": 0, "max_range": 7, "weight": 4, "cast_ticks": 10 },
+
+    "power:cryokinesis_bobby_drake/freeze_blast": { "min_range": 0, "max_range": 12, "weight": 12, "cast_ticks": 8 },
+    "power:cryokinesis_bobby_drake/cryogenesis": { "min_range": 0, "max_range": 5, "weight": 8, "cast_ticks": 10 },
+    "power:cryokinesis_bobby_drake/ice_beam": { "min_range": 4, "max_range": 22, "weight": 10, "cast_ticks": 50, "active_ticks": 50 },
+
+    "power:invisibility_sue_storm/force_bubble": { "min_range": 0, "max_range": 10, "weight": 5, "cast_ticks": 5 },
+    "power:invisibility_sue_storm/force_blast": { "min_range": 0, "max_range": 11, "weight": 14, "cast_ticks": 6 },
+
+    "power:telekinesis_jean_grey/jean_telekinetic_grab": { "mode": "state", "min_range": 2, "max_range": 14, "weight": 12, "cast_ticks": 8, "state_ticks": 40 },
+    "power:telekinesis_jean_grey/jean_throw": { "mode": "skip" },
+    "power:telekinesis_jean_grey/jean_phoenix": { "mode": "state", "min_range": 0, "max_range": 12, "weight": 3, "cast_ticks": 20, "state_ticks": 300 },
+
+    "power:pyrotechnics_jubilation_lee/paff": { "min_range": 2, "max_range": 20, "weight": 14, "cast_ticks": 4 },
+    "power:pyrotechnics_jubilation_lee/firework_volley": { "min_range": 3, "max_range": 24, "weight": 10, "cast_ticks": 8 },
+    "power:pyrotechnics_jubilation_lee/flashbang": { "min_range": 0, "max_range": 7, "weight": 6, "cast_ticks": 6 },
+    "power:pyrotechnics_jubilation_lee/pyro_jump": { "min_range": 6, "max_range": 16, "weight": 4, "cast_ticks": 2 },
+    "power:pyrotechnics_jubilation_lee/grand_finale": { "min_range": 0, "max_range": 10, "weight": 3, "cast_ticks": 20 },
+
+    "power:cyttorak_avatar_cain_marko/juggernaut_unstoppable_charge": { "mode": "state", "min_range": 4, "max_range": 20, "weight": 12, "cast_ticks": 4, "active_ticks": 60, "state_ticks": 45 },
+    "power:cyttorak_avatar_cain_marko/juggernaut_crimson_shock": { "mode": "skip" },
+
+    "power:phasing_kitty_pryde/phase_strike": { "min_range": 0, "max_range": 4, "weight": 12, "cast_ticks": 4 },
+    "power:phasing_kitty_pryde/phase_sink": { "min_range": 0, "max_range": 7, "weight": 8, "cast_ticks": 6 },
+
+    "power:kryptonian_clark_kent/heat_vision": { "min_range": 3, "max_range": 28, "weight": 14, "cast_ticks": 40, "active_ticks": 40 },
+    "power:kryptonian_clark_kent/super_breath": { "min_range": 0, "max_range": 11, "weight": 10, "cast_ticks": 10 },
+    "power:kryptonian_clark_kent/flying_punch": { "min_range": 4, "max_range": 20, "weight": 10, "cast_ticks": 2, "active_ticks": 10 },
+    "power:kryptonian_clark_kent/solar_flare": { "min_range": 0, "max_range": 9, "weight": 3, "cast_ticks": 10 },
+
+    "power:magnetism_erik_lehnsherr/magnetic_grip": { "mode": "state", "min_range": 2, "max_range": 20, "weight": 10, "cast_ticks": 8, "state_ticks": 30 },
+    "power:magnetism_erik_lehnsherr/magnetic_crush": { "min_range": 2, "max_range": 22, "weight": 12, "cast_ticks": 8 },
+
+    "power:martian_jonn_jonzz/density_shift": { "min_range": 0, "max_range": 8, "weight": 4, "cast_ticks": 6 },
+    "power:martian_jonn_jonzz/martian_vision": { "min_range": 3, "max_range": 13, "weight": 14, "cast_ticks": 24, "active_ticks": 24 },
+    "power:martian_jonn_jonzz/psychic_grip": { "min_range": 2, "max_range": 15, "weight": 6, "cast_ticks": 6 },
+
+    "power:elasticity_reed_richards/stretch_punch": { "min_range": 2, "max_range": 10, "weight": 14, "cast_ticks": 4 },
+    "power:elasticity_reed_richards/stretch_hammer": { "min_range": 0, "max_range": 6, "weight": 10, "cast_ticks": 8 },
+    "power:elasticity_reed_richards/stretch_sweep": { "min_range": 0, "max_range": 5, "weight": 10, "cast_ticks": 6 },
+
+    "power:teleportation_kurt_wagner/nightcrawler_bamf": { "min_range": 5, "max_range": 14, "weight": 10, "cast_ticks": 2 },
+    "power:teleportation_kurt_wagner/nightcrawler_bamf_ballet": { "min_range": 0, "max_range": 9, "weight": 8, "cast_ticks": 4 }
+  }
+}

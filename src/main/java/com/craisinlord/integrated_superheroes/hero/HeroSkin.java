@@ -56,6 +56,19 @@ public final class HeroSkin {
     private HeroSkin() {
     }
 
+    public static void release() {
+        TextureManager manager = Minecraft.getInstance().getTextureManager();
+        for (Material material : Material.values()) {
+            material.cache.values().forEach(manager::release);
+            material.cache.clear();
+            material.retry.clear();
+            if (material.pattern != null) {
+                material.pattern.close();
+                material.pattern = null;
+            }
+        }
+    }
+
     public static PlayerSkin apply(PlayerSkin skin, Material material) {
         ResourceLocation painted = painted(skin.texture(), material);
         if (painted == null) {

@@ -36,6 +36,9 @@ import java.util.List;
 
 @EventBusSubscriber(modid = IntegratedSuperheroes.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public final class HeroSlotsClient {
+    private static List<AbilityRow> cachedRows;
+    private static java.lang.ref.WeakReference<LocalPlayer> cachedPlayer = new java.lang.ref.WeakReference<>(null);
+    private static int cachedTick;
     private static final DecimalFormat COOLDOWN_FORMAT = new DecimalFormat("#.#");
     private static final int ICON_WIDTH = 10;
     public static final KeyMapping[] EXTRA_KEYS = {
@@ -189,6 +192,15 @@ public final class HeroSlotsClient {
     }
 
     public static List<AbilityRow> rows(LocalPlayer player) {
+        if (cachedRows == null || cachedPlayer.get() != player || cachedTick != player.tickCount) {
+            cachedRows = buildRows(player);
+            cachedPlayer = new java.lang.ref.WeakReference<>(player);
+            cachedTick = player.tickCount;
+        }
+        return cachedRows;
+    }
+
+    private static List<AbilityRow> buildRows(LocalPlayer player) {
         List<AbilityRow> rows = new ArrayList<>();
         PlayerData data = HeroPowers.data(player);
         KeyMapping[] keys = slotKeys();

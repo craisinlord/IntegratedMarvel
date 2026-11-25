@@ -7,6 +7,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -27,6 +28,7 @@ public final class JuggernautPower {
     public static final HeroPower.Toggle SHAKE = new HeroPower.Toggle("integrated_superheroes_off_juggernaut_shake", "Screen Shake",
             () -> Items.ANVIL);
     private static RogueMemory rogueMemory;
+    private static boolean registered;
 
     private JuggernautPower() {
     }
@@ -34,6 +36,16 @@ public final class JuggernautPower {
     public static HeroPower create(Supplier<Item> syringe) {
         SerumCostumes.register(ID, "thematic:juggernaut");
         rogueMemory();
+        if (!registered) {
+            registered = true;
+            HeroCaster.onTick(caster -> {
+                JuggernautCharge.tick(caster);
+                if (JuggernautCharge.charging(caster)) {
+                    HeroCaster.extend(caster, 2);
+                }
+            });
+            HeroCaster.onCleanup(JuggernautCharge::clear);
+        }
         return new HeroPower(
                 ID,
                 "Avatar of Cyttorak (Juggernaut)",
@@ -41,8 +53,8 @@ public final class JuggernautPower {
                 JuggernautConfig.JUGGERNAUT,
                 List.of(),
                 List.of(
-                        new HeroPower.Ability(CHARGE, "Unstoppable Charge", JuggernautPower::charge),
-                        new HeroPower.Ability(SHOCK, "Crimson Shock", JuggernautPower::crimsonShock),
+                        HeroPower.Ability.of(CHARGE, "Unstoppable Charge", JuggernautPower::charge),
+                        HeroPower.Ability.of(SHOCK, "Crimson Shock", JuggernautPower::crimsonShock),
                         HeroToggles.WHEEL
                 ),
                 List.of(BREACH, FOOTSTEPS, SHAKE),
@@ -82,20 +94,25 @@ public final class JuggernautPower {
         return SerumKit.is(player, ID);
     }
 
-    static boolean breachOn(Player player) {
-        return HeroToggles.isOn(player, BREACH);
+    static boolean breachOn(LivingEntity caster) {
+        return caster instanceof Player player && HeroToggles.isOn(player, BREACH);
     }
 
-    static boolean footstepsOn(Player player) {
-        return HeroToggles.isOn(player, FOOTSTEPS);
+    static boolean footstepsOn(LivingEntity caster) {
+        return !(caster instanceof Player player) || HeroToggles.isOn(player, FOOTSTEPS);
     }
 
-    static boolean shakeOn(Player player) {
-        return HeroToggles.isOn(player, SHAKE);
+    static boolean shakeOn(LivingEntity caster) {
+        return !(caster instanceof Player player) || HeroToggles.isOn(player, SHAKE);
     }
 
-    private static double charge(ServerPlayer player, int slot) {
+    private static double charge(LivingEntity player, int slot) {
         if (JuggernautCharge.charging(player)) {
+            if (!(player instanceof ServerPlayer) && JuggernautCharge.momentum(player) >= JuggernautConfig.SHOCK_MIN_MOMENTUM.get()
+                    && JuggernautCharge.remaining(player, SHOCK) <= 0.0D) {
+                crimsonShock(player, slot);
+                return 0.0D;
+            }
             JuggernautCharge.digIn(player);
             return 0.0D;
         }
@@ -109,13 +126,13 @@ public final class JuggernautPower {
         return JuggernautCharge.start(player) ? 0.25D : 0.0D;
     }
 
-    private static double crimsonShock(ServerPlayer player, int slot) {
+    private static double crimsonShock(LivingEntity player, int slot) {
         double left = JuggernautCharge.remaining(player, SHOCK);
         if (left > 0.0D) {
             return left;
         }
         if (JuggernautCharge.momentum(player) < JuggernautConfig.SHOCK_MIN_MOMENTUM.get()) {
-            player.displayClientMessage(Component.literal("§7Build up more momentum first."), true);
+            HeroCaster.message(player, Component.literal("§7Build up more momentum first."));
             return 0.0D;
         }
         float spent = JuggernautCharge.spend(player);

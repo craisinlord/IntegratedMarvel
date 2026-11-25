@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.compat.thematic;
 
+import com.craisinlord.integrated_superheroes.hero.ServerState;
 import bond.thematic.api.content.pocket.PocketDimension;
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import net.minecraft.ChatFormatting;
@@ -27,7 +28,7 @@ final class ThematicQuantumDive {
     private static final TagKey<Item> DIVERS = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "quantum_divers"));
     private static final ResourceLocation REALM = ResourceLocation.parse("thematic:quantum_realm");
     private static final float MAX_SCALE = 0.15F;
-    private static final Map<UUID, Integer> DIVING = new ConcurrentHashMap<>();
+    private static final Map<UUID, Integer> DIVING = ServerState.map(new ConcurrentHashMap<>());
 
     private ThematicQuantumDive() {
     }

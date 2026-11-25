@@ -5,17 +5,19 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 public final class TempBlocks {
-    private static final Map<ResourceKey<Level>, Map<BlockPos, Entry>> PLACED = new HashMap<>();
+    private static final Map<ResourceKey<Level>, Map<BlockPos, Entry>> PLACED = ServerState.map(new HashMap<>());
 
     private TempBlocks() {
     }
@@ -51,9 +53,6 @@ public final class TempBlocks {
             placed.put(pos.immutable(), new Entry(existing.placed(), existing.original(), Math.max(existing.expires(), level.getGameTime() + ticks)));
             return true;
         }
-        if (player != null && !HeroGrief.canPlace(player, level, pos)) {
-            return false;
-        }
         BlockState state;
         if (block != null) {
             if (!current.canBeReplaced() || !overFluids && !current.getFluidState().isEmpty()) {
@@ -65,6 +64,9 @@ public final class TempBlocks {
         } else if (current.getFluidState().is(Fluids.WATER) && current.getFluidState().isSource() && current.is(Blocks.WATER)) {
             state = Blocks.FROSTED_ICE.defaultBlockState();
         } else {
+            return false;
+        }
+        if (player != null && !HeroGrief.canPlace(player, level, pos)) {
             return false;
         }
         level.setBlockAndUpdate(pos, state);
@@ -87,6 +89,21 @@ public final class TempBlocks {
         event.setCanceled(true);
         placed.remove(event.getPos());
         level.setBlockAndUpdate(event.getPos(), entry.original());
+    }
+
+    public static void onServerStopping(ServerStoppingEvent event) {
+        PLACED.forEach((dimension, placed) -> {
+            ServerLevel level = event.getServer().getLevel(dimension);
+            if (level == null) {
+                return;
+            }
+            placed.forEach((pos, entry) -> {
+                if (level.getBlockState(pos).is(entry.placed().getBlock())) {
+                    level.setBlock(pos, entry.original(), Block.UPDATE_CLIENTS);
+                }
+            });
+        });
+        PLACED.clear();
     }
 
     public static void tick(ServerLevel level) {

@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.compat.thematic;
 
+import com.google.common.collect.MapMaker;
 import bond.thematic.api.content.flight.FlightTrait;
 import bond.thematic.api.content.movement.MovementModes;
 import bond.thematic.api.offline.Offline;
@@ -15,7 +16,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -27,7 +27,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public final class ThematicFixes {
-    private static final Set<Player> THEMATIC_FLIGHT = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
+    private static final Set<Player> THEMATIC_FLIGHT = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
     private static final Set<String> OWN_NAMESPACES = Set.of("thematic", IntegratedSuperheroes.MODID);
 
     private ThematicFixes() {
@@ -41,7 +41,7 @@ public final class ThematicFixes {
         if (!ThematicOptions.on(ThematicOptions.KEEP_OTHER_FLIGHT) || Offline.isOffline(player) || grounded(player)) {
             return false;
         }
-        if (FlightTrait.flyer(player) != null || !MovementModes.declared(player, "flight").isEmpty()) {
+        if (thematicFlyer(player)) {
             THEMATIC_FLIGHT.add(player);
             return false;
         }
@@ -52,6 +52,14 @@ public final class ThematicFixes {
             EntityComponents.SPEED.get(player).setFlying(abilities.flying);
         }
         return true;
+    }
+
+    public static boolean ownsAbilities(Player player) {
+        return !ThematicOptions.on(ThematicOptions.KEEP_OTHER_FLIGHT) || Offline.isOffline(player) || grounded(player) || thematicFlyer(player);
+    }
+
+    private static boolean thematicFlyer(Player player) {
+        return !MovementModes.declared(player, "flight").isEmpty() || FlightTrait.flyer(player) != null;
     }
 
     private static boolean grounded(Player player) {

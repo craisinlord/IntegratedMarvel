@@ -33,7 +33,7 @@ import java.util.UUID;
 public final class HellrideHorse {
     public static final String ABILITY = "ghost_rider_hellride";
     public static final String TAG = "integrated_superheroes_hellride";
-    private static final Map<UUID, Ride> RIDES = new HashMap<>();
+    private static final Map<UUID, Ride> RIDES = ServerState.map(new HashMap<>());
 
     private HellrideHorse() {
     }

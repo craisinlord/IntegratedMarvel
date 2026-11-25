@@ -1,5 +1,8 @@
 package com.craisinlord.integrated_superheroes.voidworld.pruning;
 
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.Util;
+import java.util.concurrent.CompletableFuture;
 import com.craisinlord.integrated_superheroes.compat.AntarchyDimensionalTear;
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import com.craisinlord.integrated_superheroes.gauntlet.GauntletFx;
@@ -39,6 +42,7 @@ public final class VoidPruning {
     private static final double RING_VISIBLE = 192.0D;
     private static final double EFFECT_VISIBLE = 320.0D;
     private static final double FALLBACK_VISIBLE = 288.0D;
+    private static final long WARM_TICKS = 200L;
     private static final Map<ServerLevel, Runtime> RUNTIME = new WeakHashMap<>();
 
     private VoidPruning() {
@@ -47,6 +51,8 @@ public final class VoidPruning {
     private static final class Runtime {
         final Map<UUID, Long> next = new HashMap<>();
         final List<Drop> drops = new ArrayList<>();
+        CompletableFuture<PrunedPiece.Pick> warm;
+        int warmTier = -1;
     }
 
     static final class Drop {
@@ -160,13 +166,16 @@ public final class VoidPruning {
                 continue;
             }
             if (now < next) {
+                if (next - now <= WARM_TICKS) {
+                    warm(level, rt, VoidTier.forPlayer(player));
+                }
                 continue;
             }
             if (rt.drops.size() >= maxConcurrent()) {
                 rt.next.put(id, now + 200L);
                 continue;
             }
-            if (start(level, player, false) == null) {
+            if (start(level, player, false, false) == null) {
                 rt.next.put(id, now + 60L);
                 continue;
             }
@@ -191,21 +200,30 @@ public final class VoidPruning {
     }
 
     public static PrunedPiece force(ServerLevel level, ServerPlayer player, boolean here) {
-        return start(level, player, here);
+        return start(level, player, here, true);
     }
 
-    private static PrunedPiece start(ServerLevel level, ServerPlayer player, boolean here) {
+    private static PrunedPiece start(ServerLevel level, ServerPlayer player, boolean here, boolean now) {
         if (!VoidWorld.isVoid(level)) {
             return null;
         }
         Runtime rt = runtime(level);
         RandomSource random = level.random;
         int tier = VoidTier.forPlayer(player);
-        PrunedPiece.Pick pick = PrunedPiece.pick(level, tier, random);
+        PrunedPiece.Pick pick;
+        if (now) {
+            pick = PrunedPiece.pick(level.getServer().getResourceManager(), tier, random);
+        } else {
+            warm(level, rt, tier);
+            if (!rt.warm.isDone()) {
+                return null;
+            }
+            pick = rt.warm.isCompletedExceptionally() ? null : rt.warm.join();
+            rt.warm = null;
+        }
         if (pick == null) {
             return null;
         }
-        int failedPrepares = 0;
         int radius = pick.radius();
         for (int attempt = 0; attempt < 48; attempt++) {
             double angle = random.nextDouble() * Math.PI * 2.0D;
@@ -223,21 +241,22 @@ public final class VoidPruning {
             }
             PrunedPiece piece = PrunedPiece.prepare(level, pick, tier, new BlockPos(x, ground, z), ground);
             if (piece == null) {
-                if (++failedPrepares >= 4) {
-                    return null;
-                }
-                PrunedPiece.Pick next = PrunedPiece.pick(level, tier, random);
-                if (next == null) {
-                    return null;
-                }
-                pick = next;
-                radius = pick.radius();
-                continue;
+                return null;
             }
             begin(level, rt, piece, ground, random);
             return piece;
         }
         return null;
+    }
+
+    private static void warm(ServerLevel level, Runtime rt, int tier) {
+        if (rt.warm != null && rt.warmTier == tier) {
+            return;
+        }
+        ResourceManager manager = level.getServer().getResourceManager();
+        long seed = level.random.nextLong();
+        rt.warmTier = tier;
+        rt.warm = CompletableFuture.supplyAsync(() -> PrunedPiece.pick(manager, tier, RandomSource.create(seed)), Util.backgroundExecutor());
     }
 
     private static boolean clearOfPlayers(ServerLevel level, int x, int z, int radius) {

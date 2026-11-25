@@ -117,6 +117,14 @@ public class StormCommandBlockEntity extends BlockEntity {
         return false;
     }
 
+    @Nullable
+    public Component blockedCommand() {
+        if (!(this.level instanceof ServerLevel level) || StringUtil.isNullOrEmpty(this.commandBlock.getCommand())) {
+            return null;
+        }
+        return StormCommandFilter.blocked(level.getServer().getCommands().getDispatcher(), this.commandBlock.createCommandSourceStack(), this.commandBlock.getCommand());
+    }
+
     public void applyEdit(String command, boolean trackOutput, boolean automatic) {
         this.commandBlock.setCommand(command);
         this.commandBlock.setTrackOutput(trackOutput);
@@ -304,6 +312,12 @@ public class StormCommandBlockEntity extends BlockEntity {
                         count[0]++;
                     }
                 });
+                Component blocked = StormCommandFilter.blocked(server.getCommands().getDispatcher(), source, this.getCommand());
+                if (blocked != null) {
+                    this.setLastOutput(blocked);
+                    this.setSuccessCount(0);
+                    return 0;
+                }
                 server.getCommands().performPrefixedCommand(source, this.getCommand());
             } catch (Exception exception) {
                 IntegratedSuperheroes.LOGGER.error("Storm Command Block at {} failed to run '{}'", StormCommandBlockEntity.this.worldPosition, this.getCommand(), exception);

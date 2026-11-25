@@ -4,6 +4,7 @@ import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import com.craisinlord.integrated_superheroes.compat.thematic.ThematicLookGroups;
 import com.craisinlord.integrated_superheroes.compat.thematic.PowerOwnership;
+import com.craisinlord.integrated_superheroes.compat.thematic.SuitPieces;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -13,6 +14,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
+import net.tintankgames.marvel.world.item.SuitItem;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -71,6 +73,7 @@ public final class SerumLooks {
             Map.entry("rock_hide_ben_grimm", List.of(FANTASTIC_FOUR))
     );
 
+    private static final String MARVEL_LEGACY = "marvellegacy";
     private static final String[] PIECES = {"chestplate", "helmet", "leggings", "boots"};
     private static final Map<String, List<Look>> CACHE = new ConcurrentHashMap<>();
 
@@ -78,7 +81,12 @@ public final class SerumLooks {
     }
 
     public static void register() {
-        NeoForge.EVENT_BUS.addListener((TagsUpdatedEvent event) -> CACHE.clear());
+        NeoForge.EVENT_BUS.addListener((TagsUpdatedEvent event) -> {
+            CACHE.clear();
+            if (ModCompat.THEMATIC) {
+                com.craisinlord.integrated_superheroes.compat.thematic.ThematicLookGroups.clearCache();
+            }
+        });
     }
 
     public static List<Look> forPower(String power) {
@@ -114,6 +122,20 @@ public final class SerumLooks {
     public static boolean marvelSet(String costume) {
         ResourceLocation id = ResourceLocation.tryParse(costume);
         return id != null && !BuiltInRegistries.ITEM.containsKey(id) && piece(costume, "chestplate") != null;
+    }
+
+    public static boolean ownLook(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return false;
+        }
+        Item item = stack.getItem();
+        if (item instanceof SuitItem) {
+            return true;
+        }
+        if (MARVEL_LEGACY.equals(BuiltInRegistries.ITEM.getKey(item).getNamespace())) {
+            return true;
+        }
+        return ModCompat.THEMATIC && SuitPieces.characterItem(item);
     }
 
     public static Item piece(String set, String slot) {

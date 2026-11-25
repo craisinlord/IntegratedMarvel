@@ -1,0 +1,7 @@
+{
+  "moves": {
+    "power:compound_v_homelander/laser_sweep": { "min_range": 3, "max_range": 22, "weight": 14, "cast_ticks": 40, "active_ticks": 40 },
+    "power:compound_v_homelander/intimidate": { "min_range": 0, "max_range": 8, "weight": 6, "cast_ticks": 10 },
+    "power:compound_v_homelander/grab_and_throw": { "mode": "state", "min_range": 0, "max_range": 5, "weight": 10, "cast_ticks": 10, "state_ticks": 30 }
+  }
+}

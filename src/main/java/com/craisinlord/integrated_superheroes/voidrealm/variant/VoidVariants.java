@@ -19,6 +19,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.item.Item;
@@ -57,8 +58,16 @@ public final class VoidVariants {
         return entity != null && entity.getTags().contains(TAG);
     }
 
+    public static boolean full(ServerLevel level) {
+        return loaded(level).size() + VariantTears.pending(level) >= VariantConfig.MAX_LOADED.get();
+    }
+
     public static List<Mob> loaded(ServerLevel level) {
         return VariantTracker.loaded(level);
+    }
+
+    public static VariantProfile profile(Entity entity) {
+        return VariantTracker.profile(entity);
     }
 
     public static VariantAlignment alignment(Entity entity) {
@@ -69,6 +78,18 @@ public final class VoidVariants {
         if (other == null || other == mob) {
             return false;
         }
+        Entity self = summoner(mob);
+        Entity them = summoner(other);
+        if (self != mob || them != other) {
+            if (self == them) {
+                return true;
+            }
+            if (them == mob || self == other) {
+                return true;
+            }
+            mob = self;
+            other = them;
+        }
         if (other instanceof WitherstormEntity) {
             return isVariant(mob);
         }
@@ -78,6 +99,15 @@ public final class VoidVariants {
             return false;
         }
         return mine == theirs || !VariantConfig.ready() || !VariantConfig.FIGHT_EACH_OTHER.get();
+    }
+
+    private static Entity summoner(Entity entity) {
+        if (entity instanceof com.craisinlord.integrated_superheroes.hero.SwarmSquirrel squirrel && squirrel.getOwner() != null
+                && isVariant(squirrel.getOwner())) {
+            return squirrel.getOwner();
+        }
+        LivingEntity pym = com.craisinlord.integrated_superheroes.suit.PymColony.ownerOf(entity);
+        return pym != null && isVariant(pym) ? pym : entity;
     }
 
     public static Mob spawn(ServerLevel level, BlockPos pos, int tier) {
@@ -145,20 +175,25 @@ public final class VoidVariants {
             VariantGear.equip(mob, profile);
             int count = 2;
             List<String> style = hostStyle;
-            for (String move : HeroMoves.kitFor(profile)) {
-                if (!moves.contains(move)) {
-                    moves.add(move);
+            List<String> thematicMoves = thematicHost && profile.kind() == VariantKind.THEMATIC
+                    ? ThematicVariants.pickMoves(mob, Integer.MAX_VALUE, level.random) : List.of();
+            if (thematicMoves.isEmpty()) {
+                for (String move : HeroMoves.kitFor(profile)) {
+                    if (!moves.contains(move)) {
+                        moves.add(move);
+                    }
                 }
             }
             if (thematicHost) {
-                List<String> thematicMoves = profile.kind() == VariantKind.THEMATIC ? ThematicVariants.pickMoves(mob, Integer.MAX_VALUE, level.random) : List.of();
                 ThematicVariants.unlock(mob, thematicMoves);
                 moves.addAll(thematicMoves);
                 style = ThematicVariants.style(wornLook(profile));
             }
-            for (String move : VariantMoves.fallbackFor(profile.kind(), style, count)) {
-                if (moves.size() < count && !moves.contains(move)) {
-                    moves.add(move);
+            if (thematicMoves.isEmpty()) {
+                for (String move : VariantMoves.fallbackFor(profile.kind(), style, count)) {
+                    if (moves.size() < count && !moves.contains(move)) {
+                        moves.add(move);
+                    }
                 }
             }
             for (EquipmentSlot slot : EquipmentSlot.values()) {

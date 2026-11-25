@@ -36,9 +36,10 @@ public final class MrFantasticPower {
     public static final int BRIDGE = 7;
     public static final int HAMMER_TICKS = 14;
     public static final int HAMMER_IMPACT = 6;
-    private static final Map<Integer, Stretch> STRETCHES = new HashMap<>();
-    private static final Map<Integer, Vec3> BRIDGES = new HashMap<>();
-    private static final Map<UUID, Hammer> HAMMERS = new HashMap<>();
+    private static final Map<Integer, Stretch> STRETCHES = ClientState.map(new HashMap<>());
+    private static final Map<Integer, Vec3> BRIDGES = ClientState.map(new HashMap<>());
+    private static final Map<UUID, Hammer> HAMMERS = ServerState.map(new HashMap<>());
+    private static boolean registered;
 
     private MrFantasticPower() {
     }
@@ -51,6 +52,11 @@ public final class MrFantasticPower {
 
     public static HeroPower create(Supplier<Item> syringe) {
         HeroWheels.register(ReedShapes.wheel());
+        if (!registered) {
+            registered = true;
+            HeroCaster.onTick(MrFantasticPower::tickHammer);
+            HeroCaster.onCleanup(caster -> HAMMERS.remove(caster.getUUID()));
+        }
         return new HeroPower(
                 ID,
                 "Elasticity (Reed Richards)",
@@ -58,9 +64,9 @@ public final class MrFantasticPower {
                 MarvelBalanceConfig.REED,
                 List.of(),
                 List.of(
-                        new HeroPower.Ability("stretch_punch", "Stretch Punch", MrFantasticPower::stretchPunch),
-                        new HeroPower.Ability("stretch_hammer", "Stretch Hammer", MrFantasticPower::stretchHammer),
-                        new HeroPower.Ability("stretch_sweep", "Stretch Sweep", MrFantasticPower::stretchSweep),
+                        HeroPower.Ability.of("stretch_punch", "Stretch Punch", MrFantasticPower::stretchPunch),
+                        HeroPower.Ability.of("stretch_hammer", "Stretch Hammer", MrFantasticPower::stretchHammer),
+                        HeroPower.Ability.of("stretch_sweep", "Stretch Sweep", MrFantasticPower::stretchSweep),
                         new HeroPower.Ability(ReedShapes.ABILITY, "Shape Shift", (player, slot) -> 0.0D),
                         new HeroPower.Ability(ReedShapes.USE_ABILITY, "Use Shape", ReedShapes::use)
                 ),
@@ -152,7 +158,11 @@ public final class MrFantasticPower {
         return stretch;
     }
 
-    public static void send(ServerPlayer player, int mode, Vec3 point, int ticks) {
+    private static net.minecraft.world.damagesource.DamageSource attack(LivingEntity caster) {
+        return caster instanceof Player player ? caster.damageSources().playerAttack(player) : caster.damageSources().mobAttack(caster);
+    }
+
+    public static void send(LivingEntity player, int mode, Vec3 point, int ticks) {
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(player,
                 new StretchPayload(player.getId(), mode, (float) point.x, (float) point.y, (float) point.z, ticks));
     }
@@ -175,7 +185,7 @@ public final class MrFantasticPower {
         player.fallDistance = 0.0F;
     }
 
-    private static double stretchPunch(ServerPlayer player, int slot) {
+    private static double stretchPunch(LivingEntity player, int slot) {
         double range = MarvelBalanceConfig.STRETCH_PUNCH_RANGE.get();
         HeroAbilities.Beam beam = HeroAbilities.beam(player, player.getLookAngle(), range, 1);
         Vec3 point = beam.end();
@@ -183,7 +193,7 @@ public final class MrFantasticPower {
             LivingEntity target = beam.targets().get(0);
             point = target.getBoundingBox().getCenter();
             float damage = MarvelBalanceConfig.STRETCH_PUNCH_DAMAGE.get().floatValue();
-            HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+            HeroAbilities.runAsAbilityDamage(() -> target.hurt(attack(player), damage));
             Vec3 look = player.getLookAngle();
             target.setDeltaMovement(look.x * 1.3D, 0.35D, look.z * 1.3D);
             target.hurtMarked = true;
@@ -195,7 +205,7 @@ public final class MrFantasticPower {
         return MarvelBalanceConfig.STRETCH_PUNCH_COOLDOWN.get();
     }
 
-    private static double stretchHammer(ServerPlayer player, int slot) {
+    private static double stretchHammer(LivingEntity player, int slot) {
         if (HAMMERS.containsKey(player.getUUID())) {
             return 0.0D;
         }
@@ -207,16 +217,16 @@ public final class MrFantasticPower {
                     ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
             point = ground.getLocation();
         }
-        HAMMERS.put(player.getUUID(), new Hammer(point, player.serverLevel().getGameTime() + HAMMER_IMPACT));
+        HAMMERS.put(player.getUUID(), new Hammer(point, HeroCaster.level(player).getGameTime() + HAMMER_IMPACT));
         send(player, HAMMER, point, HAMMER_TICKS);
         HeroFx.play(player, SoundEvents.SLIME_SQUISH, 1.0F, 0.6F);
         player.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
         return MarvelBalanceConfig.STRETCH_HAMMER_COOLDOWN.get();
     }
 
-    private static void tickHammer(ServerPlayer player) {
+    private static void tickHammer(LivingEntity player) {
         Hammer hammer = HAMMERS.get(player.getUUID());
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         if (hammer == null || level.getGameTime() < hammer.impact()) {
             return;
         }
@@ -226,8 +236,8 @@ public final class MrFantasticPower {
         double reach = (radius + 0.5D) * (radius + 0.5D);
         float damage = MarvelBalanceConfig.STRETCH_HAMMER_DAMAGE.get().floatValue();
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, new AABB(point, point).inflate(radius, 2.0D, radius),
-                entity -> entity != player && entity.isAlive() && entity.getBoundingBox().getCenter().distanceToSqr(point) <= reach)) {
-            HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+                entity -> HeroCaster.foe(player, entity) && entity.getBoundingBox().getCenter().distanceToSqr(point) <= reach)) {
+            HeroAbilities.runAsAbilityDamage(() -> target.hurt(attack(player), damage));
             Vec3 motion = target.getDeltaMovement();
             target.setDeltaMovement(motion.x * 0.2D, 0.45D, motion.z * 0.2D);
             target.hurtMarked = true;
@@ -247,18 +257,18 @@ public final class MrFantasticPower {
         level.playSound(null, point.x, point.y, point.z, SoundEvents.NOTE_BLOCK_BIT.value(), SoundSource.PLAYERS, 1.0F, 2.0F);
     }
 
-    private static double stretchSweep(ServerPlayer player, int slot) {
+    private static double stretchSweep(LivingEntity player, int slot) {
         double radius = MarvelBalanceConfig.STRETCH_SWEEP_RADIUS.get();
         float damage = MarvelBalanceConfig.STRETCH_SWEEP_DAMAGE.get().floatValue();
         HeroAdvancements.cast(player).hits(6, "fantastic_four/mr_fantastic/clean_sweep").run(() -> {
             for (LivingEntity target : HeroAbilities.sphere(player, radius)) {
-                HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+                HeroAbilities.runAsAbilityDamage(() -> target.hurt(attack(player), damage));
                 Vec3 out = target.position().subtract(player.position()).normalize().scale(1.2D);
                 target.setDeltaMovement(out.x, 0.4D, out.z);
                 target.hurtMarked = true;
             }
         });
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         level.sendParticles(ParticleTypes.SWEEP_ATTACK, player.getX(), player.getY() + 1.0D, player.getZ(),
                 8, radius * 0.5D, 0.2D, radius * 0.5D, 0.0D);
         send(player, SWEEP, new Vec3(radius, 0.0D, 0.0D), 16);

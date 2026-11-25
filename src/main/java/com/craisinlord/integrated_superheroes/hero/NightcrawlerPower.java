@@ -48,17 +48,31 @@ public final class NightcrawlerPower {
     public static final HeroPower.Toggle THICK_SMOKE = new HeroPower.Toggle("integrated_superheroes_off_thick_smoke", "Thick Smoke", () -> Items.CAMPFIRE);
     private static final String DATA = "integrated_superheroes_nightcrawler";
     private static final DustParticleOptions SMOKE_DUST = new DustParticleOptions(new Vector3f(0.18F, 0.1F, 0.28F), 1.6F);
-    private static final Map<UUID, Ballet> BALLETS = new HashMap<>();
-    private static final Map<UUID, Long> MESSAGED = new HashMap<>();
+    private static final Map<UUID, Ballet> BALLETS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> MESSAGED = ServerState.map(new HashMap<>());
     private static final HeroTeleportSafety.Policy BAMF_POLICY = new HeroTeleportSafety.Policy(12.0D, 1, 2, true, true, 1.25D, 4);
     private static final HeroTeleportSafety.Policy STRIKE_POLICY = new HeroTeleportSafety.Policy(12.0D, 1, 1, true, true, 1.25D, 0);
 
     private static final long GAP_TICKS = 4L;
+    private static boolean registered;
 
     private NightcrawlerPower() {
     }
 
     public static HeroPower create(Supplier<Item> syringe) {
+        if (!registered) {
+            registered = true;
+            HeroCaster.onTick(caster -> {
+                if (BALLETS.containsKey(caster.getUUID())) {
+                    tickBallet(caster, now(caster));
+                }
+            });
+            HeroCaster.onCleanup(caster -> {
+                BALLETS.remove(caster.getUUID());
+                MESSAGED.remove(caster.getUUID());
+                HeroTeleportSafety.forget(caster);
+            });
+        }
         return new HeroPower(
                 ID,
                 "Teleportation (Nightcrawler)",
@@ -66,8 +80,8 @@ public final class NightcrawlerPower {
                 NightcrawlerConfig.STATS,
                 List.of("agility"),
                 List.of(
-                        new HeroPower.Ability(BAMF, "Bamf", NightcrawlerPower::bamf),
-                        new HeroPower.Ability(BALLET, "Bamf Ballet", NightcrawlerPower::ballet),
+                        HeroPower.Ability.of(BAMF, "Bamf", NightcrawlerPower::bamf),
+                        HeroPower.Ability.of(BALLET, "Bamf Ballet", NightcrawlerPower::ballet),
                         HeroToggles.WHEEL
                 ),
                 List.of(WALL_PERCH, HeroToggles.SUPER_LEAP, THICK_SMOKE),
@@ -185,35 +199,43 @@ public final class NightcrawlerPower {
         HeroTeleportSafety.clearAll();
     }
 
-    private static long now(ServerPlayer player) {
-        return player.server.overworld().getGameTime();
+    private static long now(LivingEntity player) {
+        return player.getServer().overworld().getGameTime();
+    }
+
+    private static net.minecraft.world.damagesource.DamageSource attack(LivingEntity caster) {
+        return caster instanceof Player player ? caster.damageSources().playerAttack(player) : caster.damageSources().mobAttack(caster);
     }
 
     private static int ticks(double seconds) {
         return (int) Math.round(seconds * 20.0D);
     }
 
-    private static boolean blockedHere(ServerPlayer player) {
+    private static boolean blockedHere(LivingEntity player) {
         String dimension = player.level().dimension().location().toString();
         return NightcrawlerConfig.BLOCKED_DIMENSIONS.get().contains(dimension);
     }
 
-    private static void tell(ServerPlayer player, String text) {
+    private static void tell(LivingEntity player, String text) {
+        if (!(player instanceof ServerPlayer)) {
+            return;
+        }
         long now = now(player);
         Long last = MESSAGED.get(player.getUUID());
         if (last != null && now - last < 10L) {
             return;
         }
         MESSAGED.put(player.getUUID(), now);
-        player.displayClientMessage(Component.literal("§7" + text), true);
+        HeroCaster.message(player, Component.literal("§7" + text));
     }
 
     private static HeroTeleportSafety.Policy bamfPolicy(double range) {
         return BAMF_POLICY.withRange(range);
     }
 
-    private static double bamf(ServerPlayer player, int slot) {
+    private static double bamf(LivingEntity player, int slot) {
         long now = now(player);
+        boolean mob = !(player instanceof ServerPlayer);
         if (BALLETS.containsKey(player.getUUID())) {
             return 0.0D;
         }
@@ -227,7 +249,12 @@ public final class NightcrawlerPower {
             tell(player, "Something here keeps you from teleporting.");
             return 0.0D;
         }
-        HeroTeleportSafety.Policy policy = bamfPolicy(NightcrawlerConfig.BAMF_RANGE.get());
+        double range = NightcrawlerConfig.BAMF_RANGE.get();
+        LivingEntity target = HeroCaster.target(player);
+        if (mob && target != null) {
+            range = Mth.clamp(player.distanceTo(target) - 1.5D, 2.0D, range);
+        }
+        HeroTeleportSafety.Policy policy = bamfPolicy(range);
         if (!blink(player, policy)) {
             return 0.0D;
         }
@@ -238,7 +265,7 @@ public final class NightcrawlerPower {
         }
         charges.save(player);
         syncHud(player, charges, now);
-        return 0.0D;
+        return mob ? 1.0D : 0.0D;
     }
 
     public static double rogueBamf(ServerPlayer player) {
@@ -253,7 +280,7 @@ public final class NightcrawlerPower {
         return NightcrawlerConfig.ROGUE_BAMF_COOLDOWN.get();
     }
 
-    private static boolean blink(ServerPlayer player, HeroTeleportSafety.Policy policy) {
+    private static boolean blink(LivingEntity player, HeroTeleportSafety.Policy policy) {
         if (!HeroTeleportSafety.canStart(player) || HeroTeleportSafety.throttled(player, policy)) {
             return false;
         }
@@ -277,7 +304,7 @@ public final class NightcrawlerPower {
         return true;
     }
 
-    private static void settleFall(ServerPlayer player, Vec3 origin, float fallBefore) {
+    private static void settleFall(LivingEntity player, Vec3 origin, float fallBefore) {
         if (HeroTeleportSafety.supported(player, player.position())) {
             player.fallDistance = 0.0F;
         } else {
@@ -285,12 +312,12 @@ public final class NightcrawlerPower {
         }
     }
 
-    private static boolean thick(ServerPlayer player) {
-        return HeroToggles.isOn(player, THICK_SMOKE);
+    private static boolean thick(LivingEntity player) {
+        return !(player instanceof Player human) || HeroToggles.isOn(human, THICK_SMOKE);
     }
 
-    private static void bamfFx(ServerPlayer player, Vec3 from, Vec3 to) {
-        ServerLevel level = player.serverLevel();
+    private static void bamfFx(LivingEntity player, Vec3 from, Vec3 to) {
+        ServerLevel level = HeroCaster.level(player);
         boolean thick = thick(player);
         puff(level, player, from, thick);
         puff(level, player, to, thick);
@@ -299,7 +326,7 @@ public final class NightcrawlerPower {
         level.playSound(null, to.x, to.y, to.z, SoundEvents.FIRE_EXTINGUISH, net.minecraft.sounds.SoundSource.PLAYERS, 0.35F, 1.6F);
     }
 
-    private static void puff(ServerLevel level, ServerPlayer player, Vec3 feet, boolean thick) {
+    private static void puff(ServerLevel level, LivingEntity player, Vec3 feet, boolean thick) {
         double width = player.getBbWidth() * 0.4D;
         double height = player.getBbHeight() * 0.35D;
         double y = feet.y + player.getBbHeight() * 0.5D;
@@ -309,7 +336,7 @@ public final class NightcrawlerPower {
         level.sendParticles(ParticleTypes.SMOKE, feet.x, y, feet.z, thick ? 10 : 3, width, height, width, 0.03D);
     }
 
-    private static double ballet(ServerPlayer player, int slot) {
+    private static double ballet(LivingEntity player, int slot) {
         long now = now(player);
         if (BALLETS.containsKey(player.getUUID())) {
             return 0.0D;
@@ -364,15 +391,16 @@ public final class NightcrawlerPower {
         ballet.nextTick = now + NightcrawlerConfig.BALLET_STEP_TICKS.get();
         BALLETS.put(player.getUUID(), ballet);
         syncHud(player, charges, now);
-        return 0.0D;
+        return player instanceof ServerPlayer ? 0.0D : NightcrawlerConfig.BALLET_COOLDOWN.get();
     }
 
-    private static boolean hostile(ServerPlayer player, LivingEntity entity) {
-        return KineticBurst.affects(player, entity)
-                && (entity instanceof Enemy || entity instanceof Mob mob && mob.getTarget() == player || entity instanceof Player);
+    private static boolean hostile(LivingEntity player, LivingEntity entity) {
+        return TelekineticFormation.affects(player, entity)
+                && (entity instanceof Enemy || entity instanceof Mob mob && mob.getTarget() == player || entity instanceof Player
+                || !(player instanceof ServerPlayer));
     }
 
-    private static Vec3 strikeSpot(ServerPlayer player, LivingEntity target, Vec3 from) {
+    private static Vec3 strikeSpot(LivingEntity player, LivingEntity target, Vec3 from) {
         Vec3 toward = target.position().subtract(from);
         Vec3 flat = new Vec3(toward.x, 0.0D, toward.z);
         flat = flat.lengthSqr() < 1.0E-4D ? player.getLookAngle().multiply(1.0D, 0.0D, 1.0D).normalize() : flat.normalize();
@@ -382,7 +410,7 @@ public final class NightcrawlerPower {
         return HeroTeleportSafety.near(player, desired, from, policy).orElse(null);
     }
 
-    private static boolean strike(ServerPlayer player, Ballet ballet, LivingEntity target, Vec3 spot) {
+    private static boolean strike(LivingEntity player, Ballet ballet, LivingEntity target, Vec3 spot) {
         Vec3 from = player.position();
         Vec3 look = target.getEyePosition().subtract(spot.add(0.0D, player.getEyeHeight(), 0.0D));
         float yRot = (float) (Mth.atan2(look.z, look.x) * Mth.RAD_TO_DEG) - 90.0F;
@@ -394,8 +422,7 @@ public final class NightcrawlerPower {
         settleBallet(player, ballet);
         bamfFx(player, from, player.position());
         float damage = (float) ballet.perStrike;
-        target.invulnerableTime = 0;
-        HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+        HeroAbilities.runAsAbilityDamage(() -> HeroHits.force(player, target, attack(player), damage));
         target.knockback(0.4D, player.getX() - target.getX(), player.getZ() - target.getZ());
         ballet.hits++;
         player.level().playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.PLAYER_ATTACK_STRONG,
@@ -404,18 +431,19 @@ public final class NightcrawlerPower {
         return true;
     }
 
-    private static void tickBallet(ServerPlayer player, long now) {
+    private static void tickBallet(LivingEntity player, long now) {
         Ballet ballet = BALLETS.get(player.getUUID());
         if (ballet == null || now < ballet.nextTick) {
             return;
         }
-        if (!player.level().dimension().equals(ballet.dimension) || !HeroTeleportSafety.canStart(player) || HealingFactor.isDowned(player)) {
+        if (!player.level().dimension().equals(ballet.dimension) || !HeroTeleportSafety.canStart(player)
+                || player instanceof Player downed && HealingFactor.isDowned(downed)) {
             BALLETS.remove(player.getUUID());
             return;
         }
         ballet.index++;
         while (ballet.index < ballet.targets.size()) {
-            Entity found = player.serverLevel().getEntity(ballet.targets.get(ballet.index));
+            Entity found = HeroCaster.level(player).getEntity(ballet.targets.get(ballet.index));
             if (found instanceof LivingEntity target && target.isAlive() && hostile(player, target)
                     && target.position().distanceTo(ballet.origin) <= NightcrawlerConfig.BALLET_RANGE.get() + 2.0D
                     && player.hasLineOfSight(target)) {
@@ -432,7 +460,7 @@ public final class NightcrawlerPower {
         finish(player, ballet);
     }
 
-    private static void finish(ServerPlayer player, Ballet ballet) {
+    private static void finish(LivingEntity player, Ballet ballet) {
         BALLETS.remove(player.getUUID());
         Vec3 from = player.position();
         HeroTeleportSafety.Policy policy = STRIKE_POLICY.withRange(NightcrawlerConfig.BALLET_RANGE.get() * 2.0D);
@@ -442,12 +470,12 @@ public final class NightcrawlerPower {
             }
         });
         settleBallet(player, ballet);
-        if (ballet.hits >= 3) {
-            HeroAdvancements.award(player, "x_men/nightcrawler/ballet");
+        if (ballet.hits >= 3 && player instanceof ServerPlayer serverPlayer) {
+            HeroAdvancements.award(serverPlayer, "x_men/nightcrawler/ballet");
         }
     }
 
-    private static void settleBallet(ServerPlayer player, Ballet ballet) {
+    private static void settleBallet(LivingEntity player, Ballet ballet) {
         if (HeroTeleportSafety.supported(player, player.position())) {
             player.fallDistance = 0.0F;
         } else {
@@ -455,7 +483,10 @@ public final class NightcrawlerPower {
         }
     }
 
-    private static void syncHud(ServerPlayer player, Charges charges, long now) {
+    private static void syncHud(LivingEntity caster, Charges charges, long now) {
+        if (!(caster instanceof ServerPlayer player)) {
+            return;
+        }
         boolean dirty = false;
         int max = NightcrawlerConfig.BAMF_CHARGES.get();
         Power bamf = HeroAbilities.slotPower(player, BAMF);
@@ -519,7 +550,7 @@ public final class NightcrawlerPower {
         private long balletUntil;
         private long graceUntil;
 
-        private static CompoundTag root(ServerPlayer player) {
+        private static CompoundTag root(LivingEntity player) {
             CompoundTag data = player.getPersistentData();
             if (!data.contains(Player.PERSISTED_NBT_TAG)) {
                 data.put(Player.PERSISTED_NBT_TAG, new CompoundTag());
@@ -527,7 +558,7 @@ public final class NightcrawlerPower {
             return data.getCompound(Player.PERSISTED_NBT_TAG);
         }
 
-        private static Charges load(ServerPlayer player) {
+        private static Charges load(LivingEntity player) {
             Charges state = new Charges();
             CompoundTag root = root(player);
             int max = NightcrawlerConfig.BAMF_CHARGES.get();
@@ -544,7 +575,7 @@ public final class NightcrawlerPower {
             return state;
         }
 
-        private void save(ServerPlayer player) {
+        private void save(LivingEntity player) {
             CompoundTag tag = new CompoundTag();
             tag.putInt("charges", charges);
             tag.putLong("next", next);

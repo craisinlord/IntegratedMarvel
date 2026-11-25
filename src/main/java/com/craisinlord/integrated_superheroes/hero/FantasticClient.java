@@ -43,7 +43,7 @@ public final class FantasticClient {
     private static final float STILT_SCALE = 3.0F;
     private static final float[] PIVOTS = new float[18];
     private static final double BLEND_TICKS = 8.0D;
-    private static final Map<UUID, Blend> BLENDS = new HashMap<>();
+    private static final Map<UUID, Blend> BLENDS = ClientState.map(new HashMap<>());
     private static boolean saved;
 
     private FantasticClient() {

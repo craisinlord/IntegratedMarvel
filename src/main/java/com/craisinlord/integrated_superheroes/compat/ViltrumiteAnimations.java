@@ -3,6 +3,7 @@ package com.craisinlord.integrated_superheroes.compat;
 import com.craisinlord.integrated_superheroes.hero.HeroAnimations;
 import com.craisinlord.integrated_superheroes.hero.MarvelBalanceConfig;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public final class ViltrumiteAnimations {
@@ -13,8 +14,8 @@ public final class ViltrumiteAnimations {
     private ViltrumiteAnimations() {
     }
 
-    public static boolean play(ServerPlayer player, int move) {
-        if (!ModCompat.VILTRUMITE || !MarvelBalanceConfig.VILTRUMITE_ANIMATIONS.get() || ViltrumiteBridge.isViltrumite(player)) {
+    public static boolean play(LivingEntity caster, int move) {
+        if (!(caster instanceof ServerPlayer player) || !ModCompat.VILTRUMITE || !MarvelBalanceConfig.VILTRUMITE_ANIMATIONS.get() || ViltrumiteBridge.isViltrumite(player)) {
             return false;
         }
         HeroAnimations.stop(player);

@@ -1,6 +1,7 @@
 package com.craisinlord.integrated_superheroes.hero;
 
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -19,7 +20,14 @@ public record HeroPower(
         List<Toggle> toggles,
         Hooks hooks
 ) {
-    public record Ability(String name, String displayName, Handler handler) {
+    public record Ability(String name, String displayName, Handler handler, Cast cast) {
+        public Ability(String name, String displayName, Handler handler) {
+            this(name, displayName, handler, null);
+        }
+
+        public static Ability of(String name, String displayName, Cast cast) {
+            return new Ability(name, displayName, cast::press, cast);
+        }
     }
 
     public record Toggle(String flag, String label, Supplier<Item> icon, boolean defaultOn) {
@@ -31,6 +39,11 @@ public record HeroPower(
     @FunctionalInterface
     public interface Handler {
         double press(ServerPlayer player, int slot);
+    }
+
+    @FunctionalInterface
+    public interface Cast {
+        double press(LivingEntity caster, int slot);
     }
 
     public interface Hooks {

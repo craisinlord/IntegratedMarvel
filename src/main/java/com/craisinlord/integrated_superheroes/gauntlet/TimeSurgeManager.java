@@ -38,6 +38,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @EventBusSubscriber(modid = IntegratedSuperheroes.MODID)
 public final class TimeSurgeManager {
     private static final long DURATION = 400L;
+    private static final long BLOCK_ENTITY_BUDGET_NANOS = 10_000_000L;
+    private static long blockEntityDeadline;
     private static final Map<ResourceKey<Level>, Long> ACTIVE = new ConcurrentHashMap<>();
     private static final List<Area> AREAS = new CopyOnWriteArrayList<>();
 
@@ -64,7 +66,13 @@ public final class TimeSurgeManager {
         if (!(event.getLevel() instanceof ServerLevel level)) return;
         long now = level.getServer().overworld().getGameTime();
         if (!TimeFreezeManager.owners(level.dimension()).isEmpty()) return;
-        tickAreas(level, now);
+        blockEntityDeadline = System.nanoTime() + BLOCK_ENTITY_BUDGET_NANOS;
+        Set<Long> visited = new HashSet<>();
+        surge(level, now, visited);
+        tickAreas(level, now, visited);
+    }
+
+    private static void surge(ServerLevel level, long now, Set<Long> visited) {
         Long expires = ACTIVE.get(level.dimension());
         if (expires == null) return;
         if (now >= expires) {
@@ -73,14 +81,15 @@ public final class TimeSurgeManager {
         }
         advanceDay(level);
         int radius = GauntletConfig.TIME_SURGE_CHUNK_RADIUS.get();
-        Set<Long> visited = new HashSet<>();
         Pass pass = new Pass(level, 1.0D, now);
         for (ServerPlayer player : level.players()) {
             ChunkPos center = player.chunkPosition();
             pass.begin();
-            for (int dx = -radius; dx <= radius; dx++) {
-                for (int dz = -radius; dz <= radius; dz++) {
-                    accelerateChunk(level, center.x + dx, center.z + dz, pass, visited);
+            for (int ring = 0; ring <= radius; ring++) {
+                for (int dx = -ring; dx <= ring; dx++) {
+                    for (int dz = -ring; dz <= ring; dz++) {
+                        if (Math.max(Math.abs(dx), Math.abs(dz)) == ring) accelerateChunk(level, center.x + dx, center.z + dz, pass, visited);
+                    }
                 }
             }
             pass.ageMobs(level, center.x - radius, center.z - radius, center.x + radius, center.z + radius);
@@ -91,9 +100,8 @@ public final class TimeSurgeManager {
         }
     }
 
-    private static void tickAreas(ServerLevel level, long now) {
+    private static void tickAreas(ServerLevel level, long now, Set<Long> visited) {
         if (AREAS.isEmpty()) return;
-        Set<Long> visited = new HashSet<>();
         for (Area area : AREAS) {
             if (now >= area.expiry()) {
                 AREAS.remove(area);
@@ -124,8 +132,9 @@ public final class TimeSurgeManager {
         LevelChunk chunk = level.getChunkSource().getChunkNow(chunkX, chunkZ);
         if (chunk == null) return;
         if (pass.randomTicks > 0) randomTicks(level, chunk, pass.randomTicks);
-        if (pass.blockEntityTicks > 0) {
+        if (pass.blockEntityTicks > 0 && System.nanoTime() <= blockEntityDeadline) {
             for (BlockEntity blockEntity : new ArrayList<>(chunk.getBlockEntities().values())) {
+                if (System.nanoTime() > blockEntityDeadline) break;
                 tickBlockEntity(level, blockEntity, pass.blockEntityTicks);
             }
         }
@@ -170,12 +179,16 @@ public final class TimeSurgeManager {
     @SuppressWarnings("unchecked")
     private static <T extends BlockEntity> void tickBlockEntity(ServerLevel level, BlockEntity blockEntity, int times) {
         if (blockEntity.isRemoved()) return;
+        BlockPos pos = blockEntity.getBlockPos();
         BlockState state = blockEntity.getBlockState();
         BlockEntityTicker<T> ticker = state.getTicker(level, (BlockEntityType<T>) blockEntity.getType());
-        if (ticker == null) return;
-        BlockPos pos = blockEntity.getBlockPos();
-        for (int index = 0; index < times && !blockEntity.isRemoved(); index++) {
+        for (int index = 0; ticker != null && index < times && !blockEntity.isRemoved(); index++) {
             ticker.tick(level, pos, state, (T) blockEntity);
+            BlockState now = blockEntity.getBlockState();
+            if (now != state) {
+                state = now;
+                ticker = state.getTicker(level, (BlockEntityType<T>) blockEntity.getType());
+            }
         }
     }
 

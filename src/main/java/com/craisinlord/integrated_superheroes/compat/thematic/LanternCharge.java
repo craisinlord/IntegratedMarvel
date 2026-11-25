@@ -1,8 +1,8 @@
 package com.craisinlord.integrated_superheroes.compat.thematic;
 
+import com.craisinlord.integrated_superheroes.hero.ServerState;
 import bond.thematic.api.ability.ThematicAbility;
 import bond.thematic.api.ability.corp.CorpsType;
-import bond.thematic.api.callbacks.AbilityCallback;
 import bond.thematic.api.content.ability.part.MeterPart;
 import bond.thematic.api.content.ability.system.MeterSystem;
 import bond.thematic.api.content.action.effect.MeterActions;
@@ -34,7 +34,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -132,7 +131,8 @@ final class LanternCharge {
             net.minecraft.world.item.Items.DIAMOND, 150,
             net.minecraft.world.item.Items.GOLD_BLOCK, 360);
 
-    private static final Map<UUID, State> STATES = new HashMap<>();
+    private static final Map<String, Optional<MoveCost>> MOVE_COSTS = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final Map<UUID, State> STATES = ServerState.map(new HashMap<>());
     private static final Map<String, Optional<Holder.Reference<MobEffect>>> EFFECTS = new java.util.concurrent.ConcurrentHashMap<>();
     private static boolean failed;
     private static boolean hooked;
@@ -158,7 +158,6 @@ final class LanternCharge {
         }
         hooked = true;
         try {
-            AbilityCallback.ABILITY_CALLBACK_EVENT.register((AbilityCallback) LanternCharge::abilities);
         } catch (Throwable error) {
             IntegratedSuperheroes.LOGGER.warn("Couldn't hook Thematic flight for Lantern charge", error);
         }
@@ -222,18 +221,6 @@ final class LanternCharge {
         return new Ring(corps, prefix, key, meter, store);
     }
 
-    private static Abilities abilities(Player player, Abilities abilities) {
-        if (player == null || abilities == null || player.level().isClientSide() || player.isCreative() || player.isSpectator()) {
-            return abilities;
-        }
-        Ring ring = ring(player);
-        if (ring != null && ring.economy() && ring.value() < FLIGHT_CUT_BELOW) {
-            abilities.mayfly = false;
-            abilities.flying = false;
-        }
-        return abilities;
-    }
-
     private static void onPlayerTick(PlayerTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) {
             return;
@@ -257,6 +244,9 @@ final class LanternCharge {
         }
     }
 
+    private record MoveCost(String prefix, int price) {
+    }
+
     private static void chargeMoves(ServerPlayer player, Ring ring, State state) {
         CharacterItem suit = ThematicHelper.getArmor(player);
         if (suit == null) {
@@ -271,15 +261,15 @@ final class LanternCharge {
             if (id == null) {
                 continue;
             }
-            String[] cost = moveCost(id, ring.prefix());
+            MoveCost cost = moveCost(id).orElse(null);
             if (cost == null) {
                 continue;
             }
-            Ring payer = cost[0] == null || cost[0].equals(ring.prefix()) ? ring : ring(player, ring.corps(), cost[0]);
+            Ring payer = cost.prefix() == null || cost.prefix().equals(ring.prefix()) ? ring : ring(player, ring.corps(), cost.prefix());
             if (payer == null) {
                 continue;
             }
-            int price = Integer.parseInt(cost[1]);
+            int price = cost.price();
             double now = ability.getCooldown(player);
             Double before = state.cooldowns.get(id);
             if (before != null && now > before + 2) {
@@ -296,18 +286,22 @@ final class LanternCharge {
         }
     }
 
-    private static String[] moveCost(String id, String prefix) {
+    private static Optional<MoveCost> moveCost(String id) {
+        return MOVE_COSTS.computeIfAbsent(id, LanternCharge::findMoveCost);
+    }
+
+    private static Optional<MoveCost> findMoveCost(String id) {
         String[] exact = EXACT_MOVE_COSTS.get(id);
         if (exact != null) {
-            return exact;
+            return Optional.of(new MoveCost(exact[0], Integer.parseInt(exact[1])));
         }
         for (String corps : OATHS.keySet()) {
             if (id.startsWith(corps + "_")) {
                 Integer cost = CORPS_MOVE_COSTS.get(id.substring(corps.length() + 1));
-                return cost == null ? null : new String[]{corps, String.valueOf(cost)};
+                return cost == null ? Optional.empty() : Optional.of(new MoveCost(corps, cost));
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     private static void enforceFlightCut(ServerPlayer player, Ring ring, State state) {

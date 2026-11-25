@@ -23,6 +23,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
@@ -59,9 +60,9 @@ public final class SwampThingPower {
     private static final ParticleOptions HANGING = new BlockParticleOption(ParticleTypes.BLOCK, Blocks.HANGING_ROOTS.defaultBlockState());
     private static final ParticleOptions MOSS = new BlockParticleOption(ParticleTypes.BLOCK, Blocks.MOSS_BLOCK.defaultBlockState());
     private static final ParticleOptions VINES = new BlockParticleOption(ParticleTypes.BLOCK, Blocks.VINE.defaultBlockState());
-    private static final Map<UUID, Long> BIND_IMMUNE = new HashMap<>();
-    private static final Map<UUID, Long> LAST_HURT = new HashMap<>();
-    private static final Map<UUID, Long> MESSAGED = new HashMap<>();
+    private static final Map<UUID, Long> BIND_IMMUNE = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> LAST_HURT = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> MESSAGED = ServerState.map(new HashMap<>());
     private static RogueMemory rogue;
     private static boolean registered;
 
@@ -83,8 +84,8 @@ public final class SwampThingPower {
                 SwampThingConfig.STATS,
                 List.of(),
                 List.of(
-                        new HeroPower.Ability(ENTANGLE, "Entangle", SwampThingPower::entangle),
-                        new HeroPower.Ability(ROOT_STEP, "Root Step", SwampThingPower::rootStep),
+                        HeroPower.Ability.of(ENTANGLE, "Entangle", SwampThingPower::entangle),
+                        HeroPower.Ability.of(ROOT_STEP, "Root Step", SwampThingPower::rootStep),
                         HeroToggles.WHEEL
                 ),
                 List.of(MENDING, SWAMP_LUNGS),
@@ -126,11 +127,14 @@ public final class SwampThingPower {
         return state.is(ROOTABLE);
     }
 
-    private static boolean standingOnRoots(ServerPlayer player) {
+    private static boolean standingOnRoots(LivingEntity player) {
         return player.onGround() && !player.isInWater() && rootable(player.getBlockStateOn());
     }
 
-    private static void tell(ServerPlayer player, String text) {
+    private static void tell(LivingEntity caster, String text) {
+        if (!(caster instanceof ServerPlayer player)) {
+            return;
+        }
         long now = player.level().getGameTime();
         Long last = MESSAGED.get(player.getUUID());
         if (last != null && Math.abs(now - last) < 10L) {
@@ -158,9 +162,17 @@ public final class SwampThingPower {
         player.serverLevel().sendParticles(ParticleTypes.COMPOSTER, player.getX(), player.getY() + 0.2D, player.getZ(), 4, 0.3D, 0.1D, 0.3D, 0.0D);
     }
 
-    private static BlockHitResult aimGround(ServerPlayer player, double range) {
+    private static BlockHitResult aimGround(LivingEntity player, double range) {
         Vec3 eye = player.getEyePosition();
         Vec3 end = eye.add(player.getLookAngle().scale(range));
+        LivingEntity target = HeroCaster.target(player);
+        if (target != null) {
+            if (target.distanceToSqr(player) > range * range) {
+                return null;
+            }
+            eye = target.position().add(0.0D, 0.5D, 0.0D);
+            end = target.position().subtract(0.0D, 3.0D, 0.0D);
+        }
         BlockHitResult hit = player.level().clip(new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, player));
         if (hit.getType() != HitResult.Type.BLOCK || !rootable(player.level().getBlockState(hit.getBlockPos()))) {
             return null;
@@ -182,34 +194,35 @@ public final class SwampThingPower {
         return above.getCollisionShape(level, ground.above()).isEmpty() && above.getFluidState().isEmpty();
     }
 
-    private static double entangle(ServerPlayer player, int slot) {
+    private static double entangle(LivingEntity player, int slot) {
         BlockHitResult hit = aimGround(player, SwampThingConfig.ENTANGLE_RANGE.get());
         if (hit == null) {
             tell(player, "Aim at grass, dirt, mud or moss.");
             return 0.0D;
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         if (!exposed(level, hit.getBlockPos())) {
             tell(player, "The roots need open ground to break through.");
             return 0.0D;
         }
         Vec3 center = groundTop(level, hit);
         double radius = SwampThingConfig.ENTANGLE_RADIUS.get();
-        float damage = (float) (MarvelBalanceConfig.CRYOGENESIS_DAMAGE.get() * SwampThingConfig.ENTANGLE_DAMAGE_MULTIPLIER.get());
+        float damage = SwampThingConfig.ENTANGLE_DAMAGE.get().floatValue();
         int bound = rootBurst(player, level, center, radius, damage, false);
         rootFx(level, center, radius);
         HeroFx.play(player, SoundEvents.MANGROVE_ROOTS_BREAK, 0.8F, 0.7F);
         HeroAnimations.play(player, "web_shoot_both");
-        if (bound >= 3) {
-            HeroAdvancements.award(player, "justice_league/swamp_thing/overgrown");
+        if (bound >= 3 && player instanceof ServerPlayer serverPlayer) {
+            HeroAdvancements.award(serverPlayer, "justice_league/swamp_thing/overgrown");
         }
         return SwampThingConfig.ENTANGLE_COOLDOWN.get();
     }
 
-    private static int rootBurst(ServerPlayer player, ServerLevel level, Vec3 center, double radius, float damage, boolean borrowed) {
+    private static int rootBurst(LivingEntity player, ServerLevel level, Vec3 center, double radius, float damage, boolean borrowed) {
         AABB area = new AABB(center.x - radius, center.y - 1.0D, center.z - radius, center.x + radius, center.y + 2.0D, center.z + radius);
         List<LivingEntity> victims = level.getEntitiesOfClass(LivingEntity.class, area, entity -> {
-            if (entity == player || entity instanceof ArmorStand || !KineticBurst.affects(player, entity)) {
+            if (entity == player || entity instanceof ArmorStand
+                    || !(player instanceof ServerPlayer owner ? KineticBurst.affects(owner, entity) : HeroCaster.foe(player, entity))) {
                 return false;
             }
             double dx = entity.getX() - center.x;
@@ -228,8 +241,8 @@ public final class SwampThingPower {
         int bound = 0;
         for (LivingEntity target : victims) {
             if (damage > 0.0F) {
-                HeroAbilities.runAsAbilityDamage(() -> target.hurt(borrowed ? player.damageSources().mobAttack(player)
-                        : player.damageSources().playerAttack(player), damage));
+                HeroAbilities.runAsAbilityDamage(() -> target.hurt(borrowed || !(player instanceof Player attacker) ? player.damageSources().mobAttack(player)
+                        : player.damageSources().playerAttack(attacker), damage));
             }
             boolean ordinary = HeroAbilities.canControl(target) && !HeroAbilities.isBoss(target);
             if (slowTicks > 0) {
@@ -271,7 +284,7 @@ public final class SwampThingPower {
         level.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.HANGING_ROOTS_PLACE, net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 0.7F);
     }
 
-    private static boolean blockedHere(ServerPlayer player) {
+    private static boolean blockedHere(LivingEntity player) {
         return SwampThingConfig.ROOT_STEP_BLOCKED_DIMENSIONS.get().contains(player.level().dimension().location().toString());
     }
 
@@ -279,7 +292,7 @@ public final class SwampThingPower {
         return rootable(level.getBlockState(BlockPos.containing(feet.x, feet.y - 0.01D, feet.z)));
     }
 
-    private static Vec3 landing(ServerPlayer player, Vec3 desired, HeroTeleportSafety.Policy policy) {
+    private static Vec3 landing(LivingEntity player, Vec3 desired, HeroTeleportSafety.Policy policy) {
         Level level = player.level();
         Vec3 from = player.position();
         BlockPos center = BlockPos.containing(desired.x, desired.y - 0.01D, desired.z);
@@ -310,7 +323,7 @@ public final class SwampThingPower {
         return null;
     }
 
-    private static double rootStep(ServerPlayer player, int slot) {
+    private static double rootStep(LivingEntity player, int slot) {
         if (blockedHere(player)) {
             tell(player, "The roots don't reach here.");
             return 0.0D;
@@ -328,7 +341,7 @@ public final class SwampThingPower {
             tell(player, "Look at a patch of natural ground you can see.");
             return 0.0D;
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         Vec3 desired = groundTop(level, hit);
         if (desired.distanceTo(player.position()) < 1.5D) {
             return 0.0D;
@@ -387,7 +400,7 @@ public final class SwampThingPower {
         ServerLevel level = player.serverLevel();
         Vec3 center = player.position();
         double radius = SwampThingConfig.ROGUE_RADIUS.get();
-        float damage = RogueKit.dmg(MarvelBalanceConfig.CRYOGENESIS_DAMAGE.get() * SwampThingConfig.ROGUE_DAMAGE_MULTIPLIER.get());
+        float damage = RogueKit.dmg(SwampThingConfig.ROGUE_DAMAGE.get());
         rootBurst(player, level, center, radius, damage, true);
         rootFx(level, center, radius);
         return SwampThingConfig.ROGUE_COOLDOWN.get();

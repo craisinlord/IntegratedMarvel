@@ -45,7 +45,11 @@ public final class CosmeticMerges {
     }
 
     public static boolean serumCostume(String id) {
-        return enabled() && POLICY.getAsJsonObject("serumLooks").entrySet().stream()
+        return enabled() && serumListed(id);
+    }
+
+    public static boolean serumListed(String id) {
+        return POLICY.getAsJsonObject("serumLooks").entrySet().stream()
                 .anyMatch(entry -> contains(entry.getValue(), id));
     }
 

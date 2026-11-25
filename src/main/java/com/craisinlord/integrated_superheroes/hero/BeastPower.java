@@ -50,8 +50,8 @@ public final class BeastPower {
     private static final int KICK_TICKS = 12;
     private static final int FALL_GUARD_TICKS = 200;
     private static final int WALL_MEMORY_TICKS = 60;
-    private static final Map<UUID, State> STATES = new HashMap<>();
-    private static final Map<UUID, Long> STUMBLE_IMMUNE = new HashMap<>();
+    private static final Map<UUID, State> STATES = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> STUMBLE_IMMUNE = ServerState.map(new HashMap<>());
     private static RogueMemory rogue;
     private static boolean registered;
 
@@ -80,6 +80,8 @@ public final class BeastPower {
                             "thematic:spiderman_wall_bump_1", true));
             SerumCostumes.register(ID, "thematic:beast");
             RogueAbsorption.remember(rogueMemory());
+            HeroCaster.onTick(BeastPower::tickState);
+            HeroCaster.onCleanup(caster -> STATES.remove(caster.getUUID()));
         }
         return new HeroPower(
                 ID,
@@ -88,8 +90,8 @@ public final class BeastPower {
                 BeastConfig.BEAST,
                 List.of("agility"),
                 List.of(
-                        new HeroPower.Ability(POUNCE, "Pounce", BeastPower::pounce),
-                        new HeroPower.Ability(SWEEP, "Weighted Sweep", BeastPower::sweep),
+                        HeroPower.Ability.of(POUNCE, "Pounce", BeastPower::pounce),
+                        HeroPower.Ability.of(SWEEP, "Weighted Sweep", BeastPower::sweep),
                         HeroToggles.WHEEL
                 ),
                 List.of(SurfaceCling.TOGGLE, HeroToggles.SUPER_LEAP, LOW_LIGHT),
@@ -151,11 +153,11 @@ public final class BeastPower {
         return BeastConfig.CLING_LATERAL.get();
     }
 
-    private static State state(ServerPlayer player) {
+    private static State state(LivingEntity player) {
         return STATES.computeIfAbsent(player.getUUID(), ignored -> new State());
     }
 
-    private static boolean target(ServerPlayer player, LivingEntity entity) {
+    private static boolean target(LivingEntity player, LivingEntity entity) {
         return !(entity instanceof ArmorStand) && KineticBurst.affects(player, entity) && player.hasLineOfSight(entity);
     }
 
@@ -163,11 +165,15 @@ public final class BeastPower {
         return (float) (MarvelBalanceConfig.POUNCE_DAMAGE.get() * multiplier);
     }
 
-    private static double pounce(ServerPlayer player, int slot) {
+    private static net.minecraft.world.damagesource.DamageSource attack(LivingEntity caster) {
+        return caster instanceof net.minecraft.world.entity.player.Player player ? caster.damageSources().playerAttack(player) : caster.damageSources().mobAttack(caster);
+    }
+
+    private static double pounce(LivingEntity player, int slot) {
         State state = state(player);
         long now = player.level().getGameTime();
         if (state.phase == WINDOW && now < state.until) {
-            return rebound(player, state, now);
+            return player instanceof ServerPlayer user ? rebound(user, state, now) : 0.0D;
         }
         if (state.phase != IDLE) {
             return 0.0D;
@@ -184,19 +190,21 @@ public final class BeastPower {
         player.setDeltaMovement(flat.x * speed, lift * up, flat.z * speed);
         player.hurtMarked = true;
         player.fallDistance = 0.0F;
-        SurfaceCling.release(player);
+        if (player instanceof ServerPlayer user) {
+            SurfaceCling.release(user);
+        }
         state.phase = POUNCING;
         state.started = now;
         state.until = now + POUNCE_TICKS;
         state.direction = flat;
         state.first = null;
-        state.fromWall = SurfaceCling.clungWithin(player, WALL_MEMORY_TICKS);
+        state.fromWall = player instanceof ServerPlayer user && SurfaceCling.clungWithin(user, WALL_MEMORY_TICKS);
         state.fallGuardUntil = now + FALL_GUARD_TICKS;
         state.leftGround = false;
         HeroAnimations.play(player, "flip_both_1");
         HeroFx.play(player, SoundEvents.GOAT_LONG_JUMP, 1.0F, 0.8F);
-        player.serverLevel().sendParticles(ParticleTypes.CLOUD, player.getX(), player.getY() + 0.1D, player.getZ(), 6, 0.3D, 0.05D, 0.3D, 0.02D);
-        return 0.0D;
+        HeroCaster.level(player).sendParticles(ParticleTypes.CLOUD, player.getX(), player.getY() + 0.1D, player.getZ(), 6, 0.3D, 0.05D, 0.3D, 0.02D);
+        return player instanceof ServerPlayer ? 0.0D : BeastConfig.POUNCE_COOLDOWN.get();
     }
 
     private static double rebound(ServerPlayer player, State state, long now) {
@@ -268,7 +276,7 @@ public final class BeastPower {
         return new Vec3(face.getStepX(), 0.0D, face.getStepZ());
     }
 
-    private static void tickState(ServerPlayer player) {
+    private static void tickState(LivingEntity player) {
         State state = STATES.get(player.getUUID());
         if (state == null) {
             return;
@@ -283,7 +291,7 @@ public final class BeastPower {
             state.fallGuardUntil = 0L;
         }
         if (state.phase == POUNCING || state.phase == KICKING) {
-            if (VillainWorld.suppressed(player) || HealingFactor.isDowned(player)) {
+            if (player instanceof ServerPlayer user && (VillainWorld.suppressed(user) || HealingFactor.isDowned(user))) {
                 finish(player, state, BeastConfig.POUNCE_COOLDOWN.get());
                 return;
             }
@@ -315,9 +323,9 @@ public final class BeastPower {
         }
     }
 
-    private static void landPounce(ServerPlayer player, State state, LivingEntity hit, long now) {
+    private static void landPounce(LivingEntity player, State state, LivingEntity hit, long now) {
         float damage = pounceDamage(BeastConfig.POUNCE_DAMAGE_MULTIPLIER.get());
-        HeroAbilities.runAsAbilityDamage(() -> hit.hurt(player.damageSources().playerAttack(player), damage));
+        HeroAbilities.runAsAbilityDamage(() -> hit.hurt(attack(player), damage));
         Vec3 dir = state.direction;
         hit.knockback(0.8D, -dir.x, -dir.z);
         int up = HeroGravity.up(player);
@@ -327,45 +335,45 @@ public final class BeastPower {
         state.phase = WINDOW;
         state.first = hit.getUUID();
         state.until = now + BeastConfig.REBOUND_WINDOW_TICKS.get();
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         Vec3 at = hit.getBoundingBox().getCenter();
         HeroFx.vfx(level, at, "punch_pressure_wave", 0, () ->
                 level.sendParticles(ParticleTypes.CRIT, at.x, at.y, at.z, 12, 0.3D, 0.3D, 0.3D, 0.2D));
         HeroFx.play(player, HeroFx.sound("thematic:beast_bench_burst", SoundEvents.PLAYER_ATTACK_STRONG), 0.9F, 1.1F);
-        player.displayClientMessage(Component.literal("§bRebound ready"), true);
+        HeroCaster.message(player, Component.literal("§bRebound ready"));
     }
 
-    private static void landKick(ServerPlayer player, State state, LivingEntity hit) {
+    private static void landKick(LivingEntity player, State state, LivingEntity hit) {
         float damage = pounceDamage(BeastConfig.REBOUND_DAMAGE_MULTIPLIER.get());
-        HeroAbilities.runAsAbilityDamage(() -> hit.hurt(player.damageSources().playerAttack(player), damage));
+        HeroAbilities.runAsAbilityDamage(() -> hit.hurt(attack(player), damage));
         Vec3 dir = state.direction;
         hit.knockback(1.0D, -dir.x, -dir.z);
         int up = HeroGravity.up(player);
         player.setDeltaMovement(-dir.x * 0.5D, 0.5D * up, -dir.z * 0.5D);
         player.hurtMarked = true;
         player.fallDistance = 0.0F;
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         Vec3 at = hit.getBoundingBox().getCenter();
         HeroFx.vfx(level, at, "impact_starburst", 0, () ->
                 level.sendParticles(ParticleTypes.CRIT, at.x, at.y, at.z, 16, 0.3D, 0.3D, 0.3D, 0.25D));
         HeroFx.play(player, HeroFx.sound("thematic:beast_kick", SoundEvents.PLAYER_ATTACK_KNOCKBACK), 1.0F, 1.0F);
-        if (state.fromWall) {
-            HeroAdvancements.award(player, "x_men/beast/bank_shot");
+        if (state.fromWall && player instanceof ServerPlayer user) {
+            HeroAdvancements.award(user, "x_men/beast/bank_shot");
         }
         double cooldown = BeastConfig.POUNCE_COOLDOWN.get() * (1.0D - BeastConfig.REBOUND_REFUND.get());
         finish(player, state, cooldown);
     }
 
-    private static void finish(ServerPlayer player, State state, double cooldown) {
+    private static void finish(LivingEntity player, State state, double cooldown) {
         state.phase = IDLE;
         state.first = null;
         state.fromWall = false;
-        if (cooldown > 0.0D) {
-            HeroAbilities.setCooldown(player, POUNCE, cooldown);
+        if (cooldown > 0.0D && player instanceof ServerPlayer user) {
+            HeroAbilities.setCooldown(user, POUNCE, cooldown);
         }
     }
 
-    private static double sweep(ServerPlayer player, int slot) {
+    private static double sweep(LivingEntity player, int slot) {
         double range = BeastConfig.SWEEP_RANGE.get();
         float damage = (float) (MarvelBalanceConfig.CLAW_SWIPE_DAMAGE.get() * BeastConfig.SWEEP_DAMAGE_MULTIPLIER.get());
         Vec3 look = player.getLookAngle();
@@ -387,7 +395,7 @@ public final class BeastPower {
             return height > -1.0D && height < 1.5D && distance <= range && (distance < 0.5D || across.normalize().dot(forward) >= minDot);
         });
         for (LivingEntity target : targets) {
-            HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+            HeroAbilities.runAsAbilityDamage(() -> target.hurt(attack(player), damage));
             target.knockback(0.4D, -forward.x, -forward.z);
             if (stumble > 0 && HeroAbilities.canControl(target) && !HeroAbilities.isBoss(target)) {
                 Long immune = STUMBLE_IMMUNE.get(target.getUUID());
@@ -400,7 +408,7 @@ public final class BeastPower {
         if (STUMBLE_IMMUNE.size() > 256) {
             STUMBLE_IMMUNE.values().removeIf(until -> until < now);
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         for (int i = -1; i <= 1; i++) {
             double angle = Math.toRadians(i * 45.0D);
             double x = forward.x * Math.cos(angle) - forward.z * Math.sin(angle);

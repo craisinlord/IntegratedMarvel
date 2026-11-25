@@ -16,6 +16,7 @@ public record GauntletShapePayload(ParticleOptions particle, int shape, double a
     public static final int BOX = 2;
     public static final int LINE = 3;
     public static final int ELLIPSE = 4;
+    public static final int BURST = 5;
     private static final int FAR_BIT = 0x40;
     public static final Type<GauntletShapePayload> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "gauntlet_shape"));

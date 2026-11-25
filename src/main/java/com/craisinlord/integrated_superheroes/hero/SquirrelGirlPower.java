@@ -16,6 +16,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -51,11 +52,11 @@ public final class SquirrelGirlPower {
             new HeroWheels.Option(GNAW, "Gnaw", () -> Items.OAK_LOG),
             new HeroWheels.Option(STAY, "Stay", () -> Items.LEAD)
     );
-    private static final Map<UUID, String> ORDERS = new HashMap<>();
-    private static final Map<UUID, Long> NEXT_SQUIRREL = new HashMap<>();
-    private static final Map<UUID, UUID> TIPPY = new HashMap<>();
-    private static final Map<UUID, Long> TIPPY_BACK = new HashMap<>();
-    private static final Map<UUID, HeroGnaw> GNAWING = new HashMap<>();
+    private static final Map<UUID, String> ORDERS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> NEXT_SQUIRREL = ServerState.map(new HashMap<>());
+    private static final Map<UUID, UUID> TIPPY = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> TIPPY_BACK = ServerState.map(new HashMap<>());
+    private static final Map<UUID, HeroGnaw> GNAWING = ServerState.map(new HashMap<>());
 
     private SquirrelGirlPower() {
     }
@@ -69,9 +70,9 @@ public final class SquirrelGirlPower {
                 MarvelBalanceConfig.SQUIRREL_GIRL,
                 List.of("agility"),
                 List.of(
-                        new HeroPower.Ability("call_swarm", "Call the Swarm", SquirrelGirlPower::callSwarm),
-                        new HeroPower.Ability("sic_em", "Sic 'Em", SquirrelGirlPower::sicEm),
-                        new HeroPower.Ability("squirrel_pile", "Squirrel Pile", SquirrelGirlPower::squirrelPile),
+                        HeroPower.Ability.of("call_swarm", "Call the Swarm", SquirrelGirlPower::callSwarm),
+                        HeroPower.Ability.of("sic_em", "Sic 'Em", SquirrelGirlPower::sicEm),
+                        HeroPower.Ability.of("squirrel_pile", "Squirrel Pile", SquirrelGirlPower::squirrelPile),
                         new HeroPower.Ability(ORDERS_ABILITY, "Swarm Orders", (player, slot) -> 0.0D),
                         HeroToggles.WHEEL
                 ),
@@ -150,9 +151,15 @@ public final class SquirrelGirlPower {
         return gnaw == null ? null : gnaw.target();
     }
 
-    private static List<SwarmSquirrel> squirrels(ServerPlayer player) {
-        return player.serverLevel().getEntitiesOfClass(SwarmSquirrel.class, player.getBoundingBox().inflate(64.0D),
-                squirrel -> squirrel.isAlive() && !squirrel.isTippy() && squirrel.ownedBy(player));
+    private static final int MOB_SWARM_LIFE = 20 * 60;
+
+    private static boolean ownedBy(SwarmSquirrel squirrel, LivingEntity caster) {
+        return caster instanceof Player player ? squirrel.ownedBy(player) : caster instanceof Mob mob && squirrel.summonedBy(mob);
+    }
+
+    private static List<SwarmSquirrel> squirrels(LivingEntity player) {
+        return HeroCaster.level(player).getEntitiesOfClass(SwarmSquirrel.class, player.getBoundingBox().inflate(64.0D),
+                squirrel -> squirrel.isAlive() && !squirrel.isTippy() && ownedBy(squirrel, player));
     }
 
     private static SwarmSquirrel tippy(ServerPlayer player) {
@@ -189,14 +196,22 @@ public final class SquirrelGirlPower {
         }
     }
 
-    private static SwarmSquirrel spawn(ServerPlayer player, boolean tippy, boolean dramatic) {
-        ServerLevel level = player.serverLevel();
+    private static SwarmSquirrel spawn(LivingEntity player, boolean tippy, boolean dramatic) {
+        ServerLevel level = HeroCaster.level(player);
         SwarmSquirrel squirrel = HeroEntities.SWARM_SQUIRREL.get().create(level);
         if (squirrel == null) {
             return null;
         }
         float bite = (tippy ? MarvelBalanceConfig.TIPPY_BITE_DAMAGE.get() : MarvelBalanceConfig.SWARM_BITE_DAMAGE.get()).floatValue();
-        squirrel.setup(player, tippy, bite, MarvelBalanceConfig.SWARM_SQUIRREL_HEALTH.get());
+        if (player instanceof ServerPlayer owner) {
+            squirrel.setup(owner, tippy, bite, MarvelBalanceConfig.SWARM_SQUIRREL_HEALTH.get());
+        } else {
+            LivingEntity target = HeroCaster.target(player);
+            if (!(player instanceof Mob mob) || target == null) {
+                return null;
+            }
+            squirrel.summonFor(mob, target, bite, MarvelBalanceConfig.SWARM_SQUIRREL_HEALTH.get(), MOB_SWARM_LIFE);
+        }
         BlockPos ground = tippy ? player.blockPosition() : groundNear(player);
         BlockPos sky = ground.above(8);
         boolean glide = dramatic && level.canSeeSky(ground) && level.isEmptyBlock(sky) && level.isEmptyBlock(sky.above()) && level.random.nextBoolean();
@@ -220,8 +235,8 @@ public final class SquirrelGirlPower {
         return squirrel;
     }
 
-    private static BlockPos groundNear(ServerPlayer player) {
-        ServerLevel level = player.serverLevel();
+    private static BlockPos groundNear(LivingEntity player) {
+        ServerLevel level = HeroCaster.level(player);
         BlockPos origin = player.blockPosition();
         for (int attempt = 0; attempt < 12; attempt++) {
             double angle = level.random.nextDouble() * Math.PI * 2.0D;
@@ -239,7 +254,10 @@ public final class SquirrelGirlPower {
         return origin;
     }
 
-    private static double callSwarm(ServerPlayer player, int slot) {
+    private static double callSwarm(LivingEntity caster, int slot) {
+        if (!(caster instanceof ServerPlayer player)) {
+            return mobSwarm(caster);
+        }
         PlayerData data = HeroPowers.data(player);
         if (data.hasState(SWARM_STATE)) {
             data.removeState(SWARM_STATE);
@@ -266,23 +284,45 @@ public final class SquirrelGirlPower {
         return MarvelBalanceConfig.SWARM_CALL_COOLDOWN.get();
     }
 
-    private static LivingEntity aimed(ServerPlayer player, double range) {
-        HeroAbilities.Beam beam = HeroAbilities.beam(player, player.getLookAngle(), range, 8);
-        return beam.targets().stream()
-                .filter(entity -> !(entity instanceof SwarmSquirrel squirrel && squirrel.ownedBy(player)))
-                .findFirst()
-                .orElse(null);
+    private static double mobSwarm(LivingEntity caster) {
+        List<SwarmSquirrel> out = squirrels(caster);
+        if (!out.isEmpty()) {
+            out.forEach(SwarmSquirrel::vanish);
+            HeroFx.play(caster, ModSounds.SWARM_SQUIRREL_BEG.get(), 0.8F, 0.8F);
+            return MarvelBalanceConfig.SWARM_CALL_COOLDOWN.get();
+        }
+        if (HeroCaster.target(caster) == null) {
+            return 0.0D;
+        }
+        int size = MarvelBalanceConfig.SWARM_SIZE.get();
+        for (int i = 0; i < size; i++) {
+            spawn(caster, false, true);
+        }
+        HeroFx.play(caster, ModSounds.SWARM_SQUIRREL_IDLE.get(), 1.2F, 1.0F);
+        HeroFx.play(caster, ModSounds.SWARM_SQUIRREL_BEG.get(), 1.0F, 1.3F);
+        HeroAnimations.play(caster, "web_shoot_both");
+        return MarvelBalanceConfig.SWARM_CALL_COOLDOWN.get();
     }
 
-    private static boolean needSwarm(ServerPlayer player) {
-        if (swarmOut(player) && !squirrels(player).isEmpty()) {
+    private static LivingEntity aimed(LivingEntity player, double range) {
+        HeroAbilities.Beam beam = HeroAbilities.beam(player, player.getLookAngle(), range, 8);
+        LivingEntity found = beam.targets().stream()
+                .filter(entity -> !(entity instanceof SwarmSquirrel squirrel && ownedBy(squirrel, player)))
+                .findFirst()
+                .orElse(null);
+        return found != null ? found : HeroCaster.target(player);
+    }
+
+    private static boolean needSwarm(LivingEntity player) {
+        boolean out = player instanceof Player owner ? swarmOut(owner) : true;
+        if (out && !squirrels(player).isEmpty()) {
             return true;
         }
-        player.displayClientMessage(Component.literal("§7Call the swarm first."), true);
+        HeroCaster.message(player, Component.literal("§7Call the swarm first."));
         return false;
     }
 
-    private static double sicEm(ServerPlayer player, int slot) {
+    private static double sicEm(LivingEntity player, int slot) {
         if (!needSwarm(player)) {
             return 0.0D;
         }
@@ -295,8 +335,10 @@ public final class SquirrelGirlPower {
                 squirrel.focus(target);
             });
             Vec3 top = target.position().add(0.0D, target.getBbHeight() + 0.3D, 0.0D);
-            player.serverLevel().sendParticles(ParticleTypes.ANGRY_VILLAGER, top.x, top.y, top.z, 3, 0.3D, 0.2D, 0.3D, 0.0D);
-            player.displayClientMessage(Component.literal("§6Sic 'em!"), true);
+            HeroCaster.level(player).sendParticles(ParticleTypes.ANGRY_VILLAGER, top.x, top.y, top.z, 3, 0.3D, 0.2D, 0.3D, 0.0D);
+            HeroCaster.message(player, Component.literal("§6Sic 'em!"));
+        } else if (!(player instanceof ServerPlayer)) {
+            return 0.0D;
         } else {
             Vec3 eye = player.getEyePosition();
             BlockHitResult hit = player.level().clip(new ClipContext(eye, eye.add(player.getLookAngle().scale(range)),
@@ -309,16 +351,16 @@ public final class SquirrelGirlPower {
                 squirrel.setOrderedToSit(false);
                 squirrel.guard(guard);
             });
-            player.serverLevel().sendParticles(ParticleTypes.HAPPY_VILLAGER, guard.getX() + 0.5D, guard.getY() + 0.3D, guard.getZ() + 0.5D,
+            HeroCaster.level(player).sendParticles(ParticleTypes.HAPPY_VILLAGER, guard.getX() + 0.5D, guard.getY() + 0.3D, guard.getZ() + 0.5D,
                     8, 0.4D, 0.2D, 0.4D, 0.0D);
-            player.displayClientMessage(Component.literal("§6Guard that spot!"), true);
+            HeroCaster.message(player, Component.literal("§6Guard that spot!"));
         }
         HeroFx.play(player, ModSounds.SWARM_SQUIRREL_BEG.get(), 1.0F, 1.5F);
         HeroAnimations.play(player, "web_shoot_r");
         return MarvelBalanceConfig.SIC_EM_COOLDOWN.get();
     }
 
-    private static double squirrelPile(ServerPlayer player, int slot) {
+    private static double squirrelPile(LivingEntity player, int slot) {
         if (!needSwarm(player)) {
             return 0.0D;
         }
@@ -340,13 +382,13 @@ public final class SquirrelGirlPower {
         if (HeroAbilities.canControl(target)) {
             HeroStun.stun(target, ticks);
         }
-        if (swarm.size() >= MarvelBalanceConfig.SWARM_SIZE.get()) {
-            HeroAdvancements.award(player, "street_level/squirrel_girl/squirrel_pile");
+        if (swarm.size() >= MarvelBalanceConfig.SWARM_SIZE.get() && player instanceof ServerPlayer serverPlayer) {
+            HeroAdvancements.award(serverPlayer, "street_level/squirrel_girl/squirrel_pile");
         }
         HeroFx.play(target, ModSounds.SWARM_SQUIRREL_BEG.get(), 1.5F, 1.1F);
         HeroFx.play(target, SoundEvents.PLAYER_ATTACK_SWEEP, 1.0F, 1.6F);
         HeroAnimations.play(player, "web_shoot_both");
-        player.displayClientMessage(Component.literal("§6Squirrel pile!"), true);
+        HeroCaster.message(player, Component.literal("§6Squirrel pile!"));
         return MarvelBalanceConfig.PILE_COOLDOWN.get();
     }
 
@@ -386,7 +428,7 @@ public final class SquirrelGirlPower {
     private static void stopGnaw(ServerPlayer player) {
         HeroGnaw gnaw = GNAWING.remove(player.getUUID());
         if (gnaw != null) {
-            gnaw.stop(player.serverLevel());
+            gnaw.stop();
         }
     }
 
@@ -399,7 +441,7 @@ public final class SquirrelGirlPower {
         if (gnaw == null) {
             return;
         }
-        if (!swarmOut(player) || !GNAW.equals(order(player))) {
+        if (gnaw.lost(player) || !swarmOut(player) || !GNAW.equals(order(player))) {
             stopGnaw(player);
             return;
         }

@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.suit;
 
+import com.craisinlord.integrated_superheroes.hero.HeroCaster;
 import com.craisinlord.integrated_superheroes.hero.HeroAbilities;
 import com.craisinlord.integrated_superheroes.hero.HeroAnimations;
 import com.craisinlord.integrated_superheroes.hero.HeroFx;
@@ -7,7 +8,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,15 +19,16 @@ public final class SuitMovementAbilities {
     }
 
     static SuitAbility.Result afterburner(SuitContext context) {
-        ServerPlayer player = context.player();
+        LivingEntity player = context.caster();
         Vec3 velocity = player.getLookAngle().scale(SuitAbilityConfig.AFTERBURNER_SPEED.get());
         if (player.onGround()) {
             velocity = velocity.add(0.0D, 0.35D, 0.0D);
         }
-        HeroAbilities.startDash(player, velocity, SuitAbilityConfig.AFTERBURNER_TICKS.get(),
-                context.damage(SuitAbilityConfig.AFTERBURNER), 1.2D, entity -> SuitTargeting.canHit(player, entity));
+        Vec3 launch = velocity;
+        HeroAbilities.runAsSuitDamage(() -> HeroAbilities.startDash(player, launch, SuitAbilityConfig.AFTERBURNER_TICKS.get(),
+                context.damage(SuitAbilityConfig.AFTERBURNER), 1.2D, entity -> SuitTargeting.canHit(player, entity)));
         SuitStates.noFall(player);
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         if (HeroFx.vfx(level, player.position(), "ember_flare", 0)) {
             HeroFx.cue(player, "thematic:ultron.rush_engage", 1.0F, 1.0F);
         } else {
@@ -39,7 +40,7 @@ public final class SuitMovementAbilities {
     }
 
     static SuitAbility.Result superheroLanding(SuitContext context) {
-        ServerPlayer player = context.player();
+        LivingEntity player = context.caster();
         Vec3 motion = player.getDeltaMovement();
         if (player.onGround()) {
             player.setDeltaMovement(motion.x, 0.9D, motion.z);
@@ -53,12 +54,12 @@ public final class SuitMovementAbilities {
         state.landingPeakY = player.getY();
         state.landingDamage = context.damage(SuitAbilityConfig.LANDING);
         SuitStates.noFall(player);
-        player.serverLevel().sendParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 0.5D, player.getZ(), 10, 0.2D, 0.3D, 0.2D, 0.02D);
+        HeroCaster.level(player).sendParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 0.5D, player.getZ(), 10, 0.2D, 0.3D, 0.2D, 0.02D);
         return SuitAbility.Result.FIRED;
     }
 
-    static void landingImpact(ServerPlayer player, double fallen, float baseDamage) {
-        ServerLevel level = player.serverLevel();
+    static void landingImpact(LivingEntity player, double fallen, float baseDamage) {
+        ServerLevel level = HeroCaster.level(player);
         double multiplier = Math.min(SuitAbilityConfig.LANDING_MAX_MULTIPLIER.get(), 1.0D + SuitAbilityConfig.LANDING_PER_BLOCK.get() * Math.max(0.0D, fallen));
         float damage = (float) (baseDamage * multiplier);
         double radius = SuitAbilityConfig.LANDING_RADIUS.get();
@@ -67,7 +68,7 @@ public final class SuitMovementAbilities {
                 continue;
             }
             target.invulnerableTime = 0;
-            HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+            HeroAbilities.runAsSuitDamage(() -> target.hurt(SuitTargeting.attack(player), damage));
             Vec3 away = target.position().subtract(player.position());
             target.knockback(1.2D, -away.x, -away.z);
             target.setDeltaMovement(target.getDeltaMovement().add(0.0D, 0.4D, 0.0D));
@@ -90,7 +91,7 @@ public final class SuitMovementAbilities {
     }
 
     static SuitAbility.Result starboost(SuitContext context) {
-        ServerPlayer player = context.player();
+        LivingEntity player = context.caster();
         SuitStates.State state = SuitStates.get(player);
         state.starboostTotal = SuitAbilityConfig.STARBOOST_TICKS.get();
         state.starboostTicks = state.starboostTotal;
@@ -98,7 +99,7 @@ public final class SuitMovementAbilities {
         Vec3 motion = player.getDeltaMovement();
         player.setDeltaMovement(motion.x, 1.0D, motion.z);
         player.hurtMarked = true;
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         if (HeroFx.vfx(level, player.position(), "ignition_plume", 0)) {
             HeroFx.vfx(level, player.position(), "air_burst_ring", 0);
             HeroFx.cue(player, "thematic:ultron.rush_engage", 1.2F, 0.9F);

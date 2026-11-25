@@ -71,17 +71,17 @@ public final class AtlanteanPower {
     private static final String MISSILE = "missile";
     private static final String COMMAND = "command";
     private static final int COMMAND_CAP = 3;
-    private static final Map<UUID, Integer> DRY = new HashMap<>();
-    private static final Map<UUID, Ally> ALLIES = new HashMap<>();
-    private static final Map<UUID, Flight> TRIDENTS = new HashMap<>();
-    private static final Map<UUID, Long> PROVOKED = new HashMap<>();
-    private static final Map<UUID, Bomb> BOMBS = new HashMap<>();
-    private static final Map<UUID, Long> SURGED = new HashMap<>();
+    private static final Map<UUID, Integer> DRY = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Ally> ALLIES = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Flight> TRIDENTS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> PROVOKED = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Bomb> BOMBS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> SURGED = ServerState.map(new HashMap<>());
 
     private record Flight(UUID owner, long returnAt) {
     }
 
-    private record Ally(UUID owner, long until, String group, float bite, long since) {
+    private record Ally(UUID owner, long until, String group, float bite, long since, boolean wild) {
     }
 
     private static final class Bomb {
@@ -111,15 +111,27 @@ public final class AtlanteanPower {
             if (ModCompat.ICE_AND_FIRE) {
                 NeoForge.EVENT_BUS.addListener(AtlanteanPower::onEffect);
             }
+            NeoForge.EVENT_BUS.addListener(AtlanteanPower::onWildTrident);
+            HeroCaster.onTick(caster -> {
+                if (caster.tickCount % 10 == 0) {
+                    tickAllies(caster);
+                }
+                tickBomb(caster);
+                tickTridents(HeroCaster.level(caster));
+            });
+            HeroCaster.onCleanup(caster -> {
+                dismiss(caster, null);
+                dropBomb(caster);
+            });
         }
         List<HeroPower.Ability> abilities = new ArrayList<>();
         if (ModCompat.ANTARCHY) {
-            abilities.add(new HeroPower.Ability("missile_squids", "Missile Squids", AtlanteanPower::missileSquids));
-            abilities.add(new HeroPower.Ability("octopus_bomb", "Octopus Bomb", AtlanteanPower::octopusBomb));
+            abilities.add(HeroPower.Ability.of("missile_squids", "Missile Squids", AtlanteanPower::missileSquids));
+            abilities.add(HeroPower.Ability.of("octopus_bomb", "Octopus Bomb", AtlanteanPower::octopusBomb));
         }
-        abilities.add(new HeroPower.Ability("call_sea_life", "Call of the Sea", AtlanteanPower::callSeaLife));
+        abilities.add(HeroPower.Ability.of("call_sea_life", "Call of the Sea", AtlanteanPower::callSeaLife));
         abilities.add(new HeroPower.Ability("speak_to_the_sea", "Speak to the Sea", AtlanteanPower::speak));
-        abilities.add(new HeroPower.Ability("trident_throw", "Trident Throw", AtlanteanPower::tridentThrow));
+        abilities.add(HeroPower.Ability.of("trident_throw", "Trident Throw", AtlanteanPower::tridentThrow));
         return new HeroPower(
                 ID,
                 "Atlantean (Arthur Curry)",
@@ -182,7 +194,7 @@ public final class AtlanteanPower {
                                     player.serverLevel().addFreshEntity(bolt);
                                 }
                             }
-                            event.setAmount(amount);
+                            event.setAmount(amount * AbilityDamage.scale(player, event.getEntity()));
                         }
                         event.setAmount(event.getAmount() * multiplier(player));
                     }
@@ -207,7 +219,7 @@ public final class AtlanteanPower {
         }
         Ally ally = ALLIES.get(event.getEntity().getUUID());
         if (ally != null) {
-            if (target instanceof Player || isAllyOf(ally.owner(), target)) {
+            if (ally.wild() ? spared(event.getEntity(), ally, target) : target instanceof Player || isAllyOf(ally.owner(), target)) {
                 event.setCanceled(true);
             }
             return;
@@ -225,12 +237,13 @@ public final class AtlanteanPower {
             return;
         }
         LivingEntity victim = event.getEntity();
-        if (victim instanceof Player || isAllyOf(ally.owner(), victim)) {
+        if (ally.wild() ? spared(victim, ally, victim) : victim instanceof Player || isAllyOf(ally.owner(), victim)) {
             event.setCanceled(true);
             return;
         }
         if (ally.bite() > 0.0F) {
-            event.setAmount(ally.bite());
+            Entity owner = victim.level() instanceof ServerLevel level ? level.getEntity(ally.owner()) : null;
+            event.setAmount(ally.bite() * AbilityDamage.scale(owner, victim));
         }
     }
 
@@ -239,6 +252,32 @@ public final class AtlanteanPower {
                 && event.getEffectInstance().getEffect().value() == IceAndFireCharges.sirenCharm().value()) {
             event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
         }
+    }
+
+    private static boolean spared(Entity near, Ally ally, LivingEntity target) {
+        if (target.getUUID().equals(ally.owner()) || isAllyOf(ally.owner(), target)) {
+            return true;
+        }
+        Entity owner = near.level() instanceof ServerLevel level ? level.getEntity(ally.owner()) : null;
+        return owner instanceof LivingEntity caster && !HeroCaster.foe(caster, target);
+    }
+
+    private static void onWildTrident(LivingIncomingDamageEvent event) {
+        Entity direct = event.getSource().getDirectEntity();
+        if (direct == null || !direct.getTags().contains(TRIDENT_TAG) || !(event.getSource().getEntity() instanceof Mob owner)) {
+            return;
+        }
+        float amount = NewSerumConfig.TRIDENT_DAMAGE.get().floatValue();
+        if (wet(owner)) {
+            amount += NewSerumConfig.TRIDENT_BOLT_DAMAGE.get().floatValue();
+            LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(owner.level());
+            if (bolt != null) {
+                bolt.moveTo(event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ());
+                bolt.setVisualOnly(true);
+                owner.level().addFreshEntity(bolt);
+            }
+        }
+        event.setAmount(amount);
     }
 
     private static boolean provoked(ServerPlayer player) {
@@ -255,7 +294,7 @@ public final class AtlanteanPower {
         return ally != null && ally.owner().equals(owner);
     }
 
-    private static boolean wet(ServerPlayer player) {
+    private static boolean wet(LivingEntity player) {
         return player.isInWaterRainOrBubble();
     }
 
@@ -320,7 +359,7 @@ public final class AtlanteanPower {
         }
     }
 
-    private static boolean nearWater(ServerPlayer player, int radius) {
+    private static boolean nearWater(LivingEntity player, int radius) {
         BlockPos origin = player.blockPosition();
         for (BlockPos pos : BlockPos.betweenClosed(origin.offset(-radius, -2, -radius), origin.offset(radius, 1, radius))) {
             if (player.level().getFluidState(pos).is(FluidTags.WATER)) {
@@ -330,17 +369,17 @@ public final class AtlanteanPower {
         return false;
     }
 
-    private static void enlist(ServerPlayer player, Mob mob, long until, String group, float bite) {
+    private static void enlist(LivingEntity player, Mob mob, long until, String group, float bite) {
         if (!COMMAND.equals(group)) {
             mob.addTag(SEA_LIFE_TAG);
             mob.setPersistenceRequired();
         }
         mob.setTarget(null);
-        ALLIES.put(mob.getUUID(), new Ally(player.getUUID(), until, group, bite, player.level().getGameTime()));
+        ALLIES.put(mob.getUUID(), new Ally(player.getUUID(), until, group, bite, player.level().getGameTime(), !(player instanceof Player)));
     }
 
-    private static double missileSquids(ServerPlayer player, int slot) {
-        ServerLevel level = player.serverLevel();
+    private static double missileSquids(LivingEntity player, int slot) {
+        ServerLevel level = HeroCaster.level(player);
         int count = NewSerumConfig.MISSILE_COUNT.get() + (wet(player) ? NewSerumConfig.MISSILE_WET_BONUS.get() : 0);
         long until = level.getGameTime() + NewSerumConfig.MISSILE_SECONDS.get() * 20L;
         float bite = NewSerumConfig.MISSILE_BITE_DAMAGE.get().floatValue();
@@ -370,11 +409,11 @@ public final class AtlanteanPower {
         return NewSerumConfig.MISSILE_COOLDOWN.get();
     }
 
-    private static double octopusBomb(ServerPlayer player, int slot) {
+    private static double octopusBomb(LivingEntity player, int slot) {
         if (BOMBS.containsKey(player.getUUID())) {
             return 0.0D;
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         Vec3 look = player.getLookAngle();
         Vec3 at = player.getEyePosition().add(look.scale(1.5D)).subtract(0.0D, 0.6D, 0.0D);
         Mob octopus = AntarchySeaLife.octopus(level, at, player.getYRot());
@@ -391,27 +430,48 @@ public final class AtlanteanPower {
         return NewSerumConfig.OCTOPUS_COOLDOWN.get();
     }
 
-    private static void dropBomb(ServerPlayer player) {
+    public static void leave(ServerPlayer player) {
+        Bomb bomb = BOMBS.remove(player.getUUID());
+        List<Map.Entry<UUID, Ally>> allies = new ArrayList<>();
+        for (Map.Entry<UUID, Ally> entry : ALLIES.entrySet()) {
+            if (entry.getValue().owner().equals(player.getUUID())) {
+                allies.add(Map.entry(entry.getKey(), entry.getValue()));
+            }
+        }
+        if (bomb == null && allies.isEmpty()) {
+            return;
+        }
+        allies.forEach(entry -> ALLIES.remove(entry.getKey()));
+        for (ServerLevel level : player.server.getAllLevels()) {
+            if (bomb != null && level.getEntity(bomb.octopus) instanceof Entity octopus) {
+                octopus.discard();
+            }
+            allies.forEach(entry -> release(level, entry.getKey(), entry.getValue()));
+        }
+    }
+
+    private static void dropBomb(LivingEntity player) {
         Bomb bomb = BOMBS.remove(player.getUUID());
         if (bomb != null) {
-            Entity octopus = player.serverLevel().getEntity(bomb.octopus);
+            Entity octopus = HeroCaster.level(player).getEntity(bomb.octopus);
             if (octopus != null) {
                 octopus.discard();
             }
         }
     }
 
-    private static boolean bombable(ServerPlayer player, LivingEntity entity) {
-        return entity != player && entity.isAlive() && !(entity instanceof Player) && !isAllyOf(player.getUUID(), entity)
+    private static boolean bombable(LivingEntity player, LivingEntity entity) {
+        return entity != player && entity.isAlive() && (player instanceof Player ? !(entity instanceof Player) : HeroCaster.foe(player, entity))
+                && !isAllyOf(player.getUUID(), entity)
                 && !entity.getTags().contains(SEA_LIFE_TAG) && !entity.isSpectator();
     }
 
-    private static void tickBomb(ServerPlayer player) {
+    private static void tickBomb(LivingEntity player) {
         Bomb bomb = BOMBS.get(player.getUUID());
         if (bomb == null) {
             return;
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         if (!(level.getEntity(bomb.octopus) instanceof Mob octopus) || !octopus.isAlive()) {
             BOMBS.remove(player.getUUID());
             return;
@@ -465,9 +525,9 @@ public final class AtlanteanPower {
         }
     }
 
-    private static void detonate(ServerPlayer player, Mob octopus) {
+    private static void detonate(LivingEntity player, Mob octopus) {
         BOMBS.remove(player.getUUID());
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         Vec3 center = octopus.position().add(0.0D, octopus.getBbHeight() * 0.5D, 0.0D);
         double radius = NewSerumConfig.OCTOPUS_RADIUS.get();
         float damage = NewSerumConfig.OCTOPUS_DAMAGE.get().floatValue();
@@ -487,9 +547,9 @@ public final class AtlanteanPower {
         octopus.discard();
     }
 
-    private static double callSeaLife(ServerPlayer player, int slot) {
-        if (!player.isInWater() && !nearWater(player, 4)) {
-            return landSurge(player);
+    private static double callSeaLife(LivingEntity caster, int slot) {
+        if (!(caster instanceof ServerPlayer player) || !caster.isInWater() && !nearWater(caster, 4)) {
+            return landSurge(caster);
         }
         dismiss(player, CALL);
         ServerLevel level = player.serverLevel();
@@ -536,8 +596,8 @@ public final class AtlanteanPower {
         return NewSerumConfig.SEA_LIFE_COOLDOWN.get();
     }
 
-    private static double landSurge(ServerPlayer player) {
-        ServerLevel level = player.serverLevel();
+    private static double landSurge(LivingEntity player) {
+        ServerLevel level = HeroCaster.level(player);
         float damage = NewSerumConfig.LAND_SURGE_DAMAGE.get().floatValue();
         HeroAbilities.runAsAbilityDamage(() -> HeroShockwaves.ring(player, 10, 5, damage));
         for (LivingEntity target : HeroAbilities.sphere(player, 5.0D)) {
@@ -621,13 +681,14 @@ public final class AtlanteanPower {
                 && entity.level() == player.level() && entity.distanceToSqr(player) < 32.0D * 32.0D;
     }
 
-    private static void tickAllies(ServerPlayer player) {
+    private static void tickAllies(LivingEntity player) {
         if (ALLIES.isEmpty()) {
             return;
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         long now = level.getGameTime();
-        LivingEntity focus = focus(player);
+        boolean wild = !(player instanceof ServerPlayer);
+        LivingEntity focus = player instanceof ServerPlayer user ? focus(user) : HeroCaster.target(player);
         List<LivingEntity> enemies = null;
         Iterator<Map.Entry<UUID, Ally>> iterator = ALLIES.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -651,9 +712,12 @@ public final class AtlanteanPower {
                 dolphin.setMoisntessLevel(2400);
             }
             LivingEntity current = mob.getTarget();
-            boolean stale = current == null || !current.isAlive() || current instanceof Player || isAllyOf(player.getUUID(), current);
+            boolean stale = current == null || !current.isAlive() || (wild ? !HeroCaster.foe(player, current) : current instanceof Player)
+                    || isAllyOf(player.getUUID(), current);
             if (focus != null && focus != mob && focus != current) {
                 mob.setTarget(focus);
+            } else if (stale && wild) {
+                mob.setTarget(null);
             } else if (stale) {
                 if (enemies == null) {
                     enemies = level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(16.0D),
@@ -690,8 +754,8 @@ public final class AtlanteanPower {
         entity.discard();
     }
 
-    private static void dismiss(ServerPlayer player, String group) {
-        ServerLevel level = player.serverLevel();
+    private static void dismiss(LivingEntity player, String group) {
+        ServerLevel level = HeroCaster.level(player);
         Iterator<Map.Entry<UUID, Ally>> iterator = ALLIES.entrySet().iterator();
         List<Map.Entry<UUID, Ally>> gone = new ArrayList<>();
         while (iterator.hasNext()) {
@@ -707,8 +771,8 @@ public final class AtlanteanPower {
         }
     }
 
-    private static double tridentThrow(ServerPlayer player, int slot) {
-        ServerLevel level = player.serverLevel();
+    private static double tridentThrow(LivingEntity player, int slot) {
+        ServerLevel level = HeroCaster.level(player);
         ItemStack stack = new ItemStack(Items.TRIDENT);
         stack.enchant(level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.LOYALTY), 3);
         ThrownTrident trident = new ThrownTrident(level, player, stack);

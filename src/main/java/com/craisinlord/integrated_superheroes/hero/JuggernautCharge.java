@@ -62,9 +62,9 @@ public final class JuggernautCharge {
     private static final int AIRBORNE_LIMIT = 12;
     private static final int LEVEL_EFFECTS_PER_TICK = 6;
     private static final DustParticleOptions CRIMSON = new DustParticleOptions(new Vector3f(0.62F, 0.04F, 0.06F), 1.6F);
-    private static final Map<UUID, State> STATES = new HashMap<>();
-    private static final List<Wave> WAVES = new ArrayList<>();
-    private static final Map<ResourceKey<Level>, long[]> LEVEL_EFFECTS = new HashMap<>();
+    private static final Map<UUID, State> STATES = ServerState.map(new HashMap<>());
+    private static final List<Wave> WAVES = ServerState.all(new ArrayList<>());
+    private static final Map<ResourceKey<Level>, long[]> LEVEL_EFFECTS = ServerState.map(new HashMap<>());
 
     private JuggernautCharge() {
     }
@@ -120,27 +120,27 @@ public final class JuggernautCharge {
         }
     }
 
-    public static boolean charging(Player player) {
+    public static boolean charging(LivingEntity player) {
         State state = STATES.get(player.getUUID());
         return state != null && state.phase == Phase.CHARGING;
     }
 
-    static boolean busy(Player player) {
+    static boolean busy(LivingEntity player) {
         State state = STATES.get(player.getUUID());
         return state != null && (state.phase == Phase.BRAKING || state.phase == Phase.BRACED);
     }
 
-    static float momentum(Player player) {
+    static float momentum(LivingEntity player) {
         State state = STATES.get(player.getUUID());
         return state == null ? 0.0F : state.momentum;
     }
 
-    static boolean start(ServerPlayer player) {
+    static boolean start(LivingEntity player) {
         if (interrupted(player)) {
             return false;
         }
         if (!player.onGround()) {
-            player.displayClientMessage(net.minecraft.network.chat.Component.literal("§7You need solid ground under your feet."), true);
+            HeroCaster.message(player, net.minecraft.network.chat.Component.literal("§7You need solid ground under your feet."));
             return false;
         }
         Vec3 look = player.getLookAngle();
@@ -152,7 +152,7 @@ public final class JuggernautCharge {
         state.last = player.position();
         STATES.put(player.getUUID(), state);
         brace(player, true);
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = ((ServerLevel) player.level());
         level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.RAVAGER_ROAR, SoundSource.PLAYERS, 1.2F, 0.75F);
         BlockState ground = level.getBlockState(player.blockPosition().below());
         if (!ground.isAir()) {
@@ -165,7 +165,7 @@ public final class JuggernautCharge {
         return true;
     }
 
-    static void digIn(ServerPlayer player) {
+    static void digIn(LivingEntity player) {
         State state = STATES.get(player.getUUID());
         if (state == null || state.phase != Phase.CHARGING) {
             return;
@@ -175,12 +175,12 @@ public final class JuggernautCharge {
         state.momentum = 0.0F;
         state.brace = Vec3.directionFromRotation(0.0F, state.heading);
         startCooldown(player, JuggernautPower.CHARGE, JuggernautConfig.CHARGE_COOLDOWN.get());
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = ((ServerLevel) player.level());
         level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.GRINDSTONE_USE, SoundSource.PLAYERS, 1.0F, 0.5F);
         level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.RAVAGER_STEP, SoundSource.PLAYERS, 1.4F, 0.5F);
     }
 
-    static float spend(ServerPlayer player) {
+    static float spend(LivingEntity player) {
         State state = STATES.get(player.getUUID());
         if (state == null) {
             return 0.0F;
@@ -196,7 +196,7 @@ public final class JuggernautCharge {
         return spent;
     }
 
-    public static void clear(ServerPlayer player) {
+    public static void clear(LivingEntity player) {
         State state = STATES.remove(player.getUUID());
         brace(player, false);
         WAVES.removeIf(wave -> wave.owner.equals(player.getUUID()));
@@ -206,11 +206,13 @@ public final class JuggernautCharge {
         if (state.phase == Phase.CHARGING) {
             persist(player, JuggernautPower.CHARGE, JuggernautConfig.CHARGE_COOLDOWN.get());
         }
-        SerumKit.meter(player, -1.0F);
-        SerumKit.clearMeter(player);
+        if (player instanceof ServerPlayer serverPlayer) {
+            SerumKit.meter(serverPlayer, -1.0F);
+            SerumKit.clearMeter(serverPlayer);
+        }
     }
 
-    static boolean frontal(ServerPlayer player, DamageSource source) {
+    static boolean frontal(LivingEntity player, DamageSource source) {
         State state = STATES.get(player.getUUID());
         if (state == null || state.phase != Phase.BRACED) {
             return false;
@@ -230,9 +232,10 @@ public final class JuggernautCharge {
         return to.normalize().dot(state.brace) >= minDot;
     }
 
-    static void tick(ServerPlayer player) {
-        if (player.tickCount % 20 == 0) {
-            syncCooldowns(player);
+    static void tick(LivingEntity player) {
+        ServerPlayer serverPlayer = player instanceof ServerPlayer sp ? sp : null;
+        if (serverPlayer != null && player.tickCount % 20 == 0) {
+            syncCooldowns(serverPlayer);
         }
         State state = STATES.get(player.getUUID());
         if (state != null) {
@@ -244,16 +247,18 @@ public final class JuggernautCharge {
             }
         }
         State now = STATES.get(player.getUUID());
-        SerumKit.meter(player, now == null || now.momentum <= 0.0F ? -1.0F : now.momentum / 100.0F);
+        if (serverPlayer != null) {
+            SerumKit.meter(serverPlayer, now == null || now.momentum <= 0.0F ? -1.0F : now.momentum / 100.0F);
+        }
     }
 
-    private static boolean interrupted(ServerPlayer player) {
+    private static boolean interrupted(LivingEntity player) {
         return !player.isAlive() || player.isSpectator() || player.isPassenger() || player.isInWater() || player.isInLava()
-                || player.isFallFlying() || player.getAbilities().flying || player.isSleeping()
-                || VillainWorld.suppressed(player) || HealingFactor.isDowned(player);
+                || player.isFallFlying() || player.isSleeping()
+                || player instanceof Player human && (human.getAbilities().flying || VillainWorld.suppressed(human) || HealingFactor.isDowned(human));
     }
 
-    private static void tickCharge(ServerPlayer player, State state) {
+    private static void tickCharge(LivingEntity player, State state) {
         state.age++;
         if (interrupted(player) || state.age > JuggernautConfig.CHARGE_MAX_TICKS.get()) {
             end(player, state);
@@ -322,12 +327,12 @@ public final class JuggernautCharge {
         push(player, heading, move);
     }
 
-    private static void push(ServerPlayer player, Vec3 heading, double distance) {
+    private static void push(LivingEntity player, Vec3 heading, double distance) {
         player.setDeltaMovement(heading.x * distance, -0.08D, heading.z * distance);
         player.hurtMarked = true;
     }
 
-    private static void tickBrake(ServerPlayer player, State state) {
+    private static void tickBrake(LivingEntity player, State state) {
         state.phaseTicks++;
         if (interrupted(player)) {
             finish(player);
@@ -342,7 +347,7 @@ public final class JuggernautCharge {
         }
         state.phase = Phase.BRACED;
         state.phaseTicks = 0;
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = ((ServerLevel) player.level());
         BlockState ground = level.getBlockState(player.blockPosition().below());
         if (!ground.isAir()) {
             level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, ground), player.getX(), player.getY() + 0.1D, player.getZ(),
@@ -354,7 +359,7 @@ public final class JuggernautCharge {
         }
     }
 
-    private static void tickBrace(ServerPlayer player, State state) {
+    private static void tickBrace(LivingEntity player, State state) {
         state.phaseTicks++;
         if (interrupted(player) || state.phaseTicks >= JuggernautConfig.DIG_IN_TICKS.get()) {
             finish(player);
@@ -362,11 +367,11 @@ public final class JuggernautCharge {
         }
         if (state.phaseTicks % 6 == 0) {
             Vec3 front = player.position().add(state.brace.scale(0.7D)).add(0.0D, 1.2D, 0.0D);
-            player.serverLevel().sendParticles(CRIMSON, front.x, front.y, front.z, 3, 0.3D, 0.4D, 0.3D, 0.0D);
+            ((ServerLevel) player.level()).sendParticles(CRIMSON, front.x, front.y, front.z, 3, 0.3D, 0.4D, 0.3D, 0.0D);
         }
     }
 
-    private static void tickCoast(ServerPlayer player, State state) {
+    private static void tickCoast(LivingEntity player, State state) {
         state.phaseTicks++;
         if (state.phaseTicks > 20) {
             state.momentum -= 5.0F;
@@ -376,12 +381,12 @@ public final class JuggernautCharge {
         }
     }
 
-    private static void finish(ServerPlayer player) {
+    private static void finish(LivingEntity player) {
         STATES.remove(player.getUUID());
         brace(player, false);
     }
 
-    private static void end(ServerPlayer player, State state) {
+    private static void end(LivingEntity player, State state) {
         brace(player, false);
         startCooldown(player, JuggernautPower.CHARGE, JuggernautConfig.CHARGE_COOLDOWN.get());
         state.phase = Phase.COASTING;
@@ -391,13 +396,13 @@ public final class JuggernautCharge {
         }
     }
 
-    private static void impact(ServerPlayer player, State state, Vec3 heading, boolean boss) {
+    private static void impact(LivingEntity player, State state, Vec3 heading, boolean boss) {
         double cap = JuggernautConfig.CHARGE_MAX_SPEED.get();
         boolean hard = state.speed >= cap * JuggernautConfig.IMPACT_SPEED_FRACTION.get();
         state.momentum *= 0.5F;
         Set<UUID> spared = new HashSet<>(state.hit);
         end(player, state);
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = ((ServerLevel) player.level());
         if (!hard) {
             level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.IRON_GOLEM_DAMAGE, SoundSource.PLAYERS, 0.8F, 0.6F);
             return;
@@ -409,7 +414,7 @@ public final class JuggernautCharge {
         level.playSound(null, front.x, front.y, front.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 0.6F, 0.8F);
         float damage = JuggernautConfig.IMPACT_SHOCKWAVE_DAMAGE.get().floatValue();
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, new AABB(front, front).inflate(3.0D, 1.5D, 3.0D),
-                entity -> !spared.contains(entity.getUUID()) && KineticBurst.affects(player, entity))) {
+                entity -> !spared.contains(entity.getUUID()) && TelekineticFormation.affects(player, entity))) {
             if (damage > 0.0F) {
                 HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().mobAttack(player), damage));
             }
@@ -427,11 +432,11 @@ public final class JuggernautCharge {
         }
     }
 
-    private static boolean hitEntities(ServerPlayer player, State state, Vec3 back, Vec3 heading) {
-        ServerLevel level = player.serverLevel();
+    private static boolean hitEntities(LivingEntity player, State state, Vec3 back, Vec3 heading) {
+        ServerLevel level = ((ServerLevel) player.level());
         AABB box = player.getBoundingBox().expandTowards(back).expandTowards(heading.scale(0.75D)).inflate(0.4D);
         List<LivingEntity> targets = new ArrayList<>(level.getEntitiesOfClass(LivingEntity.class, box,
-                entity -> entity != player && entity.isAlive() && !state.hit.contains(entity.getUUID()) && KineticBurst.affects(player, entity)));
+                entity -> entity != player && entity.isAlive() && !state.hit.contains(entity.getUUID()) && TelekineticFormation.affects(player, entity)));
         if (targets.isEmpty()) {
             return false;
         }
@@ -469,9 +474,9 @@ public final class JuggernautCharge {
         return bossHit;
     }
 
-    private static boolean breaching(ServerPlayer player, State state) {
+    private static boolean breaching(LivingEntity player, State state) {
         return JuggernautPower.breachOn(player) && JuggernautConfig.BREACH_ALLOWED.get()
-                && state.momentum >= JuggernautConfig.BREACH_MIN_MOMENTUM.get() && player.mayBuild()
+                && state.momentum >= JuggernautConfig.BREACH_MIN_MOMENTUM.get() && player instanceof Player builder && builder.mayBuild()
                 && player.level().getGameRules().getBoolean(MarvelGameRules.RULE_SUPERPOWERGRIEFING);
     }
 
@@ -484,8 +489,8 @@ public final class JuggernautCharge {
         return hardness >= 0.0F && hardness <= JuggernautConfig.BREACH_MAX_HARDNESS.get();
     }
 
-    private static Sweep sweep(ServerPlayer player, State state, Vec3 heading, double lookahead) {
-        ServerLevel level = player.serverLevel();
+    private static Sweep sweep(LivingEntity player, State state, Vec3 heading, double lookahead) {
+        ServerLevel level = ((ServerLevel) player.level());
         AABB base = player.getBoundingBox();
         double feet = base.minY;
         double step = player.maxUpStep();
@@ -573,8 +578,8 @@ public final class JuggernautCharge {
         return new Sweep(clear, wall);
     }
 
-    private static void breachEffects(ServerPlayer player, State state, List<Broken> broken) {
-        ServerLevel level = player.serverLevel();
+    private static void breachEffects(LivingEntity player, State state, List<Broken> broken) {
+        ServerLevel level = ((ServerLevel) player.level());
         int shown = 0;
         for (Broken entry : broken) {
             if (shown >= 2 || !levelEffect(level)) {
@@ -608,7 +613,7 @@ public final class JuggernautCharge {
         return true;
     }
 
-    private static void brace(ServerPlayer player, boolean on) {
+    private static void brace(LivingEntity player, boolean on) {
         AttributeInstance instance = player.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
         if (instance == null) {
             return;
@@ -621,8 +626,8 @@ public final class JuggernautCharge {
         }
     }
 
-    static void launchShock(ServerPlayer player, float spent) {
-        ServerLevel level = player.serverLevel();
+    static void launchShock(LivingEntity player, float spent) {
+        ServerLevel level = ((ServerLevel) player.level());
         double share = Math.min(1.0D, spent / 100.0D);
         Vec3 look = player.getLookAngle();
         Vec3 direction = new Vec3(look.x, 0.0D, look.z);
@@ -658,12 +663,13 @@ public final class JuggernautCharge {
         if (WAVES.isEmpty()) {
             return;
         }
-        Iterator<Wave> iterator = WAVES.iterator();
-        while (iterator.hasNext()) {
-            Wave wave = iterator.next();
-            ServerPlayer owner = wave.level.getServer().getPlayerList().getPlayer(wave.owner);
+        for (Wave wave : List.copyOf(WAVES)) {
+            if (!WAVES.contains(wave)) {
+                continue;
+            }
+            LivingEntity owner = wave.level.getEntity(wave.owner) instanceof LivingEntity living && living.isAlive() ? living : null;
             if (owner == null || owner.level() != wave.level || wave.step * 2 >= wave.length) {
-                iterator.remove();
+                WAVES.remove(wave);
                 continue;
             }
             boolean blocked = false;
@@ -685,7 +691,7 @@ public final class JuggernautCharge {
                 wave.level.sendParticles(CRIMSON, at.x, floor.getY() + 1.3D, at.z, 4, 0.8D, 0.2D, 0.8D, 0.0D);
                 AABB box = new AABB(at.x - 1.5D, floor.getY() + 1.0D, at.z - 1.5D, at.x + 1.5D, floor.getY() + 3.5D, at.z + 1.5D);
                 for (LivingEntity target : wave.level.getEntitiesOfClass(LivingEntity.class, box,
-                        entity -> !wave.hit.contains(entity.getUUID()) && KineticBurst.affects(owner, entity))) {
+                        entity -> !wave.hit.contains(entity.getUUID()) && TelekineticFormation.affects(owner, entity))) {
                     wave.hit.add(target.getUUID());
                     if (wave.damage > 0.0F) {
                         HeroAbilities.runAsAbilityDamage(() -> target.hurt(owner.damageSources().mobAttack(owner), wave.damage));
@@ -698,23 +704,25 @@ public final class JuggernautCharge {
             }
             wave.step++;
             if (blocked) {
-                iterator.remove();
+                WAVES.remove(wave);
             }
         }
     }
 
-    static double remaining(ServerPlayer player, String ability) {
+    static double remaining(LivingEntity player, String ability) {
         long until = ready(player).getLong(ability);
         long now = clock(player);
         return until > now ? (until - now) / 20.0D : 0.0D;
     }
 
-    static void startCooldown(ServerPlayer player, String ability, double seconds) {
-        HeroAbilities.setCooldown(player, ability, seconds);
+    static void startCooldown(LivingEntity player, String ability, double seconds) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            HeroAbilities.setCooldown(serverPlayer, ability, seconds);
+        }
         persist(player, ability, seconds);
     }
 
-    static void persist(ServerPlayer player, String ability, double seconds) {
+    static void persist(LivingEntity player, String ability, double seconds) {
         ready(player).putLong(ability, clock(player) + (long) Math.ceil(seconds * 20.0D));
     }
 
@@ -739,11 +747,11 @@ public final class JuggernautCharge {
         }
     }
 
-    private static long clock(ServerPlayer player) {
-        return player.server.overworld().getGameTime();
+    private static long clock(LivingEntity player) {
+        return player.getServer().overworld().getGameTime();
     }
 
-    private static CompoundTag ready(ServerPlayer player) {
+    private static CompoundTag ready(LivingEntity player) {
         CompoundTag root = player.getPersistentData();
         CompoundTag kept = root.getCompound(Player.PERSISTED_NBT_TAG);
         root.put(Player.PERSISTED_NBT_TAG, kept);

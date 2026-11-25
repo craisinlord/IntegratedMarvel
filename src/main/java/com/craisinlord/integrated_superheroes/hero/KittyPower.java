@@ -13,20 +13,27 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ProjectileItem;
+import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
@@ -47,13 +54,15 @@ public final class KittyPower {
     public static final String ID = "phasing_kitty_pryde";
     public static final String PHASING_STATE = "integrated_superheroes_phasing";
     private static final String PHASE = "phase";
+    private static final String PHASED_SHOT = "integrated_superheroes_phased_shot";
     private static final TagKey<Block> PHASE_BLOCKING = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "phase_blocking"));
-    private static final Map<UUID, Float> METER = new HashMap<>();
-    private static final Map<UUID, Integer> SENT = new HashMap<>();
-    private static final Map<UUID, Long> GUESTS = new HashMap<>();
-    private static final Map<UUID, Vec3> LAST_SOLID = new HashMap<>();
-    private static final Map<UUID, Vec3> SERVER_OK = new HashMap<>();
-    private static final Map<UUID, Vec3> CLIENT_OK = new HashMap<>();
+    private static final Map<UUID, Float> METER = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Integer> SENT = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> GUESTS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> UNTOUCHABLE_UNTIL = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Vec3> LAST_SOLID = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Vec3> SERVER_OK = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Vec3> CLIENT_OK = ClientState.map(new HashMap<>());
     private static final List<BlockPos> RESCUE_OFFSETS = rescueOffsets();
     private static volatile int clientMeter = 100;
 
@@ -69,8 +78,8 @@ public final class KittyPower {
                 List.of("agility"),
                 List.of(
                         new HeroPower.Ability(PHASE, "Phase", KittyPower::phase),
-                        new HeroPower.Ability("phase_strike", "Phase Strike", KittyPower::phaseStrike),
-                        new HeroPower.Ability("phase_sink", "Phase Sink", KittyPower::phaseSink),
+                        HeroPower.Ability.of("phase_strike", "Phase Strike", KittyPower::phaseStrike),
+                        HeroPower.Ability.of("phase_sink", "Phase Sink", KittyPower::phaseSink),
                         new HeroPower.Ability("phase_others", "Phase Others", KittyPower::phaseOthers)
                 ),
                 List.of(),
@@ -83,11 +92,11 @@ public final class KittyPower {
                             meter = Math.max(0.0F, meter - step);
                             if (meter <= 0.0F) {
                                 endPhase(player);
-                                HeroAbilities.setCooldown(player, PHASE, MarvelBalanceConfig.PHASE_COOLDOWN.get());
+                                HeroAbilities.setCooldown(player, PHASE, MarvelBalanceConfig.PHASE_EMPTY_COOLDOWN.get());
                                 player.displayClientMessage(Component.literal("§7You can't hold the phase any longer."), true);
                             }
                         } else {
-                            meter = Math.min(1.0F, meter + step * 0.5F);
+                            meter = Math.min(1.0F, meter + 1.0F / (MarvelBalanceConfig.PHASE_RECHARGE_SECONDS.get().floatValue() * 20.0F));
                         }
                         METER.put(player.getUUID(), meter);
                         BlockPos eye = BlockPos.containing(player.getEyePosition());
@@ -140,15 +149,24 @@ public final class KittyPower {
         return offsets;
     }
 
-    private static boolean blocked(Player player) {
-        Level level = player.level();
-        AABB box = player.getBoundingBox().deflate(0.01D);
+    private static boolean blocked(Level level, AABB bounds) {
+        AABB box = bounds.deflate(0.01D);
         for (BlockPos pos : BlockPos.betweenClosed(BlockPos.containing(box.minX, box.minY, box.minZ), BlockPos.containing(box.maxX, box.maxY, box.maxZ))) {
             BlockState state = level.getBlockState(pos);
             if (state.isAir()) {
                 continue;
             }
             if (state.is(PHASE_BLOCKING) || isReinforced(state)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean blockedPath(Level level, AABB from, Vec3 motion) {
+        int steps = Mth.ceil(motion.length() / 0.4D);
+        for (int step = 1; step <= steps; step++) {
+            if (blocked(level, from.move(motion.scale((double) step / steps)))) {
                 return true;
             }
         }
@@ -169,12 +187,17 @@ public final class KittyPower {
         if (player.level().isClientSide && !player.isLocalPlayer()) {
             return;
         }
-        if (!blocked(player)) {
+        Vec3 back = ok.get(player.getUUID());
+        AABB box = player.getBoundingBox();
+        Vec3 motion = back == null ? Vec3.ZERO : player.position().subtract(back);
+        boolean stopped = motion.lengthSqr() > 256.0D || motion.lengthSqr() < 0.16D
+                ? blocked(player.level(), box)
+                : blockedPath(player.level(), box.move(motion.reverse()), motion);
+        if (!stopped) {
             ok.put(player.getUUID(), player.position());
             standOnFloor(player);
             return;
         }
-        Vec3 back = ok.get(player.getUUID());
         if (back == null) {
             return;
         }
@@ -244,6 +267,9 @@ public final class KittyPower {
 
     private static void startPhase(ServerPlayer player) {
         HeroPowers.data(player).addState(PHASING_STATE);
+        if (!GUESTS.containsKey(player.getUUID())) {
+            UNTOUCHABLE_UNTIL.put(player.getUUID(), player.level().getGameTime() + MarvelBalanceConfig.PHASE_UNTOUCHABLE_TICKS.get());
+        }
         PlayerData.sync(player);
         SERVER_OK.put(player.getUUID(), player.position());
         HeroFx.play(player, SoundEvents.ILLUSIONER_MIRROR_MOVE, 1.0F, 1.4F);
@@ -254,6 +280,7 @@ public final class KittyPower {
     public static void endPhase(ServerPlayer player) {
         HeroPowers.data(player).removeState(PHASING_STATE);
         GUESTS.remove(player.getUUID());
+        UNTOUCHABLE_UNTIL.remove(player.getUUID());
         PlayerData.sync(player);
         player.noPhysics = false;
         rescue(player);
@@ -274,7 +301,8 @@ public final class KittyPower {
             }
             Vec3 target = new Vec3(at.getX() + 0.5D, at.getY(), at.getZ() + 0.5D);
             AABB moved = box.move(target.subtract(player.position()));
-            if (level.noCollision(player, moved) && !level.containsAnyLiquid(moved)) {
+            if (level.noCollision(player, moved) && !level.containsAnyLiquid(moved)
+                    && !blockedPath(level, box, target.subtract(player.position()))) {
                 player.connection.teleport(target.x, target.y, target.z, player.getYRot(), player.getXRot());
                 return;
             }
@@ -292,7 +320,37 @@ public final class KittyPower {
     }
 
     public static void onAnyDamage(LivingIncomingDamageEvent event) {
-        if (event.getEntity() instanceof Player player && isPhasing(player) && !event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+        if (!(event.getEntity() instanceof Player player) || !isPhasing(player) || event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+            return;
+        }
+        DamageSource source = event.getSource();
+        if (source.is(DamageTypes.IN_WALL) || source.is(DamageTypes.CRAMMING) || source.is(DamageTypes.FLY_INTO_WALL) || source.is(DamageTypeTags.IS_FALL)
+                || player.level().getGameTime() < UNTOUCHABLE_UNTIL.getOrDefault(player.getUUID(), 0L)) {
+            event.setCanceled(true);
+            return;
+        }
+        event.setAmount(event.getAmount() * MarvelBalanceConfig.PHASE_DAMAGE_TAKEN.get().floatValue());
+    }
+
+    public static void onDealDamage(LivingIncomingDamageEvent event) {
+        Entity direct = event.getSource().getDirectEntity();
+        if (direct instanceof Player player && event.getEntity() != player && isPhasing(player)
+                || direct != null && direct.getTags().contains(PHASED_SHOT)) {
+            event.setCanceled(true);
+        }
+    }
+
+    public static void onJoin(EntityJoinLevelEvent event) {
+        if (!event.getLevel().isClientSide() && event.getEntity() instanceof Projectile projectile
+                && projectile.getOwner() instanceof Player player && isPhasing(player)) {
+            projectile.addTag(PHASED_SHOT);
+        }
+    }
+
+    public static void onUseItem(PlayerInteractEvent.RightClickItem event) {
+        Item item = event.getItemStack().getItem();
+        if ((item instanceof ProjectileWeaponItem || item instanceof ProjectileItem) && isPhasing(event.getEntity())) {
+            event.setCancellationResult(InteractionResult.FAIL);
             event.setCanceled(true);
         }
     }
@@ -339,12 +397,6 @@ public final class KittyPower {
         }
     }
 
-    public static void onProjectile(ProjectileImpactEvent event) {
-        if (event.getRayTraceResult() instanceof EntityHitResult hit && hit.getEntity() instanceof Player player && isPhasing(player)) {
-            event.setCanceled(true);
-        }
-    }
-
     private static double phase(ServerPlayer player, int slot) {
         if (isPhasing(player)) {
             endPhase(player);
@@ -361,27 +413,30 @@ public final class KittyPower {
         return 0.0D;
     }
 
-    private static double phaseStrike(ServerPlayer player, int slot) {
+    private static double phaseStrike(LivingEntity player, int slot) {
         HeroAbilities.Beam beam = HeroAbilities.beam(player, player.getLookAngle(), 4.0D, 1);
         if (beam.targets().isEmpty()) {
             return 0.0D;
         }
         LivingEntity target = beam.targets().get(0);
-        if (isPhasing(player)) {
-            endPhase(player);
+        boolean phased = player instanceof ServerPlayer caster && isPhasing(caster);
+        if (phased) {
+            ServerPlayer caster = (ServerPlayer) player;
+            endPhase(caster);
+            HeroAbilities.setCooldown(caster, PHASE, MarvelBalanceConfig.PHASE_COOLDOWN.get());
         }
-        float damage = MarvelBalanceConfig.PHASE_STRIKE_DAMAGE.get().floatValue();
+        float damage = (phased ? MarvelBalanceConfig.PHASE_STRIKE_PHASED_DAMAGE : MarvelBalanceConfig.PHASE_STRIKE_DAMAGE).get().floatValue();
         HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().indirectMagic(player, player), damage));
         target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 2));
         target.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 60, 2));
         Vec3 center = target.getBoundingBox().getCenter();
-        player.serverLevel().sendParticles(ParticleTypes.END_ROD, center.x, center.y, center.z, 16, 0.3D, 0.4D, 0.3D, 0.05D);
+        HeroCaster.level(player).sendParticles(ParticleTypes.END_ROD, center.x, center.y, center.z, 16, 0.3D, 0.4D, 0.3D, 0.05D);
         HeroFx.play(player, SoundEvents.ILLUSIONER_CAST_SPELL, 1.0F, 1.6F);
         HeroAnimations.play(player, "uppercut");
         return MarvelBalanceConfig.PHASE_STRIKE_COOLDOWN.get();
     }
 
-    private static double phaseSink(ServerPlayer player, int slot) {
+    private static double phaseSink(LivingEntity player, int slot) {
         HeroAbilities.Beam beam = HeroAbilities.beam(player, player.getLookAngle(), 8.0D, 1);
         if (beam.targets().isEmpty() || !HeroAbilities.canControl(beam.targets().get(0))) {
             return 0.0D;
@@ -392,7 +447,7 @@ public final class KittyPower {
         target.setDeltaMovement(Vec3.ZERO);
         HeroStun.stun(target, MarvelBalanceConfig.PHASE_SINK_TICKS.get(), originalY);
         Vec3 center = target.position();
-        player.serverLevel().sendParticles(ParticleTypes.END_ROD, center.x, center.y + 0.5D, center.z, 20, 0.4D, 0.2D, 0.4D, 0.02D);
+        HeroCaster.level(player).sendParticles(ParticleTypes.END_ROD, center.x, center.y + 0.5D, center.z, 20, 0.4D, 0.2D, 0.4D, 0.02D);
         HeroFx.play(target, SoundEvents.ILLUSIONER_MIRROR_MOVE, 1.0F, 0.6F);
         HeroAnimations.play(player, "bettercombat:one_handed_slam");
         return MarvelBalanceConfig.PHASE_SINK_COOLDOWN.get();

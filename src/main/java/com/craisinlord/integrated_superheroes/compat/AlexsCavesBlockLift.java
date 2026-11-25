@@ -1,5 +1,7 @@
 package com.craisinlord.integrated_superheroes.compat;
 
+import com.craisinlord.integrated_superheroes.hero.HeroAbilities;
+import com.craisinlord.integrated_superheroes.hero.ServerState;
 import com.craisinlord.integrated_superheroes.hero.HeroBlockLift;
 import com.craisinlord.integrated_superheroes.hero.HeroBlockLift.Profile;
 import com.craisinlord.integrated_superheroes.hero.HeroFx;
@@ -44,8 +46,8 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public final class AlexsCavesBlockLift {
-    private static final Map<UUID, Held> HELD = new HashMap<>();
-    private static final Map<Integer, Thrown> THROWN = new HashMap<>();
+    private static final Map<UUID, Held> HELD = ServerState.map(new HashMap<>());
+    private static final Map<Integer, Thrown> THROWN = ServerState.map(new HashMap<>());
 
     private AlexsCavesBlockLift() {
     }
@@ -157,6 +159,9 @@ public final class AlexsCavesBlockLift {
             Map.Entry<Integer, Thrown> entry = iterator.next();
             Entity entity = level.getEntity(entry.getKey());
             if (entity == null) {
+                if (HeroAbilities.gone(level, entry.getKey())) {
+                    iterator.remove();
+                }
                 continue;
             }
             Thrown thrown = entry.getValue();

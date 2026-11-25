@@ -29,6 +29,10 @@ public final class HeroGnaw {
         DONE
     }
 
+    private static final double MAX_DISTANCE = 48.0D;
+    private static final int CHEW_INTERVAL = 5;
+
+    private final ServerLevel level;
     private final Block block;
     private final Deque<BlockPos> queue = new ArrayDeque<>();
     private final Set<BlockPos> seen = new HashSet<>();
@@ -37,7 +41,8 @@ public final class HeroGnaw {
     private float progress;
     private int broken;
 
-    private HeroGnaw(Block block, BlockPos start, int crackId) {
+    private HeroGnaw(ServerLevel level, Block block, BlockPos start, int crackId) {
+        this.level = level;
         this.block = block;
         this.crackId = crackId;
         this.queue.add(start);
@@ -57,7 +62,13 @@ public final class HeroGnaw {
             return null;
         }
         player.serverLevel().sendParticles(ParticleTypes.HAPPY_VILLAGER, pos.getX() + 0.5D, pos.getY() + 1.1D, pos.getZ() + 0.5D, 6, 0.3D, 0.1D, 0.3D, 0.0D);
-        return new HeroGnaw(state.getBlock(), pos.immutable(), crackId);
+        return new HeroGnaw(player.serverLevel(), state.getBlock(), pos.immutable(), crackId);
+    }
+
+    public boolean lost(ServerPlayer player) {
+        BlockPos target = this.target();
+        return player.serverLevel() != this.level || target != null
+                && (!this.level.isLoaded(target) || target.distSqr(player.blockPosition()) > MAX_DISTANCE * MAX_DISTANCE);
     }
 
     public static boolean gnawable(ServerLevel level, BlockPos pos, BlockState state) {
@@ -69,14 +80,17 @@ public final class HeroGnaw {
         return this.current != null ? this.current : this.queue.peek();
     }
 
-    public void stop(ServerLevel level) {
+    public void stop() {
         if (this.current != null) {
-            level.destroyBlockProgress(this.crackId, this.current, -1);
+            this.level.destroyBlockProgress(this.crackId, this.current, -1);
         }
     }
 
     public Step tick(ServerPlayer player, ToLongFunction<Vec3> chewers, double ticksPerHardness, boolean drops, int max) {
-        ServerLevel level = player.serverLevel();
+        if (player.tickCount % CHEW_INTERVAL != 0) {
+            return Step.CHEWING;
+        }
+        ServerLevel level = this.level;
         while (this.current == null) {
             BlockPos next = this.queue.poll();
             if (next == null) {
@@ -101,11 +115,9 @@ public final class HeroGnaw {
             return Step.CHEWING;
         }
         float hardness = Math.max(0.3F, state.getDestroySpeed(level, pos));
-        this.progress += chewing / (float) (hardness * ticksPerHardness);
-        if (player.tickCount % 4 == 0) {
-            level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), center.x, center.y, center.z, 4, 0.3D, 0.3D, 0.3D, 0.05D);
-            level.playSound(null, pos, state.getSoundType().getHitSound(), player.getSoundSource(), 0.4F, 1.3F);
-        }
+        this.progress += CHEW_INTERVAL * chewing / (float) (hardness * ticksPerHardness);
+        level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), center.x, center.y, center.z, 4, 0.3D, 0.3D, 0.3D, 0.05D);
+        level.playSound(null, pos, state.getSoundType().getHitSound(), player.getSoundSource(), 0.4F, 1.3F);
         if (this.progress < 1.0F) {
             level.destroyBlockProgress(this.crackId, pos, (int) (this.progress * 10.0F));
             return Step.CHEWING;

@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public final class GhostRiderJudgment {
-    private static final Map<UUID, Map<UUID, Mark>> MARKS = new HashMap<>();
+    private static final Map<UUID, Map<UUID, Mark>> MARKS = ServerState.map(new HashMap<>());
 
     private GhostRiderJudgment() {
     }
@@ -26,19 +26,19 @@ public final class GhostRiderJudgment {
         private long touched;
     }
 
-    public static int stacks(ServerPlayer owner, LivingEntity target) {
+    public static int stacks(LivingEntity owner, LivingEntity target) {
         Mark mark = mark(owner, target, false);
         return mark == null ? 0 : mark.stacks;
     }
 
-    public static int add(ServerPlayer owner, LivingEntity target) {
+    public static int add(LivingEntity owner, LivingEntity target) {
         Mark mark = mark(owner, target, true);
         mark.stacks = Math.min(GhostRiderConfig.JUDGMENT_MAX.get(), mark.stacks + 1);
-        mark.touched = owner.serverLevel().getGameTime();
+        mark.touched = owner.level().getGameTime();
         return mark.stacks;
     }
 
-    public static int consume(ServerPlayer owner, LivingEntity target) {
+    public static int consume(LivingEntity owner, LivingEntity target) {
         Map<UUID, Mark> marks = MARKS.get(owner.getUUID());
         if (marks == null) {
             return 0;
@@ -47,11 +47,11 @@ public final class GhostRiderJudgment {
         return mark == null || expired(owner, mark) ? 0 : mark.stacks;
     }
 
-    private static boolean expired(ServerPlayer owner, Mark mark) {
-        return owner.serverLevel().getGameTime() - mark.touched > GhostRiderConfig.JUDGMENT_EXPIRE_TICKS.get();
+    private static boolean expired(LivingEntity owner, Mark mark) {
+        return owner.level().getGameTime() - mark.touched > GhostRiderConfig.JUDGMENT_EXPIRE_TICKS.get();
     }
 
-    private static Mark mark(ServerPlayer owner, LivingEntity target, boolean create) {
+    private static Mark mark(LivingEntity owner, LivingEntity target, boolean create) {
         Map<UUID, Mark> marks = create ? MARKS.computeIfAbsent(owner.getUUID(), ignored -> new HashMap<>()) : MARKS.get(owner.getUUID());
         if (marks == null) {
             return null;
@@ -137,7 +137,7 @@ public final class GhostRiderJudgment {
         return victim.isAlliedTo(rider);
     }
 
-    public static void clear(ServerPlayer owner) {
+    public static void clear(LivingEntity owner) {
         MARKS.remove(owner.getUUID());
     }
 

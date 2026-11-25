@@ -34,16 +34,32 @@ public final class SonicPower {
     private static final String CRY = "canary_cry";
     private static final int CRY_COLOR = 0xFFE9A8;
     private static final int SCREAM_ALPHA = 0x80000000;
-    private static final Map<UUID, Scream> SCREAMS = new HashMap<>();
-    private static final Map<UUID, Long> LIFTED = new HashMap<>();
+    private static final Map<UUID, Scream> SCREAMS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> LIFTED = ServerState.map(new HashMap<>());
 
     private record Scream(long start, Set<BlockPos> resonated) {
+    }
+
+    private static boolean registered;
+
+    public static void clearStale(ServerPlayer player) {
+        if (!SCREAMS.containsKey(player.getUUID())) {
+            HeroAbilities.clearActive(player, CRY);
+        }
     }
 
     private SonicPower() {
     }
 
     public static HeroPower create(Supplier<Item> syringe) {
+        if (!registered) {
+            registered = true;
+            HeroCaster.onTick(SonicPower::tickMob);
+            HeroCaster.onCleanup(caster -> {
+                SCREAMS.remove(caster.getUUID());
+                LIFTED.remove(caster.getUUID());
+            });
+        }
         return new HeroPower(
                 ID,
                 "Sonic Scream (Dinah Lance)",
@@ -51,9 +67,9 @@ public final class SonicPower {
                 NewSerumConfig.SONIC,
                 List.of("agility"),
                 List.of(
-                        new HeroPower.Ability(CRY, "Canary Cry", SonicPower::canaryCry),
-                        new HeroPower.Ability("sonic_burst", "Sonic Burst", SonicPower::sonicBurst),
-                        new HeroPower.Ability("sonic_lift", "Sonic Lift", SonicPower::sonicLift)
+                        HeroPower.Ability.of(CRY, "Canary Cry", SonicPower::canaryCry),
+                        HeroPower.Ability.of("sonic_burst", "Sonic Burst", SonicPower::sonicBurst),
+                        HeroPower.Ability.of("sonic_lift", "Sonic Lift", SonicPower::sonicLift)
                 ),
                 List.of(),
                 new HeroPower.Hooks() {
@@ -92,6 +108,21 @@ public final class SonicPower {
         return SerumKit.is(player, ID);
     }
 
+    private static void tickMob(LivingEntity caster) {
+        tickScream(caster);
+        Long lifted = LIFTED.get(caster.getUUID());
+        if (lifted != null) {
+            caster.fallDistance = 0.0F;
+            if (caster.level().getGameTime() - lifted > 5L && (caster.onGround() || caster.isInWater())) {
+                LIFTED.remove(caster.getUUID());
+            }
+        }
+    }
+
+    private static net.minecraft.world.damagesource.DamageSource attack(LivingEntity caster) {
+        return caster instanceof Player player ? caster.damageSources().playerAttack(player) : caster.damageSources().mobAttack(caster);
+    }
+
     private static void deafen(LivingEntity target, int ticks) {
         if (!HeroAbilities.canControl(target)) {
             return;
@@ -104,37 +135,43 @@ public final class SonicPower {
         }
     }
 
-    private static double canaryCry(ServerPlayer player, int slot) {
+    private static double canaryCry(LivingEntity player, int slot) {
         Scream scream = SCREAMS.remove(player.getUUID());
         if (scream != null) {
-            HeroAbilities.setActive(player, CRY, false);
+            if (player instanceof ServerPlayer serverPlayer) {
+                HeroAbilities.setActive(serverPlayer, CRY, false);
+            }
             long held = player.level().getGameTime() - scream.start();
             double share = Math.min(1.0D, held / (double) NewSerumConfig.CANARY_CRY_MAX_TICKS.get());
             return Math.max(1.5D, NewSerumConfig.CANARY_CRY_COOLDOWN.get() * share);
         }
         SCREAMS.put(player.getUUID(), new Scream(player.level().getGameTime(), new HashSet<>()));
-        HeroAbilities.setActive(player, CRY, true);
+        if (player instanceof ServerPlayer serverPlayer) {
+            HeroAbilities.setActive(serverPlayer, CRY, true);
+        }
         if (HeroFx.thematic()) {
             HeroFx.cue(player, "thematic:canary_cry", 1.2F, 1.0F);
         } else {
             HeroFx.play(player, SoundEvents.WARDEN_SONIC_BOOM, 1.2F, 1.7F);
             HeroFx.play(player, SoundEvents.GOAT_SCREAMING_AMBIENT, 0.6F, 1.6F);
         }
-        return 0.25D;
+        return player instanceof ServerPlayer ? 0.25D : NewSerumConfig.CANARY_CRY_COOLDOWN.get();
     }
 
-    private static void tickScream(ServerPlayer player) {
+    private static void tickScream(LivingEntity player) {
         Scream scream = SCREAMS.get(player.getUUID());
         if (scream == null) {
             return;
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         long elapsed = level.getGameTime() - scream.start();
         int max = NewSerumConfig.CANARY_CRY_MAX_TICKS.get();
         if (elapsed >= max || !player.isAlive()) {
             SCREAMS.remove(player.getUUID());
-            HeroAbilities.setActive(player, CRY, false);
-            HeroAbilities.setCooldown(player, CRY, NewSerumConfig.CANARY_CRY_COOLDOWN.get());
+            if (player instanceof ServerPlayer serverPlayer) {
+                HeroAbilities.setActive(serverPlayer, CRY, false);
+                HeroAbilities.setCooldown(serverPlayer, CRY, NewSerumConfig.CANARY_CRY_COOLDOWN.get());
+            }
             return;
         }
         if (elapsed % 5L != 0L) {
@@ -147,7 +184,7 @@ public final class SonicPower {
         double knockback = NewSerumConfig.CANARY_CRY_KNOCKBACK.get() * (1.0D + t);
         Vec3 look = player.getLookAngle();
         for (LivingEntity target : HeroAbilities.cone(player, range, angle)) {
-            HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+            HeroAbilities.runAsAbilityDamage(() -> HeroHits.pulse(player, target, attack(player), damage));
             target.setDeltaMovement(target.getDeltaMovement().add(look.x * knockback, 0.1D + Math.max(0.0D, look.y) * knockback * 0.5D, look.z * knockback));
             target.hurtMarked = true;
             deafen(target, Math.max(10, NewSerumConfig.CANARY_CRY_STUN_TICKS.get() / 4));
@@ -174,8 +211,8 @@ public final class SonicPower {
             }
         }
         int shattered = walk(player, level, mouth, range, angle, scream.resonated());
-        if (shattered > 0) {
-            HeroAdvancements.count(player, "justice_league/sonic/glass_shatterer", shattered, 50.0D);
+        if (shattered > 0 && player instanceof ServerPlayer serverPlayer) {
+            HeroAdvancements.count(serverPlayer, "justice_league/sonic/glass_shatterer", shattered, 50.0D);
         }
         HeroFx.shake(level, player.position(), range, 0.2F, 5);
     }
@@ -188,8 +225,8 @@ public final class SonicPower {
         return state.is(Blocks.SCULK_SENSOR) || state.is(Blocks.CALIBRATED_SCULK_SENSOR) || state.is(Blocks.SCULK_SHRIEKER);
     }
 
-    private static int walk(ServerPlayer player, ServerLevel level, Vec3 from, double range, double angle, Set<BlockPos> resonated) {
-        boolean shatter = NewSerumConfig.CANARY_CRY_SHATTERS_GLASS.get() && player.mayBuild()
+    private static int walk(LivingEntity player, ServerLevel level, Vec3 from, double range, double angle, Set<BlockPos> resonated) {
+        boolean shatter = NewSerumConfig.CANARY_CRY_SHATTERS_GLASS.get() && player instanceof Player builder && builder.mayBuild()
                 && level.getGameRules().getBoolean(MarvelGameRules.RULE_SUPERPOWERGRIEFING);
         Set<BlockPos> seen = new HashSet<>();
         int broken = 0;
@@ -227,12 +264,13 @@ public final class SonicPower {
         return broken;
     }
 
-    private static void resonate(ServerPlayer player, ServerLevel level, BlockPos pos) {
+    private static void resonate(LivingEntity player, ServerLevel level, BlockPos pos) {
         Vec3 center = Vec3.atCenterOf(pos);
         double radius = NewSerumConfig.RESONANCE_RADIUS.get();
         float damage = NewSerumConfig.RESONANCE_DAMAGE.get().floatValue();
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, new AABB(center, center).inflate(radius),
-                entity -> entity != player && entity.isAlive() && entity.distanceToSqr(center) <= radius * radius)) {
+                entity -> entity != player && entity.isAlive() && entity.distanceToSqr(center) <= radius * radius
+                        && (HeroCaster.isPlayer(player) || HeroCaster.foe(player, entity)))) {
             HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().sonicBoom(player), damage));
             SerumKit.push(target, center, 1.0D, 0.4D);
             deafen(target, 20);
@@ -242,12 +280,12 @@ public final class SonicPower {
         level.playSound(null, pos, SoundEvents.SCULK_SHRIEKER_SHRIEK, player.getSoundSource(), 1.2F, 1.4F);
     }
 
-    private static double sonicBurst(ServerPlayer player, int slot) {
-        ServerLevel level = player.serverLevel();
+    private static double sonicBurst(LivingEntity player, int slot) {
+        ServerLevel level = HeroCaster.level(player);
         double radius = NewSerumConfig.SONIC_BURST_RADIUS.get();
         float damage = NewSerumConfig.SONIC_BURST_DAMAGE.get().floatValue();
         for (LivingEntity target : HeroAbilities.sphere(player, radius)) {
-            HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+            HeroAbilities.runAsAbilityDamage(() -> target.hurt(attack(player), damage));
             SerumKit.push(target, player.position(), 1.4D, 0.5D);
             deafen(target, NewSerumConfig.CANARY_CRY_STUN_TICKS.get() / 2);
         }
@@ -267,8 +305,8 @@ public final class SonicPower {
         return NewSerumConfig.SONIC_BURST_COOLDOWN.get();
     }
 
-    private static double sonicLift(ServerPlayer player, int slot) {
-        ServerLevel level = player.serverLevel();
+    private static double sonicLift(LivingEntity player, int slot) {
+        ServerLevel level = HeroCaster.level(player);
         Vec3 look = player.getLookAngle();
         double power = NewSerumConfig.SONIC_LIFT_POWER.get();
         player.setDeltaMovement(look.x * 0.5D, power, look.z * 0.5D);
@@ -278,8 +316,8 @@ public final class SonicPower {
         Vec3 feet = player.position();
         float damage = NewSerumConfig.SONIC_LIFT_DAMAGE.get().floatValue();
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, new AABB(feet, feet).inflate(3.0D, 2.0D, 3.0D),
-                entity -> entity != player && entity.isAlive())) {
-            HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+                entity -> entity != player && entity.isAlive() && (HeroCaster.isPlayer(player) || HeroCaster.foe(player, entity)))) {
+            HeroAbilities.runAsAbilityDamage(() -> target.hurt(attack(player), damage));
             SerumKit.push(target, feet, 1.0D, 0.2D);
         }
         int tint = SCREAM_ALPHA | SerumKit.primary(player, CRY_COLOR) & 0xFFFFFF;

@@ -1,16 +1,17 @@
 package com.craisinlord.integrated_superheroes.suit;
 
+import com.craisinlord.integrated_superheroes.hero.HeroCaster;
 import net.minecraft.world.entity.item.PrimedTnt;
 import com.craisinlord.integrated_superheroes.compat.AlexsCavesSuits;
 import com.craisinlord.integrated_superheroes.hero.HeroFx;
 import com.craisinlord.integrated_superheroes.compat.IceAndFireCharges;
+import com.craisinlord.integrated_superheroes.compat.FallbackGrenade;
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import com.craisinlord.integrated_superheroes.hero.HeroAbilities;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -51,9 +52,9 @@ public final class SuitIntegrationAbilities {
 
     static SuitAbility.Result cryoCharge(SuitContext context) {
         if (ModCompat.ICE_AND_FIRE) {
-            return fireCharge(context, IceAndFireCharges.ice(context.player().level()), CRYO, SuitAbilityConfig.CRYO_CHARGE, SoundEvents.GLASS_BREAK);
+            return fireCharge(context, IceAndFireCharges.ice(context.caster().level()), CRYO, SuitAbilityConfig.CRYO_CHARGE, SoundEvents.GLASS_BREAK);
         }
-        ServerPlayer player = context.player();
+        LivingEntity player = context.caster();
         Snowball snowball = new Snowball(player.level(), player);
         snowball.setItem(new ItemStack(Items.SNOWBALL));
         snowball.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 2.0F, 0.5F);
@@ -64,20 +65,20 @@ public final class SuitIntegrationAbilities {
     }
 
     static SuitAbility.Result fireCharge(SuitContext context) {
-        Level level = context.player().level();
+        Level level = context.caster().level();
         AbstractHurtingProjectile charge = ModCompat.ICE_AND_FIRE
                 ? IceAndFireCharges.fire(level)
-                : new SmallFireball(level, context.player(), context.player().getLookAngle());
+                : new SmallFireball(level, context.caster(), context.caster().getLookAngle());
         return fireCharge(context, charge, "fire", SuitAbilityConfig.FIRE_CHARGE, SoundEvents.BLAZE_SHOOT);
     }
 
     static SuitAbility.Result arcCharge(SuitContext context) {
         if (ModCompat.ICE_AND_FIRE) {
-            return fireCharge(context, IceAndFireCharges.lightning(context.player().level()), ARC, SuitAbilityConfig.ARC_CHARGE,
+            return fireCharge(context, IceAndFireCharges.lightning(context.caster().level()), ARC, SuitAbilityConfig.ARC_CHARGE,
                     SoundEvents.TRIDENT_THUNDER.value());
         }
-        ServerPlayer player = context.player();
-        ServerLevel level = player.serverLevel();
+        LivingEntity player = context.caster();
+        ServerLevel level = HeroCaster.level(player);
         double range = 32.0D;
         Vec3 eye = player.getEyePosition();
         Vec3 end = eye.add(player.getLookAngle().scale(range));
@@ -102,7 +103,7 @@ public final class SuitIntegrationAbilities {
         if (hit != null && hit.getEntity() instanceof LivingEntity target) {
             float damage = context.damage(SuitAbilityConfig.ARC_CHARGE);
             target.invulnerableTime = 0;
-            HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+            HeroAbilities.runAsSuitDamage(() -> target.hurt(SuitTargeting.attack(player), damage));
             chain(player, target, damage);
         }
         level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.TRIDENT_THUNDER.value(), SoundSource.PLAYERS, 0.8F, 1.2F);
@@ -117,7 +118,7 @@ public final class SuitIntegrationAbilities {
 
     private static SuitAbility.Result fireCharge(SuitContext context, AbstractHurtingProjectile charge, String kind, SuitAbilityConfig.Settings settings,
                                                  net.minecraft.sounds.SoundEvent sound) {
-        ServerPlayer player = context.player();
+        LivingEntity player = context.caster();
         Vec3 look = player.getLookAngle();
         Vec3 from = player.getEyePosition().add(look.scale(1.0D)).add(0.0D, -0.3D, 0.0D);
         charge.setOwner(player);
@@ -133,7 +134,7 @@ public final class SuitIntegrationAbilities {
     static void onChargeDamage(LivingIncomingDamageEvent event) {
         Entity direct = event.getSource().getDirectEntity();
         if (!(direct instanceof Projectile charge) || !charge.getPersistentData().contains(CHARGE_DAMAGE)
-                || !(charge.getOwner() instanceof ServerPlayer owner) || HeroAbilities.isAbilityDamage()) {
+                || !(charge.getOwner() instanceof LivingEntity owner) || HeroAbilities.isAbilityDamage()) {
             return;
         }
         LivingEntity target = event.getEntity();
@@ -157,7 +158,7 @@ public final class SuitIntegrationAbilities {
         }
     }
 
-    private static void chain(ServerPlayer owner, LivingEntity from, float damage) {
+    private static void chain(LivingEntity owner, LivingEntity from, float damage) {
         double range = SuitAbilityConfig.ARC_CHAIN_RANGE.get();
         LivingEntity next = from.level().getEntitiesOfClass(LivingEntity.class, from.getBoundingBox().inflate(range),
                         entity -> entity != from && SuitTargeting.canHit(owner, entity) && entity.distanceToSqr(from) <= range * range)
@@ -169,17 +170,21 @@ public final class SuitIntegrationAbilities {
         }
         HeroAbilities.particleLine(level, from.getBoundingBox().getCenter(), next.getBoundingBox().getCenter(), ParticleTypes.ELECTRIC_SPARK, 0.3D);
         next.invulnerableTime = 0;
-        HeroAbilities.runAsAbilityDamage(() -> next.hurt(owner.damageSources().playerAttack(owner), damage));
+        HeroAbilities.runAsSuitDamage(() -> next.hurt(SuitTargeting.attack(owner), damage));
     }
 
     static SuitAbility.Result depthCharge(SuitContext context) {
-        ServerPlayer player = context.player();
+        LivingEntity player = context.caster();
         if (!player.isInWater()) {
-            player.displayClientMessage(Component.literal("§cDepth charges only work underwater"), true);
+            HeroCaster.message(player, Component.literal("§cDepth charges only work underwater"));
             return SuitAbility.Result.FAILED;
         }
         if (ModCompat.ALEXS_CAVES) {
-            AlexsCavesSuits.depthCharge(player);
+            SuitMobSupport.noGrief(player, AlexsCavesSuits.depthCharge(player));
+        } else if (!HeroCaster.griefs(player)) {
+            FallbackGrenade charge = FallbackGrenade.create(player.level(), player, 30).explosive(context.damage(SuitAbilityConfig.DEPTH_CHARGE), 3.0F);
+            charge.setDeltaMovement(player.getLookAngle().scale(1.0D));
+            player.level().addFreshEntity(charge);
         } else {
             PrimedTnt charge = new PrimedTnt(player.level(), player.getX(), player.getEyeY() - 0.2D, player.getZ(), player);
             charge.setFuse(30);
@@ -191,8 +196,8 @@ public final class SuitIntegrationAbilities {
     }
 
     static SuitAbility.Result magnetPulse(SuitContext context) {
-        ServerPlayer player = context.player();
-        ServerLevel level = player.serverLevel();
+        LivingEntity player = context.caster();
+        ServerLevel level = HeroCaster.level(player);
         double radius = SuitAbilityConfig.MAGNET_PULSE_RADIUS.get();
         AABB area = player.getBoundingBox().inflate(radius);
         Vec3 center = player.position().add(0.0D, 1.0D, 0.0D);

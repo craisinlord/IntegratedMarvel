@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.villain;
 
+import com.craisinlord.integrated_superheroes.hero.ServerState;
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import com.craisinlord.integrated_superheroes.hero.HeroFx;
 import net.minecraft.ChatFormatting;
@@ -23,6 +24,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.tintankgames.marvel.world.entity.HydraAgent;
 import net.tintankgames.marvel.sounds.MarvelSoundEvents;
 import net.tintankgames.marvel.world.entity.projectile.TesseractCharge;
 
@@ -34,7 +36,8 @@ import java.util.UUID;
 
 public final class RedSkullBrain extends VillainBrain {
     private static final int SKULL_CYAN = 0xC040D8FF;
-    private static final Map<UUID, int[]> PORTAL_HITS = new HashMap<>();
+    private static final int MAX_PORTAL_TROOPERS = 10;
+    private static final Map<UUID, int[]> PORTAL_HITS = ServerState.map(new HashMap<>());
     private final List<Move> commander;
     private final List<Move> cube;
     private final List<Move> overload;
@@ -303,7 +306,7 @@ public final class RedSkullBrain extends VillainBrain {
                 VillainFx.spaceBurst(lvl, spot.add(0.0D, 1.0D, 0.0D), 0.8F, (now % 360L), true);
                 VillainFx.ring(lvl, spot, 1.0D, VillainFx.CYAN);
             }
-            if ((now - start) % 120L == 60L) {
+            if ((now - start) % 120L == 60L && lvl.getEntitiesOfClass(HydraAgent.class, new net.minecraft.world.phys.AABB(spot, spot).inflate(48.0D)).size() < MAX_PORTAL_TROOPERS) {
                 HydraSquad.spawnAt(lvl, spot, target, HydraSquad.Role.TROOPER);
                 VillainFx.spaceBurst(lvl, spot.add(0.0D, 1.0D, 0.0D), 1.5F, 0.0F, true);
             }

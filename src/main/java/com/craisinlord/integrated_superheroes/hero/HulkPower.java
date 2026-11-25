@@ -52,12 +52,12 @@ public final class HulkPower {
     private static final Map<Integer, Integer> CLIENT_RAGE = new ConcurrentHashMap<>();
     private static final Map<Holder<MobEffect>, Integer> HULK_EFFECTS = Map.of(MobEffects.FIRE_RESISTANCE, 0, MobEffects.MOVEMENT_SPEED, 0);
     private static final Map<Holder<MobEffect>, HeroPower.Toggle> EFFECT_TOGGLES = Map.of(MobEffects.MOVEMENT_SPEED, HeroToggles.SPEED);
-    private static final Map<UUID, Rage> RAGE = new HashMap<>();
-    private static final Map<UUID, Leap> SERVER_LEAPS = new HashMap<>();
-    private static final Map<UUID, Leap> CLIENT_LEAPS = new HashMap<>();
-    private static final Map<UUID, Long> SERVER_LAST_LEAP = new HashMap<>();
-    private static final Map<UUID, Long> CLIENT_LAST_LEAP = new HashMap<>();
-    private static final Map<UUID, Long> LAST_STAND_READY = new HashMap<>();
+    private static final Map<UUID, Rage> RAGE = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Leap> SERVER_LEAPS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Leap> CLIENT_LEAPS = ClientState.map(new HashMap<>());
+    private static final Map<UUID, Long> SERVER_LAST_LEAP = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> CLIENT_LAST_LEAP = ClientState.map(new HashMap<>());
+    private static final Map<UUID, Long> LAST_STAND_READY = ServerState.map(new HashMap<>());
     private static volatile int clientRage;
 
     private HulkPower() {
@@ -82,8 +82,8 @@ public final class HulkPower {
                 List.of(),
                 List.of(
                         new HeroPower.Ability(HULK_OUT, "Hulk Out", HulkPower::hulkOut),
-                        new HeroPower.Ability("thunderclap", "Thunderclap", HulkPower::thunderclap),
-                        new HeroPower.Ability("hulk_smash", "Hulk Smash", HulkPower::hulkSmash),
+                        HeroPower.Ability.of("thunderclap", "Thunderclap", HulkPower::thunderclap),
+                        HeroPower.Ability.of("hulk_smash", "Hulk Smash", HulkPower::hulkSmash),
                         HeroToggles.WHEEL
                 ),
                 List.of(GAMMA_LEAP, RAMPAGE, HeroToggles.SPEED),
@@ -253,7 +253,7 @@ public final class HulkPower {
         return player.level().noCollision(player, grown);
     }
 
-    private static double rageCooldown(Player player, double cooldown) {
+    private static double rageCooldown(LivingEntity player, double cooldown) {
         float rage;
         if (player.level().isClientSide) {
             rage = clientRage;
@@ -395,15 +395,15 @@ public final class HulkPower {
         return transform(player, false) ? MarvelBalanceConfig.HULK_OUT_COOLDOWN.get() : 0.0D;
     }
 
-    private static boolean requireHulk(ServerPlayer player) {
-        if (isHulk(player)) {
+    private static boolean requireHulk(LivingEntity caster) {
+        if (!(caster instanceof ServerPlayer player) || isHulk(player)) {
             return true;
         }
         player.displayClientMessage(Component.literal("§7Banner can't do that. Hulk out first."), true);
         return false;
     }
 
-    private static double thunderclap(ServerPlayer player, int slot) {
+    private static double thunderclap(LivingEntity player, int slot) {
         if (!requireHulk(player)) {
             return 0.0D;
         }
@@ -412,12 +412,12 @@ public final class HulkPower {
         Vec3 look = player.getLookAngle();
         HeroAdvancements.cast(player).hits(8, "avengers/hulk/thunderclap").run(() -> {
             for (LivingEntity target : HeroAbilities.cone(player, range, 50.0D)) {
-                target.hurt(player.damageSources().mobAttack(player), damage);
+                HeroHits.hurt(player, target, player.damageSources().mobAttack(player), damage);
                 target.knockback(3.0D, -look.x, -look.z);
                 target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 1));
             }
         });
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         Vec3 front = player.getEyePosition().add(look.scale(1.5D));
         if (HeroFx.vfx(level, front, "punch_pressure_wave", 0, 2.0F)) {
             HeroFx.vfx(level, front.add(look.scale(range * 0.4D)), "air_burst_ring", 0, (float) (range * 0.5D));
@@ -431,12 +431,14 @@ public final class HulkPower {
             HeroAnimations.play(player, "bettercombat:two_handed_slam");
         }
         HeroFx.shake(level, player.position(), 24.0D, 0.7F, 10);
-        HulkRampage.fling(player, range);
-        addRage(player, MarvelBalanceConfig.RAGE_PER_IMPACT.get().floatValue());
+        if (player instanceof ServerPlayer serverPlayer) {
+            HulkRampage.fling(serverPlayer, range);
+            addRage(serverPlayer, MarvelBalanceConfig.RAGE_PER_IMPACT.get().floatValue());
+        }
         return rageCooldown(player, MarvelBalanceConfig.THUNDERCLAP_COOLDOWN.get());
     }
 
-    private static double hulkSmash(ServerPlayer player, int slot) {
+    private static double hulkSmash(LivingEntity player, int slot) {
         if (!requireHulk(player)) {
             return 0.0D;
         }
@@ -444,7 +446,7 @@ public final class HulkPower {
         HeroAdvancements.cast(player).kills(entity -> entity instanceof net.minecraft.world.entity.animal.IronGolem
                         || entity instanceof net.minecraft.world.entity.monster.Ravager, "avengers/hulk/puny")
                 .run(() -> HeroShockwaves.ring(player, 8, MarvelBalanceConfig.HULK_SMASH_LENGTH.get(), damage));
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         if (HeroFx.vfx(level, player.position(), "gamma_shockwave", GAMMA_GREEN, MarvelBalanceConfig.HULK_SMASH_LENGTH.get().floatValue())) {
             HeroFx.vfx(level, player.position(), "slam_fracture_large", 0);
             HeroFx.vfx(level, player.position(), "slam_dust_large", 0);
@@ -457,8 +459,10 @@ public final class HulkPower {
         }
         HeroAnimations.play(player, "celestisynth:cs_keres_smash");
         HeroFx.shake(level, player.position(), 32.0D, 1.0F, 16);
-        HulkRampage.trenches(player, 8, MarvelBalanceConfig.HULK_SMASH_LENGTH.get());
-        addRage(player, MarvelBalanceConfig.RAGE_PER_IMPACT.get().floatValue());
+        if (player instanceof ServerPlayer serverPlayer) {
+            HulkRampage.trenches(serverPlayer, 8, MarvelBalanceConfig.HULK_SMASH_LENGTH.get());
+            addRage(serverPlayer, MarvelBalanceConfig.RAGE_PER_IMPACT.get().floatValue());
+        }
         return rageCooldown(player, MarvelBalanceConfig.HULK_SMASH_COOLDOWN.get());
     }
 
@@ -562,7 +566,7 @@ public final class HulkPower {
         float damage = (float) (MarvelBalanceConfig.GAMMA_LANDING_DAMAGE.get() * scale);
         double radius = MarvelBalanceConfig.GAMMA_LANDING_RADIUS.get();
         for (LivingEntity target : HeroAbilities.sphere(player, radius)) {
-            target.hurt(player.damageSources().mobAttack(player), damage);
+            HeroHits.hurt(player, target, player.damageSources().mobAttack(player), damage);
             Vec3 push = target.position().subtract(player.position()).normalize();
             target.setDeltaMovement(push.x * 1.2D, 0.7D, push.z * 1.2D);
             target.hurtMarked = true;

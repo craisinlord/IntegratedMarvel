@@ -11,7 +11,7 @@ import java.util.UUID;
 public final class DeadpoolNarration {
     public static final HeroPower.Toggle TOGGLE = new HeroPower.Toggle("integrated_superheroes_off_narration", "Narration", () -> Items.WRITABLE_BOOK);
     private static final Map<String, Trigger> TRIGGERS = new HashMap<>();
-    private static final Map<UUID, Memory> MEMORY = new HashMap<>();
+    private static final Map<UUID, Memory> MEMORY = ServerState.map(new HashMap<>());
 
     static {
         priority("downed", 3);

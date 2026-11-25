@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.hero;
 
+import net.minecraft.Util;
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -126,13 +127,16 @@ public final class DaredevilClient {
         }
     }
 
+    private static long nextShaderTry;
+
     private static void tickShader(Minecraft minecraft) {
         if (minecraft.gameRenderer == null) {
             return;
         }
         var current = minecraft.gameRenderer.currentEffect();
         boolean showing = current != null && SHADER_NAME.equals(current.getName());
-        if (on && !showing && current == null) {
+        if (on && !showing && current == null && Util.getMillis() >= nextShaderTry) {
+            nextShaderTry = Util.getMillis() + 1000L;
             minecraft.gameRenderer.loadEffect(SHADER);
             loaded = true;
         } else if (!on && showing) {

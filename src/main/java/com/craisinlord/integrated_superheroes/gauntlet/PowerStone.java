@@ -117,16 +117,20 @@ public final class PowerStone {
                 "message.integrated_superheroes.gauntlet.power_release", Math.round(stored)), true);
     }
 
+    private static final int MAX_LAUNCHED = 250;
+
     private static void crater(ServerPlayer player, ServerLevel level, BlockPos center, double radius, boolean launchRing) {
         int r = (int) Math.ceil(radius);
+        int launched = 0;
         List<BlockEditQueue.Edit> edits = new ArrayList<>();
         for (BlockPos pos : BlockPos.betweenClosed(center.offset(-r, -r, -r), center.offset(r, 0, r))) {
             double distance = Math.sqrt(pos.distSqr(center));
             if (distance > radius) continue;
             BlockState state = level.getBlockState(pos);
             if (state.isAir() || state.hasBlockEntity() || state.getExplosionResistance(level, pos, null) > 1200.0F) continue;
-            if (launchRing && distance > radius - 1.5D && level.random.nextFloat() < 0.6F) {
+            if (launchRing && launched < MAX_LAUNCHED && distance > radius - 1.5D && level.random.nextFloat() < 0.6F) {
                 if (!GauntletGrief.canEdit(player, level, pos)) continue;
+                launched++;
                 FallingBlockEntity falling = FallingBlockEntity.fall(level, pos.immutable(), state);
                 falling.setDeltaMovement((pos.getX() - center.getX()) * 0.08D, 0.9D + level.random.nextDouble() * 0.6D,
                         (pos.getZ() - center.getZ()) * 0.08D);
@@ -179,7 +183,12 @@ public final class PowerStone {
             BlockPos ground = toss.source.offset(offset);
             BlockState state = level.getBlockState(ground);
             boolean rip = toss.griefing && player != null && !state.isAir() && !state.hasBlockEntity()
-                    && state.getDestroySpeed(level, ground) >= 0.0F && GauntletGrief.canEdit(player, level, ground);
+                    && state.getDestroySpeed(level, ground) >= 0.0F
+                    && GauntletGrief.canEditCached(player, level, ground, toss.allowedSections);
+            if (toss.inside(offset)) {
+                if (rip) level.setBlock(ground, Blocks.AIR.defaultBlockState(), 3);
+                continue;
+            }
             BlockPos sky = BlockPos.containing(toss.spawnCenter.add(offset.getX(), offset.getY(), offset.getZ()));
             if (!level.isInWorldBounds(sky) || !level.isLoaded(sky) || !level.getBlockState(sky).isAir()) continue;
             BlockState moon = rip ? state : moonBlock(level.random.nextInt(10));
@@ -233,6 +242,8 @@ public final class PowerStone {
         private final List<BlockPos> offsets;
         private final float damage;
         private final boolean griefing;
+        private final java.util.Set<Long> allowedSections = new java.util.HashSet<>();
+        private final double innerSqr;
         private int cursor;
         private int age;
         private int spawned;
@@ -246,6 +257,17 @@ public final class PowerStone {
             this.offsets = offsets;
             this.damage = damage;
             this.griefing = griefing;
+            this.innerSqr = innerSqr(offsets.stream().mapToDouble(offset -> offset.distSqr(BlockPos.ZERO)).max().orElse(0.0D));
+        }
+
+        private static double innerSqr(double outerSqr) {
+            double radius = Math.sqrt(outerSqr);
+            double inner = radius >= 6.5D ? radius - 1.2D : radius >= 4.0D ? radius - 2.0D : 0.0D;
+            return inner * inner;
+        }
+
+        private boolean inside(BlockPos offset) {
+            return offset.distSqr(BlockPos.ZERO) < innerSqr;
         }
     }
 

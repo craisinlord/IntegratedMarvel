@@ -2,7 +2,9 @@ package com.craisinlord.integrated_superheroes.hero;
 
 import com.craisinlord.integrated_superheroes.gauntlet.GauntletGrief;
 import com.craisinlord.integrated_superheroes.compat.FallbackGrenade;
+import com.craisinlord.integrated_superheroes.compat.GunJam;
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
+import com.craisinlord.integrated_superheroes.compat.ScorchedGunsUnload;
 import com.craisinlord.integrated_superheroes.compat.ScorchedGunsWeapons;
 import com.craisinlord.integrated_superheroes.suit.SuitFx;
 import com.craisinlord.integrated_superheroes.registry.ModTags;
@@ -35,6 +37,7 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biomes;
@@ -80,22 +83,23 @@ public final class DeadpoolPower {
     private static final EffectCure DEADPOOL_CURE = EffectCure.get("deadpool");
     private static final String INJECTED = "integrated_superheroes_deadpool_injected";
     private static final String DODGES = "integrated_superheroes_deadpool_dodges";
+    private static final String REVIVES = "integrated_superheroes_deadpool_revives";
     private static final String WALLS = "integrated_superheroes_deadpool_walls";
     private static final List<HeroWheels.Option> OPTIONS = List.of(
             new HeroWheels.Option(SMASH_CUT, "Smash Cut", () -> Items.RED_BED),
             new HeroWheels.Option(PAUSE_MENU, "Pause Menu", () -> Items.CLOCK),
             new HeroWheels.Option(RAGE_QUIT, "Rage Quit", () -> Items.GLASS_PANE)
     );
-    private static final Map<UUID, Deque<Snapshot>> HISTORY = new HashMap<>();
-    private static final Map<UUID, Unload> UNLOADS = new HashMap<>();
-    private static final Map<UUID, Map<String, Long>> WHEEL_READY = new HashMap<>();
-    private static final Map<UUID, Cut> CUTS = new HashMap<>();
-    private static final Map<UUID, Long> PAUSED_UNTIL = new HashMap<>();
-    private static final Map<UUID, Long> FUMBLE_UNTIL = new HashMap<>();
-    private static final Map<UUID, Long> FRESH_TARGETS = new HashMap<>();
-    private static final Map<UUID, Long> DODGE_READY = new HashMap<>();
-    private static final Map<UUID, Deque<Long>> KILLS = new HashMap<>();
-    private static final Map<UUID, Ambient> AMBIENT = new HashMap<>();
+    private static final Map<UUID, Deque<Snapshot>> HISTORY = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Unload> UNLOADS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Map<String, Long>> WHEEL_READY = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Cut> CUTS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> PAUSED_UNTIL = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> FUMBLE_UNTIL = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> FRESH_TARGETS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> DODGE_READY = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Deque<Long>> KILLS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Ambient> AMBIENT = ServerState.map(new HashMap<>());
 
     private DeadpoolPower() {
     }
@@ -107,13 +111,18 @@ public final class DeadpoolPower {
     }
 
     private static final class Unload {
+        private final long stopsAt;
         private int shotsLeft;
+        private int fired;
+        private long nextShot;
         private long endsAt;
         private int kills;
+        private boolean offHand;
         private final Set<UUID> hit = new HashSet<>();
 
-        private Unload(int shots) {
+        private Unload(int shots, long stopsAt) {
             this.shotsLeft = shots;
+            this.stopsAt = stopsAt;
         }
     }
 
@@ -139,9 +148,9 @@ public final class DeadpoolPower {
                 MarvelBalanceConfig.DEADPOOL,
                 List.of("agility"),
                 List.of(
-                        new HeroPower.Ability(UNLOAD, "Unload", DeadpoolPower::unload),
-                        new HeroPower.Ability(PULL_THE_PIN, "Pull the Pin", DeadpoolPower::pullThePin),
-                        new HeroPower.Ability(RETCON, "Retcon", DeadpoolPower::retcon),
+                        HeroPower.Ability.of(UNLOAD, "Unload", DeadpoolPower::unload),
+                        HeroPower.Ability.of(PULL_THE_PIN, "Pull the Pin", DeadpoolPower::pullThePin),
+                        HeroPower.Ability.of(RETCON, "Retcon", DeadpoolPower::retcon),
                         new HeroPower.Ability(FOURTH_WALL, "Fourth Wall", (player, slot) -> 0.0D),
                         HeroToggles.WHEEL
                 ),
@@ -186,6 +195,10 @@ public final class DeadpoolPower {
 
                     @Override
                     public void incomingDamage(ServerPlayer player, LivingIncomingDamageEvent event) {
+                        if (event.getSource().getEntity() == player && isUnloadShot(event.getSource().getDirectEntity())) {
+                            event.setCanceled(true);
+                            return;
+                        }
                         if (readTheScript(player, event)) {
                             return;
                         }
@@ -199,6 +212,9 @@ public final class DeadpoolPower {
 
                     @Override
                     public void outgoingDamage(ServerPlayer player, LivingIncomingDamageEvent event) {
+                        if (isUnloadShot(event.getSource().getDirectEntity())) {
+                            landUnload(player, event.getEntity(), event.getSource().getDirectEntity() instanceof AbstractArrow);
+                        }
                         if (!HeroAbilities.isAbilityDamage() && holdsGun(player) && event.getSource().getDirectEntity() != player) {
                             event.setAmount(event.getAmount() * (1.0F + MarvelBalanceConfig.DEADPOOL_GUN_BONUS.get().floatValue()));
                         }
@@ -208,6 +224,17 @@ public final class DeadpoolPower {
     }
 
     public static void registerEvents() {
+        HeroCaster.onTick(caster -> {
+            tickUnload(caster);
+            if (caster.tickCount % 20 == 0) {
+                snapshot(caster);
+            }
+        });
+        HeroCaster.onCleanup(caster -> {
+            UNLOADS.remove(caster.getUUID());
+            HISTORY.remove(caster.getUUID());
+            FUMBLE_UNTIL.remove(caster.getUUID());
+        });
         NeoForge.EVENT_BUS.addListener(DeadpoolPower::onTarget);
         NeoForge.EVENT_BUS.addListener(DeadpoolPower::onChangeDimension);
         NeoForge.EVENT_BUS.addListener(DeadpoolPower::onFinishUsing);
@@ -219,15 +246,33 @@ public final class DeadpoolPower {
         return ID.equals(HeroPowers.data(player).getPrimaryPower());
     }
 
-    private static boolean holdsGun(Player player) {
-        if (!ModCompat.SCORCHED_GUNS) {
+    private static boolean holdsGun(LivingEntity player) {
+        if (!ModCompat.SCORCHED_GUNS || !(player instanceof Player)) {
             return true;
         }
         return ScorchedGunsWeapons.isGun(player.getMainHandItem()) || ScorchedGunsWeapons.isGun(player.getOffhandItem());
     }
 
-    private static long now(ServerPlayer player) {
-        return player.server.getTickCount();
+    private static boolean isUnloadShot(Entity entity) {
+        return ModCompat.SCORCHED_GUNS && ScorchedGunsUnload.isUnloadShot(entity);
+    }
+
+    private static void landUnload(ServerPlayer player, LivingEntity victim, boolean arrow) {
+        if (arrow && !(victim instanceof Player)) {
+            victim.invulnerableTime = 0;
+        }
+        Unload unload = UNLOADS.get(player.getUUID());
+        if (unload != null) {
+            unload.hit.add(victim.getUUID());
+        }
+    }
+
+    private static long now(LivingEntity player) {
+        return HeroCaster.level(player).getServer().getTickCount();
+    }
+
+    private static boolean say(LivingEntity caster, String trigger) {
+        return caster instanceof ServerPlayer player && DeadpoolNarration.say(player, trigger);
     }
 
     private static CompoundTag persisted(ServerPlayer player) {
@@ -236,6 +281,13 @@ public final class DeadpoolPower {
             data.put(Player.PERSISTED_NBT_TAG, new CompoundTag());
         }
         return data.getCompound(Player.PERSISTED_NBT_TAG);
+    }
+
+    static int countRevive(ServerPlayer player) {
+        CompoundTag persisted = persisted(player);
+        int revives = persisted.getInt(REVIVES) + 1;
+        persisted.putInt(REVIVES, revives);
+        return revives;
     }
 
     private static void ensureAbilities(ServerPlayer player) {
@@ -259,19 +311,24 @@ public final class DeadpoolPower {
         }
     }
 
-    private static double unload(ServerPlayer player, int slot) {
+    private static net.minecraft.world.damagesource.DamageSource attack(LivingEntity caster) {
+        return caster instanceof net.minecraft.world.entity.player.Player player ? caster.damageSources().playerAttack(player) : caster.damageSources().mobAttack(caster);
+    }
+
+    private static double unload(LivingEntity player, int slot) {
         if (!holdsGun(player)) {
-            if (!DeadpoolNarration.say(player, "no_gun")) {
-                player.displayClientMessage(Component.literal("§cForgot the guns. Again."), true);
+            if (!say(player, "no_gun")) {
+                HeroCaster.message(player, Component.literal("§cForgot the guns. Again."));
             }
             return 0.0D;
         }
-        UNLOADS.put(player.getUUID(), new Unload(MarvelBalanceConfig.UNLOAD_SHOTS.get()));
-        DeadpoolNarration.say(player, "unload");
+        UNLOADS.put(player.getUUID(), new Unload(MarvelBalanceConfig.UNLOAD_SHOTS.get(),
+                now(player) + Math.round(MarvelBalanceConfig.UNLOAD_MAX_SECONDS.get() * 20.0D)));
+        say(player, "unload");
         return MarvelBalanceConfig.UNLOAD_COOLDOWN.get();
     }
 
-    private static void tickUnload(ServerPlayer player) {
+    private static void tickUnload(LivingEntity player) {
         Unload unload = UNLOADS.get(player.getUUID());
         if (unload == null) {
             return;
@@ -283,12 +340,15 @@ public final class DeadpoolPower {
             }
             return;
         }
-        if (player.tickCount % 2 != 0) {
+        if (!holdsGun(player)) {
+            stopUnload(unload, now);
             return;
         }
-        if (!holdsGun(player)) {
-            unload.shotsLeft = 0;
-            unload.endsAt = now + 100L;
+        if (ModCompat.SCORCHED_GUNS && player instanceof ServerPlayer shooter) {
+            fireGun(shooter, unload, now);
+            return;
+        }
+        if (player.tickCount % 2 != 0) {
             return;
         }
         fireShot(player, unload, unload.shotsLeft % 2 == 0);
@@ -298,21 +358,53 @@ public final class DeadpoolPower {
         }
     }
 
-    private static void fireShot(ServerPlayer player, Unload unload, boolean rightHand) {
-        ServerLevel level = player.serverLevel();
-        double range = MarvelBalanceConfig.UNLOAD_RANGE.get();
-        Vec3 eye = player.getEyePosition();
-        LivingEntity target = HeroAbilities.cone(player, range, 30.0D).stream()
-                .filter(entity -> entity instanceof Enemy || entity instanceof Mob mob && mob.getTarget() == player)
+    private static void stopUnload(Unload unload, long now) {
+        unload.shotsLeft = 0;
+        unload.endsAt = now + 100L;
+    }
+
+    private static void fireGun(ServerPlayer player, Unload unload, long now) {
+        if (now < unload.nextShot) {
+            return;
+        }
+        if (unload.fired >= MarvelBalanceConfig.UNLOAD_MIN_SHOTS.get() && now >= unload.stopsAt || GunJam.blocksShot(player)) {
+            stopUnload(unload, now);
+            return;
+        }
+        ItemStack main = player.getMainHandItem();
+        ItemStack off = player.getOffhandItem();
+        boolean offHand = !ScorchedGunsWeapons.isGun(main) || unload.offHand && ScorchedGunsWeapons.isGun(off);
+        ItemStack gun = offHand ? off : main;
+        float floor = MarvelBalanceConfig.UNLOAD_DAMAGE.get().floatValue() * AbilityDamage.scale(player)
+                / (1.0F + MarvelBalanceConfig.DEADPOOL_GUN_BONUS.get().floatValue());
+        unload.offHand = !offHand;
+        unload.nextShot = now + ScorchedGunsUnload.interval(gun, MarvelBalanceConfig.UNLOAD_FIRE_RATE.get());
+        unload.fired++;
+        unload.shotsLeft--;
+        if (unload.shotsLeft <= 0) {
+            unload.endsAt = now + 100L;
+        }
+        ScorchedGunsUnload.shoot(player, gun, unloadAim(player), floor).forEach(hit -> unload.hit.add(hit.getUUID()));
+    }
+
+    private static Vec3 unloadAim(LivingEntity player) {
+        LivingEntity target = HeroAbilities.cone(player, MarvelBalanceConfig.UNLOAD_RANGE.get(), 30.0D).stream()
+                .filter(entity -> !(player instanceof ServerPlayer) || entity instanceof Enemy || entity instanceof Mob mob && mob.getTarget() == player)
                 .min(Comparator.comparingDouble(entity -> entity.distanceToSqr(player)))
                 .orElse(null);
-        Vec3 direction = target == null ? player.getLookAngle() : target.getBoundingBox().getCenter().subtract(eye).normalize();
+        return target == null ? player.getLookAngle() : target.getBoundingBox().getCenter().subtract(player.getEyePosition()).normalize();
+    }
+
+    private static void fireShot(LivingEntity player, Unload unload, boolean rightHand) {
+        ServerLevel level = HeroCaster.level(player);
+        double range = MarvelBalanceConfig.UNLOAD_RANGE.get();
+        Vec3 eye = player.getEyePosition();
+        Vec3 direction = unloadAim(player);
         HeroAbilities.Beam beam = HeroAbilities.beam(player, direction, range, 1);
         float damage = MarvelBalanceConfig.UNLOAD_DAMAGE.get().floatValue();
         for (LivingEntity hit : beam.targets()) {
             unload.hit.add(hit.getUUID());
-            hit.invulnerableTime = 0;
-            HeroAbilities.runAsAbilityDamage(() -> hit.hurt(player.damageSources().playerAttack(player), damage));
+            HeroAbilities.runAsAbilityDamage(() -> HeroHits.force(player, hit, attack(player), damage));
         }
         Vec3 right = player.getLookAngle().cross(new Vec3(0.0D, 1.0D, 0.0D));
         right = right.lengthSqr() < 1.0E-6D ? new Vec3(1.0D, 0.0D, 0.0D) : right.normalize();
@@ -324,9 +416,9 @@ public final class DeadpoolPower {
         SuitFx.sound(level, player.position(), "item.iron_pistol.fire", SoundEvents.FIREWORK_ROCKET_BLAST, 0.9F, 1.1F + player.getRandom().nextFloat() * 0.2F);
     }
 
-    private static double pullThePin(ServerPlayer player, int slot) {
-        ServerLevel level = player.serverLevel();
-        float damage = MarvelBalanceConfig.GRENADE_DAMAGE.get().floatValue();
+    private static double pullThePin(LivingEntity player, int slot) {
+        ServerLevel level = HeroCaster.level(player);
+        float damage = MarvelBalanceConfig.GRENADE_DAMAGE.get().floatValue() * AbilityDamage.scale(player);
         float radius = MarvelBalanceConfig.GRENADE_RADIUS.get().floatValue();
         SuitFx.sound(level, player.position(), SuitFx.GRENADE_PIN, SoundEvents.TRIPWIRE_CLICK_ON, 1.0F, 1.0F);
         if (player.getRandom().nextDouble() < MarvelBalanceConfig.GRENADE_FUMBLE_CHANCE.get()) {
@@ -337,8 +429,10 @@ public final class DeadpoolPower {
             grenade.setDeltaMovement(Vec3.ZERO);
             level.addFreshEntity(grenade);
             FUMBLE_UNTIL.put(player.getUUID(), now(player) + 60L);
-            DeadpoolNarration.say(player, "fumble");
-            DeadpoolAdvancements.award(player, DeadpoolAdvancements.OOPS);
+            say(player, "fumble");
+            if (player instanceof ServerPlayer user) {
+                DeadpoolAdvancements.award(user, DeadpoolAdvancements.OOPS);
+            }
             player.invulnerableTime = 0;
             player.hurt(player.damageSources().explosion(grenade, null), MarvelBalanceConfig.GRENADE_FUMBLE_SELF_DAMAGE.get().floatValue());
             return MarvelBalanceConfig.GRENADE_COOLDOWN.get();
@@ -351,11 +445,11 @@ public final class DeadpoolPower {
             level.addFreshEntity(FallbackGrenade.create(level, player, 30).explosive(damage, radius)
                     .throwFrom(player, player.getXRot() - 6.0F, player.getYRot(), 1.4F));
         }
-        DeadpoolNarration.say(player, "grenade");
+        say(player, "grenade");
         return MarvelBalanceConfig.GRENADE_COOLDOWN.get();
     }
 
-    private static void snapshot(ServerPlayer player) {
+    private static void snapshot(LivingEntity player) {
         Deque<Snapshot> history = HISTORY.computeIfAbsent(player.getUUID(), ignored -> new ArrayDeque<>());
         history.addLast(new Snapshot(player.level().dimension(), player.position(), player.getYRot(), player.getXRot(), player.getHealth()));
         while (history.size() > MarvelBalanceConfig.RETCON_SECONDS.get() + 1) {
@@ -363,31 +457,37 @@ public final class DeadpoolPower {
         }
     }
 
-    private static double retcon(ServerPlayer player, int slot) {
+    private static double retcon(LivingEntity player, int slot) {
         Deque<Snapshot> history = HISTORY.get(player.getUUID());
         Snapshot saved = history == null ? null : history.stream()
                 .filter(entry -> entry.dimension() == player.level().dimension())
                 .findFirst()
                 .orElse(null);
         if (saved == null) {
-            player.displayClientMessage(Component.literal("§7Nothing to retcon yet."), true);
+            HeroCaster.message(player, Component.literal("§7Nothing to retcon yet."));
             return 0.0D;
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         float before = player.getHealth();
         boolean desperate = before < player.getMaxHealth() * 0.2F;
         level.sendParticles(ParticleTypes.REVERSE_PORTAL, player.getX(), player.getY() + 1.0D, player.getZ(), 40, 0.4D, 0.8D, 0.4D, 0.05D);
         HeroAbilities.particleLine(level, player.position().add(0.0D, 1.0D, 0.0D), saved.position().add(0.0D, 1.0D, 0.0D), ParticleTypes.REVERSE_PORTAL, 0.5D);
-        player.teleportTo(level, saved.position().x, saved.position().y, saved.position().z, saved.yRot(), saved.xRot());
+        if (player instanceof ServerPlayer user) {
+            user.teleportTo(level, saved.position().x, saved.position().y, saved.position().z, saved.yRot(), saved.xRot());
+        } else {
+            player.teleportTo(saved.position().x, saved.position().y, saved.position().z);
+        }
         player.fallDistance = 0.0F;
         player.setHealth(Math.max(before, Math.min(saved.health(), before + MarvelBalanceConfig.RETCON_HEAL_CAP.get().floatValue())));
         history.clear();
         level.sendParticles(ParticleTypes.REVERSE_PORTAL, player.getX(), player.getY() + 1.0D, player.getZ(), 40, 0.4D, 0.8D, 0.4D, 0.05D);
         level.playSound(null, player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0F, 0.6F);
-        PacketDistributor.sendToPlayer(player, new DeadpoolFxPayload(DeadpoolFxPayload.RETCON, 10));
-        DeadpoolNarration.say(player, "retcon");
-        if (desperate) {
-            DeadpoolAdvancements.award(player, DeadpoolAdvancements.THAT_NEVER_HAPPENED);
+        if (player instanceof ServerPlayer user) {
+            PacketDistributor.sendToPlayer(user, new DeadpoolFxPayload(DeadpoolFxPayload.RETCON, 10));
+        }
+        say(player, "retcon");
+        if (desperate && player instanceof ServerPlayer user) {
+            DeadpoolAdvancements.award(user, DeadpoolAdvancements.THAT_NEVER_HAPPENED);
         }
         return MarvelBalanceConfig.RETCON_COOLDOWN.get();
     }
@@ -493,8 +593,7 @@ public final class DeadpoolPower {
             if (!HeroAbilities.canControl(target) || target instanceof OwnableEntity pet && player.getUUID().equals(pet.getOwnerUUID())) {
                 continue;
             }
-            target.invulnerableTime = 0;
-            HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+            HeroAbilities.runAsAbilityDamage(() -> HeroHits.force(player, target, player.damageSources().playerAttack(player), damage));
             target.knockback(knockback, player.getX() - target.getX(), player.getZ() - target.getZ());
             target.hurtMarked = true;
         }

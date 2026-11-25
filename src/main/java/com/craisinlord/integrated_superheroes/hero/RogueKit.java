@@ -44,7 +44,7 @@ import java.util.function.Predicate;
 
 public final class RogueKit {
     public static final int GREEN = 0x4CD964;
-    private static final Map<UUID, Slam> SLAMS = new HashMap<>();
+    private static final Map<UUID, Slam> SLAMS = ServerState.map(new HashMap<>());
 
     private RogueKit() {
     }

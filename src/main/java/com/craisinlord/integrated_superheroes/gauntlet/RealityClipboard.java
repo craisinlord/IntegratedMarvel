@@ -197,7 +197,7 @@ public final class RealityClipboard {
             if (!free && !RealityCost.placeable(piece.state())) continue;
             BlockPos pos = origin.offset(StructureTemplate.transform(piece.offset(), Mirror.NONE, rotation, BlockPos.ZERO).subtract(shift));
             if (!level.isInWorldBounds(pos)) continue;
-            edits.add(new BlockEditQueue.Edit(pos.immutable(), piece.state().rotate(level, pos, rotation), null));
+            edits.add(new BlockEditQueue.Edit(pos.immutable(), rotated(piece.state(), level, pos, rotation), null));
         }
         edits.sort(Comparator.comparingInt(edit -> edit.pos().getY()));
         if (edits.isEmpty()) {
@@ -261,13 +261,21 @@ public final class RealityClipboard {
         while (history.size() > HISTORY) history.removeLast();
     }
 
+    private static BlockState rotated(BlockState state, ServerLevel level, BlockPos pos, Rotation rotation) {
+        try {
+            return state.rotate(level, pos, rotation);
+        } catch (RuntimeException e) {
+            return state;
+        }
+    }
+
     private static void pasteSingle(GauntletCast cast, Piece piece, BlockHitResult hit, Rotation rotation) {
         ServerPlayer player = cast.player();
         ServerLevel level = cast.level();
         BlockPos target = hit.getBlockPos();
         if (!level.getBlockState(target).canBeReplaced()) target = target.relative(hit.getDirection());
         target = target.immutable();
-        BlockState state = piece.state().rotate(level, target, rotation);
+        BlockState state = rotated(piece.state(), level, target, rotation);
         boolean free = RealityCost.free(cast);
         if (!level.isInWorldBounds(target) || !level.getBlockState(target).canBeReplaced()
                 || !GauntletGrief.canEdit(player, level, target)

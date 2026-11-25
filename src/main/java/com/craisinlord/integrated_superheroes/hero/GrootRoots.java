@@ -75,16 +75,16 @@ public final class GrootRoots {
             new HeroWheels.Option(THORN_BURST, "Thorn Burst", () -> Items.SWEET_BERRIES),
             new HeroWheels.Option(SPORES, "Spore Glow", () -> Items.GLOW_BERRIES)
     );
-    private static final Map<UUID, String> SELECTED = new HashMap<>();
-    private static final Map<UUID, Map<String, Long>> READY = new HashMap<>();
-    private static final Map<UUID, Rooted> ROOTED = new HashMap<>();
-    private static final Map<UUID, Skewered> SKEWERS = new HashMap<>();
-    private static final Map<UUID, Grapple> GRAPPLES = new HashMap<>();
-    private static final Map<UUID, Surge> SURGES = new HashMap<>();
-    private static final Map<UUID, Shelter> SHELTERS = new HashMap<>();
-    private static final Map<UUID, List<Placed>> PLACED = new HashMap<>();
-    private static final Map<UUID, Long> SOFT_LANDING = new HashMap<>();
-    private static final Map<UUID, Long> LAST_HURT = new HashMap<>();
+    private static final Map<UUID, String> SELECTED = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Map<String, Long>> READY = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Rooted> ROOTED = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Skewered> SKEWERS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Grapple> GRAPPLES = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Surge> SURGES = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Shelter> SHELTERS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, List<Placed>> PLACED = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> SOFT_LANDING = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> LAST_HURT = ServerState.map(new HashMap<>());
 
     private static final class Rooted {
         private long until;
@@ -123,7 +123,7 @@ public final class GrootRoots {
         return OPTIONS.stream().filter(entry -> entry.id().equals(option)).map(HeroWheels.Option::label).findFirst().orElse(option);
     }
 
-    private static String selected(ServerPlayer player) {
+    private static String selected(LivingEntity player) {
         return SELECTED.getOrDefault(player.getUUID(), SKEWER);
     }
 
@@ -136,11 +136,14 @@ public final class GrootRoots {
         return Math.max(0.0D, (at - player.level().getGameTime()) / 20.0D);
     }
 
-    private static double startCooldown(ServerPlayer player, String form, double seconds) {
+    private static double startCooldown(LivingEntity player, String form, double seconds) {
+        if (!(player instanceof ServerPlayer user)) {
+            return seconds;
+        }
         READY.computeIfAbsent(player.getUUID(), ignored -> new HashMap<>())
                 .put(form, player.level().getGameTime() + Math.round(seconds * 20.0D));
         if (form.equals(selected(player))) {
-            HeroAbilities.setCooldown(player, GROW, seconds);
+            HeroAbilities.setCooldown(user, GROW, seconds);
         }
         return seconds;
     }
@@ -157,23 +160,24 @@ public final class GrootRoots {
     }
 
     private static float damage(double multiplier) {
-        return (float) (MarvelBalanceConfig.STRETCH_PUNCH_DAMAGE.get() * multiplier);
+        return (float) (GrootConfig.ABILITY_DAMAGE.get() * multiplier);
     }
 
     public static float markBonus(LivingEntity target) {
         return target.hasEffect(MobEffects.GLOWING) ? GrootConfig.SPORE_MARK_BONUS.get().floatValue() : 1.0F;
     }
 
-    private static void hurt(ServerPlayer player, LivingEntity target, float amount) {
+    private static void hurt(LivingEntity player, LivingEntity target, float amount) {
         float total = amount * markBonus(target);
-        HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), total));
+        HeroAbilities.runAsAbilityDamage(() -> target.hurt(player instanceof Player user ? player.damageSources().playerAttack(user)
+                : player.damageSources().mobAttack(player), total));
     }
 
     private static boolean ordinary(LivingEntity target) {
         return !(target instanceof Player) && HeroAbilities.canControl(target) && !HeroAbilities.isBoss(target);
     }
 
-    private static boolean foe(ServerPlayer player, LivingEntity target) {
+    private static boolean foe(LivingEntity player, LivingEntity target) {
         return !(target instanceof ArmorStand) && KineticBurst.affects(player, target);
     }
 
@@ -207,15 +211,29 @@ public final class GrootRoots {
         };
     }
 
-    public static boolean rooted(ServerPlayer player) {
+    public static boolean rooted(LivingEntity player) {
         return ROOTED.containsKey(player.getUUID());
     }
 
-    private static double skewer(ServerPlayer player) {
+    private static void morph(LivingEntity player, int kind, int ticks, Vec3 point, Vec3 aux, int... targets) {
+        if (player instanceof ServerPlayer user) {
+            GrootMorphs.send(user, kind, ticks, point, aux, targets);
+        }
+    }
+
+    public static void tickCaster(LivingEntity caster) {
+        tickSkewer(caster);
+    }
+
+    public static void clearCaster(LivingEntity caster) {
+        SKEWERS.remove(caster.getUUID());
+    }
+
+    static double skewer(LivingEntity player) {
         double range = GrootConfig.SKEWER_RANGE.get();
         HeroAbilities.Beam beam = HeroAbilities.beam(player, player.getLookAngle(), range, GrootConfig.SKEWER_MAX_TARGETS.get());
         Vec3 tip = beam.end();
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         GrootPower.woodLine(player, GrootPower.hand(player), tip);
         player.swing(InteractionHand.MAIN_HAND, true);
         HeroFx.play(player, SoundEvents.WOOD_BREAK, 1.2F, 0.6F);
@@ -237,25 +255,25 @@ public final class GrootRoots {
         }
         int[] hit = GrootMorphs.ids(beam.targets());
         if (beam.targets().isEmpty()) {
-            GrootMorphs.send(player, GrootMorphs.SKEWER, 12, tip, null, hit);
+            morph(player, GrootMorphs.SKEWER, 12, tip, null, hit);
             return startCooldown(player, SKEWER, GrootConfig.SKEWER_MISS_COOLDOWN.get());
         }
         if (pinned.isEmpty()) {
-            GrootMorphs.send(player, GrootMorphs.SKEWER, 12, tip, null, hit);
+            morph(player, GrootMorphs.SKEWER, 12, tip, null, hit);
         } else {
-            GrootMorphs.send(player, GrootMorphs.SKEWER, pinTicks + 8, tip, null, hit);
+            morph(player, GrootMorphs.SKEWER, pinTicks + 8, tip, null, hit);
             SKEWERS.put(player.getUUID(), new Skewered(pinned, tip, level.getGameTime() + pinTicks));
         }
         return startCooldown(player, SKEWER, GrootConfig.SKEWER_COOLDOWN.get());
     }
 
-    private static void tickSkewer(ServerPlayer player) {
+    private static void tickSkewer(LivingEntity player) {
         Skewered skewered = SKEWERS.get(player.getUUID());
         if (skewered == null || player.level().getGameTime() < skewered.retractAt()) {
             return;
         }
         SKEWERS.remove(player.getUUID());
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         Vec3 look = player.getLookAngle();
         Vec3 flat = new Vec3(look.x, 0.0D, look.z);
         flat = flat.lengthSqr() < 1.0E-4D ? Vec3.directionFromRotation(0.0F, player.getYRot()) : flat.normalize();
@@ -670,8 +688,8 @@ public final class GrootRoots {
         return 0.0D;
     }
 
-    private static double thornBurst(ServerPlayer player) {
-        ServerLevel level = player.serverLevel();
+    static double thornBurst(LivingEntity player) {
+        ServerLevel level = HeroCaster.level(player);
         double radius = rooted(player) ? GrootConfig.THORN_BURST_ROOTED_RADIUS.get() : GrootConfig.THORN_BURST_RADIUS.get();
         float amount = damage(GrootConfig.THORN_BURST_DAMAGE_MULTIPLIER.get());
         double push = GrootConfig.THORN_BURST_KNOCKBACK.get();
@@ -700,7 +718,9 @@ public final class GrootRoots {
         }
         level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.SWEET_BERRY_BUSH.defaultBlockState()),
                 center.x, center.y, center.z, 30, radius * 0.4D, 0.6D, radius * 0.4D, 0.15D);
-        GrootMorphs.send(player, GrootMorphs.THORN, 8, null);
+        if (player instanceof ServerPlayer user) {
+            GrootMorphs.send(user, GrootMorphs.THORN, 8, null);
+        }
         HeroFx.play(player, SoundEvents.SWEET_BERRY_BUSH_PLACE, 1.2F, 0.6F);
         HeroFx.play(player, SoundEvents.THORNS_HIT, 1.0F, 0.7F);
         HeroFx.play(player, SoundEvents.WOOD_BREAK, 1.0F, 0.5F);

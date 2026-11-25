@@ -71,6 +71,7 @@ public final class VoidEvents {
     @SubscribeEvent
     public static void onChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         SETTLED.remove(event.getEntity().getUUID());
+        warm(event.getEntity());
         CompoundTag data = event.getEntity().getPersistentData();
         if (event.getTo().equals(VoidWorld.LEVEL)) {
             data.putLong(VoidTier.VISIT_START_KEY, event.getEntity().level().getGameTime());
@@ -81,6 +82,7 @@ public final class VoidEvents {
 
     @SubscribeEvent
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        warm(event.getEntity());
         CompoundTag data = event.getEntity().getPersistentData();
         if (VoidWorld.isVoid(event.getEntity().level())) {
             if (!data.contains(VoidTier.VISIT_START_KEY)) {
@@ -95,6 +97,15 @@ public final class VoidEvents {
     public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         LAST_CATCH.remove(event.getEntity().getUUID());
         SETTLED.remove(event.getEntity().getUUID());
+        if (event.getEntity() instanceof ServerPlayer player) {
+            VoidTravel.forget(player);
+        }
+    }
+
+    private static void warm(net.minecraft.world.entity.player.Player entity) {
+        if (entity instanceof ServerPlayer player && "infinity".equals(player.level().dimension().location().getNamespace())) {
+            VoidTravel.warm(player);
+        }
     }
 
     @SubscribeEvent

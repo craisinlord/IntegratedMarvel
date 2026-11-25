@@ -6,7 +6,6 @@ import com.craisinlord.integrated_superheroes.hero.skin.SkinData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -31,9 +30,6 @@ public final class ThematicSerumLooks {
             if (costume.isEmpty() || !(player == Minecraft.getInstance().player ? ThematicLookOptions.showOwn() : ThematicLookOptions.showOthers())) {
                 return null;
             }
-            if (wearsOwnLook(player.getItemBySlot(EquipmentSlot.CHEST))) {
-                return null;
-            }
             ItemStack stack = STACKS.computeIfAbsent(costume, ThematicSerumLooks::create);
             return stack.isEmpty() ? null : stack;
         } catch (Throwable error) {
@@ -43,14 +39,8 @@ public final class ThematicSerumLooks {
         }
     }
 
-    private static boolean wearsOwnLook(ItemStack chest) {
-        if (chest.isEmpty()) {
-            return false;
-        }
-        if (chest.getItem() instanceof CharacterItem) {
-            return true;
-        }
-        return !ResourceLocation.DEFAULT_NAMESPACE.equals(BuiltInRegistries.ITEM.getKey(chest.getItem()).getNamespace());
+    public static boolean covers(Player player) {
+        return standIn(player) != null;
     }
 
     private static ItemStack create(String costume) {

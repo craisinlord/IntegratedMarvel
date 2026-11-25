@@ -66,7 +66,13 @@ final class VoidClouds {
     private static CompletableFuture<Void> baking;
     private static float bakedStorm = -1.0F;
     private static double lastBake;
+    private static final double REBUILD_SECONDS = 0.05D;
+
     private static double lastFrame = -1.0D;
+    private static double lastBuild = -1.0D;
+    private static boolean builtFancy;
+    private static boolean farBuilt;
+    private static boolean nearBuilt;
 
     private static VertexBuffer farMesh;
     private static VertexBuffer nearMesh;
@@ -259,8 +265,9 @@ final class VoidClouds {
         float abyss = TimelineSky.abyss(camera.y);
         prepareColours(storm, camera);
         int lights = gatherLights(now, storm);
-        MeshData far = buildLayers(farBytes, 0, 1);
-        MeshData near = fancy ? buildLayers(nearBytes, 1, LAYER_RADIUS.length) : null;
+        boolean rebuild = lastBuild < 0.0D || now - lastBuild >= REBUILD_SECONDS || fancy != builtFancy;
+        MeshData far = rebuild ? buildLayers(farBytes, 0, 1) : null;
+        MeshData near = rebuild && fancy ? buildLayers(nearBytes, 1, LAYER_RADIUS.length) : null;
         MeshData light = lights > 0 ? buildLights(lights, fancy ? 2 : 1) : null;
         MeshData bolt = buildBolt(now);
 
@@ -270,6 +277,12 @@ final class VoidClouds {
         if (texShader == null || colourShader == null) {
             closeAll(far, near, light, bolt);
             return;
+        }
+        if (rebuild) {
+            lastBuild = now;
+            builtFancy = fancy;
+            farBuilt = far != null;
+            nearBuilt = near != null;
         }
         float k = (1.0F - 0.5F * storm) * abyss;
         float opacity = VoidSkyConfig.cloudOpacity();
@@ -281,7 +294,9 @@ final class VoidClouds {
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.setShaderTexture(0, texture.getId());
         RenderSystem.setShaderColor(k, k, k, opacity);
-        draw(farMesh, far, texShader, projection);
+        if (farBuilt) {
+            draw(farMesh, far, texShader, projection);
+        }
         if (bolt != null) {
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
@@ -292,7 +307,7 @@ final class VoidClouds {
             RenderSystem.setShaderTexture(0, texture.getId());
             RenderSystem.setShaderColor(k, k, k, opacity);
         }
-        if (near != null) {
+        if (nearBuilt) {
             draw(nearMesh, near, texShader, projection);
         }
         if (light != null) {
@@ -318,11 +333,10 @@ final class VoidClouds {
     }
 
     private static void draw(VertexBuffer buffer, MeshData mesh, ShaderInstance shader, Matrix4f projection) {
-        if (mesh == null) {
-            return;
-        }
         buffer.bind();
-        buffer.upload(mesh);
+        if (mesh != null) {
+            buffer.upload(mesh);
+        }
         buffer.drawWithShader(MATRIX, projection, shader);
     }
 

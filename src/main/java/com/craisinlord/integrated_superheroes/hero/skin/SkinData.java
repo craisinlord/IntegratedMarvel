@@ -127,18 +127,27 @@ public final class SkinData {
         return SerumSkins.byId(choice.skin()).filter(skin -> skin.powerId().equals(choice.power())).map(SerumSkin::id).orElse("");
     }
 
+    public static String shownCostume(Player player) {
+        return player.hasData(SHOWN.get()) ? player.getData(SHOWN.get()).costume() : "";
+    }
+
     public static String costume(Player player) {
         if (player.level().isClientSide) {
             return player.hasData(SHOWN.get()) ? player.getData(SHOWN.get()).costume() : "";
         }
         String suitLook = suitLook(player);
-        if (!suitLook.isEmpty() && SuitSkins.wearsIronMan(player)) {
+        if (!suitLook.isEmpty() && WornSuits.fits(player, suitLook)) {
             return suitLook;
         }
+        boolean suited = WornSuits.wearsSuit(player);
         String civilian = civilian(player);
-        if (!civilian.isEmpty()) {
+        if (!civilian.isEmpty() && !suited) {
             return civilian;
         }
+        return suited && !chosenLook(player) ? "" : serumCostume(player);
+    }
+
+    public static String serumCostume(Player player) {
         String power = power(player);
         if (power.isEmpty() || costumeOff(player) || !SerumCostumes.shows(power, player)) {
             return "";
@@ -158,9 +167,13 @@ public final class SkinData {
         return CivilianSkins.valid(costume) ? costume : "";
     }
 
+    public static boolean chosenLook(Player player) {
+        Choice choice = choice(player);
+        return !choice.hidden() && (!choice.look().isEmpty() || !choice.skin().isEmpty());
+    }
+
     public static String suitLook(Player player) {
-        String costume = player.hasData(SUIT_LOOK.get()) ? player.getData(SUIT_LOOK.get()) : "";
-        return SuitSkins.ironManLook(costume) ? costume : "";
+        return player.hasData(SUIT_LOOK.get()) ? player.getData(SUIT_LOOK.get()) : "";
     }
 
     public static void setSuitLook(ServerPlayer player, String costume) {
@@ -187,6 +200,7 @@ public final class SkinData {
             return;
         }
         player.removeData(CIVILIAN.get());
+        player.removeData(SUIT_LOOK.get());
         if (OFF.equals(skinId)) {
             player.setData(CHOICE.get(), new Choice(power, "", "", true));
         } else if (skinId == null || skinId.isEmpty() || DEFAULT.equals(skinId)) {
@@ -203,6 +217,7 @@ public final class SkinData {
             return;
         }
         player.removeData(CIVILIAN.get());
+        player.removeData(SUIT_LOOK.get());
         player.setData(CHOICE.get(), new Choice(power, look.skin(), look.costume(), false));
         refresh(player);
     }

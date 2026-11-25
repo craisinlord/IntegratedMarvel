@@ -33,8 +33,9 @@ public final class HumanTorchPower {
     public static final String FLAME_STATE = "integrated_superheroes_flame";
     private static final String FLAME_ON = "flame_on";
     private static final String FIREBALL_TAG = "integrated_superheroes_torch_fireball";
-    private static final Map<UUID, Cage> CAGES = new HashMap<>();
+    private static final Map<UUID, Cage> CAGES = ServerState.map(new HashMap<>());
     private static final ResourceLocation FLIGHT_ID = ResourceLocation.fromNamespaceAndPath("integrated_superheroes", "torch_flight");
+    private static boolean registered;
 
     private HumanTorchPower() {
     }
@@ -58,6 +59,11 @@ public final class HumanTorchPower {
     }
 
     public static HeroPower create(Supplier<Item> syringe) {
+        if (!registered) {
+            registered = true;
+            HeroCaster.onTick(HumanTorchPower::tickCage);
+            HeroCaster.onCleanup(caster -> CAGES.remove(caster.getUUID()));
+        }
         return new HeroPower(
                 ID,
                 "Flame On (Johnny Storm)",
@@ -66,9 +72,9 @@ public final class HumanTorchPower {
                 List.of(),
                 List.of(
                         new HeroPower.Ability(FLAME_ON, "Flame On", HumanTorchPower::flameOn),
-                        new HeroPower.Ability("fireball", "Fireball", HumanTorchPower::fireball),
-                        new HeroPower.Ability("flame_cage", "Flame Cage", HumanTorchPower::flameCage),
-                        new HeroPower.Ability("nova_flare", "Nova Flare", HumanTorchPower::novaFlare)
+                        HeroPower.Ability.of("fireball", "Fireball", HumanTorchPower::fireball),
+                        HeroPower.Ability.of("flame_cage", "Flame Cage", HumanTorchPower::flameCage),
+                        HeroPower.Ability.of("nova_flare", "Nova Flare", HumanTorchPower::novaFlare)
                 ),
                 List.of(),
                 new HeroPower.Hooks() {
@@ -145,8 +151,12 @@ public final class HumanTorchPower {
         HeroAbilities.setCooldown(player, FLAME_ON, cooldown);
     }
 
-    private static boolean needFlame(ServerPlayer player) {
-        if (isFlamed(player)) {
+    private static net.minecraft.world.damagesource.DamageSource attack(LivingEntity caster) {
+        return caster instanceof Player player ? caster.damageSources().playerAttack(player) : caster.damageSources().mobAttack(caster);
+    }
+
+    private static boolean needFlame(LivingEntity caster) {
+        if (!(caster instanceof ServerPlayer player) || isFlamed(player)) {
             return true;
         }
         player.displayClientMessage(Component.literal("§7Flame on first."), true);
@@ -182,7 +192,7 @@ public final class HumanTorchPower {
         return 1.0D;
     }
 
-    private static double fireball(ServerPlayer player, int slot) {
+    private static double fireball(LivingEntity player, int slot) {
         if (!needFlame(player)) {
             return 0.0D;
         }
@@ -207,10 +217,10 @@ public final class HumanTorchPower {
             event.setCanceled(true);
             return;
         }
-        if (hit instanceof EntityHitResult entityHit && fireball.getOwner() instanceof ServerPlayer owner
-                && entityHit.getEntity() instanceof LivingEntity target) {
+        if (hit instanceof EntityHitResult entityHit && fireball.getOwner() instanceof LivingEntity owner
+                && entityHit.getEntity() instanceof LivingEntity target && HeroCaster.foe(owner, target)) {
             float damage = MarvelBalanceConfig.FIREBALL_DAMAGE.get().floatValue();
-            HeroAbilities.runAsAbilityDamage(() -> target.hurt(owner.damageSources().fireball(fireball, owner), damage));
+            HeroAbilities.runAsAbilityDamage(() -> HeroHits.pulse(owner, target, owner.damageSources().fireball(fireball, owner), damage));
             target.igniteForSeconds(5.0F);
         }
         Vec3 at = hit.getLocation();
@@ -222,7 +232,7 @@ public final class HumanTorchPower {
         event.setCanceled(true);
     }
 
-    private static double flameCage(ServerPlayer player, int slot) {
+    private static double flameCage(LivingEntity player, int slot) {
         if (!needFlame(player)) {
             return 0.0D;
         }
@@ -238,11 +248,11 @@ public final class HumanTorchPower {
             HeroStun.stun(target, ticks);
         }
         target.igniteForSeconds(ticks / 20.0F + 3.0F);
-        cage.themed = HeroFx.vfx(player.serverLevel(), target.position(), "fire_ring_wall", 0, (float) Math.max(1.5D, target.getBbWidth() + 1.0D));
+        cage.themed = HeroFx.vfx(HeroCaster.level(player), target.position(), "fire_ring_wall", 0, (float) Math.max(1.5D, target.getBbWidth() + 1.0D));
         if (cage.themed) {
             HeroFx.cue(target, "thematic:ignite", 1.0F, 0.8F);
         } else {
-            HeroAbilities.particleLine(player.serverLevel(), player.getEyePosition().subtract(0.0D, 0.3D, 0.0D), target.getBoundingBox().getCenter(),
+            HeroAbilities.particleLine(HeroCaster.level(player), player.getEyePosition().subtract(0.0D, 0.3D, 0.0D), target.getBoundingBox().getCenter(),
                     ParticleTypes.FLAME, 0.5D);
             HeroFx.play(target, SoundEvents.BLAZE_SHOOT, 1.0F, 0.6F);
         }
@@ -250,20 +260,24 @@ public final class HumanTorchPower {
         return MarvelBalanceConfig.FLAME_CAGE_COOLDOWN.get();
     }
 
-    private static void tickCage(ServerPlayer player) {
+    public static void clear(ServerPlayer player) {
+        CAGES.remove(player.getUUID());
+    }
+
+    private static void tickCage(LivingEntity player) {
         Cage cage = CAGES.get(player.getUUID());
         if (cage == null) {
             return;
         }
         LivingEntity target = cage.target;
-        if (target.isDeadOrDying() && target.level() == player.level()) {
-            HeroAdvancements.award(player, "fantastic_four/human_torch/hot_box");
+        if (target.isDeadOrDying() && target.level() == player.level() && player instanceof ServerPlayer serverPlayer) {
+            HeroAdvancements.award(serverPlayer, "fantastic_four/human_torch/hot_box");
         }
         if (!target.isAlive() || target.level() != player.level() || cage.ticks-- <= 0) {
             CAGES.remove(player.getUUID());
             return;
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         double radius = Math.max(1.0D, target.getBbWidth() * 0.9D + 0.6D);
         double spin = cage.ticks * 0.25D;
         for (int i = 0; !cage.themed && i < 12; i++) {
@@ -274,22 +288,21 @@ public final class HumanTorchPower {
         }
         if (cage.ticks % 20 == 0) {
             float damage = MarvelBalanceConfig.FLAME_CAGE_DAMAGE.get().floatValue();
-            target.invulnerableTime = 0;
-            HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+            HeroAbilities.runAsAbilityDamage(() -> HeroHits.force(player, target, attack(player), damage));
             target.igniteForSeconds(3.0F);
         }
     }
 
-    private static double novaFlare(ServerPlayer player, int slot) {
+    private static double novaFlare(LivingEntity player, int slot) {
         if (!needFlame(player)) {
             return 0.0D;
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         double radius = MarvelBalanceConfig.NOVA_RADIUS.get();
         float damage = MarvelBalanceConfig.NOVA_DAMAGE.get().floatValue();
         HeroAdvancements.cast(player).kills(5, "fantastic_four/human_torch/supernova").run(() -> {
             for (LivingEntity target : HeroAbilities.sphere(player, radius)) {
-                HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+                HeroAbilities.runAsAbilityDamage(() -> target.hurt(attack(player), damage));
                 target.igniteForSeconds(8.0F);
                 Vec3 push = target.position().subtract(player.position()).normalize().scale(1.4D);
                 target.setDeltaMovement(push.x, 0.5D, push.z);
@@ -312,8 +325,10 @@ public final class HumanTorchPower {
         }
         HeroFx.shake(level, center, radius * 2.0D, 0.8F, 20);
         HeroAnimations.play(player, "web_shoot_both");
-        flameOut(player, MarvelBalanceConfig.NOVA_BURNOUT_SECONDS.get());
-        player.displayClientMessage(Component.literal("§6Nova flare! §7Burned out."), true);
+        if (player instanceof ServerPlayer serverPlayer) {
+            flameOut(serverPlayer, MarvelBalanceConfig.NOVA_BURNOUT_SECONDS.get());
+        }
+        HeroCaster.message(player, Component.literal("§6Nova flare! §7Burned out."));
         return MarvelBalanceConfig.NOVA_COOLDOWN.get();
     }
 }

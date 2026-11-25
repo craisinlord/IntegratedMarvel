@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -36,12 +37,23 @@ public final class InvisibleWomanPower {
     private static final String VANISH = "vanish";
     private static final String FORCE_BUBBLE = "force_bubble";
     private static final DustParticleOptions FORCE = new DustParticleOptions(new Vector3f(0.55F, 0.8F, 1.0F), 1.0F);
-    private static final Map<UUID, Long> BUBBLE_UNTIL = new HashMap<>();
+    private static final Map<UUID, Long> BUBBLE_UNTIL = ServerState.map(new HashMap<>());
+    private static boolean registered;
 
     private InvisibleWomanPower() {
     }
 
     public static HeroPower create(Supplier<Item> syringe) {
+        if (!registered) {
+            registered = true;
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(InvisibleWomanPower::onMobHurt);
+            HeroCaster.onTick(caster -> {
+                if (hasBubble(caster)) {
+                    tickBubble(caster);
+                }
+            });
+            HeroCaster.onCleanup(caster -> BUBBLE_UNTIL.remove(caster.getUUID()));
+        }
         return new HeroPower(
                 ID,
                 "Invisibility (Sue Storm)",
@@ -51,8 +63,8 @@ public final class InvisibleWomanPower {
                 List.of(
                         new HeroPower.Ability(VANISH, "Vanish", InvisibleWomanPower::vanish),
                         new HeroPower.Ability("force_field", "Force Field", InvisibleWomanPower::forceField),
-                        new HeroPower.Ability(FORCE_BUBBLE, "Force Bubble", InvisibleWomanPower::forceBubble),
-                        new HeroPower.Ability("force_blast", "Force Blast", InvisibleWomanPower::forceBlast)
+                        HeroPower.Ability.of(FORCE_BUBBLE, "Force Bubble", InvisibleWomanPower::forceBubble),
+                        HeroPower.Ability.of("force_blast", "Force Blast", InvisibleWomanPower::forceBlast)
                 ),
                 List.of(),
                 new HeroPower.Hooks() {
@@ -99,8 +111,26 @@ public final class InvisibleWomanPower {
                 && HeroPowers.data(player).hasState(INVISIBLE_STATE);
     }
 
-    private static boolean hasBubble(Player player) {
-        return HeroPowers.data(player).hasState(BUBBLE_STATE);
+    private static boolean hasBubble(LivingEntity caster) {
+        if (caster instanceof Player player) {
+            return HeroPowers.data(player).hasState(BUBBLE_STATE);
+        }
+        return BUBBLE_UNTIL.containsKey(caster.getUUID());
+    }
+
+    private static void onMobHurt(LivingIncomingDamageEvent event) {
+        LivingEntity entity = event.getEntity();
+        if (entity instanceof Player || entity.level().isClientSide || !BUBBLE_UNTIL.containsKey(entity.getUUID())
+                || event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+            return;
+        }
+        event.setAmount(event.getAmount() * MarvelBalanceConfig.BUBBLE_DAMAGE_MULTIPLIER.get().floatValue());
+        ServerLevel level = HeroCaster.level(entity);
+        Vec3 at = entity.position().add(0.0D, 1.0D, 0.0D);
+        if (!HeroFx.vfx(level, entity.position(), "invisible_woman/force_ripple", 0)) {
+            level.sendParticles(FORCE, at.x, at.y, at.z, 10, 0.8D, 0.8D, 0.8D, 0.0D);
+        }
+        HeroFx.play(entity, SoundEvents.AMETHYST_BLOCK_HIT, 1.0F, 1.4F);
     }
 
     public static void reveal(ServerPlayer player) {
@@ -127,15 +157,15 @@ public final class InvisibleWomanPower {
     }
 
     public static void loseMobs(ServerPlayer player) {
-        for (Mob mob : player.serverLevel().getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(48.0D),
-                mob -> mob.getTarget() == player)) {
-            mob.setTarget(null);
-            mob.getNavigation().stop();
-        }
-        for (LivingEntity living : player.serverLevel().getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(48.0D),
-                living -> living.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET)
-                        && living.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).filter(target -> target == player).isPresent())) {
-            living.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);
+        for (LivingEntity living : player.serverLevel().getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(48.0D))) {
+            if (living instanceof Mob mob && mob.getTarget() == player) {
+                mob.setTarget(null);
+                mob.getNavigation().stop();
+            }
+            if (living.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET)
+                    && living.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).filter(target -> target == player).isPresent()) {
+                living.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);
+            }
         }
     }
 
@@ -187,33 +217,39 @@ public final class InvisibleWomanPower {
         return MarvelBalanceConfig.FORCE_FIELD_COOLDOWN.get();
     }
 
-    private static double forceBubble(ServerPlayer player, int slot) {
-        PlayerData data = HeroPowers.data(player);
-        if (data.hasState(BUBBLE_STATE)) {
+    private static double forceBubble(LivingEntity player, int slot) {
+        if (hasBubble(player)) {
             popBubble(player);
             return MarvelBalanceConfig.BUBBLE_COOLDOWN.get();
         }
-        data.addState(BUBBLE_STATE);
-        PlayerData.sync(player);
-        BUBBLE_UNTIL.put(player.getUUID(), player.serverLevel().getGameTime() + (long) (MarvelBalanceConfig.BUBBLE_SECONDS.get() * 20.0D));
-        HeroFx.vfx(player.serverLevel(), player.position(), "invisible_woman/force_bubble", 0, MarvelBalanceConfig.BUBBLE_RADIUS.get().floatValue());
+        if (player instanceof ServerPlayer serverPlayer) {
+            HeroPowers.data(serverPlayer).addState(BUBBLE_STATE);
+            PlayerData.sync(serverPlayer);
+        }
+        ServerLevel level = HeroCaster.level(player);
+        BUBBLE_UNTIL.put(player.getUUID(), level.getGameTime() + (long) (MarvelBalanceConfig.BUBBLE_SECONDS.get() * 20.0D));
+        HeroFx.vfx(level, player.position(), "invisible_woman/force_bubble", 0, MarvelBalanceConfig.BUBBLE_RADIUS.get().floatValue());
         HeroFx.play(player, SoundEvents.BEACON_ACTIVATE, 0.8F, 1.6F);
-        return 0.5D;
+        return player instanceof ServerPlayer ? 0.5D : MarvelBalanceConfig.BUBBLE_SECONDS.get() + MarvelBalanceConfig.BUBBLE_COOLDOWN.get();
     }
 
-    private static void popBubble(ServerPlayer player) {
-        HeroPowers.data(player).removeState(BUBBLE_STATE);
-        PlayerData.sync(player);
+    private static void popBubble(LivingEntity player) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            HeroPowers.data(serverPlayer).removeState(BUBBLE_STATE);
+            PlayerData.sync(serverPlayer);
+        }
         BUBBLE_UNTIL.remove(player.getUUID());
         HeroFx.play(player, SoundEvents.BEACON_DEACTIVATE, 0.8F, 1.6F);
     }
 
-    private static void tickBubble(ServerPlayer player) {
-        ServerLevel level = player.serverLevel();
+    private static void tickBubble(LivingEntity player) {
+        ServerLevel level = HeroCaster.level(player);
         Long until = BUBBLE_UNTIL.get(player.getUUID());
         if (until == null || level.getGameTime() >= until) {
             popBubble(player);
-            HeroAbilities.setCooldown(player, FORCE_BUBBLE, MarvelBalanceConfig.BUBBLE_COOLDOWN.get());
+            if (player instanceof ServerPlayer serverPlayer) {
+                HeroAbilities.setCooldown(serverPlayer, FORCE_BUBBLE, MarvelBalanceConfig.BUBBLE_COOLDOWN.get());
+            }
             return;
         }
         double radius = MarvelBalanceConfig.BUBBLE_RADIUS.get();
@@ -234,7 +270,7 @@ public final class InvisibleWomanPower {
                         level.sendParticles(FORCE, entity.getX(), entity.getY(), entity.getZ(), 4, 0.1D, 0.1D, 0.1D, 0.0D);
                     }
                 }
-            } else if (entity instanceof LivingEntity living && living.isAlive()) {
+            } else if (entity instanceof LivingEntity living && living.isAlive() && HeroCaster.foe(player, living)) {
                 living.setDeltaMovement(out.x * 0.6D, 0.2D, out.z * 0.6D);
                 living.hurtMarked = true;
             }
@@ -254,13 +290,17 @@ public final class InvisibleWomanPower {
         }
     }
 
-    private static double forceBlast(ServerPlayer player, int slot) {
-        ServerLevel level = player.serverLevel();
+    private static DamageSource attack(LivingEntity caster) {
+        return caster instanceof Player player ? caster.damageSources().playerAttack(player) : caster.damageSources().mobAttack(caster);
+    }
+
+    private static double forceBlast(LivingEntity player, int slot) {
+        ServerLevel level = HeroCaster.level(player);
         double range = MarvelBalanceConfig.FORCE_BLAST_RANGE.get();
         float damage = MarvelBalanceConfig.FORCE_BLAST_DAMAGE.get().floatValue();
         Vec3 look = player.getLookAngle();
         for (LivingEntity target : HeroAbilities.cone(player, range, 25.0D)) {
-            HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+            HeroAbilities.runAsAbilityDamage(() -> target.hurt(attack(player), damage));
             target.setDeltaMovement(look.x * 2.2D, 0.6D, look.z * 2.2D);
             target.hurtMarked = true;
         }
@@ -275,7 +315,9 @@ public final class InvisibleWomanPower {
         HeroFx.play(player, SoundEvents.BREEZE_WIND_CHARGE_BURST.value(), 1.0F, 1.2F);
         HeroFx.play(player, SoundEvents.AMETHYST_BLOCK_RESONATE, 1.0F, 0.8F);
         HeroAnimations.play(player, "web_shoot_both");
-        reveal(player);
+        if (player instanceof ServerPlayer serverPlayer) {
+            reveal(serverPlayer);
+        }
         return MarvelBalanceConfig.FORCE_BLAST_COOLDOWN.get();
     }
 }

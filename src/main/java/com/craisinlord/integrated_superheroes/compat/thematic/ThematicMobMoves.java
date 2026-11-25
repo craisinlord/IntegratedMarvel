@@ -55,6 +55,7 @@ final class ThematicMobMoves {
         Exit exit = key.then();
         PhaseDef phase = first;
         int offset = 0;
+        int tail = 0;
         int depth = 0;
         while (phase != null && seen.add(phase.name()) && depth++ < MAX_CHAIN) {
             PhaseSpec spec = phase.state();
@@ -65,7 +66,9 @@ final class ThematicMobMoves {
             for (SequenceSpec.Step step : steps(spec.steps())) {
                 steps.add(new SequenceSpec.Step(step.atTicks() + offset, step.actions()));
             }
-            PhaseDef following = spec.dwell().timed() ? phase(def, spec.then()) : null;
+            PhaseSpec.Reaction release = spec.dwell().timed() ? null : reaction(spec, AbilityEventKind.RELEASE);
+            Exit next = spec.dwell().timed() ? spec.then() : release != null ? release.then() : null;
+            PhaseDef following = phase(def, next);
             boolean last = following == null || seen.contains(following.name()) || depth >= MAX_CHAIN;
             for (Object raw : spec.every()) {
                 every.add(shift((PhaseSpec.TickRule) raw, offset, last ? Double.POSITIVE_INFINITY : offset + dwell));
@@ -78,6 +81,17 @@ final class ThematicMobMoves {
             }
             until = depth == 1 && !spec.until().isEmpty() ? ((PhaseSpec.Until) spec.until().get(0)).guard() : null;
             offset += dwell;
+            if (release != null) {
+                List<JsonObject> released = actions(release.actions());
+                if (!released.isEmpty()) {
+                    steps.add(new SequenceSpec.Step(offset, released));
+                    tail = Math.max(tail, offset + 1);
+                }
+                for (SequenceSpec.Step step : steps(release.steps())) {
+                    steps.add(new SequenceSpec.Step(step.atTicks() + offset, step.actions()));
+                    tail = Math.max(tail, step.atTicks() + offset + 1);
+                }
+            }
             if (last) {
                 end = actions(spec.end());
                 break;
@@ -85,7 +99,7 @@ final class ThematicMobMoves {
             if (!spec.end().isEmpty()) {
                 steps.add(new SequenceSpec.Step(offset, actions(spec.end())));
             }
-            exit = spec.then();
+            exit = next;
             phase = following;
         }
         steps.sort(Comparator.comparingInt(SequenceSpec.Step::atTicks));
@@ -97,7 +111,7 @@ final class ThematicMobMoves {
             return new Built(new MobPart(move.minRange(), move.maxRange(), move.cooldownTicks(), move.weight(), 0, false,
                     timeline, List.of(), Map.of(), List.of(), true, null, true), Kind.STEPS);
         }
-        int lasts = Math.max(1, Math.min(MAX_TICKS, offset));
+        int lasts = Math.max(1, Math.min(MAX_TICKS, Math.max(offset, tail)));
         return new Built(new MobPart(move.minRange(), move.maxRange(), move.cooldownTicks(), move.weight(), lasts, true,
                 timeline, List.copyOf(every), on, end, true, until, true), Kind.CHANNEL);
     }
@@ -138,6 +152,15 @@ final class ThematicMobMoves {
         }
         return new PhaseSpec.TickRule(rule.intervalTicks(), rule.chance(), rule.actions(), rule.clock(), rule.startTicks() + offset,
                 rule.exactInterval(), frames, rule.cycleTicks(), rule.fromTicks() + offset, Math.min(rule.untilTicks() + offset, stop));
+    }
+
+    private static PhaseSpec.Reaction reaction(PhaseSpec spec, AbilityEventKind wanted) {
+        for (Map.Entry<?, ?> entry : spec.on().entrySet()) {
+            if (wanted.equals(entry.getKey()) && entry.getValue() instanceof PhaseSpec.Reaction reaction) {
+                return reaction;
+            }
+        }
+        return null;
     }
 
     private static PhaseSpec.Reaction contact(PhaseSpec spec) {

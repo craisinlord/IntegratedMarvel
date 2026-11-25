@@ -65,6 +65,17 @@ public final class GauntletFxClient {
                             payload.az() + payload.bz() * cos);
                 }
             }
+            case GauntletShapePayload.BURST -> {
+                for (int index = 0; index < points; index++) {
+                    double theta = Math.PI * 2.0D * index / points;
+                    double phi = Math.acos(1.0D - 2.0D * (index + 0.5D) / points);
+                    double x = Math.cos(theta) * Math.sin(phi);
+                    double y = Math.cos(phi);
+                    double z = Math.sin(theta) * Math.sin(phi);
+                    level.addParticle(payload.particle(), payload.far(), payload.ax() + x * payload.radius(), payload.ay() + y * payload.radius(),
+                            payload.az() + z * payload.radius(), x * payload.spread(), y * payload.spread(), z * payload.spread());
+                }
+            }
             default -> {
             }
         }

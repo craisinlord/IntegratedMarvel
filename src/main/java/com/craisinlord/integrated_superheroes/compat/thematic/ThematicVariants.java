@@ -126,7 +126,7 @@ public final class ThematicVariants {
             }
             if (native_(ability)) {
                 anyNative = true;
-            } else if (active(ability) && allowlist.contains(ability.getId())) {
+            } else if (active(ability) && mobUsable(ability)) {
                 anyAllowed = true;
             }
             anyActive |= active(ability);

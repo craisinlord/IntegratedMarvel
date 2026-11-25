@@ -24,8 +24,8 @@ final class SerumKit {
                 && powerId.equals(HeroPowers.data(player).getPrimaryPower());
     }
 
-    static int primary(Player player, int fallback) {
-        return SerumSkins.primary(player, fallback);
+    static int primary(LivingEntity caster, int fallback) {
+        return caster instanceof Player player ? SerumSkins.primary(player, fallback) : fallback;
     }
 
     static int secondary(Player player, int fallback) {
@@ -36,7 +36,7 @@ final class SerumKit {
         return SerumSkins.has(player, trait);
     }
 
-    static ParticleOptions glow(Player player, int fallback, float size) {
+    static ParticleOptions glow(LivingEntity player, int fallback, float size) {
         return HeroAbilities.emissive(primary(player, fallback), size);
     }
 
@@ -81,7 +81,7 @@ final class SerumKit {
         }
     }
 
-    private static final java.util.Map<java.util.UUID, Integer> METER_SENT = new java.util.HashMap<>();
+    private static final java.util.Map<java.util.UUID, Integer> METER_SENT = ServerState.map(new java.util.HashMap<>());
 
     static void meter(ServerPlayer player, float fraction) {
         int percent = fraction < 0.0F ? -1 : Math.round(Math.min(1.0F, fraction) * 100.0F);

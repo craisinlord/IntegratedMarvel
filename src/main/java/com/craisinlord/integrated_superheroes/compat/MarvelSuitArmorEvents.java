@@ -32,12 +32,17 @@ public final class MarvelSuitArmorEvents {
     private static final double[] PANTHER_ARMOR = {5, 10, 8, 5, 3.5};
     private static final java.util.Set<String> PANTHER_MATERIALS = java.util.Set.of("vibranium_weave", "vibranium_nanite");
 
+    private static final java.util.Set<ArmorItem> UNTOUCHED = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
     private MarvelSuitArmorEvents() {
     }
 
     @SubscribeEvent
     public static void onItemAttributeModifiers(ItemAttributeModifierEvent event) {
         if (!(event.getItemStack().getItem() instanceof ArmorItem armor)) {
+            return;
+        }
+        if (UNTOUCHED.contains(armor)) {
             return;
         }
         boolean costume = MarvelCostumes.isCostume(armor);
@@ -53,6 +58,9 @@ public final class MarvelSuitArmorEvents {
             stats = COSTUME_ARMOR;
         } else {
             if (!marvelMaterial) {
+                if (IronManSuits.isLoaded()) {
+                    UNTOUCHED.add(armor);
+                }
                 return;
             }
             stats = SUIT_ARMOR.get(material.getPath());

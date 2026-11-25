@@ -55,12 +55,13 @@ public final class KryptonianPower {
     private static final int THEMATIC_HEAT = 0xFF0000;
     private static final int THEMATIC_FROST = 0xB1FCF5;
     private static final int FROST_CONE = 0xB3D8F4FF;
-    private static final Map<UUID, Float> SOLAR = new HashMap<>();
-    private static final Set<UUID> WEAKENED = new HashSet<>();
+    private static final Map<UUID, Float> SOLAR = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Float> SUNLIGHT = ServerState.map(new HashMap<>());
+    private static final Set<UUID> WEAKENED = ServerState.all(new HashSet<>());
     private static final TagKey<Block> KRYPTONITE_BLOCKS = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "kryptonite"));
     private static final ResourceKey<Biome> TOXIC_CAVES = ResourceKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath("alexscaves", "toxic_caves"));
-    private static final Map<UUID, Float> CHARGE = new HashMap<>();
-    private static final Map<UUID, Long> DRAINED = new HashMap<>();
+    private static final Map<UUID, Float> CHARGE = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> DRAINED = ServerState.map(new HashMap<>());
 
     private KryptonianPower() {
     }
@@ -73,11 +74,11 @@ public final class KryptonianPower {
                 NewSerumConfig.KRYPTONIAN,
                 List.of(),
                 List.of(
-                        new HeroPower.Ability("heat_vision", "Heat Vision", KryptonianPower::heatVision),
-                        new HeroPower.Ability("super_breath", "Super Breath", KryptonianPower::superBreath),
-                        new HeroPower.Ability("flying_punch", "Flying Punch", KryptonianPower::flyingPunch),
+                        HeroPower.Ability.of("heat_vision", "Heat Vision", KryptonianPower::heatVision),
+                        HeroPower.Ability.of("super_breath", "Super Breath", KryptonianPower::superBreath),
+                        HeroPower.Ability.of("flying_punch", "Flying Punch", KryptonianPower::flyingPunch),
                         HeroToggles.WHEEL,
-                        new HeroPower.Ability("solar_flare", "Solar Flare", KryptonianPower::solarFlare)
+                        HeroPower.Ability.of("solar_flare", "Solar Flare", KryptonianPower::solarFlare)
                 ),
                 HeroToggles.flying(HeroToggles.SPEED, HeroToggles.SENSES),
                 new HeroPower.Hooks() {
@@ -117,6 +118,7 @@ public final class KryptonianPower {
                         SerumKit.dropEffect(player, MobEffects.MOVEMENT_SPEED);
                         SerumKit.dropEffect(player, MobEffects.NIGHT_VISION);
                         SOLAR.remove(player.getUUID());
+                        SUNLIGHT.remove(player.getUUID());
                         WEAKENED.remove(player.getUUID());
                         CHARGE.remove(player.getUUID());
                         DRAINED.remove(player.getUUID());
@@ -134,6 +136,9 @@ public final class KryptonianPower {
                         } else if (!drained(player) && event.getSource().is(DamageTypeTags.IS_FIRE) || event.getSource().is(DamageTypeTags.IS_FREEZING)
                                 || event.getSource().is(DamageTypeTags.IS_DROWNING)) {
                             event.setCanceled(true);
+                        } else if (!drained(player) && !event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)
+                                && !event.getSource().is(DamageTypeTags.BYPASSES_RESISTANCE)) {
+                            event.setAmount(event.getAmount() * damageTaken(player));
                         }
                     }
 
@@ -153,8 +158,12 @@ public final class KryptonianPower {
         return WEAKENED.contains(player.getUUID());
     }
 
-    private static boolean drained(ServerPlayer player) {
+    private static boolean drained(LivingEntity player) {
         return DRAINED.containsKey(player.getUUID());
+    }
+
+    private static boolean trait(LivingEntity caster, String trait) {
+        return caster instanceof Player player && SerumKit.trait(player, trait);
     }
 
     private static void tickDrained(ServerPlayer player) {
@@ -165,11 +174,18 @@ public final class KryptonianPower {
         }
     }
 
-    private static float solar(ServerPlayer player) {
+    private static float solar(LivingEntity player) {
         if (WEAKENED.contains(player.getUUID()) || drained(player)) {
             return NewSerumConfig.SOLAR_MIN_MULTIPLIER.get().floatValue();
         }
         return SOLAR.getOrDefault(player.getUUID(), 1.0F);
+    }
+
+    private static float damageTaken(ServerPlayer player) {
+        double shade = NewSerumConfig.SHADE_DAMAGE_REDUCTION.get();
+        double sun = NewSerumConfig.SUN_DAMAGE_REDUCTION.get();
+        double reduction = shade + (sun - shade) * SUNLIGHT.getOrDefault(player.getUUID(), 0.0F);
+        return (float) (1.0D - reduction / 100.0D);
     }
 
     private static void tickSolar(ServerPlayer player, boolean weak) {
@@ -181,6 +197,7 @@ public final class KryptonianPower {
         double min = NewSerumConfig.SOLAR_MIN_MULTIPLIER.get();
         double max = NewSerumConfig.SOLAR_MAX_MULTIPLIER.get();
         SOLAR.put(player.getUUID(), (float) (min + (max - min) * sun));
+        SUNLIGHT.put(player.getUUID(), (float) sun);
         float charge = CHARGE.getOrDefault(player.getUUID(), 0.0F);
         if (!weak && sun > 0.0D) {
             charge = (float) Math.min(1.0D, charge + sun / NewSerumConfig.SOLAR_FLARE_CHARGE_SECONDS.get());
@@ -263,28 +280,28 @@ public final class KryptonianPower {
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new com.craisinlord.integrated_superheroes.api.HeroSensesEvent(player, radius));
     }
 
-    private static boolean blocked(ServerPlayer player) {
+    private static boolean blocked(LivingEntity player) {
         if (WEAKENED.contains(player.getUUID())) {
-            player.displayClientMessage(Component.literal("§aYou're too weak to do that right now."), true);
+            HeroCaster.message(player, Component.literal("§aYou're too weak to do that right now."));
             return true;
         }
         if (drained(player)) {
-            player.displayClientMessage(Component.literal("§eYou've got nothing left. Wait for the sun to fill you back up."), true);
+            HeroCaster.message(player, Component.literal("§eYou've got nothing left. Wait for the sun to fill you back up."));
             return true;
         }
         return false;
     }
 
-    private static double heatVision(ServerPlayer player, int slot) {
+    private static double heatVision(LivingEntity player, int slot) {
         if (blocked(player)) {
             return 0.0D;
         }
-        if (SerumKit.trait(player, SerumKit.INVERTED)) {
+        if (trait(player, SerumKit.INVERTED)) {
             return freezeVision(player);
         }
         double damage = NewSerumConfig.HEAT_VISION_DAMAGE.get() * solar(player);
         double range = NewSerumConfig.HEAT_VISION_RANGE.get();
-        double terrain = player.serverLevel().getGameRules().getBoolean(MarvelGameRules.RULE_SUPERPOWERGRIEFING)
+        double terrain = HeroCaster.griefs(player) && HeroCaster.level(player).getGameRules().getBoolean(MarvelGameRules.RULE_SUPERPOWERGRIEFING)
                 ? NewSerumConfig.HEAT_VISION_TERRAIN_RADIUS.get() : 0.0D;
         BeamSettings settings = HeroBeams.settings(range, NewSerumConfig.HEAT_VISION_DURATION_TICKS.get(), 0.6F, 1.4F, damage, 0.4F, 2,
                 terrain, 0.0D, 50.0D);
@@ -302,8 +319,8 @@ public final class KryptonianPower {
         return NewSerumConfig.HEAT_VISION_COOLDOWN.get();
     }
 
-    private static double freezeVision(ServerPlayer player) {
-        ServerLevel level = player.serverLevel();
+    private static double freezeVision(LivingEntity player) {
+        ServerLevel level = HeroCaster.level(player);
         double range = NewSerumConfig.HEAT_VISION_RANGE.get();
         HeroAbilities.Beam beam = HeroAbilities.beam(player, player.getLookAngle(), range, 3);
         Vec3 from = beam.start().add(player.getLookAngle().scale(0.6D)).subtract(0.0D, 0.1D, 0.0D);
@@ -318,7 +335,7 @@ public final class KryptonianPower {
         }
         float damage = (float) (NewSerumConfig.HEAT_VISION_DAMAGE.get() * solar(player) * 1.5D);
         for (LivingEntity target : beam.targets()) {
-            HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().freeze(), damage));
+            HeroAbilities.runAsAbilityDamage(() -> HeroHits.hurt(player, target, player.damageSources().freeze(), damage));
             chill(target, NewSerumConfig.SUPER_BREATH_FREEZE_TICKS.get());
         }
         if (eye != null) {
@@ -341,29 +358,29 @@ public final class KryptonianPower {
         target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, ticks, 2));
     }
 
-    private static double superBreath(ServerPlayer player, int slot) {
+    private static double superBreath(LivingEntity player, int slot) {
         if (blocked(player)) {
             return 0.0D;
         }
-        boolean fire = SerumKit.trait(player, SerumKit.INVERTED);
-        ServerLevel level = player.serverLevel();
+        boolean fire = trait(player, SerumKit.INVERTED);
+        ServerLevel level = HeroCaster.level(player);
         double range = NewSerumConfig.SUPER_BREATH_RANGE.get();
         float damage = (float) (NewSerumConfig.SUPER_BREATH_DAMAGE.get() * solar(player));
         Vec3 look = player.getLookAngle();
         for (LivingEntity target : HeroAbilities.cone(player, range, 25.0D)) {
             if (fire) {
-                HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().onFire(), damage));
+                HeroAbilities.runAsAbilityDamage(() -> HeroHits.hurt(player, target, player.damageSources().onFire(), damage));
                 target.igniteForSeconds(6.0F);
             } else {
-                HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().freeze(), damage));
+                HeroAbilities.runAsAbilityDamage(() -> HeroHits.hurt(player, target, player.damageSources().freeze(), damage));
                 chill(target, NewSerumConfig.SUPER_BREATH_FREEZE_TICKS.get());
             }
             target.setDeltaMovement(target.getDeltaMovement().add(look.x * 1.2D, 0.25D, look.z * 1.2D));
             target.hurtMarked = true;
         }
         Vec3 mouth = player.getEyePosition().subtract(0.0D, 0.2D, 0.0D);
-        if (!fire) {
-            frostTerrain(player, level, mouth, range);
+        if (!fire && player instanceof ServerPlayer serverPlayer) {
+            frostTerrain(serverPlayer, level, mouth, range);
         }
         if (HeroFx.thematic() && HeroFx.beam(level, mouth.add(look), mouth.add(look.scale(range)), "pyre_cone", fire ? 0 : FROST_CONE)) {
             Vec3 reach = mouth.add(look.scale(range * 0.75D));
@@ -420,20 +437,21 @@ public final class KryptonianPower {
         }
     }
 
-    private static double solarFlare(ServerPlayer player, int slot) {
+    private static double solarFlare(LivingEntity player, int slot) {
         if (blocked(player)) {
             return 0.0D;
         }
+        ServerPlayer serverPlayer = player instanceof ServerPlayer sp ? sp : null;
         float charge = CHARGE.getOrDefault(player.getUUID(), 0.0F);
-        if (charge < 1.0F) {
-            player.displayClientMessage(Component.literal("§eNot enough sun in you yet (" + Math.round(charge * 100.0F) + "%)."), true);
+        if (serverPlayer != null && charge < 1.0F) {
+            HeroCaster.message(player, Component.literal("§eNot enough sun in you yet (" + Math.round(charge * 100.0F) + "%)."));
             return 0.0D;
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         double radius = NewSerumConfig.SOLAR_FLARE_RADIUS.get();
         float damage = NewSerumConfig.SOLAR_FLARE_DAMAGE.get().floatValue();
         for (LivingEntity target : HeroAbilities.sphere(player, radius)) {
-            HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().onFire(), damage));
+            HeroAbilities.runAsAbilityDamage(() -> HeroHits.hurt(player, target, player.damageSources().onFire(), damage));
             target.igniteForSeconds(5.0F);
             SerumKit.push(target, player.position(), 2.0D, 0.6D);
         }
@@ -451,25 +469,28 @@ public final class KryptonianPower {
         HeroFx.play(player, SoundEvents.GENERIC_EXPLODE.value(), 1.4F, 0.7F);
         HeroFx.play(player, SoundEvents.BEACON_DEACTIVATE, 1.2F, 0.6F);
         HeroFx.shake(level, player.position(), radius * 2.0D, 0.7F, 12);
+        if (serverPlayer == null) {
+            return NewSerumConfig.SOLAR_FLARE_DRAINED_TICKS.get() / 20.0D;
+        }
         CHARGE.put(player.getUUID(), 0.0F);
-        SerumKit.meter(player, 0.0F);
+        SerumKit.meter(serverPlayer, 0.0F);
         int drained = NewSerumConfig.SOLAR_FLARE_DRAINED_TICKS.get();
         if (drained > 0) {
             DRAINED.put(player.getUUID(), level.getGameTime() + drained);
             HeroBeams.stopAll(player);
-            player.displayClientMessage(Component.literal("§eThat was everything. You feel human."), true);
+            HeroCaster.message(player, Component.literal("§eThat was everything. You feel human."));
         }
         return 1.0D;
     }
 
-    private static double flyingPunch(ServerPlayer player, int slot) {
+    private static double flyingPunch(LivingEntity player, int slot) {
         if (blocked(player)) {
             return 0.0D;
         }
         Vec3 velocity = player.getLookAngle().scale(NewSerumConfig.FLYING_PUNCH_SPEED.get());
         double damage = NewSerumConfig.FLYING_PUNCH_DAMAGE.get() * solar(player);
         HeroAbilities.startDash(player, velocity, 10, damage, 3.0D);
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         Vec3 chest = player.position().add(0.0D, 1.0D, 0.0D);
         if (HeroFx.vfx(level, chest, "punch_pressure_wave", 0)) {
             HeroFx.vfx(level, chest, "air_burst_ring", 0);

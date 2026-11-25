@@ -32,13 +32,13 @@ public final class StormPower {
     private static final ResourceLocation FLIGHT_ID = ResourceLocation.fromNamespaceAndPath("integrated_superheroes", "storm_flight");
     public static final HeroPower.Toggle STORM_AURA = new HeroPower.Toggle("integrated_superheroes_off_storm_aura", "Storm Aura",
             () -> HeroFx.item("antarchy:eye_of_the_storm", Items.WIND_CHARGE));
-    private static final Set<UUID> WAS_FLYING = new HashSet<>();
+    private static final Set<UUID> WAS_FLYING = ServerState.all(new HashSet<>());
 
     private StormPower() {
     }
 
-    private static final Map<UUID, Set<Integer>> LAST_STRIKE = new java.util.HashMap<>();
-    private static final Map<UUID, Gust> GUSTS = new java.util.HashMap<>();
+    private static final Map<UUID, Set<Integer>> LAST_STRIKE = ServerState.map(new java.util.HashMap<>());
+    private static final Map<UUID, Gust> GUSTS = ServerState.map(new java.util.HashMap<>());
 
     private record Gust(Map<LivingEntity, Vec3> starts, long until) {
     }
@@ -52,8 +52,8 @@ public final class StormPower {
                 MarvelBalanceConfig.STORM,
                 List.of(),
                 List.of(
-                        new HeroPower.Ability("lightning_strike", "Lightning Strike", StormPower::lightningStrike),
-                        new HeroPower.Ability("gale", "Gale", StormPower::gale),
+                        HeroPower.Ability.of("lightning_strike", "Lightning Strike", StormPower::lightningStrike),
+                        HeroPower.Ability.of("gale", "Gale", StormPower::gale),
                         new HeroPower.Ability(StormWeather.ABILITY, "Weather Control", (player, slot) -> 0.0D),
                         HeroToggles.WHEEL
                 ),
@@ -125,13 +125,20 @@ public final class StormPower {
         HeroAnimations.play(player, "celestisynth:cs_breezebreaker_jump");
     }
 
-    private static double lightningStrike(ServerPlayer player, int slot) {
-        ServerLevel level = player.serverLevel();
+    private static boolean struck(LivingEntity caster, LivingEntity entity) {
+        return entity != caster && entity.isAlive() && (HeroCaster.isPlayer(caster) || HeroCaster.foe(caster, entity));
+    }
+
+    private static double lightningStrike(LivingEntity player, int slot) {
+        ServerLevel level = HeroCaster.level(player);
         double range = MarvelBalanceConfig.LIGHTNING_RANGE.get();
         HeroAbilities.Beam beam = HeroAbilities.beam(player, player.getLookAngle(), range, 1);
+        LivingEntity aimed = HeroCaster.target(player);
         Vec3 point;
         if (!beam.targets().isEmpty()) {
             point = beam.targets().get(0).position();
+        } else if (aimed != null && aimed.distanceToSqr(player) <= range * range) {
+            point = aimed.position();
         } else {
             HitResult hit = player.pick(range, 0.0F, false);
             point = hit.getLocation();
@@ -146,20 +153,22 @@ public final class StormPower {
             strike(level, player, at, radius, damage, hit);
         }
         List<LivingEntity> chain = new ArrayList<>(level.getEntitiesOfClass(LivingEntity.class, new AABB(point, point).inflate(8.0D),
-                entity -> entity instanceof Enemy && entity.isAlive() && !hit.contains(entity.getId())));
+                entity -> (HeroCaster.isPlayer(player) ? entity instanceof Enemy && entity.isAlive() : struck(player, entity)) && !hit.contains(entity.getId())));
         chain.sort(Comparator.comparingDouble(entity -> entity.distanceToSqr(point)));
         for (int i = 0; i < Math.min(chain.size(), MarvelBalanceConfig.LIGHTNING_CHAIN_TARGETS.get()); i++) {
             strike(level, player, chain.get(i).position(), 1.0D, damage * 0.6F, hit);
         }
-        Set<Integer> previous = LAST_STRIKE.put(player.getUUID(), hit);
-        if (previous != null && previous.stream().anyMatch(id -> hit.contains(id) && level.getEntity(id) instanceof LivingEntity living && living.isAlive())) {
-            HeroAdvancements.award(player, "x_men/storm/lightning_strikes_twice");
+        if (player instanceof ServerPlayer serverPlayer) {
+            Set<Integer> previous = LAST_STRIKE.put(player.getUUID(), hit);
+            if (previous != null && previous.stream().anyMatch(id -> hit.contains(id) && level.getEntity(id) instanceof LivingEntity living && living.isAlive())) {
+                HeroAdvancements.award(serverPlayer, "x_men/storm/lightning_strikes_twice");
+            }
         }
         HeroAnimations.play(player, "celestisynth:cs_rainfall_aim_right");
         return stormy ? MarvelBalanceConfig.LIGHTNING_STORM_COOLDOWN.get() : MarvelBalanceConfig.LIGHTNING_COOLDOWN.get();
     }
 
-    private static void strike(ServerLevel level, ServerPlayer player, Vec3 at, double radius, float damage, Set<Integer> hit) {
+    private static void strike(ServerLevel level, LivingEntity player, Vec3 at, double radius, float damage, Set<Integer> hit) {
         LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(level);
         if (bolt != null) {
             bolt.moveTo(at.x, at.y, at.z);
@@ -170,10 +179,14 @@ public final class StormPower {
             HeroFx.vfx(level, at, "fork_burst", 0, (float) Math.max(2.0D, radius * 2.0D));
         }
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, new AABB(at, at).inflate(radius, radius + 1.0D, radius),
-                entity -> entity != player && entity.isAlive() && !hit.contains(entity.getId()))) {
+                entity -> struck(player, entity) && !hit.contains(entity.getId()))) {
             hit.add(target.getId());
-            target.hurt(player.damageSources().mobAttack(player), damage);
+            HeroHits.hurt(player, target, player.damageSources().mobAttack(player), damage);
         }
+    }
+
+    public static void clear(ServerPlayer player) {
+        GUSTS.remove(player.getUUID());
     }
 
     private static void tickGust(ServerPlayer player) {
@@ -194,17 +207,20 @@ public final class StormPower {
         }
     }
 
-    private static double gale(ServerPlayer player, int slot) {
+    private static double gale(LivingEntity player, int slot) {
         Vec3 look = player.getLookAngle();
-        Map<LivingEntity, Vec3> starts = new java.util.HashMap<>();
-        for (LivingEntity target : player.level().getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(24.0D),
-                entity -> entity != player && entity.isAlive() && !(entity instanceof net.minecraft.world.entity.player.Player))) {
-            starts.put(target, target.position());
+        if (player instanceof ServerPlayer) {
+            Map<LivingEntity, Vec3> starts = new java.util.HashMap<>();
+            for (LivingEntity target : player.level().getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(24.0D),
+                    entity -> entity != player && entity.isAlive() && !(entity instanceof net.minecraft.world.entity.player.Player))) {
+                starts.put(target, target.position());
+            }
+            GUSTS.put(player.getUUID(), new Gust(starts, player.level().getGameTime() + 120L));
         }
-        GUSTS.put(player.getUUID(), new Gust(starts, player.level().getGameTime() + 120L));
         StormWind.gale(player, player.getEyePosition().add(look), look);
-        if (HeroFx.vfx(player.serverLevel(), player.position().add(look.scale(3.0D)), "gust_tornado", 0)) {
-            HeroFx.vfx(player.serverLevel(), player.position(), "air_burst_ring", 0, 4.0F);
+        ServerLevel level = HeroCaster.level(player);
+        if (HeroFx.vfx(level, player.position().add(look.scale(3.0D)), "gust_tornado", 0)) {
+            HeroFx.vfx(level, player.position(), "air_burst_ring", 0, 4.0F);
         }
         HeroAnimations.play(player, "celestisynth:cs_solaris_spin");
         return MarvelBalanceConfig.GALE_COOLDOWN.get();

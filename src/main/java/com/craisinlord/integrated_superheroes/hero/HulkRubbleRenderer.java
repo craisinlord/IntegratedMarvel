@@ -1,6 +1,7 @@
 package com.craisinlord.integrated_superheroes.hero;
 
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
+import com.craisinlord.integrated_superheroes.voidworld.client.sky.ShaderPacks;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -50,7 +51,7 @@ public final class HulkRubbleRenderer {
 
     @SubscribeEvent
     public static void onRender(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES || GLOWS.isEmpty()) {
+        if (GLOWS.isEmpty() || event.getStage() != ShaderPacks.glowStage()) {
             return;
         }
         Minecraft minecraft = Minecraft.getInstance();

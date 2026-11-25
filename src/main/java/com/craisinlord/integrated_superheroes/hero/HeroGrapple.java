@@ -14,8 +14,8 @@ import java.util.Set;
 import java.util.UUID;
 
 public final class HeroGrapple {
-    private static final Map<UUID, Line> LINES = new HashMap<>();
-    private static final Set<UUID> SAFE_FALL = new HashSet<>();
+    private static final Map<UUID, Line> LINES = ServerState.map(new HashMap<>());
+    private static final Set<UUID> SAFE_FALL = ServerState.all(new HashSet<>());
 
     private HeroGrapple() {
     }

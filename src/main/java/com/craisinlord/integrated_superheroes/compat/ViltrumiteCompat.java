@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.compat;
 
+import com.craisinlord.integrated_superheroes.hero.ServerState;
 import com.craisinlord.integrated_superheroes.api.RogueAbsorption;
 import com.craisinlord.integrated_superheroes.api.RogueMemory;
 import com.craisinlord.integrated_superheroes.hero.HeroFlight;
@@ -38,7 +39,7 @@ import java.util.UUID;
 
 public final class ViltrumiteCompat {
     private static final Set<String> SQUAD = Set.of("Lucan", "Vidor", "Thula");
-    private static final Set<UUID> BORROWED = new HashSet<>();
+    private static final Set<UUID> BORROWED = ServerState.all(new HashSet<>());
     private static final long ACTIVE_WINDOW_MILLIS = 2000L;
     private static final String SCALED_TAG = "integrated_superheroes_viltrumite_scaled";
     private static final float SUBSONIC_THROTTLE = 0.59F;

@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.boss;
 
+import com.craisinlord.integrated_superheroes.gauntlet.GauntletGrief;
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
@@ -51,11 +52,11 @@ public final class WitherstormEvents {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onPlace(BlockEvent.EntityPlaceEvent event) {
-        if (event.isCanceled() || !(event.getLevel() instanceof ServerLevel level)) return;
+        if (event.isCanceled() || GauntletGrief.probing() || !(event.getLevel() instanceof ServerLevel level)) return;
         BlockPos pos = event.getPos();
         if (event.getEntity() instanceof ServerPlayer) {
-            for (WitherstormEntity storm : level.getEntitiesOfClass(WitherstormEntity.class, new AABB(pos).inflate(64.0D))) {
-                storm.recordPlaced(pos);
+            for (WitherstormEntity storm : WitherstormEntity.live(level)) {
+                if (storm.getBoundingBox().inflate(64.0D).intersects(new AABB(pos))) storm.recordPlaced(pos);
             }
         }
         BlockState placed = event.getPlacedBlock();

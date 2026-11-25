@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.villain;
 
+import com.craisinlord.integrated_superheroes.gauntlet.GauntletFx;
 import com.craisinlord.integrated_superheroes.hero.HeroFx;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -82,11 +83,7 @@ public final class VillainFx {
     public static void ring(ServerLevel level, Vec3 center, double radius, Vector3f color) {
         int points = Math.max(12, (int) (radius * 10.0D));
         DustParticleOptions dust = new DustParticleOptions(color, 1.2F);
-        for (int i = 0; i < points; i++) {
-            double angle = Math.PI * 2.0D * i / points;
-            level.sendParticles(dust, center.x + Math.cos(angle) * radius, center.y + 0.1D, center.z + Math.sin(angle) * radius,
-                    1, 0.0D, 0.0D, 0.0D, 0.0D);
-        }
+        GauntletFx.ring(level, dust, center.add(0.0D, 0.1D, 0.0D), radius, points);
     }
 
     public static void disc(ServerLevel level, Vec3 center, double radius, ParticleOptions particle, int count) {
@@ -99,13 +96,7 @@ public final class VillainFx {
         if (length < 0.01D) {
             return;
         }
-        Vec3 step = delta.scale(0.5D / length);
-        DustParticleOptions dust = new DustParticleOptions(color, 0.6F);
-        Vec3 point = from;
-        for (double d = 0.0D; d < length; d += 0.5D) {
-            level.sendParticles(dust, point.x, point.y, point.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
-            point = point.add(step);
-        }
+        GauntletFx.line(level, new DustParticleOptions(color, 0.6F), from, to, (int) (length / 0.5D), 0.0F);
     }
 
     public static void smoke(ServerLevel level, Vec3 at, double radius) {

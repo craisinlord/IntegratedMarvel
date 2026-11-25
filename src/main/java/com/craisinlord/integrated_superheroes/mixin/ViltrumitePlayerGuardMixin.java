@@ -6,10 +6,16 @@ import com.craisinlord.integrated_superheroes.compat.ViltrumiteGuards;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import dev.baranhan.viltrumitecore.util.ViltrumiteCorePlayer;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -38,6 +44,27 @@ public abstract class ViltrumitePlayerGuardMixin {
             target = "Ldev/baranhan/viltrumitecore/util/ThunderClapManager;tickThunderclaps(Lnet/minecraft/server/level/ServerLevel;)V"), remap = false)
     private boolean integratedSuperheroes$clapsOncePerTick(ServerLevel level) {
         return ViltrumiteGuards.firstThisTick(ViltrumiteGuards.CLAPS, level);
+    }
+
+    @TargetHandler(mixin = "dev.baranhan.viltrumitecore.mixin.PlayerEntityCoreMixin", name = "tickGrab")
+    @Inject(method = "@MixinSquared:Handler", at = @At("HEAD"), remap = false)
+    private void integratedSuperheroes$releaseBoss(Player player, CallbackInfo ci) {
+        if (!player.level().isClientSide && player instanceof ViltrumiteCorePlayer core && ViltrumiteGuards.resistsForce(core.getGrabbedTarget())) {
+            core.releaseTarget();
+        }
+    }
+
+    @TargetHandler(mixin = "dev.baranhan.viltrumitecore.mixin.PlayerEntityCoreMixin", name = "tickGrab")
+    @WrapOperation(method = "@MixinSquared:Handler", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/world/level/Level;getEntities(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;)Ljava/util/List;"), remap = false)
+    private List<Entity> integratedSuperheroes$skipBosses(Level level, Entity grabber, AABB box, Operation<List<Entity>> original) {
+        List<Entity> found = original.call(level, grabber, box);
+        if (found.stream().noneMatch(ViltrumiteGuards::resistsForce)) {
+            return found;
+        }
+        List<Entity> allowed = new ArrayList<>(found);
+        allowed.removeIf(ViltrumiteGuards::resistsForce);
+        return allowed;
     }
 
     @TargetHandler(mixin = "dev.baranhan.viltrumitecore.mixin.PlayerEntityCoreMixin", name = "tickGrab")

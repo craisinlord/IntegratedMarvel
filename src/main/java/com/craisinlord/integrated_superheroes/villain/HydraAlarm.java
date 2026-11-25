@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.villain;
 
+import com.craisinlord.integrated_superheroes.hero.ServerState;
 import net.minecraft.ChatFormatting;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 public final class HydraAlarm {
-    private static final Map<ResourceKey<Level>, List<Alarm>> ALARMS = new HashMap<>();
+    private static final Map<ResourceKey<Level>, List<Alarm>> ALARMS = ServerState.map(new HashMap<>());
 
     private HydraAlarm() {
     }

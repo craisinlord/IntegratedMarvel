@@ -1,5 +1,7 @@
 package com.craisinlord.integrated_superheroes.hero;
 
+import com.craisinlord.integrated_superheroes.compat.ModCompat;
+import com.craisinlord.integrated_superheroes.compat.thematic.ThematicFixes;
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import com.craisinlord.integrated_superheroes.villain.VillainWorld;
 import net.minecraft.core.BlockPos;
@@ -31,7 +33,7 @@ public final class WingedFlightController {
     private static final float DEFAULT_FLY_SPEED = 0.05F;
     private static final double DIVE_MIN_DROP = 0.35D;
     private static final double LONG_GLIDE = 150.0D;
-    private static final Map<UUID, State> STATES = new HashMap<>();
+    private static final Map<UUID, State> STATES = ServerState.map(new HashMap<>());
 
     private WingedFlightController() {
     }
@@ -450,7 +452,7 @@ public final class WingedFlightController {
                 flight.addTransientModifier(new AttributeModifier(FLIGHT_ID, 1.0D, AttributeModifier.Operation.ADD_VALUE));
             }
             float speed = AngelConfig.FLY_SPEED.get().floatValue();
-            if (!otherFlight(player) && player.getAbilities().getFlyingSpeed() != speed) {
+            if (!otherFlight(player) && player.getAbilities().getFlyingSpeed() != speed && !(ModCompat.THEMATIC && ThematicFixes.ownsAbilities(player))) {
                 player.getAbilities().setFlyingSpeed(speed);
                 player.onUpdateAbilities();
             }

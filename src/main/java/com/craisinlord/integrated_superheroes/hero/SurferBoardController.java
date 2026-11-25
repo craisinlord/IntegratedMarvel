@@ -28,8 +28,8 @@ public final class SurferBoardController {
     private static final int BOARD_COLOR = 0xE6EEF8;
     private static final double LONG_RIDE = 300.0D;
     private static final double TELEPORT_JUMP = 8.0D;
-    private static final Map<UUID, Ride> RIDES = new HashMap<>();
-    private static final Map<UUID, Long> GRACE = new HashMap<>();
+    private static final Map<UUID, Ride> RIDES = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> GRACE = ServerState.map(new HashMap<>());
 
     private SurferBoardController() {
     }

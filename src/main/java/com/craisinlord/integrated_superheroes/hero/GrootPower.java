@@ -40,7 +40,9 @@ public final class GrootPower {
     private static final int STRIKE_TICKS = 8;
     private static final int PULL_TICKS = 8;
     private static final int REEL_TICKS = 20;
-    private static final Map<UUID, State> STATES = new HashMap<>();
+    private static final Map<UUID, State> STATES = ServerState.map(new HashMap<>());
+    private static final String SKEWER_MOVE = "power:" + ID + "/grow_skewer";
+    private static final String THORN_MOVE = "power:" + ID + "/grow_thorn_burst";
     private static RogueMemory rogue;
     private static boolean registered;
 
@@ -62,6 +64,17 @@ public final class GrootPower {
             NeoForge.EVENT_BUS.addListener(GrootPower::onStopping);
             SerumCostumes.register(ID, "thematic:groot");
             RogueAbsorption.remember(rogueMemory());
+            HeroCaster.onTick(caster -> {
+                tickState(caster);
+                GrootRoots.tickCaster(caster);
+            });
+            HeroCaster.onCleanup(caster -> {
+                STATES.remove(caster.getUUID());
+                GrootRoots.clearCaster(caster);
+            });
+            com.craisinlord.integrated_superheroes.voidrealm.variant.moves.RealMoves.source(SKEWER_MOVE, (level, mob, target) -> GrootRoots.skewer(mob));
+            com.craisinlord.integrated_superheroes.voidrealm.variant.moves.RealMoves.source(THORN_MOVE, (level, mob, target) -> GrootRoots.thornBurst(mob));
+            com.craisinlord.integrated_superheroes.voidrealm.variant.moves.RealMoves.kit(ID, List.of(SKEWER_MOVE, THORN_MOVE));
         }
         HeroWheels.register(GrootRoots.wheel());
         return new HeroPower(
@@ -71,7 +84,7 @@ public final class GrootPower {
                 GrootConfig.STATS,
                 List.of(),
                 List.of(
-                        new HeroPower.Ability(BRANCH, "Branch Arm", GrootPower::branch),
+                        HeroPower.Ability.of(BRANCH, "Branch Arm", GrootPower::branch),
                         new HeroPower.Ability(GrootRoots.WHEEL, "Root Wheel", (player, slot) -> 0.0D),
                         new HeroPower.Ability(GrootRoots.GROW, "Grow", GrootRoots::grow),
                         HeroToggles.WHEEL
@@ -112,11 +125,11 @@ public final class GrootPower {
                 && ID.equals(HeroPowers.data(player).getPrimaryPower());
     }
 
-    private static State state(ServerPlayer player) {
+    private static State state(LivingEntity player) {
         return STATES.computeIfAbsent(player.getUUID(), ignored -> new State());
     }
 
-    static Vec3 hand(ServerPlayer player) {
+    static Vec3 hand(LivingEntity player) {
         Vec3 look = player.getLookAngle();
         Vec3 flat = new Vec3(look.x, 0.0D, look.z);
         flat = flat.lengthSqr() < 1.0E-4D ? Vec3.directionFromRotation(0.0F, player.getYRot()) : flat.normalize();
@@ -125,16 +138,16 @@ public final class GrootPower {
         return player.getEyePosition().add(right.scale(0.35D * scale)).add(0.0D, -0.4D * scale, 0.0D).add(look.scale(0.3D));
     }
 
-    private static boolean pullable(ServerPlayer player, LivingEntity target) {
+    private static boolean pullable(LivingEntity player, LivingEntity target) {
         return target.isAlive() && !(target instanceof Player) && !(target instanceof ArmorStand) && KineticBurst.affects(player, target)
                 && HeroAbilities.canControl(target) && !HeroAbilities.isBoss(target);
     }
 
-    static void woodLine(ServerPlayer player, Vec3 from, Vec3 to) {
-        if (!HeroToggles.isOn(player, BRANCH_VISUALS)) {
+    static void woodLine(LivingEntity player, Vec3 from, Vec3 to) {
+        if (player instanceof ServerPlayer user && !HeroToggles.isOn(user, BRANCH_VISUALS)) {
             return;
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.OAK_LOG.defaultBlockState()), to.x, to.y, to.z, 6, 0.15D, 0.15D, 0.15D, 0.05D);
         level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.OAK_LEAVES.defaultBlockState()), to.x, to.y, to.z, 3, 0.2D, 0.2D, 0.2D, 0.0D);
     }
@@ -143,12 +156,22 @@ public final class GrootPower {
         level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.OAK_LEAVES.defaultBlockState()), at.x, at.y, at.z, count, spread, 0.2D, spread, 0.0D);
     }
 
-    private static double range(ServerPlayer player) {
+    private static double range(LivingEntity player) {
         double range = GrootConfig.BRANCH_RANGE.get();
         return GrootRoots.rooted(player) ? range * GrootConfig.TAKE_ROOT_BRANCH_RANGE_MULTIPLIER.get() : range;
     }
 
-    private static double branch(ServerPlayer player, int slot) {
+    private static void branches(LivingEntity player, int mode, Entity target, Vec3 point, int ticks) {
+        if (player instanceof ServerPlayer user) {
+            GrootBranches.send(user, mode, target, point, ticks);
+        }
+    }
+
+    private static net.minecraft.world.damagesource.DamageSource attack(LivingEntity caster) {
+        return caster instanceof net.minecraft.world.entity.player.Player player ? caster.damageSources().playerAttack(player) : caster.damageSources().mobAttack(caster);
+    }
+
+    private static double branch(LivingEntity player, int slot) {
         State state = state(player);
         long now = player.level().getGameTime();
         if (state.hooked != null && now < state.hookUntil) {
@@ -166,34 +189,36 @@ public final class GrootPower {
             if (beam.hitBlock()) {
                 HeroFx.play(player, SoundEvents.WOOD_HIT, 1.0F, 0.8F);
             }
-            GrootBranches.send(player, GrootBranches.STRIKE, null, point, STRIKE_TICKS);
+            branches(player, GrootBranches.STRIKE, null, point, STRIKE_TICKS);
             return GrootConfig.BRANCH_COOLDOWN.get();
         }
-        float damage = (float) (MarvelBalanceConfig.STRETCH_PUNCH_DAMAGE.get() * GrootConfig.BRANCH_DAMAGE_MULTIPLIER.get()) * GrootRoots.markBonus(target);
-        HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+        float damage = (float) (GrootConfig.ABILITY_DAMAGE.get() * GrootConfig.BRANCH_DAMAGE_MULTIPLIER.get()) * GrootRoots.markBonus(target);
+        HeroAbilities.runAsAbilityDamage(() -> target.hurt(attack(player), damage));
         Vec3 look = player.getLookAngle();
         target.knockback(0.35D, -look.x, -look.z);
         HeroFx.play(target, SoundEvents.PLAYER_ATTACK_KNOCKBACK, 1.0F, 0.7F);
-        leaves(player.serverLevel(), point, 4, 0.3D);
+        leaves(HeroCaster.level(player), point, 4, 0.3D);
         if (target.isAlive() && pullable(player, target)) {
             state.hooked = target.getUUID();
             state.hookUntil = now + GrootConfig.PULL_WINDOW_TICKS.get();
-            GrootBranches.send(player, GrootBranches.HOLD, target, point, GrootConfig.PULL_WINDOW_TICKS.get());
-            player.displayClientMessage(Component.literal("§aGot it. Press again to pull it in."), true);
-            return 0.0D;
+            branches(player, GrootBranches.HOLD, target, point, GrootConfig.PULL_WINDOW_TICKS.get());
+            HeroCaster.message(player, Component.literal("§aGot it. Press again to pull it in."));
+            return player instanceof ServerPlayer ? 0.0D : 0.5D;
         }
-        GrootBranches.send(player, GrootBranches.STRIKE, target, point, STRIKE_TICKS);
+        branches(player, GrootBranches.STRIKE, target, point, STRIKE_TICKS);
         return GrootConfig.BRANCH_COOLDOWN.get();
     }
 
-    private static double pull(ServerPlayer player, State state) {
-        Entity found = player.serverLevel().getEntity(state.hooked);
+    private static double pull(LivingEntity player, State state) {
+        Entity found = HeroCaster.level(player).getEntity(state.hooked);
         state.hooked = null;
         state.hookUntil = 0L;
         double range = range(player) + 3.0D;
         if (!(found instanceof LivingEntity target) || !pullable(player, target) || target.distanceTo(player) > range || !player.hasLineOfSight(target)) {
-            player.displayClientMessage(Component.literal("§7Lost your grip."), true);
-            GrootBranches.clear(player);
+            HeroCaster.message(player, Component.literal("§7Lost your grip."));
+            if (player instanceof ServerPlayer user) {
+                GrootBranches.clear(user);
+            }
             return GrootConfig.BRANCH_COOLDOWN.get();
         }
         Vec3 to = player.position().subtract(target.position());
@@ -210,15 +235,17 @@ public final class GrootPower {
         state.reelStart = player.level().getGameTime();
         Vec3 center = target.getBoundingBox().getCenter();
         woodLine(player, hand(player), center);
-        GrootBranches.send(player, GrootBranches.PULL, target, center, PULL_TICKS);
+        branches(player, GrootBranches.PULL, target, center, PULL_TICKS);
         HeroFx.play(player, SoundEvents.WOOD_PLACE, 1.0F, 0.6F);
         HeroFx.play(target, SoundEvents.VINE_STEP, 1.2F, 0.8F);
         player.swing(InteractionHand.MAIN_HAND, true);
-        HeroAdvancements.award(player, "avengers/groot/branching_out");
+        if (player instanceof ServerPlayer user) {
+            HeroAdvancements.award(user, "avengers/groot/branching_out");
+        }
         return GrootConfig.BRANCH_COOLDOWN.get();
     }
 
-    private static void tickState(ServerPlayer player) {
+    private static void tickState(LivingEntity player) {
         State state = STATES.get(player.getUUID());
         if (state == null) {
             return;
@@ -227,16 +254,18 @@ public final class GrootPower {
         if (state.hooked != null && now >= state.hookUntil) {
             state.hooked = null;
             state.hookUntil = 0L;
-            HeroAbilities.setCooldown(player, BRANCH, GrootConfig.BRANCH_COOLDOWN.get());
+            if (player instanceof ServerPlayer user) {
+                HeroAbilities.setCooldown(user, BRANCH, GrootConfig.BRANCH_COOLDOWN.get());
+            }
         }
         if (state.reeled != null) {
             long elapsed = now - state.reelStart;
-            Entity found = player.serverLevel().getEntity(state.reeled);
+            Entity found = HeroCaster.level(player).getEntity(state.reeled);
             if (!(found instanceof LivingEntity target) || !target.isAlive() || elapsed > REEL_TICKS) {
                 state.reeled = null;
             } else if (elapsed >= 3 && (target.distanceTo(player) <= 2.5D || target.onGround())) {
                 HeroStun.stun(target, GrootConfig.PULL_STUN_TICKS.get());
-                player.serverLevel().sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.OAK_LEAVES.defaultBlockState()),
+                HeroCaster.level(player).sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.OAK_LEAVES.defaultBlockState()),
                         target.getX(), target.getY() + target.getBbHeight(), target.getZ(), 6, 0.3D, 0.1D, 0.3D, 0.0D);
                 state.reeled = null;
             }
@@ -263,7 +292,7 @@ public final class GrootPower {
         GrootBranches.send(player, GrootBranches.STRIKE, null, point, STRIKE_TICKS);
         player.swing(InteractionHand.MAIN_HAND, true);
         HeroFx.play(player, SoundEvents.WOOD_BREAK, 1.0F, 0.7F);
-        float damage = RogueKit.dmg(MarvelBalanceConfig.STRETCH_PUNCH_DAMAGE.get() * GrootConfig.ROGUE_DAMAGE_MULTIPLIER.get());
+        float damage = RogueKit.dmg(GrootConfig.ABILITY_DAMAGE.get() * GrootConfig.ROGUE_DAMAGE_MULTIPLIER.get());
         for (LivingEntity target : beam.targets()) {
             if (RogueKit.affects(player, target)) {
                 HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));

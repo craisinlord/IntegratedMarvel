@@ -140,7 +140,7 @@ final class VehicleTears {
 
     @Nullable
     static Vec3 open(ServerLevel level, ServerPlayer player, int tier, boolean aircraft, double fuel, boolean driver, boolean launch) {
-        for (int attempt = 0; attempt < 32; attempt++) {
+        for (int attempt = 0; attempt < 8; attempt++) {
             Vec3 ground = VoidVehicles.groundSpot(level, player.position(), 12.0D, 40.0D);
             if (ground == null) {
                 return null;
@@ -310,7 +310,7 @@ final class VehicleTears {
         long brakeAt = now + (tear.launch ? 30L : 16L) + level.random.nextInt(10);
         Run run = new Run(level.dimension(), new Vec3(push.x, 0.0D, push.z), now, brakeAt, null);
         RUNS.put(id, run);
-        if (tear.driver) {
+        if (tear.driver && !VoidVariants.full(level)) {
             Vec3 side = tear.ground.add(tear.right().scale(3.0D));
             if (MarvelPortal.enabled()) {
                 Vec3 spot = Vec3.atBottomCenterOf(BlockPos.containing(side));

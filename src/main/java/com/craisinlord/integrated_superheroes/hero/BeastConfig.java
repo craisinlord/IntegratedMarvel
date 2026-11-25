@@ -28,7 +28,7 @@ public final class BeastConfig {
 
     static void define(ModConfigSpec.Builder builder) {
         builder.push("beast");
-        BEAST = new MarvelBalanceConfig.HeroStats(builder, 25.0D, 8.0D, 0.5D, 0.5D, 0.03D, 24.0D, 1,
+        BEAST = new MarvelBalanceConfig.HeroStats(builder, 27.0D, 3.0D, 0.5D, 0.5D, 0.03D, 24.0D, 1,
                 List.of("minecraft:generic.safe_fall_distance;8.0;ADD_VALUE"));
         POUNCE_SPEED = builder.comment("Launch speed of Pounce. 1.3 carries you about 12 blocks on flat ground.")
                 .defineInRange("pounceSpeed", 1.3D, 0.2D, 3.0D);

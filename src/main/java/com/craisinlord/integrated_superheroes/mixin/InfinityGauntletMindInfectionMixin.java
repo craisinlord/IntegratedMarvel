@@ -50,6 +50,9 @@ public abstract class InfinityGauntletMindInfectionMixin {
                 && !world.getEntitiesOfClass(Player.class, new AABB(x, y, z, x, y, z).inflate(2.0D), player -> true).isEmpty()) {
             living.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 100, 2, false, false));
         }
+        if (entity.tickCount % 4 != 0) {
+            return;
+        }
         for (ServerPlayer player : level.players()) {
             level.sendParticles(player, INTEGRATED_SUPERHEROES$DUST, true, entity.getX(), entity.getY() + 1.0D, entity.getZ(), 5, 0.5D, 0.5D, 0.5D, 0.0D);
         }

@@ -644,7 +644,7 @@ public final class WinterSoldierBrain extends VillainBrain {
         ServerPlayer owner = level.getServer().getPlayerList().getPlayer(allyOwner);
         LivingEntity enemy = mob.getTarget();
         if (enemy == null || !enemy.isAlive() || !allowedAllyTarget(enemy) || enemy.distanceTo(mob) > 24.0D) {
-            enemy = findEnemy(level, owner);
+            enemy = now % 10L == 0L ? findEnemy(level, owner) : null;
             mob.setTarget(enemy);
         }
         if (now % 20L == 0L && !level.getEntitiesOfClass(LivingEntity.class, mob.getBoundingBox().inflate(48.0D),

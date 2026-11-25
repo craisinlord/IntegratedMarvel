@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.compat.thematic;
 
+import com.craisinlord.integrated_superheroes.hero.ServerState;
 import bond.thematic.api.content.entity.ai.move.HoverFlier;
 import bond.thematic.api.content.entity.body.DataMobEntity;
 import bond.thematic.api.registries.armors.armor.ArmorRegistry;
@@ -21,8 +22,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class ThematicFlight {
     private static final Map<String, Boolean> FLYERS = new ConcurrentHashMap<>();
-    private static final Map<Mob, Flight> FLIGHTS = new WeakHashMap<>();
-    private static final Map<Mob, Boolean> SUIT_VARIANTS = new WeakHashMap<>();
+    private static final Map<Mob, Flight> FLIGHTS = ServerState.map(new WeakHashMap<>());
+    private static final Map<Mob, Boolean> SUIT_VARIANTS = ServerState.map(new WeakHashMap<>());
     private static final AtomicBoolean REGISTERED = new AtomicBoolean();
     private static final int GROUNDED = 0;
     private static final int FLYING = 1;

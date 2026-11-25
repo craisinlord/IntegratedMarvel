@@ -7,6 +7,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ShieldItem;
@@ -34,8 +35,8 @@ public final class SuperSoldierPower {
                 MarvelBalanceConfig.SUPER_SOLDIER,
                 List.of("agility"),
                 List.of(
-                        new HeroPower.Ability("shield_charge", "Shield Charge", SuperSoldierPower::shieldCharge),
-                        new HeroPower.Ability("rally", "Rally", SuperSoldierPower::rally),
+                        HeroPower.Ability.of("shield_charge", "Shield Charge", SuperSoldierPower::shieldCharge),
+                        HeroPower.Ability.of("rally", "Rally", SuperSoldierPower::rally),
                         HeroToggles.WHEEL
                 ),
                 List.of(HeroToggles.SPEED, HeroToggles.SUPER_LEAP),
@@ -67,7 +68,7 @@ public final class SuperSoldierPower {
         );
     }
 
-    private static double shieldCharge(ServerPlayer player, int slot) {
+    private static double shieldCharge(LivingEntity player, int slot) {
         Vec3 look = player.getLookAngle();
         Vec3 horizontal = new Vec3(look.x, 0.0D, look.z);
         if (horizontal.lengthSqr() < 1.0E-4D) {
@@ -82,7 +83,7 @@ public final class SuperSoldierPower {
         HeroAdvancements.cast(player).hits(4, "avengers/captain_america/on_your_left")
                 .run(() -> HeroAbilities.startDash(player, new Vec3(push.x, 0.2D, push.z), 10, charge, 1.2D));
         Vec3 front = player.position().add(0.0D, 1.0D, 0.0D).add(horizontal.normalize().scale(1.2D));
-        if (HeroFx.vfx(player.serverLevel(), front, "impact_starburst", 0)) {
+        if (HeroFx.vfx(HeroCaster.level(player), front, "impact_starburst", 0)) {
             HeroFx.cue(player, "thematic:shield_throw", 1.0F, 1.0F);
         } else {
             player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.0F, 0.8F);
@@ -90,8 +91,17 @@ public final class SuperSoldierPower {
         return MarvelBalanceConfig.SHIELD_CHARGE_COOLDOWN.get();
     }
 
-    private static double rally(ServerPlayer player, int slot) {
+    private static double rally(LivingEntity caster, int slot) {
         int duration = MarvelBalanceConfig.RALLY_DURATION_TICKS.get();
+        if (!(caster instanceof ServerPlayer player)) {
+            for (LivingEntity ally : caster.level().getEntitiesOfClass(LivingEntity.class, caster.getBoundingBox().inflate(MarvelBalanceConfig.RALLY_RADIUS.get()),
+                    entity -> entity.isAlive() && !(entity instanceof Player) && (entity == caster || !HeroCaster.foe(caster, entity)))) {
+                ally.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, duration, 0));
+                ally.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, duration, 1));
+            }
+            caster.level().playSound(null, caster.blockPosition(), SoundEvents.RAID_HORN.value(), SoundSource.HOSTILE, 1.5F, 1.0F);
+            return MarvelBalanceConfig.RALLY_COOLDOWN.get();
+        }
         if (player.getHealth() <= 4.0F) {
             HeroAdvancements.award(player, "avengers/captain_america/get_up");
         }

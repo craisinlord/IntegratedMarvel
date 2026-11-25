@@ -37,8 +37,8 @@ public final class GhostRiderPower {
             () -> Items.SOUL_TORCH);
     public static final HeroPower.Toggle TRAIL = new HeroPower.Toggle("integrated_superheroes_off_ghost_rider_trail", "Hellfire Trail",
             () -> Items.BLAZE_POWDER);
-    private static final Map<UUID, Stare> STARES = new HashMap<>();
-    private static final Map<UUID, Vec3> LAST_TRAIL = new HashMap<>();
+    private static final Map<UUID, Stare> STARES = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Vec3> LAST_TRAIL = ServerState.map(new HashMap<>());
     private static boolean registered;
 
     private GhostRiderPower() {
@@ -74,6 +74,15 @@ public final class GhostRiderPower {
             RoguePower.adaptBorrowed(HellchainController.ABILITY, player -> HellchainController.press(player, true));
             RoguePower.excludeBorrowed(STARE);
             RoguePower.excludeBorrowed(HellrideHorse.ABILITY);
+            HeroCaster.onTick(caster -> {
+                HellchainController.tick(caster);
+                tickStare(caster);
+            });
+            HeroCaster.onCleanup(caster -> {
+                HellchainController.clear(caster);
+                GhostRiderJudgment.clear(caster);
+                STARES.remove(caster.getUUID());
+            });
         }
         return new HeroPower(
                 ID,
@@ -82,8 +91,8 @@ public final class GhostRiderPower {
                 GhostRiderConfig.STATS,
                 List.of(),
                 List.of(
-                        new HeroPower.Ability(HellchainController.ABILITY, "Hellchain", GhostRiderPower::hellchain),
-                        new HeroPower.Ability(STARE, "Penance Stare", GhostRiderPower::penanceStare),
+                        HeroPower.Ability.of(HellchainController.ABILITY, "Hellchain", GhostRiderPower::hellchain),
+                        HeroPower.Ability.of(STARE, "Penance Stare", GhostRiderPower::penanceStare),
                         new HeroPower.Ability(HellrideHorse.ABILITY, "Hellride", GhostRiderPower::hellride),
                         HeroToggles.WHEEL
                 ),
@@ -146,8 +155,8 @@ public final class GhostRiderPower {
         return SerumKit.is(player, ID);
     }
 
-    private static double hellchain(ServerPlayer player, int slot) {
-        return HellchainController.press(player, !isRider(player));
+    private static double hellchain(LivingEntity player, int slot) {
+        return HellchainController.press(player, player instanceof ServerPlayer user && !isRider(user));
     }
 
     private static double hellride(ServerPlayer player, int slot) {
@@ -157,31 +166,32 @@ public final class GhostRiderPower {
         return HellrideHorse.press(player);
     }
 
-    private static double penanceStare(ServerPlayer player, int slot) {
-        if (!isRider(player) || STARES.containsKey(player.getUUID())) {
+    private static double penanceStare(LivingEntity player, int slot) {
+        if (player instanceof ServerPlayer user && !isRider(user) || STARES.containsKey(player.getUUID())) {
             return 0.0D;
         }
         HeroAbilities.Beam beam = HeroAbilities.beam(player, player.getLookAngle(), GhostRiderConfig.STARE_RANGE.get(), 1);
         LivingEntity target = beam.targets().isEmpty() ? null : beam.targets().get(0);
         if (target == null || !HellfireZones.harmable(player, target) || !player.hasLineOfSight(target)) {
-            player.displayClientMessage(Component.literal("§7Look an enemy in the eye first."), true);
+            HeroCaster.message(player, Component.literal("§7Look an enemy in the eye first."));
             return 0.0D;
         }
-        STARES.put(player.getUUID(), new Stare(target.getUUID(), player.serverLevel().dimension()));
+        STARES.put(player.getUUID(), new Stare(target.getUUID(), HeroCaster.level(player).dimension()));
         int stacks = GhostRiderJudgment.stacks(player, target);
-        player.displayClientMessage(Component.literal("§6Judging " + target.getName().getString() + "§6, " + stacks + " sin"
-                + (stacks == 1 ? "" : "s") + " counted"), true);
+        HeroCaster.message(player, Component.literal("§6Judging " + target.getName().getString() + "§6, " + stacks + " sin"
+                + (stacks == 1 ? "" : "s") + " counted"));
         HeroFx.play(player, SoundEvents.WITHER_AMBIENT, 0.6F, 0.5F);
         HeroFx.play(target, SoundEvents.SOUL_ESCAPE.value(), 1.2F, 0.6F);
-        return GhostRiderConfig.STARE_CHANNEL_TICKS.get() / 20.0D + 0.5D;
+        return player instanceof ServerPlayer ? GhostRiderConfig.STARE_CHANNEL_TICKS.get() / 20.0D + 0.5D
+                : GhostRiderConfig.STARE_COOLDOWN.get();
     }
 
-    private static void tickStare(ServerPlayer player) {
+    private static void tickStare(LivingEntity player) {
         Stare stare = STARES.get(player.getUUID());
         if (stare == null) {
             return;
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         Entity entity = level.dimension() == stare.dimension ? level.getEntity(stare.target) : null;
         if (!(entity instanceof LivingEntity target) || !target.isAlive()) {
             failStare(player, null);
@@ -205,23 +215,26 @@ public final class GhostRiderPower {
         }
     }
 
-    private static boolean looking(ServerPlayer player, LivingEntity target) {
+    private static boolean looking(LivingEntity player, LivingEntity target) {
         Vec3 to = target.getBoundingBox().getCenter().subtract(player.getEyePosition());
         double distance = to.length();
         return distance < 1.5D || to.scale(1.0D / distance).dot(player.getLookAngle()) >= Math.cos(Math.toRadians(25.0D));
     }
 
-    private static void judge(ServerPlayer player, LivingEntity target) {
+    private static net.minecraft.world.damagesource.DamageSource attack(LivingEntity caster) {
+        return caster instanceof net.minecraft.world.entity.player.Player player ? caster.damageSources().playerAttack(player) : caster.damageSources().mobAttack(caster);
+    }
+
+    private static void judge(LivingEntity player, LivingEntity target) {
         int stacks = GhostRiderJudgment.consume(player, target);
         double scale = Math.min(GhostRiderConfig.STARE_MAX_SCALE.get(),
                 GhostRiderConfig.STARE_BASE_SCALE.get() + GhostRiderConfig.STARE_STACK_SCALE.get() * stacks);
         float damage = (float) (MarvelBalanceConfig.POUNCE_DAMAGE.get() * scale);
-        target.invulnerableTime = 0;
-        HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+        HeroAbilities.runAsAbilityDamage(() -> HeroHits.force(player, target, attack(player), damage));
         if (target.isAlive() && !(target instanceof Player) && HeroAbilities.canControl(target) && !HeroAbilities.isBoss(target)) {
             HeroStun.stun(target, GhostRiderConfig.STARE_RECOIL_TICKS.get());
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         Vec3 center = target.getBoundingBox().getCenter();
         level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, center.x, center.y, center.z, 30 + stacks * 10,
                 target.getBbWidth() * 0.5D, target.getBbHeight() * 0.5D, target.getBbWidth() * 0.5D, 0.06D);
@@ -230,18 +243,22 @@ public final class GhostRiderPower {
         HeroFx.play(target, SoundEvents.WITHER_SHOOT, 0.8F, 0.6F);
         HeroFx.play(target, SoundEvents.SOUL_ESCAPE.value(), 1.5F, 0.5F);
         HeroFx.shake(level, center, 6.0D, 0.3F + stacks * 0.08F, 10);
-        HeroAbilities.setCooldown(player, STARE, GhostRiderConfig.STARE_COOLDOWN.get());
+        if (player instanceof ServerPlayer user) {
+            HeroAbilities.setCooldown(user, STARE, GhostRiderConfig.STARE_COOLDOWN.get());
+        }
     }
 
-    private static void failStare(ServerPlayer player, String message) {
+    private static void failStare(LivingEntity player, String message) {
         if (STARES.remove(player.getUUID()) == null) {
             return;
         }
         if (message != null) {
-            player.displayClientMessage(Component.literal(message), true);
+            HeroCaster.message(player, Component.literal(message));
         }
         HeroFx.play(player, SoundEvents.FIRE_EXTINGUISH, 0.6F, 0.8F);
-        HeroAbilities.setCooldown(player, STARE, GhostRiderConfig.STARE_FAIL_COOLDOWN.get());
+        if (player instanceof ServerPlayer user) {
+            HeroAbilities.setCooldown(user, STARE, GhostRiderConfig.STARE_FAIL_COOLDOWN.get());
+        }
     }
 
     private static void tickTrail(ServerPlayer player) {

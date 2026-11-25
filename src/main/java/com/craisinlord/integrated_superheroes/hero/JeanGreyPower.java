@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.decoration.ArmorStand;
@@ -45,7 +46,7 @@ public final class JeanGreyPower {
     private static final ResourceLocation FLIGHT_ID = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "jean_levitation");
     private static final int TK_PINK = 0xFF4FA8;
     private static final int PHOENIX_GOLD = 0xFFFF8A1E;
-    private static final Map<UUID, Phoenix> PHOENIXES = new HashMap<>();
+    private static final Map<UUID, Phoenix> PHOENIXES = ServerState.map(new HashMap<>());
     private static RogueMemory rogue;
     private static boolean registered;
 
@@ -67,6 +68,15 @@ public final class JeanGreyPower {
             NeoForge.EVENT_BUS.addListener(JeanGreyPower::onChangeDimension);
             SerumCostumes.register(ID, "thematic:jean_grey");
             RogueAbsorption.remember(rogueMemory());
+            HeroCaster.onTick(caster -> {
+                if (PHOENIXES.containsKey(caster.getUUID())) {
+                    tickPhoenix(caster);
+                }
+            });
+            HeroCaster.onCleanup(caster -> {
+                TelekineticFormation.releaseOwner(caster.getUUID());
+                PHOENIXES.remove(caster.getUUID());
+            });
         }
         return new HeroPower(
                 ID,
@@ -75,9 +85,9 @@ public final class JeanGreyPower {
                 JeanGreyConfig.STATS,
                 List.of(),
                 List.of(
-                        new HeroPower.Ability(GRAB, "Telekinetic Grab", JeanGreyPower::grab),
-                        new HeroPower.Ability(THROW, "Throw", JeanGreyPower::fling),
-                        new HeroPower.Ability(PHOENIX, "Phoenix", JeanGreyPower::phoenix),
+                        HeroPower.Ability.of(GRAB, "Telekinetic Grab", JeanGreyPower::grab),
+                        HeroPower.Ability.of(THROW, "Throw", JeanGreyPower::fling),
+                        HeroPower.Ability.of(PHOENIX, "Phoenix", JeanGreyPower::phoenix),
                         HeroToggles.WHEEL
                 ),
                 List.of(LEVITATION, RESCUE),
@@ -138,28 +148,35 @@ public final class JeanGreyPower {
         );
     }
 
-    public static boolean ignited(Player player) {
+    public static boolean ignited(LivingEntity player) {
         Phoenix state = PHOENIXES.get(player.getUUID());
         return state != null && state.burnUntil > 0L;
     }
 
-    private static int color(Player player) {
+    private static int color(LivingEntity player) {
         return SerumKit.primary(player, TK_PINK) & 0xFFFFFF;
     }
 
-    private static TelekineticFormation.Style style(Player player) {
+    private static DamageSource attack(LivingEntity caster) {
+        return caster instanceof Player player ? caster.damageSources().playerAttack(player) : caster.damageSources().mobAttack(caster);
+    }
+
+    private static TelekineticFormation.Style style(LivingEntity player) {
         return ignited(player) ? new TelekineticFormation.Style(PHOENIX_GOLD & 0xFFFFFF, ParticleTypes.FLAME)
                 : new TelekineticFormation.Style(color(player), ParticleTypes.END_ROD);
     }
 
-    static boolean willing(ServerPlayer player, LivingEntity target) {
+    static boolean willing(LivingEntity player, LivingEntity target) {
+        if (!(player instanceof ServerPlayer)) {
+            return false;
+        }
         if (target instanceof Player other) {
             return other.isShiftKeyDown() && !other.isCreative() && !other.isSpectator();
         }
         return target instanceof TamableAnimal tamable && tamable.isTame() && player.getUUID().equals(tamable.getOwnerUUID());
     }
 
-    static LivingEntity aim(ServerPlayer player, double range) {
+    static LivingEntity aim(LivingEntity player, double range) {
         Vec3 start = player.getEyePosition();
         Vec3 look = player.getLookAngle();
         Vec3 end = start.add(look.scale(range));
@@ -177,32 +194,44 @@ public final class JeanGreyPower {
                 .orElse(null);
     }
 
-    private static double grab(ServerPlayer player, int slot) {
+    private static LivingEntity mobAim(LivingEntity caster, double range) {
+        LivingEntity target = aim(caster, range);
+        if (target == null || !HeroCaster.foe(caster, target)) {
+            target = HeroCaster.target(caster);
+        }
+        return target != null && target.distanceToSqr(caster) <= range * range && !TelekineticFormation.holding(caster, target) ? target : null;
+    }
+
+    private static double grab(LivingEntity player, int slot) {
+        boolean mob = !(player instanceof ServerPlayer);
+        if (mob && TelekineticFormation.count(player) > 0) {
+            return fling(player, slot);
+        }
         if (TelekineticFormation.count(player) >= JeanGreyConfig.MAX_HELD.get()) {
-            player.displayClientMessage(Component.literal("§7You can't hold any more. Throw or set something down first."), true);
+            HeroCaster.message(player, Component.literal("§7You can't hold any more. Throw or set something down first."));
             return 0.0D;
         }
-        LivingEntity target = aim(player, JeanGreyConfig.GRAB_RANGE.get());
+        LivingEntity target = mob ? mobAim(player, JeanGreyConfig.GRAB_RANGE.get()) : aim(player, JeanGreyConfig.GRAB_RANGE.get());
         if (target == null) {
-            player.displayClientMessage(Component.literal("§7Look at something to lift it."), true);
+            HeroCaster.message(player, Component.literal("§7Look at something to lift it."));
             return 0.0D;
         }
         boolean willing = willing(player, target);
-        if (willing && !HeroToggles.isOn(player, RESCUE)) {
-            player.displayClientMessage(Component.literal("§7Lifting allies is switched off."), true);
+        if (willing && !(player instanceof ServerPlayer serverPlayer && HeroToggles.isOn(serverPlayer, RESCUE))) {
+            HeroCaster.message(player, Component.literal("§7Lifting allies is switched off."));
             return 0.0D;
         }
         if (!willing) {
-            if (target instanceof Player) {
-                player.displayClientMessage(Component.literal("§7They have to crouch to let you lift them."), true);
+            if (target instanceof Player && !mob) {
+                HeroCaster.message(player, Component.literal("§7They have to crouch to let you lift them."));
                 return 0.0D;
             }
-            if (!KineticBurst.affects(player, target)) {
-                player.displayClientMessage(Component.literal("§7You won't lift a friend without asking."), true);
+            if (!TelekineticFormation.affects(player, target)) {
+                HeroCaster.message(player, Component.literal("§7You won't lift a friend without asking."));
                 return 0.0D;
             }
             if (HeroAbilities.isBoss(target) || !HeroAbilities.canControl(target)) {
-                player.displayClientMessage(Component.literal("§7Too strong to lift."), true);
+                HeroCaster.message(player, Component.literal("§7Too strong to lift."));
                 return 0.0D;
             }
         }
@@ -211,24 +240,24 @@ public final class JeanGreyPower {
         TelekineticFormation.Result result = TelekineticFormation.hold(player, target, ticks, willing, 0.0F, crush, JeanGreyConfig.MAX_HELD.get(), style(player));
         switch (result) {
             case BUSY -> {
-                player.displayClientMessage(Component.literal("§7Something else already has a hold on that."), true);
+                HeroCaster.message(player, Component.literal("§7Something else already has a hold on that."));
                 return 0.0D;
             }
             case IMMUNE -> {
-                player.displayClientMessage(Component.literal("§7It's still shaking off the last lift."), true);
+                HeroCaster.message(player, Component.literal("§7It's still shaking off the last lift."));
                 return 0.0D;
             }
             case FULL -> {
                 return 0.0D;
             }
             case INELIGIBLE -> {
-                player.displayClientMessage(Component.literal("§7Too strong to lift."), true);
+                HeroCaster.message(player, Component.literal("§7Too strong to lift."));
                 return 0.0D;
             }
             default -> {
             }
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         Vec3 center = target.getBoundingBox().getCenter();
         int tint = ignited(player) ? PHOENIX_GOLD & 0xFFFFFF : color(player);
         HeroAbilities.particleLine(level, player.getEyePosition().add(player.getLookAngle()), center, HeroAbilities.emissive(tint, 0.7F), 0.4D);
@@ -236,11 +265,11 @@ public final class JeanGreyPower {
         HeroFx.play(target, SoundEvents.AMETHYST_BLOCK_RESONATE, 1.0F, 1.2F);
         HeroFx.play(player, SoundEvents.ILLUSIONER_PREPARE_MIRROR, 0.5F, 1.6F);
         HeroAnimations.play(player, "web_shoot_r");
-        if (TelekineticFormation.count(player) >= 3) {
-            HeroAdvancements.award(player, "x_men/jean_grey/juggler");
+        if (TelekineticFormation.count(player) >= 3 && player instanceof ServerPlayer serverPlayer) {
+            HeroAdvancements.award(serverPlayer, "x_men/jean_grey/juggler");
         }
         if (willing) {
-            player.displayClientMessage(Component.literal("§d" + target.getName().getString() + " is safe with you."), true);
+            HeroCaster.message(player, Component.literal("§d" + target.getName().getString() + " is safe with you."));
             if (target instanceof ServerPlayer other) {
                 other.displayClientMessage(Component.literal("§dYou're being carried. Crouch again to drop."), true);
             }
@@ -248,9 +277,9 @@ public final class JeanGreyPower {
         return JeanGreyConfig.GRAB_COOLDOWN.get();
     }
 
-    private static double fling(ServerPlayer player, int slot) {
+    private static double fling(LivingEntity player, int slot) {
         if (TelekineticFormation.count(player) == 0) {
-            player.displayClientMessage(Component.literal("§7You aren't holding anything."), true);
+            HeroCaster.message(player, Component.literal("§7You aren't holding anything."));
             return 0.0D;
         }
         if (player.isShiftKeyDown()) {
@@ -271,12 +300,12 @@ public final class JeanGreyPower {
         HeroFx.play(player, SoundEvents.ILLUSIONER_CAST_SPELL, 1.0F, 1.4F);
         HeroFx.play(player, SoundEvents.PLAYER_ATTACK_SWEEP, 0.8F, 0.7F);
         Vec3 hand = player.getEyePosition().add(player.getLookAngle().scale(1.2D));
-        player.serverLevel().sendParticles(ignited(player) ? ParticleTypes.FLAME : ParticleTypes.END_ROD, hand.x, hand.y, hand.z, 8, 0.2D, 0.2D, 0.2D, 0.15D);
+        HeroCaster.level(player).sendParticles(ignited(player) ? ParticleTypes.FLAME : ParticleTypes.END_ROD, hand.x, hand.y, hand.z, 8, 0.2D, 0.2D, 0.2D, 0.15D);
         return JeanGreyConfig.THROW_COOLDOWN.get();
     }
 
-    static void phoenixBurst(ServerPlayer player, LivingEntity landed, Vec3 center, float throwDamage) {
-        ServerLevel level = player.serverLevel();
+    static void phoenixBurst(LivingEntity player, LivingEntity landed, Vec3 center, float throwDamage) {
+        ServerLevel level = HeroCaster.level(player);
         double radius = JeanGreyConfig.BURST_RADIUS.get();
         float damage = (float) (throwDamage * JeanGreyConfig.BURST_MULTIPLIER.get());
         if (radius <= 0.0D) {
@@ -285,8 +314,8 @@ public final class JeanGreyPower {
         landed.igniteForSeconds(5.0F);
         for (LivingEntity other : level.getEntitiesOfClass(LivingEntity.class, new AABB(center, center).inflate(radius),
                 candidate -> candidate != landed && candidate != player && candidate.isAlive()
-                        && candidate.distanceToSqr(center) <= radius * radius && KineticBurst.affects(player, candidate))) {
-            HeroAbilities.runAsAbilityDamage(() -> other.hurt(player.damageSources().playerAttack(player), damage));
+                        && candidate.distanceToSqr(center) <= radius * radius && TelekineticFormation.affects(player, candidate))) {
+            HeroAbilities.runAsAbilityDamage(() -> other.hurt(attack(player), damage));
             other.igniteForSeconds(5.0F);
         }
         if (!HeroFx.vfx(level, center, "pyre_detonation", PHOENIX_GOLD, (float) radius)) {
@@ -296,7 +325,7 @@ public final class JeanGreyPower {
         HeroFx.play(landed, SoundEvents.FIRECHARGE_USE, 1.0F, 0.8F);
     }
 
-    private static Phoenix state(ServerPlayer player) {
+    private static Phoenix state(LivingEntity player) {
         return PHOENIXES.computeIfAbsent(player.getUUID(), ignored -> new Phoenix());
     }
 
@@ -316,21 +345,29 @@ public final class JeanGreyPower {
         }
     }
 
-    private static void tickPhoenix(ServerPlayer player) {
-        Phoenix state = PHOENIXES.get(player.getUUID());
+    private static void tickPhoenix(LivingEntity caster) {
+        Phoenix state = PHOENIXES.get(caster.getUUID());
         if (state == null) {
             return;
         }
-        long now = player.level().getGameTime();
+        ServerPlayer player = caster instanceof ServerPlayer serverPlayer ? serverPlayer : null;
+        long now = caster.level().getGameTime();
         if (state.burnUntil > 0L) {
-            if (now >= state.burnUntil || VillainWorld.suppressed(player)) {
-                extinguish(player, state);
-                HeroAbilities.setCooldown(player, PHOENIX, JeanGreyConfig.FADE_COOLDOWN.get());
-                player.displayClientMessage(Component.literal("§7The fire goes out."), true);
+            if (now >= state.burnUntil || player != null && VillainWorld.suppressed(player)) {
+                extinguish(caster, state);
+                if (player != null) {
+                    HeroAbilities.setCooldown(player, PHOENIX, JeanGreyConfig.FADE_COOLDOWN.get());
+                }
+                HeroCaster.message(caster, Component.literal("§7The fire goes out."));
                 return;
             }
-            SerumKit.meter(player, (float) (state.burnUntil - now) / Math.max(1L, state.burnUntil - state.burnStart));
-            burn(player, now);
+            if (player != null) {
+                SerumKit.meter(player, (float) (state.burnUntil - now) / Math.max(1L, state.burnUntil - state.burnStart));
+            }
+            burn(caster, now);
+            return;
+        }
+        if (player == null) {
             return;
         }
         if (now - state.lastCombat > JeanGreyConfig.METER_DECAY_DELAY_TICKS.get() && state.meter > 0.0F) {
@@ -339,8 +376,8 @@ public final class JeanGreyPower {
         SerumKit.meter(player, state.meter <= 0.0F ? -1.0F : state.meter / 100.0F);
     }
 
-    private static void burn(ServerPlayer player, long now) {
-        ServerLevel level = player.serverLevel();
+    private static void burn(LivingEntity player, long now) {
+        ServerLevel level = HeroCaster.level(player);
         if (player.isOnFire()) {
             player.clearFire();
         }
@@ -352,7 +389,7 @@ public final class JeanGreyPower {
         double radius = JeanGreyConfig.AURA_RADIUS.get();
         if (radius > 0.0D && now % 20L == 0L) {
             for (LivingEntity target : HeroAbilities.sphere(player, radius)) {
-                if (target instanceof Enemy && KineticBurst.affects(player, target)) {
+                if ((target instanceof Enemy || !(player instanceof ServerPlayer)) && TelekineticFormation.affects(player, target)) {
                     target.igniteForSeconds(3.0F);
                 }
             }
@@ -360,31 +397,35 @@ public final class JeanGreyPower {
         }
     }
 
-    private static double phoenix(ServerPlayer player, int slot) {
+    private static double phoenix(LivingEntity player, int slot) {
         Phoenix state = state(player);
         if (state.burnUntil > 0L) {
             supernova(player, state);
             return JeanGreyConfig.SUPERNOVA_COOLDOWN.get();
         }
-        if (state.meter < 100.0F) {
-            player.displayClientMessage(Component.literal("§7The fire isn't ready yet. " + Math.round(state.meter) + "%"), true);
-            return 0.0D;
-        }
-        if (VillainWorld.suppressed(player)) {
-            return 0.0D;
+        if (player instanceof ServerPlayer serverPlayer) {
+            if (state.meter < 100.0F) {
+                HeroCaster.message(player, Component.literal("§7The fire isn't ready yet. " + Math.round(state.meter) + "%"));
+                return 0.0D;
+            }
+            if (VillainWorld.suppressed(serverPlayer)) {
+                return 0.0D;
+            }
         }
         ignite(player, state);
         return 0.0D;
     }
 
-    private static void ignite(ServerPlayer player, Phoenix state) {
+    private static void ignite(LivingEntity player, Phoenix state) {
         long now = player.level().getGameTime();
         state.meter = 0.0F;
         state.burnStart = now;
         state.burnUntil = now + JeanGreyConfig.PHOENIX_TICKS.get();
-        HeroPowers.syncStats(player);
+        if (player instanceof ServerPlayer serverPlayer) {
+            HeroPowers.syncStats(serverPlayer);
+        }
         player.clearFire();
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         if (!HeroFx.vfx(level, player.position(), "ignition_burst", PHOENIX_GOLD, 3.0F)) {
             level.sendParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 1.0D, player.getZ(), 80, 1.0D, 1.2D, 1.0D, 0.1D);
         }
@@ -393,30 +434,32 @@ public final class JeanGreyPower {
         HeroFx.play(player, SoundEvents.ENDER_DRAGON_GROWL, 0.6F, 1.6F);
         HeroFx.shake(level, player.position(), 16.0D, 0.5F, 15);
         HeroAnimations.play(player, "celestisynth:cs_solaris_spin");
-        player.displayClientMessage(Component.literal("§6The Phoenix burns."), true);
+        HeroCaster.message(player, Component.literal("§6The Phoenix burns."));
     }
 
-    private static void extinguish(ServerPlayer player, Phoenix state) {
+    private static void extinguish(LivingEntity player, Phoenix state) {
         state.burnUntil = 0L;
         state.burnStart = 0L;
         state.lastCombat = player.level().getGameTime();
-        HeroPowers.syncStats(player);
+        if (player instanceof ServerPlayer serverPlayer) {
+            HeroPowers.syncStats(serverPlayer);
+            SerumKit.meter(serverPlayer, -1.0F);
+        }
         if (player.getHealth() > player.getMaxHealth()) {
             player.setHealth(player.getMaxHealth());
         }
-        SerumKit.meter(player, -1.0F);
         HeroFx.play(player, SoundEvents.FIRE_EXTINGUISH, 0.8F, 0.8F);
     }
 
-    private static void supernova(ServerPlayer player, Phoenix state) {
-        ServerLevel level = player.serverLevel();
+    private static void supernova(LivingEntity player, Phoenix state) {
+        ServerLevel level = HeroCaster.level(player);
         double radius = JeanGreyConfig.SUPERNOVA_RADIUS.get();
         float damage = JeanGreyConfig.SUPERNOVA_DAMAGE.get().floatValue();
         for (LivingEntity target : HeroAbilities.sphere(player, radius)) {
-            if (!KineticBurst.affects(player, target)) {
+            if (!TelekineticFormation.affects(player, target)) {
                 continue;
             }
-            HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+            HeroAbilities.runAsAbilityDamage(() -> target.hurt(attack(player), damage));
             target.igniteForSeconds(8.0F);
             Vec3 push = target.position().subtract(player.position()).normalize().scale(1.6D);
             target.setDeltaMovement(push.x, 0.6D, push.z);
@@ -437,7 +480,7 @@ public final class JeanGreyPower {
         HeroFx.shake(level, center, radius * 2.5D, 1.0F, 25);
         HeroAnimations.play(player, "web_shoot_both");
         extinguish(player, state);
-        player.displayClientMessage(Component.literal("§6Supernova!"), true);
+        HeroCaster.message(player, Component.literal("§6Supernova!"));
     }
 
     private static boolean rebirth(ServerPlayer player) {

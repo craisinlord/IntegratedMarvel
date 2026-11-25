@@ -39,8 +39,10 @@ public final class MutantMonstersSeismicWaves {
         }
 
         @Override
-        public void affect(ServerLevel level, ServerPlayer owner) {
-            wave.affectBlocks(level, owner);
+        public void affect(ServerLevel level, net.minecraft.world.entity.LivingEntity owner) {
+            if (owner instanceof ServerPlayer) {
+                wave.affectBlocks(level, owner);
+            }
         }
     }
 }

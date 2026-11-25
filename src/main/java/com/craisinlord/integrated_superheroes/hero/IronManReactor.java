@@ -18,10 +18,12 @@ import java.util.UUID;
 public final class IronManReactor {
     private static final EquipmentSlot[] SLOTS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
     private static final double SPEND_THRESHOLD = 200.0D;
+    private static final int CHARGE_INTERVAL = 10;
 
-    private static final Map<UUID, Double> LAST_TOTAL = new HashMap<>();
-    private static final Map<UUID, Long> PAUSED_UNTIL = new HashMap<>();
-    private static final Map<UUID, Vec3> LAST_POSITION = new HashMap<>();
+    private static final Map<UUID, Double> LAST_TOTAL = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> PAUSED_UNTIL = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Vec3> LAST_POSITION = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Double> ACCRUED = ServerState.map(new HashMap<>());
 
     private IronManReactor() {
     }
@@ -53,17 +55,27 @@ public final class IronManReactor {
             if (standingStill(player, position, lastPosition)) {
                 output *= IronManEnergy.REACTOR_IDLE_MULTIPLIER.get();
             }
-            double cap = stats.reactorCap().get();
-            for (EquipmentSlot slot : SLOTS) {
-                ItemStack piece = player.getItemBySlot(slot);
-                double room = IronManEnergy.capacity(piece) * cap - IronManEnergy.getFE(piece);
-                if (room > 0.0D) {
-                    IronManEnergy.addFE(piece, Math.min(room, output / SLOTS.length));
-                }
+            ACCRUED.merge(id, output, Double::sum);
+        }
+        if (player.tickCount % CHARGE_INTERVAL == 0) {
+            Double accrued = ACCRUED.remove(id);
+            if (accrued != null) {
+                charge(player, stats, accrued);
+                total = total(player);
             }
-            total = total(player);
         }
         LAST_TOTAL.put(id, total);
+    }
+
+    private static void charge(ServerPlayer player, IronManSuits.Stats stats, double output) {
+        double cap = stats.reactorCap().get();
+        for (EquipmentSlot slot : SLOTS) {
+            ItemStack piece = player.getItemBySlot(slot);
+            double room = IronManEnergy.capacity(piece) * cap - IronManEnergy.getFE(piece);
+            if (room > 0.0D) {
+                IronManEnergy.addFE(piece, Math.min(room, output / SLOTS.length));
+            }
+        }
     }
 
     @SubscribeEvent
@@ -75,6 +87,7 @@ public final class IronManReactor {
         LAST_TOTAL.remove(id);
         PAUSED_UNTIL.remove(id);
         LAST_POSITION.remove(id);
+        ACCRUED.remove(id);
     }
 
     private static boolean standingStill(ServerPlayer player, Vec3 position, Vec3 lastPosition) {

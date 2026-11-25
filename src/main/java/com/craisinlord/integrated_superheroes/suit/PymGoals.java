@@ -59,7 +59,7 @@ final class PymGoals {
         member.mob.goalSelector.addGoal(priority, goal);
     }
 
-    private static ServerPlayer ready(PymColony.Member member) {
+    private static LivingEntity ready(PymColony.Member member) {
         return member.bound() ? member.owner() : null;
     }
 
@@ -67,8 +67,8 @@ final class PymGoals {
         return ready(member) != null && !member.busy();
     }
 
-    private static void teleportNear(PymColony.Member member, ServerPlayer owner) {
-        ServerLevel level = owner.serverLevel();
+    private static void teleportNear(PymColony.Member member, LivingEntity owner) {
+        ServerLevel level = (ServerLevel) owner.level();
         for (int attempt = 0; attempt < 10; attempt++) {
             BlockPos pos = owner.blockPosition().offset(level.random.nextInt(5) - 2, member.kind == PymHelmets.Kind.WASP ? 1 : 0, level.random.nextInt(5) - 2);
             if (level.isEmptyBlock(pos) && (member.kind == PymHelmets.Kind.WASP || !level.isEmptyBlock(pos.below()))) {
@@ -185,7 +185,7 @@ final class PymGoals {
 
         @Override
         public void tick() {
-            ServerPlayer owner = this.member.owner();
+            LivingEntity owner = this.member.owner();
             if (owner == null) {
                 return;
             }
@@ -217,6 +217,8 @@ final class PymGoals {
             this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
         }
 
+        private int nextSearch;
+
         private boolean foraging() {
             return free(this.member) && PymColony.FORAGE.equals(this.member.order()) && this.member.mob.getTarget() == null
                     && this.member.guard == null;
@@ -230,6 +232,10 @@ final class PymGoals {
             if (!this.member.carried.isEmpty()) {
                 return true;
             }
+            if (this.member.mob.tickCount < this.nextSearch) {
+                return false;
+            }
+            this.nextSearch = this.member.mob.tickCount + 10;
             this.member.forage = this.find();
             return this.member.forage != null;
         }
@@ -246,14 +252,18 @@ final class PymGoals {
 
         @Override
         public void tick() {
-            ServerPlayer owner = this.member.owner();
+            LivingEntity owner = this.member.owner();
             PathfinderMob mob = this.member.mob;
             if (owner == null) {
                 return;
             }
             if (!this.member.carried.isEmpty()) {
                 if (mob.distanceToSqr(owner) < 4.0D) {
-                    ItemHandlerHelper.giveItemToPlayer(owner, this.member.carried);
+                    if (owner instanceof ServerPlayer player) {
+                        ItemHandlerHelper.giveItemToPlayer(player, this.member.carried);
+                    } else {
+                        mob.spawnAtLocation(this.member.carried);
+                    }
                     this.member.carried = ItemStack.EMPTY;
                     mob.playSound(SoundEvents.ITEM_PICKUP, 0.3F, 1.4F + mob.getRandom().nextFloat() * 0.3F);
                 } else if (--this.repath <= 0) {
@@ -280,17 +290,22 @@ final class PymGoals {
         }
 
         private ItemEntity find() {
-            ServerPlayer owner = this.member.owner();
+            LivingEntity owner = this.member.owner();
             if (owner == null) {
                 return null;
             }
             double range = PymConfig.FORAGE_RANGE.get();
-            List<PymColony.Member> others = PymColony.members(owner, false);
+            java.util.Set<ItemEntity> claimed = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+            for (PymColony.Member other : PymColony.members(owner, false)) {
+                if (other != this.member && other.forage != null) {
+                    claimed.add(other.forage);
+                }
+            }
             ItemEntity best = null;
             double bestDistance = Double.MAX_VALUE;
             for (ItemEntity item : owner.level().getEntitiesOfClass(ItemEntity.class, owner.getBoundingBox().inflate(range),
                     entity -> entity.isAlive() && !entity.hasPickUpDelay())) {
-                if (others.stream().anyMatch(other -> other != this.member && other.forage == item)) {
+                if (claimed.contains(item)) {
                     continue;
                 }
                 double distance = this.member.mob.distanceToSqr(item);
@@ -360,7 +375,7 @@ final class PymGoals {
 
         @Override
         public void tick() {
-            ServerPlayer owner = this.member.owner();
+            LivingEntity owner = this.member.owner();
             if (owner == null) {
                 return;
             }
@@ -527,7 +542,7 @@ final class PymGoals {
                 return false;
             }
             this.cadence = 5;
-            ServerPlayer owner = ready(this.member);
+            LivingEntity owner = ready(this.member);
             if (owner == null || this.member.mob.isVehicle()) {
                 return false;
             }
@@ -542,7 +557,7 @@ final class PymGoals {
 
         @Override
         public boolean canContinueToUse() {
-            ServerPlayer owner = ready(this.member);
+            LivingEntity owner = ready(this.member);
             LivingEntity target = this.member.mob.getTarget();
             if (owner == null || target == null || !PymColony.allowed(this.member, target)) {
                 return false;

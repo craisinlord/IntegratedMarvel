@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
+import net.minecraft.core.BlockPos;
 import com.craisinlord.anthology.beam.BeamController;
 import com.craisinlord.anthology.beam.BeamSettings;
 import com.craisinlord.anthology.beam.BeamTerrainMode;
@@ -32,6 +33,7 @@ public final class GauntletAbilityController {
     public static final int ACTIVATE_RELEASE = 6;
     public static final int ACTIVATE = 7;
     private static final int MAX_BEAM_CHARGE_TICKS = 40;
+    private static final int MAX_BEAM_BLOCKS = 768;
     private static final Map<AbilityCooldownKey, Cooldown> ABILITY_COOLDOWNS = new ConcurrentHashMap<>();
     private static final Map<UUID, ActiveBeam> ACTIVE_BEAMS = new ConcurrentHashMap<>();
     private static final Map<UUID, ChargingBeam> CHARGING_BEAMS = new ConcurrentHashMap<>();
@@ -249,14 +251,23 @@ public final class GauntletAbilityController {
                 (float) (base.impactDamageRadius() * strength * width), (float) (base.damage() * strength),
                 (float) (base.knockback() * strength), base.terrainIntervalTicks(), base.maxTerrainDistance() * reach,
                 (float) (base.pathTerrainRadius() * strength * width), (float) (base.impactTerrainRadius() * strength * width),
-                Math.max(0, (int) Math.round(base.maxTerrainMutationsPerTick() * strength * width)), base.terrainMutationChance(),
+                (int) Math.clamp(Math.round(base.maxTerrainMutationsPerTick() * strength * width), 0L, MAX_BEAM_BLOCKS), base.terrainMutationChance(),
                 base.terrainDropChance(), resistance, base.terrainEnabled() && GauntletConfig.griefing(),
                 base.requireLineOfSightForDamage());
         BeamController controller = new BeamController(player);
         Vec3 start = player.getEyePosition();
         controller.start(start, start.add(player.getLookAngle().normalize().scale(settings.range())), settings.durationTicks());
-        ACTIVE_BEAMS.put(player.getUUID(), new ActiveBeam(controller, settings, kind, charging.ability(), new HashSet<>()));
+        ACTIVE_BEAMS.put(player.getUUID(), new ActiveBeam(controller, settings, kind, charging.ability(), new HashSet<>(), new HashSet<>()));
         GauntletFx.shake(player.serverLevel(), player.position(), (float) (0.4D + charge), 12, 24.0F);
+    }
+
+    public static boolean firingBeam(ServerPlayer player) {
+        return ACTIVE_BEAMS.containsKey(player.getUUID());
+    }
+
+    public static boolean beamMayBreak(ServerPlayer player, ServerLevel level, BlockPos pos) {
+        ActiveBeam beam = ACTIVE_BEAMS.get(player.getUUID());
+        return beam != null && GauntletGrief.canEditCached(player, level, pos, beam.allowedSections());
     }
 
     private static BeamSettings mindBeamSettings() {
@@ -266,7 +277,7 @@ public final class GauntletAbilityController {
 
     private static BeamSettings annihilationBeamSettings() {
         return new BeamSettings(64.0D, 0.0D, 2.0D, 18, 4, 1, 4.0F, 8.0F,
-                250.0F, 8.0F, 1, 64.0D, 3.0F, 8.0F, 512, 1.0F, 1.0F, 1_000_000.0F, true, false);
+                250.0F, 8.0F, 1, 64.0D, 3.0F, 8.0F, 512, 1.0F, 0.05F, 1_000_000.0F, true, false);
     }
 
     private static BeamSettings infinityBeamSettings() {
@@ -360,6 +371,6 @@ public final class GauntletAbilityController {
     private record AbilityCooldownKey(UUID playerId, String stone, int ability) {}
     private record Cooldown(long endsAt, int duration) {}
     private record ActiveBeam(BeamController controller, BeamSettings settings, BeamKind kind, GauntletAbility ability,
-                              Set<UUID> affected) {}
+                              Set<UUID> affected, java.util.Set<Long> allowedSections) {}
     private record ChargingBeam(BeamKind kind, long startedAt, GauntletAbility ability, boolean wide, boolean infinity) {}
 }

@@ -130,7 +130,7 @@ file="META-INF/accesstransformer.cfg"
 [[dependencies.${mod_id}]]
     modId="viltrumitecore"
     type="optional"
-    versionRange="[1.11.0,)"
+    versionRange="[1.12.2,)"
     ordering="AFTER"
     side="BOTH"
 

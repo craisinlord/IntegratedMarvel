@@ -2,7 +2,6 @@ package com.craisinlord.integrated_superheroes.mixin;
 
 import bond.thematic.api.registries.armors.armor.CharacterItem;
 import com.craisinlord.integrated_superheroes.compat.thematic.PowerOwnership;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -22,8 +21,12 @@ public abstract class ThematicArmorStackFastMixin {
             return;
         }
         ItemStack chest = entity.getItemBySlot(EquipmentSlot.CHEST);
+        if (chest.isEmpty() || !(chest.getItem() instanceof CharacterItem)) {
+            cir.setReturnValue(ItemStack.EMPTY);
+            return;
+        }
         boolean powered = !(entity instanceof Player)
-                || !PowerOwnership.costume(BuiltInRegistries.ITEM.getKey(chest.getItem()).toString());
-        cir.setReturnValue(powered && !chest.isEmpty() && chest.getItem() instanceof CharacterItem ? chest : ItemStack.EMPTY);
+                || !PowerOwnership.costume(chest.getItem());
+        cir.setReturnValue(powered ? chest : ItemStack.EMPTY);
     }
 }

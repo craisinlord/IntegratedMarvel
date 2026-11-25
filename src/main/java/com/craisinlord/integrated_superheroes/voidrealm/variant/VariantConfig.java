@@ -28,6 +28,8 @@ public final class VariantConfig {
     public static final ModConfigSpec.DoubleValue RIVAL_RADIUS;
     public static final ModConfigSpec.DoubleValue PLAYER_FOCUS_RADIUS;
     public static final ModConfigSpec.IntValue FALLBACK_GAP_TICKS;
+    public static final ModConfigSpec.DoubleValue ABILITY_DAMAGE_SCALE;
+    public static final ModConfigSpec.DoubleValue ABILITY_COOLDOWN_SCALE;
     public static final ModConfigSpec.DoubleValue TEAR_CHANCE;
     public static final ModConfigSpec.DoubleValue NEXUS_CHANCE;
     public static final ModConfigSpec.IntValue NEXUS_MIN_TIER;
@@ -88,6 +90,10 @@ public final class VariantConfig {
                 .defineInRange("playerFocusRadius", 8.0D, 0.0D, 64.0D);
         FALLBACK_GAP_TICKS = builder.comment("Ticks between a Variant's own fallback moves.")
                 .defineInRange("fallbackGapTicks", 60, 10, 1200);
+        ABILITY_DAMAGE_SCALE = builder.comment("Damage from a Variant's real hero abilities, as a share of the player version, before damagePerTier.")
+                .defineInRange("abilityDamageScale", 0.5D, 0.0D, 10.0D);
+        ABILITY_COOLDOWN_SCALE = builder.comment("A Variant's cooldown on a real hero ability, as a share of the player cooldown.")
+                .defineInRange("abilityCooldownScale", 1.0D, 0.0D, 10.0D);
         TEAR_CHANCE = builder.comment("Chance a spawned Variant arrives through a dimensional tear instead of just appearing.")
                 .defineInRange("tearChance", 0.85D, 0.0D, 1.0D);
         NEXUS_CHANCE = builder.comment("Chance per spawn check that a nexus tear opens near the player and lets out a brood in waves.")

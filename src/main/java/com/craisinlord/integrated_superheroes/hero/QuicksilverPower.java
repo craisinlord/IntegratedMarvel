@@ -27,10 +27,22 @@ public final class QuicksilverPower {
     private static final String RATE_SOURCE = "integrated_superheroes:quicksilver";
     private static final String RATE_KEY = "integrated_superheroes.speed_force_rate";
 
+    private static final java.util.Set<java.util.UUID> MOB_SPEED = ServerState.all(new java.util.HashSet<>());
+    private static boolean registered;
+
     private QuicksilverPower() {
     }
 
     public static HeroPower create(Supplier<Item> syringe) {
+        if (!registered) {
+            registered = true;
+            HeroCaster.onTick(QuicksilverPower::tickMobSpeed);
+            HeroCaster.onCleanup(caster -> {
+                if (MOB_SPEED.remove(caster.getUUID())) {
+                    clearRate(caster);
+                }
+            });
+        }
         return new HeroPower(
                 ID,
                 "Super Speed (Pietro Maximoff)",
@@ -38,9 +50,9 @@ public final class QuicksilverPower {
                 MarvelBalanceConfig.QUICKSILVER,
                 List.of(),
                 List.of(
-                        new HeroPower.Ability(SPEED_FORCE, "Speed Force", QuicksilverPower::toggleSpeedForce),
-                        new HeroPower.Ability("bullet_time", "Bullet Time", QuicksilverPower::bulletTime),
-                        new HeroPower.Ability("sonic_boom", "Sonic Boom", QuicksilverPower::sonicBoom)
+                        HeroPower.Ability.of(SPEED_FORCE, "Speed Force", QuicksilverPower::toggleSpeedForce),
+                        HeroPower.Ability.of("bullet_time", "Bullet Time", QuicksilverPower::bulletTime),
+                        HeroPower.Ability.of("sonic_boom", "Sonic Boom", QuicksilverPower::sonicBoom)
                 ),
                 List.of(),
                 new HeroPower.Hooks() {
@@ -70,12 +82,7 @@ public final class QuicksilverPower {
                             return;
                         }
                         player.causeFoodExhaustion((float) (MarvelBalanceConfig.SPEED_FORCE_EXHAUSTION_PER_RATE.get() * (rate - 1.0D)));
-                        if (player.getDeltaMovement().horizontalDistanceSqr() > 0.01D && player.level() instanceof ServerLevel level) {
-                            Vec3 behind = player.position().subtract(player.getViewVector(0.0F));
-                            if (!com.craisinlord.integrated_superheroes.hero.skin.SpeedsterTrail.emit(player, level, behind)) {
-                                level.sendParticles(MarvelParticleTypes.QUICKSILVER.get(), behind.x, behind.y + 1.0D, behind.z, 20, 0.0D, 0.0D, 0.0D, 0.3D);
-                            }
-                        }
+                        trail(player);
                     }
 
                     @Override
@@ -112,8 +119,37 @@ public final class QuicksilverPower {
         return power != null && power.isActive();
     }
 
-    private static double toggleSpeedForce(ServerPlayer player, int slot) {
-        setSpeedForce(player, !isSpeedForceActive(player));
+    private static void trail(LivingEntity caster) {
+        if (caster.getDeltaMovement().horizontalDistanceSqr() > 0.01D && caster.level() instanceof ServerLevel level) {
+            Vec3 behind = caster.position().subtract(caster.getViewVector(0.0F));
+            if (!(caster instanceof ServerPlayer player) || !com.craisinlord.integrated_superheroes.hero.skin.SpeedsterTrail.emit(player, level, behind)) {
+                level.sendParticles(MarvelParticleTypes.QUICKSILVER.get(), behind.x, behind.y + 1.0D, behind.z, 20, 0.0D, 0.0D, 0.0D, 0.3D);
+            }
+        }
+    }
+
+    private static void tickMobSpeed(LivingEntity caster) {
+        if (!MOB_SPEED.contains(caster.getUUID())) {
+            return;
+        }
+        MobEffectInstance speed = caster.getEffect(MobEffects.MOVEMENT_SPEED);
+        if (speed == null || speed.getAmplifier() < 1 || speed.endsWithin(20)) {
+            caster.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 80, 1, true, false, true));
+        }
+        trail(caster);
+    }
+
+    private static double toggleSpeedForce(LivingEntity caster, int slot) {
+        if (caster instanceof ServerPlayer player) {
+            setSpeedForce(player, !isSpeedForceActive(player));
+            return 0.5D;
+        }
+        if (MOB_SPEED.remove(caster.getUUID())) {
+            clearRate(caster);
+        } else {
+            MOB_SPEED.add(caster.getUUID());
+            applyRate(caster, MarvelBalanceConfig.SPEED_FORCE_START_RATE.get());
+        }
         return 0.5D;
     }
 
@@ -127,25 +163,27 @@ public final class QuicksilverPower {
         }
     }
 
-    private static double bulletTime(ServerPlayer player, int slot) {
-        TimeDilationApi.createAttachedField((ServerLevel) player.level(), player, MarvelBalanceConfig.BULLET_TIME_RADIUS.get(),
+    private static double bulletTime(LivingEntity player, int slot) {
+        TimeDilationApi.createAttachedField(HeroCaster.level(player), player, MarvelBalanceConfig.BULLET_TIME_RADIUS.get(),
                 MarvelBalanceConfig.BULLET_TIME_RATE.get(), MarvelBalanceConfig.BULLET_TIME_DURATION_TICKS.get());
-        HeroAdvancements.window(player, MarvelBalanceConfig.BULLET_TIME_DURATION_TICKS.get(), 5, "avengers/quicksilver/slow_mo_montage");
+        if (player instanceof ServerPlayer serverPlayer) {
+            HeroAdvancements.window(serverPlayer, MarvelBalanceConfig.BULLET_TIME_DURATION_TICKS.get(), 5, "avengers/quicksilver/slow_mo_montage");
+        }
         return MarvelBalanceConfig.BULLET_TIME_COOLDOWN.get();
     }
 
-    private static double sonicBoom(ServerPlayer player, int slot) {
+    private static double sonicBoom(LivingEntity player, int slot) {
         double minRate = MarvelBalanceConfig.SONIC_BOOM_MIN_RATE.get();
-        double rate = isSpeedForceActive(player) ? storedRate(player) : 1.0D;
+        double rate = player instanceof ServerPlayer serverPlayer ? isSpeedForceActive(serverPlayer) ? storedRate(serverPlayer) : 1.0D : minRate;
         if (rate < minRate) {
-            player.displayClientMessage(Component.literal(String.format("§cRun at %.0fx or faster to break the sound barrier.", minRate)), true);
+            HeroCaster.message(player, Component.literal(String.format("§cRun at %.0fx or faster to break the sound barrier.", minRate)));
             return 0.0D;
         }
         double scale = rate / minRate;
         double radius = MarvelBalanceConfig.SONIC_BOOM_RADIUS.get() * Math.sqrt(scale);
         float damage = (float) (MarvelBalanceConfig.SONIC_BOOM_DAMAGE.get() * scale);
         for (LivingEntity target : HeroAbilities.sphere(player, radius)) {
-            target.hurt(player.damageSources().sonicBoom(player), damage);
+            HeroHits.hurt(player, target, player.damageSources().sonicBoom(player), damage);
             Vec3 away = target.position().subtract(player.position()).normalize();
             target.knockback(1.5D * scale, -away.x, -away.z);
         }
@@ -159,7 +197,9 @@ public final class QuicksilverPower {
             level.sendParticles(ParticleTypes.EXPLOSION, player.getX(), player.getY() + 1.0D, player.getZ(), 6, radius / 3.0D, 0.5D, radius / 3.0D, 0.0D);
         }
         level.playSound(null, player.blockPosition(), MarvelSoundEvents.QUICKSILVER_SONIC_BOOM.get(), SoundSource.PLAYERS, 1.5F, 1.0F);
-        HeroAdvancements.award(player, "avengers/quicksilver/sound_barrier");
+        if (player instanceof ServerPlayer serverPlayer) {
+            HeroAdvancements.award(serverPlayer, "avengers/quicksilver/sound_barrier");
+        }
         return MarvelBalanceConfig.SONIC_BOOM_COOLDOWN.get();
     }
 
@@ -171,12 +211,12 @@ public final class QuicksilverPower {
         return Math.max(1.0D, Math.min(max, stored));
     }
 
-    private static void applyRate(ServerPlayer player, double rate) {
+    private static void applyRate(LivingEntity player, double rate) {
         TimeDilationApi.setRateCeiling(player, MarvelBalanceConfig.SPEED_FORCE_MAX_RATE.get());
         TimeDilationApi.setPersonalRate(player, RATE_SOURCE, rate);
     }
 
-    private static void clearRate(ServerPlayer player) {
+    private static void clearRate(LivingEntity player) {
         TimeDilationApi.clearPersonalRate(player, RATE_SOURCE);
         TimeDilationApi.clearRateCeiling(player);
         MobEffectInstance speed = player.getEffect(MobEffects.MOVEMENT_SPEED);

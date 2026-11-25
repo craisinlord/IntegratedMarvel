@@ -1,9 +1,15 @@
 package com.craisinlord.integrated_superheroes.compat;
 
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
+import com.craisinlord.integrated_superheroes.hero.HeroAbilities;
 import com.craisinlord.integrated_superheroes.hero.MarvelBalanceConfig;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
@@ -15,6 +21,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.entity.PartEntity;
@@ -29,7 +36,7 @@ public final class ViltrumiteGuards {
     public static final int METEORS = 0;
     public static final int BLEEDING = 1;
     public static final int CLAPS = 2;
-    private static final long[] LAST_RUN = {Long.MIN_VALUE, Long.MIN_VALUE, Long.MIN_VALUE};
+    private static final Map<ResourceKey<Level>, long[]> LAST_RUN = new HashMap<>();
     private static final ThreadLocal<int[]> MOVE_DEPTH = ThreadLocal.withInitial(() -> new int[1]);
     private static volatile Set<Entity> clientGrabbed = Set.of();
 
@@ -66,6 +73,14 @@ public final class ViltrumiteGuards {
 
     public static boolean performance() {
         return on(MarvelBalanceConfig.VILTRUMITE_GUARD_PERFORMANCE);
+    }
+
+    public static boolean bosses() {
+        return on(MarvelBalanceConfig.VILTRUMITE_GUARD_BOSSES);
+    }
+
+    public static boolean resistsForce(Entity entity) {
+        return entity instanceof LivingEntity living && !(living instanceof Player) && bosses() && !HeroAbilities.canControl(living);
     }
 
     public static ViltrumiteFlightLedger ledger(Abilities abilities) {
@@ -136,11 +151,49 @@ public final class ViltrumiteGuards {
             return true;
         }
         long tick = level.getServer().getTickCount();
-        if (LAST_RUN[job] == tick) {
+        long[] lastRun = LAST_RUN.computeIfAbsent(level.dimension(), key -> new long[]{Long.MIN_VALUE, Long.MIN_VALUE, Long.MIN_VALUE});
+        if (lastRun[job] == tick) {
             return false;
         }
-        LAST_RUN[job] = tick;
+        lastRun[job] = tick;
         return true;
+    }
+
+    public static boolean stranded(Entity entity) {
+        return entity.isRemoved() || entity.level().players().isEmpty();
+    }
+
+    public static <T> Iterator<T> inLevel(Iterator<T> all, Function<T, Entity> owner, ServerLevel level) {
+        return new Iterator<>() {
+            private T upcoming;
+            private boolean ready;
+
+            @Override
+            public boolean hasNext() {
+                while (!ready && all.hasNext()) {
+                    T candidate = all.next();
+                    if (owner.apply(candidate).level() == level) {
+                        upcoming = candidate;
+                        ready = true;
+                    }
+                }
+                return ready;
+            }
+
+            @Override
+            public T next() {
+                if (!hasNext()) {
+                    throw new java.util.NoSuchElementException();
+                }
+                ready = false;
+                return upcoming;
+            }
+
+            @Override
+            public void remove() {
+                all.remove();
+            }
+        };
     }
 
     public static boolean mayBeGrabbed(Entity entity) {

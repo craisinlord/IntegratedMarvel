@@ -84,6 +84,7 @@ public final class GauntletBeamEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onLivingDeath(LivingDeathEvent event) {
+        if (event.getEntity().level().isClientSide()) return;
         if (event.getEntity() instanceof ServerPlayer player && TimeRewindManager.tryTimeLoop(player)) {
             event.setCanceled(true);
             SoulStoneManager.clearFinalizing(player.getUUID());

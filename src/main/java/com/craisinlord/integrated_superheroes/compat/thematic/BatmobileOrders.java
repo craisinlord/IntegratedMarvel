@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.compat.thematic;
 
+import com.craisinlord.integrated_superheroes.hero.ServerState;
 import bond.thematic.api.content.action.ContentAction;
 import bond.thematic.api.registries.entity.AbstractVehicleEntity;
 import com.google.gson.JsonObject;
@@ -37,7 +38,7 @@ final class BatmobileOrders {
     private static final int PASS_TICKS = 22;
     private static final int SHOT_GAP = 5;
     private static final double GUN_RANGE = 28.0D;
-    private static final Map<UUID, Order> ORDERS = new HashMap<>();
+    private static final Map<UUID, Order> ORDERS = ServerState.map(new HashMap<>());
 
     private BatmobileOrders() {
     }

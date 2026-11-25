@@ -1,5 +1,7 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
+import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraft.world.level.chunk.LevelChunk;
 import com.craisinlord.integrated_superheroes.hero.HeroAbilities;
 
 import net.minecraft.core.BlockPos;
@@ -73,6 +75,32 @@ public final class MindStone {
         cast.cooldown();
     }
 
+    private static void findOres(ServerLevel level, BlockPos origin, int range, List<BlockPos> ores) {
+        int minX = origin.getX() - range;
+        int minY = Math.max(level.getMinBuildHeight(), origin.getY() - range);
+        int minZ = origin.getZ() - range;
+        int maxX = origin.getX() + range;
+        int maxY = Math.min(level.getMaxBuildHeight() - 1, origin.getY() + range);
+        int maxZ = origin.getZ() + range;
+        for (int chunkX = minX >> 4; chunkX <= maxX >> 4; chunkX++) {
+            for (int chunkZ = minZ >> 4; chunkZ <= maxZ >> 4; chunkZ++) {
+                LevelChunk chunk = level.getChunkSource().getChunkNow(chunkX, chunkZ);
+                if (chunk == null) continue;
+                for (int sectionY = minY >> 4; sectionY <= maxY >> 4; sectionY++) {
+                    LevelChunkSection section = chunk.getSection(chunk.getSectionIndexFromSectionY(sectionY));
+                    if (section.hasOnlyAir() || !section.maybeHas(state -> state.is(Tags.Blocks.ORES))) continue;
+                    for (int x = Math.max(minX, chunkX << 4); x <= Math.min(maxX, (chunkX << 4) + 15); x++) {
+                        for (int y = Math.max(minY, sectionY << 4); y <= Math.min(maxY, (sectionY << 4) + 15); y++) {
+                            for (int z = Math.max(minZ, chunkZ << 4); z <= Math.min(maxZ, (chunkZ << 4) + 15); z++) {
+                                if (section.getBlockState(x & 15, y & 15, z & 15).is(Tags.Blocks.ORES)) ores.add(new BlockPos(x, y, z));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public static void sight(GauntletCast cast) {
         ServerPlayer player = cast.player();
         ServerLevel level = cast.level();
@@ -83,9 +111,7 @@ public final class MindStone {
                 entity -> entity != player && entity.isAlive()).stream().map(Entity::getId).limit(512).toList();
         BlockPos origin = player.blockPosition();
         List<BlockPos> ores = new ArrayList<>();
-        for (BlockPos pos : BlockPos.betweenClosed(origin.offset(-oreRange, -oreRange, -oreRange), origin.offset(oreRange, oreRange, oreRange))) {
-            if (level.isLoaded(pos) && level.getBlockState(pos).is(Tags.Blocks.ORES)) ores.add(pos.immutable());
-        }
+        findOres(level, origin, oreRange, ores);
         ores.sort(Comparator.comparingDouble(pos -> pos.distSqr(origin)));
         List<Long> packed = ores.stream().limit(768).map(BlockPos::asLong).toList();
         int duration = cast.infinity() ? 600 : 300;

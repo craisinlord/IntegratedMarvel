@@ -1,5 +1,7 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
+import net.minecraft.core.SectionPos;
+import java.util.Set;
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -62,7 +64,13 @@ public final class GauntletGrief {
         return player != null && player.mayInteract(level, pos);
     }
 
-    public static boolean canDestroyTerrain(ServerPlayer player, ServerLevel level, BlockPos pos) {
-        return GauntletConfig.griefing() && canEdit(player, level, pos);
+    public static boolean canEditCached(ServerPlayer player, ServerLevel level, BlockPos pos, Set<Long> allowedSections) {
+        BlockState state = level.getBlockState(pos);
+        if (state.isAir() || state.hasBlockEntity()) return canEdit(player, level, pos);
+        long section = SectionPos.asLong(pos);
+        if (allowedSections.contains(section)) return canEditQuietly(player, level, pos);
+        if (!canEdit(player, level, pos)) return false;
+        allowedSections.add(section);
+        return true;
     }
 }

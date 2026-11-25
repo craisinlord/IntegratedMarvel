@@ -61,7 +61,7 @@ public class VariantEntity extends Monster {
         super.tick();
         if (!this.rolled && this.level() instanceof net.minecraft.server.level.ServerLevel server && !this.isRemoved()) {
             this.rolled = true;
-            if (VariantProfile.of(this) == null) {
+            if (VariantProfile.of(this) == null && !VoidVariants.full(server)) {
                 int tier = com.craisinlord.integrated_superheroes.voidworld.VoidTier.at(server, this.blockPosition());
                 if (MarvelPortal.enabled() && com.craisinlord.integrated_superheroes.voidworld.VoidWorld.isVoid(server)
                         ? VariantTears.arrive(server, position(), tier, null)

@@ -44,16 +44,27 @@ public final class ShazamPower {
     private static final ResourceLocation FLIGHT_ID = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "shazam_flight");
     private static final String HEAL_KEY = "integrated_superheroes_shazam_heal";
     private static final int BOLT_COLOR = 0xFFE14A;
-    private static final Map<UUID, Chain> CHAINS = new HashMap<>();
-    private static final Map<UUID, Long> CAUGHT = new HashMap<>();
+    private static final Map<UUID, Chain> CHAINS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> CAUGHT = ServerState.map(new HashMap<>());
 
     private record Chain(int hopsLeft, long nextHop, int targetId, Set<Integer> hit) {
     }
+
+    private static final Set<UUID> MOB_POWERED = ServerState.all(new HashSet<>());
+    private static boolean registered;
 
     private ShazamPower() {
     }
 
     public static HeroPower create(Supplier<Item> syringe) {
+        if (!registered) {
+            registered = true;
+            HeroCaster.onTick(ShazamPower::tickMob);
+            HeroCaster.onCleanup(caster -> {
+                CHAINS.remove(caster.getUUID());
+                MOB_POWERED.remove(caster.getUUID());
+            });
+        }
         return new HeroPower(
                 ID,
                 "Shazam (Billy Batson)",
@@ -61,9 +72,9 @@ public final class ShazamPower {
                 NewSerumConfig.SHAZAM,
                 List.of(),
                 List.of(
-                        new HeroPower.Ability("say_the_word", "Shazam!", ShazamPower::sayTheWord),
-                        new HeroPower.Ability("lightning_call", "Lightning Call", ShazamPower::lightningCall),
-                        new HeroPower.Ability("thunder_dash", "Thunder Dash", ShazamPower::thunderDash),
+                        HeroPower.Ability.of("say_the_word", "Shazam!", ShazamPower::sayTheWord),
+                        HeroPower.Ability.of("lightning_call", "Lightning Call", ShazamPower::lightningCall),
+                        HeroPower.Ability.of("thunder_dash", "Thunder Dash", ShazamPower::thunderDash),
                         HeroToggles.WHEEL
                 ),
                 HeroToggles.flying(HeroToggles.SPEED),
@@ -133,7 +144,28 @@ public final class ShazamPower {
         return SerumKit.is(player, ID) && HeroPowers.data(player).hasState(POWERED_STATE);
     }
 
-    private static int bolt(Player player) {
+    private static boolean powered(LivingEntity caster) {
+        return caster instanceof Player player ? isPowered(player) : MOB_POWERED.contains(caster.getUUID());
+    }
+
+    private static void tickMob(LivingEntity caster) {
+        tickChain(caster);
+        if (caster.tickCount % 20 == 0 && MOB_POWERED.contains(caster.getUUID())) {
+            caster.addEffect(new net.minecraft.world.effect.MobEffectInstance(MobEffects.MOVEMENT_SPEED, 40,
+                    NewSerumConfig.SHAZAM_SPEED_LEVEL.get() - 1, true, false));
+            caster.addEffect(new net.minecraft.world.effect.MobEffectInstance(MobEffects.FIRE_RESISTANCE, 40, 0, true, false));
+        }
+    }
+
+    private static boolean fair(LivingEntity caster, LivingEntity entity) {
+        return caster instanceof Player ? fair(entity) : HeroCaster.foe(caster, entity);
+    }
+
+    private static boolean enemy(LivingEntity caster, LivingEntity entity) {
+        return caster instanceof Player ? entity instanceof Enemy : HeroCaster.foe(caster, entity);
+    }
+
+    private static int bolt(LivingEntity player) {
         return 0xFF000000 | SerumKit.primary(player, BOLT_COLOR) & 0xFFFFFF;
     }
 
@@ -151,7 +183,10 @@ public final class ShazamPower {
                 && !(entity instanceof OwnableEntity ownable && ownable.getOwnerUUID() != null);
     }
 
-    private static double sayTheWord(ServerPlayer player, int slot) {
+    private static double sayTheWord(LivingEntity caster, int slot) {
+        if (!(caster instanceof ServerPlayer player)) {
+            return mobWord(caster);
+        }
         ServerLevel level = player.serverLevel();
         PlayerData data = HeroPowers.data(player);
         boolean powering = !data.hasState(POWERED_STATE);
@@ -163,7 +198,7 @@ public final class ShazamPower {
         float damage = NewSerumConfig.SHAZAM_WORD_DAMAGE.get().floatValue();
         if (damage > 0.0F) {
             for (LivingEntity target : HeroAbilities.sphere(player, 3.0D).stream().filter(ShazamPower::fair).toList()) {
-                HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().lightningBolt(), damage));
+                HeroAbilities.runAsAbilityDamage(() -> HeroHits.hurt(player, target, player.damageSources().lightningBolt(), damage));
             }
         }
         if (powering) {
@@ -188,12 +223,36 @@ public final class ShazamPower {
         return NewSerumConfig.SHAZAM_WORD_COOLDOWN.get();
     }
 
-    private static void transformHeal(ServerPlayer player) {
+    private static double mobWord(LivingEntity caster) {
+        ServerLevel level = HeroCaster.level(caster);
+        boolean powering = MOB_POWERED.add(caster.getUUID());
+        bolt(level, caster.position());
+        if (HeroFx.vfx(level, caster.position(), "fork_strike", bolt(caster))) {
+            HeroFx.vfx(level, caster.position(), "fork_burst", bolt(caster));
+            HeroFx.cue(caster, "thematic:thunder_clap", 1.0F, 1.0F);
+        }
+        float damage = NewSerumConfig.SHAZAM_WORD_DAMAGE.get().floatValue();
+        if (damage > 0.0F) {
+            for (LivingEntity target : HeroAbilities.sphere(caster, 3.0D)) {
+                HeroAbilities.runAsAbilityDamage(() -> target.hurt(caster.damageSources().lightningBolt(), damage));
+            }
+        }
+        if (powering) {
+            level.sendParticles(SerumKit.glow(caster, BOLT_COLOR, 1.4F), caster.getX(), caster.getY() + 1.0D, caster.getZ(), 40, 0.5D, 1.0D, 0.5D, 0.0D);
+            transformHeal(caster);
+        } else {
+            MOB_POWERED.remove(caster.getUUID());
+            level.sendParticles(ParticleTypes.SMOKE, caster.getX(), caster.getY() + 1.0D, caster.getZ(), 30, 0.4D, 0.8D, 0.4D, 0.02D);
+        }
+        return NewSerumConfig.SHAZAM_WORD_COOLDOWN.get();
+    }
+
+    private static void transformHeal(LivingEntity player) {
         double cooldown = NewSerumConfig.SHAZAM_HEAL_COOLDOWN.get();
         if (cooldown <= 0.0D) {
             return;
         }
-        long now = player.server.overworld().getGameTime();
+        long now = HeroCaster.level(player).getServer().overworld().getGameTime();
         long last = player.getPersistentData().getLong(HEAL_KEY);
         if (last > 0L && last <= now && now - last < (long) (cooldown * 20.0D)) {
             return;
@@ -202,41 +261,44 @@ public final class ShazamPower {
         player.setHealth(player.getMaxHealth());
     }
 
-    private static boolean human(ServerPlayer player) {
-        if (isPowered(player)) {
+    private static boolean human(LivingEntity player) {
+        if (powered(player)) {
             return false;
         }
-        player.displayClientMessage(Component.literal("§7Nothing happens. You have to say the word first."), true);
+        HeroCaster.message(player, Component.literal("§7Nothing happens. You have to say the word first."));
         return true;
     }
 
-    private static double lightningCall(ServerPlayer player, int slot) {
+    private static double lightningCall(LivingEntity player, int slot) {
         if (human(player)) {
             return 0.0D;
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         double range = NewSerumConfig.SHAZAM_LIGHTNING_RANGE.get();
         HeroAbilities.Beam beam = HeroAbilities.beam(player, player.getLookAngle(), range, 1);
         Vec3 point;
+        LivingEntity aimed = HeroCaster.target(player);
         if (!beam.targets().isEmpty()) {
             point = beam.targets().get(0).position();
+        } else if (aimed != null && aimed.distanceToSqr(player) <= range * range) {
+            point = aimed.position();
         } else {
             HitResult hit = player.pick(range, 0.0F, false);
             point = hit.getLocation();
         }
         float damage = NewSerumConfig.SHAZAM_LIGHTNING_DAMAGE.get().floatValue();
         double radius = NewSerumConfig.SHAZAM_LIGHTNING_RADIUS.get();
-        if (point.distanceToSqr(player.position()) <= radius * radius) {
+        if (player instanceof ServerPlayer caught && point.distanceToSqr(player.position()) <= radius * radius) {
             bolt(level, player.position());
-            if (!catchLightning(player)) {
-                player.displayClientMessage(Component.literal("§7The lightning has nothing more to give you yet."), true);
+            if (!catchLightning(caught)) {
+                caught.displayClientMessage(Component.literal("§7The lightning has nothing more to give you yet."), true);
             }
             return NewSerumConfig.SHAZAM_LIGHTNING_COOLDOWN.get();
         }
         Set<Integer> hit = new HashSet<>();
         strike(level, player, point, radius, damage, hit);
         List<LivingEntity> chain = new ArrayList<>(level.getEntitiesOfClass(LivingEntity.class, new AABB(point, point).inflate(8.0D),
-                entity -> entity instanceof Enemy && entity.isAlive() && !hit.contains(entity.getId())));
+                entity -> enemy(player, entity) && entity.isAlive() && !hit.contains(entity.getId())));
         chain.sort(Comparator.comparingDouble(entity -> entity.distanceToSqr(point)));
         for (int i = 0; i < Math.min(chain.size(), NewSerumConfig.SHAZAM_LIGHTNING_CHAIN.get()); i++) {
             strike(level, player, chain.get(i).position(), 1.0D, damage * 0.6F, hit);
@@ -251,11 +313,11 @@ public final class ShazamPower {
         return NewSerumConfig.SHAZAM_LIGHTNING_COOLDOWN.get();
     }
 
-    private static void strike(ServerLevel level, ServerPlayer player, Vec3 at, double radius, float damage, Set<Integer> hit) {
+    private static void strike(ServerLevel level, LivingEntity player, Vec3 at, double radius, float damage, Set<Integer> hit) {
         bolt(level, at);
         HeroFx.vfx(level, at, "fork_strike", bolt(player));
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, new AABB(at, at).inflate(radius, radius + 1.0D, radius),
-                entity -> entity != player && entity.isAlive() && !hit.contains(entity.getId()) && fair(entity))) {
+                entity -> entity != player && entity.isAlive() && !hit.contains(entity.getId()) && fair(player, entity))) {
             hit.add(target.getId());
             HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().mobAttack(player), damage));
         }
@@ -282,12 +344,12 @@ public final class ShazamPower {
         return true;
     }
 
-    private static LivingEntity nextHop(ServerPlayer player, Vec3 from, Set<Integer> hit) {
+    private static LivingEntity nextHop(LivingEntity player, Vec3 from, Set<Integer> hit) {
         double range = NewSerumConfig.SHAZAM_DASH_HOP_RANGE.get();
         LivingEntity best = null;
         double bestDistance = Double.MAX_VALUE;
         for (LivingEntity candidate : player.level().getEntitiesOfClass(LivingEntity.class, new AABB(from, from).inflate(range),
-                entity -> entity instanceof Enemy && entity.isAlive() && !hit.contains(entity.getId()))) {
+                entity -> enemy(player, entity) && entity.isAlive() && !hit.contains(entity.getId()))) {
             double distance = candidate.distanceToSqr(from);
             if (distance <= range * range && distance < bestDistance) {
                 bestDistance = distance;
@@ -297,8 +359,8 @@ public final class ShazamPower {
         return best;
     }
 
-    private static void hop(ServerPlayer player, LivingEntity target, Set<Integer> hit) {
-        ServerLevel level = player.serverLevel();
+    private static void hop(LivingEntity player, LivingEntity target, Set<Integer> hit) {
+        ServerLevel level = HeroCaster.level(player);
         Vec3 from = player.position().add(0.0D, 1.0D, 0.0D);
         Vec3 offset = player.position().subtract(target.position());
         Vec3 flat = new Vec3(offset.x, 0.0D, offset.z);
@@ -319,13 +381,13 @@ public final class ShazamPower {
         HeroAnimations.play(player, "uppercut");
     }
 
-    private static void tickChain(ServerPlayer player) {
+    private static void tickChain(LivingEntity player) {
         Chain chain = CHAINS.get(player.getUUID());
         if (chain == null || player.level().getGameTime() < chain.nextHop()) {
             return;
         }
         CHAINS.remove(player.getUUID());
-        if (chain.hopsLeft() <= 0 || !isPowered(player)) {
+        if (chain.hopsLeft() <= 0 || !powered(player)) {
             return;
         }
         Entity last = player.level().getEntity(chain.targetId());
@@ -338,14 +400,14 @@ public final class ShazamPower {
         CHAINS.put(player.getUUID(), new Chain(chain.hopsLeft() - 1, player.level().getGameTime() + 4L, next.getId(), chain.hit()));
     }
 
-    private static double thunderDash(ServerPlayer player, int slot) {
+    private static double thunderDash(LivingEntity player, int slot) {
         if (human(player)) {
             return 0.0D;
         }
         LivingEntity first = null;
         double best = Double.MAX_VALUE;
         for (LivingEntity candidate : HeroAbilities.cone(player, NewSerumConfig.SHAZAM_DASH_HOP_RANGE.get(), 25.0D)) {
-            if (candidate instanceof Enemy && candidate.distanceToSqr(player) < best) {
+            if (enemy(player, candidate) && candidate.distanceToSqr(player) < best) {
                 best = candidate.distanceToSqr(player);
                 first = candidate;
             }
@@ -359,11 +421,12 @@ public final class ShazamPower {
         }
         Vec3 velocity = player.getLookAngle().scale(NewSerumConfig.SHAZAM_DASH_SPEED.get());
         HeroAbilities.startDash(player, velocity, 10, NewSerumConfig.SHAZAM_DASH_DAMAGE.get(), 2.5D);
-        if (HeroFx.vfx(player.serverLevel(), player.position(), "fork_ground_line", bolt(player))) {
-            HeroFx.vfx(player.serverLevel(), player.position().add(0.0D, 1.0D, 0.0D), "air_burst_ring", 0);
+        ServerLevel level = HeroCaster.level(player);
+        if (HeroFx.vfx(level, player.position(), "fork_ground_line", bolt(player))) {
+            HeroFx.vfx(level, player.position().add(0.0D, 1.0D, 0.0D), "air_burst_ring", 0);
             HeroFx.cue(player, "thematic:thunder_clap", 0.6F, 1.6F);
         } else {
-            player.serverLevel().sendParticles(SerumKit.glow(player, BOLT_COLOR, 1.2F), player.getX(), player.getY() + 1.0D, player.getZ(),
+            level.sendParticles(SerumKit.glow(player, BOLT_COLOR, 1.2F), player.getX(), player.getY() + 1.0D, player.getZ(),
                     20, 0.4D, 0.8D, 0.4D, 0.0D);
             HeroFx.play(player, SoundEvents.LIGHTNING_BOLT_THUNDER, 0.4F, 1.8F);
         }

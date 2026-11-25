@@ -35,8 +35,9 @@ public final class HeroAttributes {
     private static final ResourceLocation STEP_HEIGHT = legacyId("step_height_modifier");
     private static final ResourceLocation SPEED = legacyId("speed_modifier");
     private static final Logger LOGGER = LogUtils.getLogger();
+    private static final Map<String, Optional<Extra>> PARSED = new java.util.concurrent.ConcurrentHashMap<>();
     private static final Set<String> WARNED = new HashSet<>();
-    private static final Set<Attribute> SUIT_CAPPED = Set.of(Attributes.MAX_HEALTH.value(), Attributes.ARMOR.value(), Attributes.ARMOR_TOUGHNESS.value());
+    private static final Set<Attribute> SUIT_CAPPED = Set.of(Attributes.MAX_HEALTH.value(), Attributes.ARMOR_TOUGHNESS.value());
 
     private HeroAttributes() {
     }
@@ -45,7 +46,7 @@ public final class HeroAttributes {
         Map<Attribute, Double> suit = suitBonuses(player);
         set(player, Attributes.MAX_HEALTH, HEALTH, beyondSuit(suit, Attributes.MAX_HEALTH.value(), stats.health.get()));
         set(player, Attributes.ATTACK_DAMAGE, ATTACK, 0.0D);
-        set(player, Attributes.ARMOR, ARMOR, beyondSuit(suit, Attributes.ARMOR.value(), stats.armor.get()));
+        set(player, Attributes.ARMOR, ARMOR, stats.armor.get());
         set(player, Attributes.ATTACK_KNOCKBACK, KNOCKBACK, stats.attackKnockback.get());
         set(player, Attributes.STEP_HEIGHT, STEP_HEIGHT, stats.stepHeight.get());
         set(player, Attributes.MOVEMENT_SPEED, SPEED, stats.movementSpeed.get());
@@ -202,6 +203,10 @@ public final class HeroAttributes {
     }
 
     private static Extra parse(String entry) {
+        return PARSED.computeIfAbsent(entry, text -> Optional.ofNullable(read(text))).orElse(null);
+    }
+
+    private static Extra read(String entry) {
         String[] parts = entry.split(";");
         if (parts.length != 3) {
             warn(entry, "expected namespace:attribute;amount;OPERATION");

@@ -22,8 +22,8 @@ import java.util.Set;
 import java.util.UUID;
 
 final class VanillaBlockLift {
-    private static final Map<UUID, Held> HELD = new HashMap<>();
-    private static final Map<Integer, Thrown> THROWN = new HashMap<>();
+    private static final Map<UUID, Held> HELD = ServerState.map(new HashMap<>());
+    private static final Map<Integer, Thrown> THROWN = ServerState.map(new HashMap<>());
 
     private VanillaBlockLift() {
     }
@@ -138,6 +138,9 @@ final class VanillaBlockLift {
             Map.Entry<Integer, Thrown> entry = iterator.next();
             Entity entity = level.getEntity(entry.getKey());
             if (entity == null) {
+                if (HeroAbilities.gone(level, entry.getKey())) {
+                    iterator.remove();
+                }
                 continue;
             }
             Thrown thrown = entry.getValue();
@@ -150,7 +153,7 @@ final class VanillaBlockLift {
                     candidate -> candidate != owner && candidate.isAlive() && !thrown.hit().contains(candidate.getId()))) {
                 thrown.hit().add(target.getId());
                 HeroAdvancements.thrownBlock(owner, target);
-                target.hurt(owner != null ? owner.damageSources().mobAttack(owner) : level.damageSources().fallingBlock(falling), thrown.damage());
+                HeroHits.hurt(owner, target, owner != null ? owner.damageSources().mobAttack(owner) : level.damageSources().fallingBlock(falling), thrown.damage());
             }
             if (falling.horizontalCollision) {
                 HeroFx.play(falling, SoundEvents.ANVIL_LAND, 1.2F, 0.6F);

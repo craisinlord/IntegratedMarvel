@@ -15,7 +15,7 @@ public final class GrootBranches {
     public static final int HOLD = 1;
     public static final int PULL = 2;
     public static final int CLEAR = 3;
-    private static final Map<Integer, Branch> BRANCHES = new HashMap<>();
+    private static final Map<Integer, Branch> BRANCHES = ClientState.map(new HashMap<>());
 
     private GrootBranches() {
     }

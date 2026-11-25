@@ -2,7 +2,7 @@ package com.craisinlord.integrated_superheroes.suit;
 
 import com.craisinlord.integrated_superheroes.compat.AlexsCavesSuits;
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
-import com.craisinlord.integrated_superheroes.hero.HeroAbilities;
+import com.craisinlord.integrated_superheroes.hero.HeroCaster;
 import com.craisinlord.integrated_superheroes.hero.HeroFx;
 import com.craisinlord.integrated_superheroes.registry.SuitEntities;
 import net.minecraft.core.particles.ParticleOptions;
@@ -15,7 +15,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -78,15 +77,17 @@ public class SuitMissileEntity extends Projectile {
     private Vec3 launchPos;
     private boolean returning;
     private boolean reloaded;
+    private boolean griefs = true;
     private final Set<UUID> pierced = new HashSet<>();
 
     public SuitMissileEntity(EntityType<? extends SuitMissileEntity> type, Level level) {
         super(type, level);
     }
 
-    public static SuitMissileEntity launch(ServerPlayer owner, Kind kind, Vec3 from, Vec3 direction, float damage, float scale) {
+    public static SuitMissileEntity launch(LivingEntity owner, Kind kind, Vec3 from, Vec3 direction, float damage, float scale) {
         SuitMissileEntity missile = new SuitMissileEntity(SuitEntities.SUIT_MISSILE.get(), owner.level());
         missile.setOwner(owner);
+        missile.griefs = HeroCaster.griefs(owner);
         missile.setPos(from);
         missile.launchPos = from;
         missile.setDeltaMovement(direction.normalize().scale(kind.startSpeed));
@@ -186,7 +187,7 @@ public class SuitMissileEntity extends Projectile {
         if (targetPoint != null) {
             aim = targetPoint;
         } else {
-            if ((target == null || !target.isAlive() || target.isRemoved()) && kind != Kind.ROCKET && getOwner() instanceof ServerPlayer owner) {
+            if (tickCount % 4 == 0 && (target == null || !target.isAlive() || target.isRemoved()) && kind != Kind.ROCKET && getOwner() instanceof LivingEntity owner) {
                 target = SuitTargeting.nearest(owner, position(), 16.0D);
             }
             if (target != null) {
@@ -271,14 +272,14 @@ public class SuitMissileEntity extends Projectile {
 
     @Override
     protected boolean canHitEntity(Entity entity) {
-        return super.canHitEntity(entity) && getOwner() instanceof ServerPlayer owner && SuitTargeting.canHit(owner, entity)
+        return super.canHitEntity(entity) && getOwner() instanceof LivingEntity owner && SuitTargeting.canHit(owner, entity)
                 && !pierced.contains(entity.getUUID());
     }
 
     @Override
     protected void onHitEntity(EntityHitResult result) {
         if (kind() == Kind.GAUNTLET) {
-            if (getOwner() instanceof ServerPlayer owner && result.getEntity() instanceof LivingEntity living && damage > 0.0F) {
+            if (getOwner() instanceof LivingEntity owner && result.getEntity() instanceof LivingEntity living && damage > 0.0F) {
                 pierced.add(living.getUUID());
                 hurt(owner, living, damage);
                 living.knockback(0.6D, -getDeltaMovement().x, -getDeltaMovement().z);
@@ -325,7 +326,7 @@ public class SuitMissileEntity extends Projectile {
             discard();
             return;
         }
-        if (damage > 0.0F && getOwner() instanceof ServerPlayer owner) {
+        if (damage > 0.0F && getOwner() instanceof LivingEntity owner) {
             if (direct instanceof LivingEntity living) {
                 hurt(owner, living, damage);
             }
@@ -337,7 +338,7 @@ public class SuitMissileEntity extends Projectile {
             }
         }
         if (kind() == Kind.ROCKET) {
-            boolean griefing = level.getGameRules().getBoolean(MarvelGameRules.RULE_SUPERPOWERGRIEFING);
+            boolean griefing = level.getGameRules().getBoolean(MarvelGameRules.RULE_SUPERPOWERGRIEFING) && ownerGriefs();
             level.explode(this, null, NO_ENTITY_DAMAGE, getX(), getY(), getZ(), 2.0F, false,
                     griefing ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
             if (!HeroFx.vfx(level, position(), "pyre_detonation", 0, 3.0F)) {
@@ -361,9 +362,14 @@ public class SuitMissileEntity extends Projectile {
         if (HeroFx.vfx(level, position(), "solar_explosion", 0)) {
             HeroFx.cue(level, position(), "thematic:major_detonation", 6.0F, 1.0F);
         }
-        if (!ModCompat.ALEXS_CAVES || !AlexsCavesSuits.nuke(level, this)) {
-            level.explode(this, getX(), getY(), getZ(), 16.0F, true, Level.ExplosionInteraction.TNT);
+        boolean griefs = ownerGriefs();
+        if (!ModCompat.ALEXS_CAVES || !AlexsCavesSuits.nuke(level, this, griefs)) {
+            level.explode(this, getX(), getY(), getZ(), 16.0F, griefs, griefs ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
         }
+    }
+
+    private boolean ownerGriefs() {
+        return griefs;
     }
 
     private static final ExplosionDamageCalculator NO_ENTITY_DAMAGE = new ExplosionDamageCalculator() {
@@ -378,9 +384,8 @@ public class SuitMissileEntity extends Projectile {
         }
     };
 
-    private static void hurt(ServerPlayer owner, LivingEntity target, float amount) {
-        target.invulnerableTime = 0;
-        HeroAbilities.runAsAbilityDamage(() -> target.hurt(owner.damageSources().playerAttack(owner), amount));
+    private static void hurt(LivingEntity owner, LivingEntity target, float amount) {
+        SuitTargeting.hit(owner, target, amount);
     }
 
     private static ParticleOptions particle(ResourceLocation id, SimpleParticleType fallback) {

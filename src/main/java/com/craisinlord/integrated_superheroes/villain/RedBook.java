@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.villain;
 
+import com.craisinlord.integrated_superheroes.hero.ServerState;
 import com.craisinlord.integrated_superheroes.hero.HeroStun;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
@@ -40,7 +41,7 @@ public final class RedBook {
             {"Один", "One"},
             {"Товарный вагон", "Freight car"}
     };
-    private static final Map<UUID, Reading> READINGS = new HashMap<>();
+    private static final Map<UUID, Reading> READINGS = ServerState.map(new HashMap<>());
 
     private RedBook() {
     }

@@ -24,6 +24,8 @@ public final class NewSerumConfig {
     public static ModConfigSpec.DoubleValue SOLAR_MAX_MULTIPLIER;
     public static ModConfigSpec.DoubleValue SOLAR_MIN_MULTIPLIER;
     public static ModConfigSpec.DoubleValue SOLAR_REGEN_PER_SECOND;
+    public static ModConfigSpec.DoubleValue SUN_DAMAGE_REDUCTION;
+    public static ModConfigSpec.DoubleValue SHADE_DAMAGE_REDUCTION;
     public static ModConfigSpec.DoubleValue KRYPTONITE_RADIUS;
     public static ModConfigSpec.DoubleValue KRYPTONITE_DAMAGE_TAKEN_MULTIPLIER;
     public static ModConfigSpec.DoubleValue KRYPTONITE_DAMAGE_PER_SECOND;
@@ -170,31 +172,35 @@ public final class NewSerumConfig {
 
     static void define(ModConfigSpec.Builder builder) {
         builder.push("kryptonian");
-        KRYPTONIAN = new MarvelBalanceConfig.HeroStats(builder, 85.0D, 22.0D, 2.0D, 0.5D, 0.0D, 125.0D, 2,
+        KRYPTONIAN = new MarvelBalanceConfig.HeroStats(builder, 89.0D, 9.0D, 2.0D, 0.5D, 0.0D, 125.0D, 2,
                 List.of("minecraft:generic.knockback_resistance;0.8;ADD_VALUE", "minecraft:generic.safe_fall_distance;100.0;ADD_VALUE"));
         KRYPTONIAN_FLY_SPEED = builder.defineInRange("flySpeed", 0.12D, 0.01D, 1.0D);
         KRYPTONIAN_SPEED_LEVEL = builder.comment("Speed effect level while the Super Speed toggle is on.")
                 .defineInRange("superSpeedLevel", 3, 1, 10);
-        HEAT_VISION_DAMAGE = builder.defineInRange("heatVisionDamage", 90.0D, 0.0D, 10000.0D);
+        HEAT_VISION_DAMAGE = builder.defineInRange("heatVisionDamage", 110.0D, 0.0D, 10000.0D);
         HEAT_VISION_RANGE = builder.defineInRange("heatVisionRange", 32.0D, 4.0D, 128.0D);
         HEAT_VISION_DURATION_TICKS = builder.defineInRange("heatVisionDurationTicks", 40, 1, 400);
         HEAT_VISION_TERRAIN_RADIUS = builder.comment("Heat vision melts blocks in this radius. 0 turns it off. The superpower griefing game rule must also be on.")
                 .defineInRange("heatVisionTerrainRadius", 1.0D, 0.0D, 8.0D);
         HEAT_VISION_COOLDOWN = builder.defineInRange("heatVisionCooldownSeconds", 4.0D, 0.0D, 600.0D);
-        SUPER_BREATH_DAMAGE = builder.defineInRange("superBreathDamage", 35.0D, 0.0D, 10000.0D);
+        SUPER_BREATH_DAMAGE = builder.defineInRange("superBreathDamage", 50.0D, 0.0D, 10000.0D);
         SUPER_BREATH_RANGE = builder.defineInRange("superBreathRange", 12.0D, 2.0D, 64.0D);
         SUPER_BREATH_FREEZE_TICKS = builder.defineInRange("superBreathFreezeTicks", 100, 0, 1200);
         SUPER_BREATH_COOLDOWN = builder.defineInRange("superBreathCooldownSeconds", 10.0D, 0.0D, 600.0D);
         FLYING_PUNCH_SPEED = builder.defineInRange("flyingPunchSpeed", 2.6D, 0.1D, 10.0D);
-        FLYING_PUNCH_DAMAGE = builder.defineInRange("flyingPunchDamage", 140.0D, 0.0D, 10000.0D);
+        FLYING_PUNCH_DAMAGE = builder.defineInRange("flyingPunchDamage", 200.0D, 0.0D, 10000.0D);
         FLYING_PUNCH_COOLDOWN = builder.defineInRange("flyingPunchCooldownSeconds", 5.0D, 0.0D, 600.0D);
         XRAY_RADIUS = builder.comment("Creatures in this radius glow through walls while the X-Ray Vision toggle is on.")
                 .defineInRange("xRayRadius", 32.0D, 0.0D, 128.0D);
         SOLAR_MAX_MULTIPLIER = builder.comment("Damage multiplier in full daylight with open sky.")
                 .defineInRange("solarMaxMultiplier", 1.3D, 0.0D, 10.0D);
         SOLAR_MIN_MULTIPLIER = builder.comment("Damage multiplier at night or deep underground.")
-                .defineInRange("solarMinMultiplier", 0.7D, 0.0D, 10.0D);
-        SOLAR_REGEN_PER_SECOND = builder.defineInRange("solarRegenPerSecond", 1.0D, 0.0D, 100.0D);
+                .defineInRange("solarMinMultiplier", 0.85D, 0.0D, 10.0D);
+        SOLAR_REGEN_PER_SECOND = builder.defineInRange("solarRegenPerSecond", 1.5D, 0.0D, 100.0D);
+        SUN_DAMAGE_REDUCTION = builder.comment("Percent of incoming damage ignored in full daylight with open sky. None while weakened by kryptonite or drained.")
+                .defineInRange("sunDamageReductionPercent", 65.0D, 0.0D, 100.0D);
+        SHADE_DAMAGE_REDUCTION = builder.comment("Percent of incoming damage ignored at night or deep underground.")
+                .defineInRange("shadeDamageReductionPercent", 45.0D, 0.0D, 100.0D);
         KRYPTONITE_RADIUS = builder.comment("How close someone holding kryptonite (the integrated_superheroes:kryptonite item tag) has to be to weaken a Kryptonian.")
                 .defineInRange("kryptoniteRadius", 8.0D, 0.0D, 64.0D);
         KRYPTONITE_DAMAGE_TAKEN_MULTIPLIER = builder.defineInRange("kryptoniteDamageTakenMultiplier", 2.0D, 1.0D, 100.0D);
@@ -205,7 +211,7 @@ public final class NewSerumConfig {
                 .define("kryptoniteInToxicCaves", true);
         SOLAR_FLARE_CHARGE_SECONDS = builder.comment("Seconds in full open daylight to fill the solar meter.")
                 .defineInRange("solarFlareChargeSeconds", 90.0D, 1.0D, 3600.0D);
-        SOLAR_FLARE_DAMAGE = builder.defineInRange("solarFlareDamage", 250.0D, 0.0D, 10000.0D);
+        SOLAR_FLARE_DAMAGE = builder.defineInRange("solarFlareDamage", 350.0D, 0.0D, 10000.0D);
         SOLAR_FLARE_RADIUS = builder.defineInRange("solarFlareRadius", 10.0D, 1.0D, 32.0D);
         SOLAR_FLARE_DRAINED_TICKS = builder.comment("After a Solar Flare you're mortal this long: no flight, no immunities, no other powers.")
                 .defineInRange("solarFlareDrainedTicks", 600, 0, 12000);
@@ -214,16 +220,16 @@ public final class NewSerumConfig {
         builder.pop();
 
         builder.push("martian");
-        MARTIAN = new MarvelBalanceConfig.HeroStats(builder, 40.0D, 12.0D, 1.0D, 0.5D, 0.0D, 40.0D, 1,
+        MARTIAN = new MarvelBalanceConfig.HeroStats(builder, 42.0D, 5.0D, 1.0D, 0.5D, 0.0D, 40.0D, 1,
                 List.of("minecraft:generic.safe_fall_distance;40.0;ADD_VALUE"));
         MARTIAN_FLY_SPEED = builder.defineInRange("flySpeed", 0.09D, 0.01D, 1.0D);
-        MARTIAN_PHASE_TICKS = builder.defineInRange("phaseTicks", 160, 20, 2400);
-        MARTIAN_PHASE_COOLDOWN = builder.defineInRange("phaseCooldownSeconds", 8.0D, 0.0D, 600.0D);
+        MARTIAN_PHASE_TICKS = builder.defineInRange("phaseTicks", 120, 20, 2400);
+        MARTIAN_PHASE_COOLDOWN = builder.defineInRange("phaseCooldownSeconds", 12.0D, 0.0D, 600.0D);
         MARTIAN_VANISH_COOLDOWN = builder.defineInRange("vanishCooldownSeconds", 6.0D, 0.0D, 600.0D);
         DENSE_TICKS = builder.comment("How long crouch + Density Shift keeps you dense.")
                 .defineInRange("denseTicks", 200, 20, 2400);
         DENSE_COOLDOWN = builder.defineInRange("denseCooldownSeconds", 12.0D, 0.0D, 600.0D);
-        DENSE_ARMOR = builder.defineInRange("denseArmor", 12.0D, 0.0D, 100.0D);
+        DENSE_ARMOR = builder.defineInRange("denseArmor", 5.0D, 0.0D, 100.0D);
         DENSE_ATTACK_MULTIPLIER = builder.comment("Melee damage multiplier while dense.")
                 .defineInRange("denseAttackMultiplier", 1.5D, 1.0D, 10.0D);
         DENSE_SLAM_DAMAGE = builder.comment("Damage of the shockwave when you land from a fall of 4+ blocks while dense.")
@@ -247,7 +253,7 @@ public final class NewSerumConfig {
 
         builder.push("shazam");
         builder.comment("Stats while powered up.").push("powered");
-        SHAZAM = new MarvelBalanceConfig.HeroStats(builder, 60.0D, 18.0D, 2.0D, 0.5D, 0.02D, 80.0D, 1,
+        SHAZAM = new MarvelBalanceConfig.HeroStats(builder, 64.0D, 7.0D, 2.0D, 0.5D, 0.02D, 80.0D, 1,
                 List.of("minecraft:generic.knockback_resistance;0.6;ADD_VALUE", "minecraft:generic.safe_fall_distance;100.0;ADD_VALUE"));
         builder.pop();
         builder.comment("Stats while human. Normal player by default.").push("human");
@@ -276,7 +282,7 @@ public final class NewSerumConfig {
         builder.pop();
 
         builder.push("atlantean");
-        ATLANTEAN = new MarvelBalanceConfig.HeroStats(builder, 40.0D, 14.0D, 1.0D, 0.5D, 0.0D, 45.0D, 1,
+        ATLANTEAN = new MarvelBalanceConfig.HeroStats(builder, 42.0D, 6.0D, 1.0D, 0.5D, 0.0D, 45.0D, 1,
                 List.of("neoforge:swim_speed;1.5;ADD_MULTIPLIED_BASE"));
         WATER_DAMAGE_MULTIPLIER = builder.comment("Damage multiplier while in water or rain.")
                 .defineInRange("waterDamageMultiplier", 1.5D, 0.0D, 10.0D);
@@ -325,7 +331,7 @@ public final class NewSerumConfig {
         builder.pop();
 
         builder.push("amazon");
-        AMAZON = new MarvelBalanceConfig.HeroStats(builder, 45.0D, 16.0D, 1.5D, 0.5D, 0.02D, 55.0D, 1,
+        AMAZON = new MarvelBalanceConfig.HeroStats(builder, 49.0D, 6.0D, 1.5D, 0.5D, 0.02D, 55.0D, 1,
                 List.of("minecraft:generic.knockback_resistance;0.5;ADD_VALUE", "minecraft:generic.safe_fall_distance;20.0;ADD_VALUE"));
         AMAZON_LEAP_LEVEL = builder.defineInRange("leapJumpLevel", 3, 1, 10);
         GUARD_MELEE_MULTIPLIER = builder.comment("Melee damage taken while guarding with the bracelets. Projectiles from the front are deflected.")
@@ -337,7 +343,7 @@ public final class NewSerumConfig {
         LASSO_RANGE = builder.defineInRange("lassoRange", 20.0D, 2.0D, 64.0D);
         LASSO_PACIFY_TICKS = builder.defineInRange("lassoPacifyTicks", 80, 0, 1200);
         LASSO_COOLDOWN = builder.defineInRange("lassoCooldownSeconds", 6.0D, 0.0D, 600.0D);
-        BRACELET_CLASH_DAMAGE = builder.defineInRange("braceletClashDamage", 40.0D, 0.0D, 10000.0D);
+        BRACELET_CLASH_DAMAGE = builder.defineInRange("braceletClashDamage", 75.0D, 0.0D, 10000.0D);
         BRACELET_CLASH_RADIUS = builder.defineInRange("braceletClashRadius", 6.0D, 1.0D, 32.0D);
         BRACELET_CLASH_COOLDOWN = builder.defineInRange("braceletClashCooldownSeconds", 10.0D, 0.0D, 600.0D);
         BRACELETS_CATCH = builder.comment("Lightning, or a beam or spell from the front, hitting raised bracelets is blocked and fires a free Bracelet Clash.")
@@ -345,7 +351,7 @@ public final class NewSerumConfig {
         builder.pop();
 
         builder.push("sonic");
-        SONIC = new MarvelBalanceConfig.HeroStats(builder, 24.0D, 8.0D, 0.5D, 0.0D, 0.02D, 28.0D, 0,
+        SONIC = new MarvelBalanceConfig.HeroStats(builder, 26.0D, 3.0D, 0.5D, 0.0D, 0.02D, 28.0D, 0,
                 List.of("minecraft:generic.safe_fall_distance;6.0;ADD_VALUE"));
         CANARY_CRY_DAMAGE = builder.comment("Damage of each pulse of the Canary Cry. It pulses every 5 ticks while you keep screaming.")
                 .defineInRange("canaryCryPulseDamage", 14.0D, 0.0D, 10000.0D);
@@ -367,7 +373,7 @@ public final class NewSerumConfig {
         RESONANCE_RADIUS = builder.defineInRange("resonanceRadius", 4.0D, 1.0D, 16.0D);
         CANARY_CRY_SHATTERS_GLASS = builder.comment("The Canary Cry breaks glass in its path. The superpower griefing game rule must also be on.")
                 .define("canaryCryShattersGlass", true);
-        SONIC_BURST_DAMAGE = builder.defineInRange("sonicBurstDamage", 32.0D, 0.0D, 10000.0D);
+        SONIC_BURST_DAMAGE = builder.defineInRange("sonicBurstDamage", 60.0D, 0.0D, 10000.0D);
         SONIC_BURST_RADIUS = builder.defineInRange("sonicBurstRadius", 6.0D, 1.0D, 32.0D);
         SONIC_BURST_COOLDOWN = builder.defineInRange("sonicBurstCooldownSeconds", 10.0D, 0.0D, 600.0D);
         SONIC_LIFT_POWER = builder.comment("Upward launch speed of Sonic Lift.")
@@ -378,7 +384,7 @@ public final class NewSerumConfig {
         builder.pop();
 
         builder.push("homelander");
-        HOMELANDER = new MarvelBalanceConfig.HeroStats(builder, 85.0D, 22.0D, 2.0D, 0.5D, 0.0D, 120.0D, 2,
+        HOMELANDER = new MarvelBalanceConfig.HeroStats(builder, 89.0D, 9.0D, 2.0D, 0.5D, 0.0D, 120.0D, 2,
                 List.of("minecraft:generic.knockback_resistance;0.8;ADD_VALUE", "minecraft:generic.safe_fall_distance;100.0;ADD_VALUE"));
         HOMELANDER_FLY_SPEED = builder.defineInRange("flySpeed", 0.15D, 0.01D, 1.0D);
         LASER_SWEEP_DAMAGE = builder.defineInRange("laserSweepDamage", 90.0D, 0.0D, 10000.0D);

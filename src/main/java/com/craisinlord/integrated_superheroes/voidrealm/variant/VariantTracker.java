@@ -52,6 +52,7 @@ final class VariantTracker {
     }
 
     static void register() {
+        com.craisinlord.integrated_superheroes.voidrealm.variant.moves.RealMoves.register();
         NeoForge.EVENT_BUS.addListener(VariantTracker::onJoin);
         NeoForge.EVENT_BUS.addListener(VariantTracker::onLeave);
         NeoForge.EVENT_BUS.addListener(VariantTracker::onLevelTick);
@@ -72,6 +73,11 @@ final class VariantTracker {
             }
         }
         return out;
+    }
+
+    public static VariantProfile profile(Entity entity) {
+        Tracked tracked = TRACKED.get(entity);
+        return tracked != null ? tracked.profile : VariantProfile.of(entity);
     }
 
     static VariantAlignment alignment(Entity entity) {
@@ -209,7 +215,8 @@ final class VariantTracker {
     }
 
     private static boolean busy(Mob mob) {
-        return VoidVariants.thematicHost(mob) && ThematicVariants.busy(mob);
+        return VoidVariants.thematicHost(mob) && ThematicVariants.busy(mob)
+                || com.craisinlord.integrated_superheroes.hero.HeroCaster.casting(mob);
     }
 
     private static void tick(ServerLevel level, Tracked tracked, long now) {

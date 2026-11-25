@@ -94,6 +94,11 @@ public final class HeroMoves {
         if (profile == null) {
             return List.of();
         }
+        List<String> real = profile.kind() == com.craisinlord.integrated_superheroes.voidrealm.variant.VariantKind.THEMATIC
+                ? List.of() : RealMoves.kitFor(profile.family());
+        if (!real.isEmpty()) {
+            return real;
+        }
         return switch (profile.kind()) {
             case SERUM, VILTRUMITE -> SERUM_KITS.getOrDefault(profile.family(), List.of());
             case THEMATIC -> ThematicKits.kitFor(profile.family(), profile.look());

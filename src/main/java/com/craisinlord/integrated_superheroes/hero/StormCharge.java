@@ -44,9 +44,8 @@ public final class StormCharge {
 
     @SubscribeEvent
     public static void onStartTracking(PlayerEvent.StartTracking event) {
-        if (event.getEntity() instanceof ServerPlayer tracker && event.getTarget() instanceof ServerPlayer target
-                && CHARGED.contains(target.getUUID())) {
-            PacketDistributor.sendToPlayer(tracker, new StormChargePayload(target.getId(), true));
+        if (event.getEntity() instanceof ServerPlayer tracker && event.getTarget() instanceof ServerPlayer target) {
+            PacketDistributor.sendToPlayer(tracker, new StormChargePayload(target.getId(), CHARGED.contains(target.getUUID())));
         }
     }
 

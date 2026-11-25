@@ -1,11 +1,11 @@
 package com.craisinlord.integrated_superheroes.suit;
 
+import com.craisinlord.integrated_superheroes.hero.HeroCaster;
 import com.craisinlord.integrated_superheroes.compat.FallbackGrenade;
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import com.craisinlord.integrated_superheroes.compat.ScorchedGunsWeapons;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,12 +30,12 @@ public final class SuitGrenadeAbilities {
         }
         Entity owner = direct instanceof Projectile projectile ? projectile.getOwner() : event.getSource().getEntity();
         LivingEntity target = event.getEntity();
-        return owner instanceof ServerPlayer player && !SuitTargeting.canHit(player, target);
+        return owner instanceof LivingEntity player && !SuitTargeting.canHit(player, target);
     }
 
     static SuitAbility.Result grenadeLauncher(SuitContext context) {
-        ServerPlayer player = context.player();
-        ServerLevel level = player.serverLevel();
+        LivingEntity player = context.caster();
+        ServerLevel level = HeroCaster.level(player);
         int count = SuitAbilityConfig.GRENADE_LAUNCHER_GRENADES.get();
         float damage = context.damage(SuitAbilityConfig.GRENADE_LAUNCHER);
         float radius = SuitAbilityConfig.GRENADE_LAUNCHER_RADIUS.get().floatValue();
@@ -60,8 +60,8 @@ public final class SuitGrenadeAbilities {
     }
 
     static SuitAbility.Result hellfireBomb(SuitContext context) {
-        ServerPlayer player = context.player();
-        ServerLevel level = player.serverLevel();
+        LivingEntity player = context.caster();
+        ServerLevel level = HeroCaster.level(player);
         Entity bomb;
         if (ModCompat.SCORCHED_GUNS) {
             Projectile hellfire = ScorchedGunsWeapons.hellfireBomb(level, player, 40);

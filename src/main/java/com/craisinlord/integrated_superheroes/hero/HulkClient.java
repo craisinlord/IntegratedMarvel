@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.hero;
 
+import net.minecraft.Util;
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -118,6 +119,8 @@ public final class HulkClient {
         player.spinningEffectIntensity = warp;
     }
 
+    private static long nextShaderTry;
+
     private static void tickShader(Minecraft minecraft) {
         if (minecraft.gameRenderer == null) {
             return;
@@ -134,7 +137,8 @@ public final class HulkClient {
             minecraft.gameRenderer.shutdownEffect();
             loaded = null;
         }
-        if (want != null && minecraft.gameRenderer.currentEffect() == null) {
+        if (want != null && minecraft.gameRenderer.currentEffect() == null && Util.getMillis() >= nextShaderTry) {
+            nextShaderTry = Util.getMillis() + 1000L;
             minecraft.gameRenderer.loadEffect(want);
             loaded = want;
         }

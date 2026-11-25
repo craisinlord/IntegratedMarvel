@@ -1,6 +1,7 @@
 package com.craisinlord.integrated_superheroes.hero;
 
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
+import com.craisinlord.integrated_superheroes.voidworld.client.sky.ShaderPacks;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -113,7 +114,7 @@ public final class StormArcRenderer {
 
     @SubscribeEvent
     public static void onRender(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES || ARCS.isEmpty()) {
+        if (ARCS.isEmpty() || event.getStage() != ShaderPacks.glowStage()) {
             return;
         }
         Minecraft minecraft = Minecraft.getInstance();

@@ -221,6 +221,9 @@ final class ThematicAbilityKeys {
     }
 
     private static void unbindThematicKeys(Minecraft minecraft) {
+        if (minecraft.getOverlay() != null) {
+            return;
+        }
         boolean changed = false;
         for (int i = 0; i < KEYS.size(); i++) {
             KeyMapping mapping = mapping(i);

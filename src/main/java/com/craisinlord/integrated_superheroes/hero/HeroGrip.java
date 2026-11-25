@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.hero;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,19 +17,20 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 public final class HeroGrip {
-    private static final Map<UUID, Held> HELD = new HashMap<>();
-    private static final Map<Integer, Thrown> THROWN = new HashMap<>();
+    private static final String GRAVITY_TAG = "integrated_superheroes_grip_gravity";
+    private static final Map<UUID, Held> HELD = ServerState.map(new HashMap<>());
+    private static final Map<Integer, Thrown> THROWN = ServerState.map(new HashMap<>());
 
     private HeroGrip() {
     }
 
-    private record Held(int entityId, double distance, int ticksLeft, ParticleOptions particle, Consumer<LivingEntity> onTick) {
+    private record Held(LivingEntity target, int entityId, double distance, int ticksLeft, ParticleOptions particle, Consumer<LivingEntity> onTick) {
     }
 
     private record Thrown(UUID owner, int ticksLeft, float damage, Set<Integer> hit) {
     }
 
-    public static boolean isHolding(ServerPlayer player) {
+    public static boolean isHolding(LivingEntity player) {
         return HELD.containsKey(player.getUUID());
     }
 
@@ -44,25 +46,25 @@ public final class HeroGrip {
         return false;
     }
 
-    public static boolean grab(ServerPlayer player, LivingEntity target, int ticks, ParticleOptions particle, Consumer<LivingEntity> onTick) {
+    public static boolean grab(LivingEntity player, LivingEntity target, int ticks, ParticleOptions particle, Consumer<LivingEntity> onTick) {
         if (!HeroAbilities.canControl(target) || TelekineticFormation.isHeld(target)) {
             return false;
         }
         double distance = Math.max(3.0D, Math.min(6.0D, player.distanceTo(target)));
-        HELD.put(player.getUUID(), new Held(target.getId(), distance, ticks, particle, onTick));
+        HELD.put(player.getUUID(), new Held(target, target.getId(), distance, ticks, particle, onTick));
         return true;
     }
 
-    public static boolean release(ServerPlayer player, double speed, float damage) {
+    public static boolean release(LivingEntity player, double speed, float damage) {
         Held held = HELD.remove(player.getUUID());
         if (held == null) {
             return false;
         }
+        restore(held.target());
         Entity entity = player.level().getEntity(held.entityId());
         if (!(entity instanceof LivingEntity target) || !target.isAlive()) {
             return false;
         }
-        target.setNoGravity(false);
         target.setDeltaMovement(player.getLookAngle().scale(speed));
         target.hurtMarked = true;
         target.hasImpulse = true;
@@ -70,14 +72,28 @@ public final class HeroGrip {
         return true;
     }
 
-    public static void drop(ServerPlayer player) {
+    public static void drop(LivingEntity player) {
         Held held = HELD.remove(player.getUUID());
-        if (held != null && player.level().getEntity(held.entityId()) instanceof LivingEntity target) {
-            target.setNoGravity(false);
+        if (held != null) {
+            restore(held.target());
         }
     }
 
-    public static void tick(ServerPlayer player) {
+    public static void onJoin(Entity entity) {
+        if (entity.getPersistentData().contains(GRAVITY_TAG) && !isHeld(entity)) {
+            restore(entity);
+        }
+    }
+
+    private static void restore(Entity entity) {
+        CompoundTag data = entity.getPersistentData();
+        if (data.contains(GRAVITY_TAG)) {
+            entity.setNoGravity(data.getBoolean(GRAVITY_TAG));
+            data.remove(GRAVITY_TAG);
+        }
+    }
+
+    public static void tick(LivingEntity player) {
         Held held = HELD.get(player.getUUID());
         if (held == null) {
             return;
@@ -89,6 +105,9 @@ public final class HeroGrip {
         }
         Vec3 point = player.getEyePosition().add(player.getLookAngle().scale(held.distance())).subtract(0.0D, target.getBbHeight() * 0.5D, 0.0D);
         Vec3 pull = point.subtract(target.position());
+        if (!target.getPersistentData().contains(GRAVITY_TAG)) {
+            target.getPersistentData().putBoolean(GRAVITY_TAG, target.isNoGravity());
+        }
         target.setNoGravity(true);
         target.setDeltaMovement(pull.scale(0.4D));
         target.hurtMarked = true;
@@ -100,7 +119,7 @@ public final class HeroGrip {
             level.sendParticles(held.particle(), center.x, center.y, center.z, 4, target.getBbWidth() * 0.6D, target.getBbHeight() * 0.5D,
                     target.getBbWidth() * 0.6D, 0.0D);
         }
-        HELD.put(player.getUUID(), new Held(held.entityId(), held.distance(), held.ticksLeft() - 1, held.particle(), held.onTick()));
+        HELD.put(player.getUUID(), new Held(held.target(), held.entityId(), held.distance(), held.ticksLeft() - 1, held.particle(), held.onTick()));
     }
 
     public static void tickThrown(ServerLevel level) {
@@ -112,6 +131,9 @@ public final class HeroGrip {
             Map.Entry<Integer, Thrown> entry = iterator.next();
             Entity entity = level.getEntity(entry.getKey());
             if (entity == null) {
+                if (HeroAbilities.gone(level, entry.getKey())) {
+                    iterator.remove();
+                }
                 continue;
             }
             Thrown thrown = entry.getValue();
@@ -124,11 +146,11 @@ public final class HeroGrip {
             for (LivingEntity other : level.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(0.4D),
                     candidate -> candidate != target && candidate != owner && candidate.isAlive() && !thrown.hit().contains(candidate.getId()))) {
                 thrown.hit().add(other.getId());
-                other.hurt(owner instanceof ServerPlayer player ? player.damageSources().mobAttack(player) : level.damageSources().generic(), thrown.damage());
+                HeroHits.hurt(owner, other, owner instanceof LivingEntity attacker ? attacker.damageSources().mobAttack(attacker) : level.damageSources().generic(), thrown.damage());
                 impact = true;
             }
             if (impact) {
-                target.hurt(owner instanceof ServerPlayer player ? player.damageSources().mobAttack(player) : level.damageSources().flyIntoWall(), thrown.damage());
+                HeroHits.hurt(owner, target, owner instanceof LivingEntity attacker ? attacker.damageSources().mobAttack(attacker) : level.damageSources().flyIntoWall(), thrown.damage());
                 iterator.remove();
                 continue;
             }
@@ -136,7 +158,7 @@ public final class HeroGrip {
         }
     }
 
-    public static void clear(ServerPlayer player) {
+    public static void clear(LivingEntity player) {
         drop(player);
     }
 }

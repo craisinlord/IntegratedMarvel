@@ -46,9 +46,9 @@ public final class PsychicLinks {
     public static final String UNTIL_KEY = "integrated_superheroes_psychic_until";
     private static final int SCAN_INTERVAL = 5;
     private static final int TETHER_COLOR = 0xB57CFF;
-    private static final Map<UUID, Link> LINKS = new HashMap<>();
-    private static final Map<UUID, Memory> STRUCK = new HashMap<>();
-    private static final Map<UUID, Memory> STRUCK_BY = new HashMap<>();
+    private static final Map<UUID, Link> LINKS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Memory> STRUCK = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Memory> STRUCK_BY = ServerState.map(new HashMap<>());
     private static final List<Predicate<Entity>> OTHER_CONTROL = new ArrayList<>();
     private static boolean registered;
 

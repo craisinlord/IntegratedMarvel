@@ -6,6 +6,7 @@ import java.util.List;
 
 public final class GrootConfig {
     public static MarvelBalanceConfig.HeroStats STATS;
+    public static ModConfigSpec.DoubleValue ABILITY_DAMAGE;
     public static ModConfigSpec.DoubleValue BRANCH_RANGE;
     public static ModConfigSpec.DoubleValue BRANCH_DAMAGE_MULTIPLIER;
     public static ModConfigSpec.DoubleValue BRANCH_COOLDOWN;
@@ -66,11 +67,13 @@ public final class GrootConfig {
 
     static void define(ModConfigSpec.Builder builder) {
         builder.push("floraColossusGroot");
-        STATS = new MarvelBalanceConfig.HeroStats(builder, 22.0D, 8.0D, 0.3D, 0.5D, 0.0D, 14.0D, 0,
+        STATS = new MarvelBalanceConfig.HeroStats(builder, 24.0D, 3.0D, 0.3D, 0.5D, 0.0D, 14.0D, 0,
                 List.of("minecraft:generic.scale;0.2;ADD_MULTIPLIED_BASE", "minecraft:generic.armor_toughness;2.0;ADD_VALUE"));
+        ABILITY_DAMAGE = builder.comment("Base damage every Groot ability is a fraction of.")
+                .defineInRange("abilityDamage", 50.0D, 0.0D, 10000.0D);
         BRANCH_RANGE = builder.comment("How far Branch Arm reaches.")
                 .defineInRange("branchArmRange", 10.0D, 2.0D, 32.0D);
-        BRANCH_DAMAGE_MULTIPLIER = builder.comment("Branch Arm damage as a fraction of Mr. Fantastic's stretchPunchDamage.")
+        BRANCH_DAMAGE_MULTIPLIER = builder.comment("Branch Arm damage as a fraction of Groot's abilityDamage.")
                 .defineInRange("branchArmDamageMultiplier", 0.5D, 0.0D, 10.0D);
         BRANCH_COOLDOWN = builder.comment("Cooldown of Branch Arm. Starts after the pull, or when the pull window runs out.")
                 .defineInRange("branchArmCooldownSeconds", 3.0D, 0.0D, 600.0D);
@@ -92,7 +95,7 @@ public final class GrootConfig {
                 .defineInRange("takeRootLashRadius", 6.0D, 1.0D, 24.0D);
         TAKE_ROOT_LASH_INTERVAL_TICKS = builder.comment("Ticks between root lashes while rooted.")
                 .defineInRange("takeRootLashIntervalTicks", 20, 1, 200);
-        TAKE_ROOT_LASH_DAMAGE_MULTIPLIER = builder.comment("Root lash damage as a fraction of Mr. Fantastic's stretchPunchDamage.")
+        TAKE_ROOT_LASH_DAMAGE_MULTIPLIER = builder.comment("Root lash damage as a fraction of Groot's abilityDamage.")
                 .defineInRange("takeRootLashDamageMultiplier", 0.3D, 0.0D, 10.0D);
         TAKE_ROOT_BRANCH_RANGE_MULTIPLIER = builder.comment("Branch Arm range multiplier while rooted.")
                 .defineInRange("takeRootBranchRangeMultiplier", 1.5D, 1.0D, 4.0D);
@@ -100,7 +103,7 @@ public final class GrootConfig {
                 .defineInRange("thornBurstRadius", 4.0D, 1.0D, 16.0D);
         THORN_BURST_ROOTED_RADIUS = builder.comment("Radius of Thorn Burst while rooted.")
                 .defineInRange("thornBurstRootedRadius", 6.0D, 1.0D, 16.0D);
-        THORN_BURST_DAMAGE_MULTIPLIER = builder.comment("Thorn Burst damage as a fraction of Mr. Fantastic's stretchPunchDamage.")
+        THORN_BURST_DAMAGE_MULTIPLIER = builder.comment("Thorn Burst damage as a fraction of Groot's abilityDamage.")
                 .defineInRange("thornBurstDamageMultiplier", 0.5D, 0.0D, 10.0D);
         THORN_BURST_KNOCKBACK = builder.comment("Horizontal speed Thorn Burst throws ordinary mobs away at.")
                 .defineInRange("thornBurstKnockback", 1.2D, 0.0D, 4.0D);
@@ -112,8 +115,8 @@ public final class GrootConfig {
                 .defineInRange("skewerMaxTargets", 5, 1, 20);
         SKEWER_PIN_TICKS = builder.comment("How long ordinary mobs stay pinned before Skewer drags them in.")
                 .defineInRange("skewerPinTicks", 30, 1, 200);
-        SKEWER_DAMAGE_MULTIPLIER = builder.comment("Skewer damage per creature as a fraction of Mr. Fantastic's stretchPunchDamage.")
-                .defineInRange("skewerDamageMultiplier", 0.6D, 0.0D, 10.0D);
+        SKEWER_DAMAGE_MULTIPLIER = builder.comment("Skewer damage per creature as a fraction of Groot's abilityDamage.")
+                .defineInRange("skewerDamageMultiplier", 1.2D, 0.0D, 10.0D);
         SKEWER_COOLDOWN = builder.comment("Cooldown of Skewer after it hits something.")
                 .defineInRange("skewerCooldownSeconds", 12.0D, 0.0D, 600.0D);
         SKEWER_MISS_COOLDOWN = builder.comment("Cooldown of Skewer when it hits nothing.")
@@ -132,7 +135,7 @@ public final class GrootConfig {
                 .defineInRange("trunkSurgeHeight", 4, 1, 12);
         TRUNK_SECONDS = builder.comment("How long Trunk Surge logs stay before they revert.")
                 .defineInRange("trunkSurgeSeconds", 10, 1, 120);
-        TRUNK_DAMAGE_MULTIPLIER = builder.comment("Trunk Surge damage as a fraction of Mr. Fantastic's stretchPunchDamage.")
+        TRUNK_DAMAGE_MULTIPLIER = builder.comment("Trunk Surge damage as a fraction of Groot's abilityDamage.")
                 .defineInRange("trunkSurgeDamageMultiplier", 0.4D, 0.0D, 10.0D);
         TRUNK_LAUNCH = builder.comment("Upward speed Trunk Surge launches ordinary mobs with.")
                 .defineInRange("trunkSurgeLaunch", 1.1D, 0.0D, 4.0D);
@@ -174,7 +177,7 @@ public final class GrootConfig {
                 .defineInRange("photosynthesisHeal", 1.0D, 0.0D, 100.0D);
         FIRE_DAMAGE_MULTIPLIER = builder.comment("Multiplier on fire damage Groot takes. 1.0 turns the weakness off.")
                 .defineInRange("fireDamageMultiplier", 1.5D, 0.0D, 10.0D);
-        ROGUE_DAMAGE_MULTIPLIER = builder.comment("Rogue's borrowed Skewer damage per creature as a fraction of Mr. Fantastic's stretchPunchDamage, before her memory multiplier.")
+        ROGUE_DAMAGE_MULTIPLIER = builder.comment("Rogue's borrowed Skewer damage per creature as a fraction of Groot's abilityDamage, before her memory multiplier.")
                 .defineInRange("rogueSkewerDamageMultiplier", 0.6D, 0.0D, 10.0D);
         builder.pop();
     }

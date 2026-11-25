@@ -32,15 +32,15 @@ public final class StormWind {
                 SoundEvents.WIND_CHARGE_BURST);
     }
 
-    public static void gale(ServerPlayer player, Vec3 origin, Vec3 look) {
-        ServerLevel level = player.serverLevel();
+    public static void gale(LivingEntity player, Vec3 origin, Vec3 look) {
+        ServerLevel level = (ServerLevel) player.level();
         if (ModCompat.ANTARCHY) {
             AntarchyWindVortex.gale(level, origin, look, player);
             return;
         }
         Vec3 direction = look.normalize();
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(GALE_RANGE),
-                entity -> entity != player && entity.isAlive() && !entity.isSpectator())) {
+                entity -> entity != player && entity.isAlive() && !entity.isSpectator() && (HeroCaster.isPlayer(player) || HeroCaster.foe(player, entity)))) {
             Vec3 offset = target.position().add(0.0D, target.getBbHeight() * 0.5D, 0.0D).subtract(origin);
             double distance = offset.length();
             if (distance > GALE_RANGE || distance < 1.0E-4D || offset.normalize().dot(direction) < GALE_CONE) {

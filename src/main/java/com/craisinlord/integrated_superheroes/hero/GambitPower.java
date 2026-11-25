@@ -52,11 +52,12 @@ public final class GambitPower {
     public static final String ID = "kinetic_charge_remy_lebeau";
     public static final HeroPower.Toggle CHARGED_AMMO = new HeroPower.Toggle("integrated_superheroes_off_charged_ammo", "Charged Ammo", () -> Items.AMETHYST_SHARD);
     private static final String CHARGED_TAG = "integrated_superheroes_kinetic_ammo";
-    private static final Map<UUID, ChargedAmmo> AMMO = new HashMap<>();
-    private static final Map<UUID, Mark> ENTITY_MARKS = new HashMap<>();
-    private static final Map<BlockKey, Mark> BLOCK_MARKS = new HashMap<>();
-    private static final Map<UUID, Vault> VAULTS = new HashMap<>();
-    private static final List<PendingCard> PENDING = new ArrayList<>();
+    private static final Map<UUID, ChargedAmmo> AMMO = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Mark> ENTITY_MARKS = ServerState.map(new HashMap<>());
+    private static final Map<BlockKey, Mark> BLOCK_MARKS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Vault> VAULTS = ServerState.map(new HashMap<>());
+    private static final List<PendingCard> PENDING = ServerState.all(new ArrayList<>());
+    private static boolean registered;
 
     private GambitPower() {
     }
@@ -77,6 +78,11 @@ public final class GambitPower {
     }
 
     public static HeroPower create(Supplier<Item> syringe) {
+        if (!registered) {
+            registered = true;
+            HeroCaster.onTick(GambitPower::tickVault);
+            HeroCaster.onCleanup(caster -> VAULTS.remove(caster.getUUID()));
+        }
         return new HeroPower(
                 ID,
                 "Kinetic Charge (Remy LeBeau)",
@@ -84,11 +90,11 @@ public final class GambitPower {
                 MarvelBalanceConfig.GAMBIT,
                 List.of("agility"),
                 List.of(
-                        new HeroPower.Ability("kinetic_throw", "Kinetic Throw", GambitPower::kineticThrow),
-                        new HeroPower.Ability("card_fan", "Card Fan", GambitPower::cardFan),
-                        new HeroPower.Ability("charge_touch", "Charge Touch", GambitPower::chargeTouch),
-                        new HeroPower.Ability("bo_vault", "Bo Vault", GambitPower::boVault),
-                        new HeroPower.Ability("full_house", "Full House", GambitPower::fullHouse),
+                        HeroPower.Ability.of("kinetic_throw", "Kinetic Throw", GambitPower::kineticThrow),
+                        HeroPower.Ability.of("card_fan", "Card Fan", GambitPower::cardFan),
+                        HeroPower.Ability.of("charge_touch", "Charge Touch", GambitPower::chargeTouch),
+                        HeroPower.Ability.of("bo_vault", "Bo Vault", GambitPower::boVault),
+                        HeroPower.Ability.of("full_house", "Full House", GambitPower::fullHouse),
                         HeroToggles.WHEEL
                 ),
                 List.of(CHARGED_AMMO),
@@ -141,12 +147,18 @@ public final class GambitPower {
                 && ID.equals(HeroPowers.data(player).getPrimaryPower());
     }
 
-    private static boolean hostile(ServerPlayer player, LivingEntity entity) {
+    private static boolean hostile(LivingEntity player, LivingEntity entity) {
+        if (!(player instanceof ServerPlayer)) {
+            return HeroCaster.foe(player, entity);
+        }
         return KineticBurst.affects(player, entity) && (entity instanceof Enemy || entity instanceof Mob mob && mob.getTarget() == player
                 || entity instanceof Player);
     }
 
-    private static ItemStack takeThrowable(ServerPlayer player, InteractionHand hand, int amount) {
+    private static ItemStack takeThrowable(LivingEntity caster, InteractionHand hand, int amount) {
+        if (!(caster instanceof ServerPlayer player)) {
+            return ItemStack.EMPTY;
+        }
         ItemStack held = player.getItemInHand(hand);
         if (!GambitItems.throwable(held)) {
             return ItemStack.EMPTY;
@@ -157,7 +169,7 @@ public final class GambitPower {
         return held.split(amount);
     }
 
-    private static KineticCharge throwItem(ServerPlayer player, ItemStack stack, Vec3 direction, float baseDamage, float baseRadius, double speedScale) {
+    private static KineticCharge throwItem(LivingEntity player, ItemStack stack, Vec3 direction, float baseDamage, float baseRadius, double speedScale) {
         GambitItems.Profile profile = GambitItems.profile(stack, baseDamage, baseRadius);
         float impact = MarvelBalanceConfig.KINETIC_IMPACT_DAMAGE.get().floatValue();
         double attack = attackDamage(stack);
@@ -167,13 +179,13 @@ public final class GambitPower {
         if (profile.has(GambitItems.PHANTOM)) {
             impact *= MarvelBalanceConfig.PHANTOM_CARD_MULTIPLIER.get().floatValue();
         }
-        boolean dropBack = profile.has(GambitItems.RETURNING) && !player.getAbilities().instabuild;
+        boolean dropBack = profile.has(GambitItems.RETURNING) && player instanceof Player user && !user.getAbilities().instabuild;
         KineticCharge charge = KineticCharge.create(player, stack, profile, impact, dropBack);
         Vec3 eye = player.getEyePosition();
         charge.setPos(eye.x + direction.x * 0.4D, eye.y - 0.15D + direction.y * 0.4D, eye.z + direction.z * 0.4D);
         double speed = MarvelBalanceConfig.KINETIC_THROW_SPEED.get() * profile.speed() * speedScale;
         charge.shoot(direction.x, direction.y, direction.z, (float) speed, profile.has(GambitItems.CARD) ? 0.0F : 0.5F);
-        player.serverLevel().addFreshEntity(charge);
+        HeroCaster.level(player).addFreshEntity(charge);
         return charge;
     }
 
@@ -192,7 +204,7 @@ public final class GambitPower {
         return attack;
     }
 
-    private static double kineticThrow(ServerPlayer player, int slot) {
+    private static double kineticThrow(LivingEntity player, int slot) {
         ItemStack stack = takeThrowable(player, InteractionHand.MAIN_HAND, 1);
         if (stack.isEmpty() && player.getMainHandItem().isEmpty()) {
             stack = takeThrowable(player, InteractionHand.OFF_HAND, 1);
@@ -205,11 +217,11 @@ public final class GambitPower {
         return MarvelBalanceConfig.KINETIC_THROW_COOLDOWN.get();
     }
 
-    private static double cardFan(ServerPlayer player, int slot) {
+    private static double cardFan(LivingEntity player, int slot) {
         int count = MarvelBalanceConfig.CARD_FAN_COUNT.get();
         float spread = MarvelBalanceConfig.CARD_FAN_SPREAD.get().floatValue();
         ItemStack held = player.getMainHandItem();
-        boolean useHeld = GambitItems.throwable(held) && !held.is(GambitItems.RETURNS);
+        boolean useHeld = player instanceof ServerPlayer && GambitItems.throwable(held) && !held.is(GambitItems.RETURNS);
         float damage = MarvelBalanceConfig.KINETIC_DAMAGE.get().floatValue() * 0.6F;
         float radius = MarvelBalanceConfig.KINETIC_RADIUS.get().floatValue() * 0.8F;
         for (int i = 0; i < count; i++) {
@@ -224,8 +236,8 @@ public final class GambitPower {
         return MarvelBalanceConfig.CARD_FAN_COOLDOWN.get();
     }
 
-    private static double chargeTouch(ServerPlayer player, int slot) {
-        ServerLevel level = player.serverLevel();
+    private static double chargeTouch(LivingEntity player, int slot) {
+        ServerLevel level = HeroCaster.level(player);
         double range = MarvelBalanceConfig.CHARGE_TOUCH_RANGE.get();
         Vec3 eye = player.getEyePosition();
         Vec3 end = eye.add(player.getLookAngle().scale(range));
@@ -239,11 +251,11 @@ public final class GambitPower {
             ENTITY_MARKS.put(target.getUUID(), new Mark(level.dimension(), player.getUUID(), detonateAt));
             target.addEffect(new MobEffectInstance(MobEffects.GLOWING, MarvelBalanceConfig.CHARGE_TOUCH_FUSE_TICKS.get() + 5, 0), player);
             HeroAbilities.particleLine(level, eye.subtract(0.0D, 0.3D, 0.0D), target.getBoundingBox().getCenter(), HeroAbilities.emissive(KineticBurst.PURPLE, 0.8F), 0.4D);
-        } else if (blockHit.getType() == HitResult.Type.BLOCK && !level.getBlockState(blockHit.getBlockPos()).isAir()) {
+        } else if (player instanceof ServerPlayer && blockHit.getType() == HitResult.Type.BLOCK && !level.getBlockState(blockHit.getBlockPos()).isAir()) {
             BLOCK_MARKS.put(new BlockKey(level.dimension(), blockHit.getBlockPos().immutable()), new Mark(level.dimension(), player.getUUID(), detonateAt));
             HeroAbilities.particleLine(level, eye.subtract(0.0D, 0.3D, 0.0D), blockHit.getLocation(), HeroAbilities.emissive(KineticBurst.PURPLE, 0.8F), 0.4D);
         } else {
-            player.displayClientMessage(Component.literal("§7Nothing to charge."), true);
+            HeroCaster.message(player, Component.literal("§7Nothing to charge."));
             return 0.5D;
         }
         HeroFx.play(player, SoundEvents.AMETHYST_BLOCK_CHIME, 1.5F, 0.8F);
@@ -252,12 +264,20 @@ public final class GambitPower {
         return MarvelBalanceConfig.CHARGE_TOUCH_COOLDOWN.get();
     }
 
-    private static void detonateMark(ServerLevel level, Vec3 at, ServerPlayer owner) {
+    private static LivingEntity owner(MinecraftServer server, ServerLevel level, UUID id) {
+        ServerPlayer player = server.getPlayerList().getPlayer(id);
+        if (player != null) {
+            return player;
+        }
+        return level != null && level.getEntity(id) instanceof Mob mob && mob.isAlive() ? mob : null;
+    }
+
+    private static void detonateMark(ServerLevel level, Vec3 at, LivingEntity owner) {
         KineticBurst.burst(level, at, null, owner, MarvelBalanceConfig.CHARGE_TOUCH_DAMAGE.get().floatValue(),
                 MarvelBalanceConfig.CHARGE_TOUCH_RADIUS.get().floatValue(), 0, ItemStack.EMPTY);
     }
 
-    private static double boVault(ServerPlayer player, int slot) {
+    private static double boVault(LivingEntity player, int slot) {
         boolean staff = GambitItems.isStaff(player.getMainHandItem()) || GambitItems.isStaff(player.getOffhandItem());
         double multiplier = staff ? MarvelBalanceConfig.VAULT_STAFF_MULTIPLIER.get() : 1.0D;
         Vec3 look = player.getLookAngle();
@@ -267,19 +287,19 @@ public final class GambitPower {
         player.hurtMarked = true;
         player.fallDistance = 0.0F;
         VAULTS.put(player.getUUID(), new Vault(staff, 0));
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         KineticBurst.burst(level, player.position().add(0.0D, 0.1D, 0.0D), null, player, MarvelBalanceConfig.KINETIC_DAMAGE.get().floatValue() * 0.4F, 1.5F, 0, ItemStack.EMPTY, false);
         HeroFx.play(player, SoundEvents.PLAYER_ATTACK_SWEEP, 1.0F, 0.8F);
         HeroAnimations.play(player, "flip_low_2");
         return MarvelBalanceConfig.VAULT_COOLDOWN.get();
     }
 
-    private static void tickVault(ServerPlayer player) {
+    private static void tickVault(LivingEntity player) {
         Vault vault = VAULTS.get(player.getUUID());
         if (vault == null) {
             return;
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         if (vault.ticks() < 20) {
             KineticBurst.trail(level, player.position().add(0.0D, 0.6D, 0.0D), 2);
         }
@@ -298,15 +318,15 @@ public final class GambitPower {
         }
     }
 
-    private static double fullHouse(ServerPlayer player, int slot) {
-        ServerLevel level = player.serverLevel();
+    private static double fullHouse(LivingEntity player, int slot) {
+        ServerLevel level = HeroCaster.level(player);
         List<LivingEntity> targets = HeroAbilities.cone(player, MarvelBalanceConfig.FULL_HOUSE_RANGE.get(), 35.0D).stream()
                 .filter(entity -> hostile(player, entity))
                 .sorted(Comparator.comparingDouble(entity -> entity.distanceToSqr(player)))
                 .limit(MarvelBalanceConfig.FULL_HOUSE_TARGETS.get())
                 .toList();
         if (targets.isEmpty()) {
-            player.displayClientMessage(Component.literal("§7No one to deal in."), true);
+            HeroCaster.message(player, Component.literal("§7No one to deal in."));
             return 1.0D;
         }
         long now = level.getGameTime();
@@ -318,16 +338,16 @@ public final class GambitPower {
                     12, 0.3D, 0.1D, 0.3D, 0.0D);
             PENDING.add(new PendingCard(player.getUUID(), target.getUUID(), now + 6 + i * 4L));
         }
-        player.displayClientMessage(Component.literal("§5Full House."), true);
+        HeroCaster.message(player, Component.literal("§5Full House."));
         HeroFx.play(player, SoundEvents.BOOK_PAGE_TURN, 1.5F, 0.8F);
         HeroFx.play(player, SoundEvents.EVOKER_PREPARE_ATTACK, 0.8F, 1.6F);
         return MarvelBalanceConfig.FULL_HOUSE_COOLDOWN.get();
     }
 
-    private static void chargeFx(ServerPlayer player) {
+    private static void chargeFx(LivingEntity player) {
         Vec3 hand = player.getEyePosition().add(player.getLookAngle().scale(0.6D)).subtract(0.0D, 0.25D, 0.0D);
-        player.serverLevel().sendParticles(HeroAbilities.emissive(KineticBurst.PURPLE, 0.9F), hand.x, hand.y, hand.z, 8, 0.1D, 0.1D, 0.1D, 0.0D);
-        player.serverLevel().sendParticles((HeroFx.thematic() ? HeroFx.particle("thematic:shock_particle", ParticleTypes.ELECTRIC_SPARK) : ParticleTypes.ELECTRIC_SPARK), hand.x, hand.y, hand.z, 4, 0.1D, 0.1D, 0.1D, 0.05D);
+        HeroCaster.level(player).sendParticles(HeroAbilities.emissive(KineticBurst.PURPLE, 0.9F), hand.x, hand.y, hand.z, 8, 0.1D, 0.1D, 0.1D, 0.0D);
+        HeroCaster.level(player).sendParticles((HeroFx.thematic() ? HeroFx.particle("thematic:shock_particle", ParticleTypes.ELECTRIC_SPARK) : ParticleTypes.ELECTRIC_SPARK), hand.x, hand.y, hand.z, 4, 0.1D, 0.1D, 0.1D, 0.05D);
         HeroFx.play(player, SoundEvents.AMETHYST_BLOCK_CHIME, 0.8F, 1.6F);
     }
 
@@ -344,8 +364,16 @@ public final class GambitPower {
                 }
             }
             for (PendingCard card : due) {
-                ServerPlayer player = server.getPlayerList().getPlayer(card.owner());
-                if (player == null || !(player.serverLevel().getEntity(card.target()) instanceof LivingEntity target) || !target.isAlive()) {
+                LivingEntity player = server.getPlayerList().getPlayer(card.owner());
+                if (player == null) {
+                    for (ServerLevel candidate : server.getAllLevels()) {
+                        if (candidate.getEntity(card.owner()) instanceof Mob mob && mob.isAlive()) {
+                            player = mob;
+                            break;
+                        }
+                    }
+                }
+                if (player == null || !(HeroCaster.level(player).getEntity(card.target()) instanceof LivingEntity target) || !target.isAlive()) {
                     continue;
                 }
                 Vec3 direction = target.getBoundingBox().getCenter().subtract(player.getEyePosition()).normalize().add(0.0D, 0.15D, 0.0D).normalize();
@@ -369,7 +397,7 @@ public final class GambitPower {
                 Vec3 center = entity.getBoundingBox().getCenter();
                 if (now >= mark.detonateAt() || !entity.isAlive()) {
                     iterator.remove();
-                    detonateMark(level, center, server.getPlayerList().getPlayer(mark.owner()));
+                    detonateMark(level, center, owner(server, level, mark.owner()));
                     continue;
                 }
                 crackle(level, center, entity.getBbWidth() * 0.6D, entity.getBbHeight() * 0.5D, mark.detonateAt() - now);

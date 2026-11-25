@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.villain;
 
+import com.craisinlord.integrated_superheroes.hero.ServerState;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -31,12 +32,12 @@ import java.util.function.Predicate;
 
 public final class VillainWorld {
     private static final ResourceLocation STUCK_JUMP = ResourceLocation.fromNamespaceAndPath(IntegratedSuperheroes.MODID, "villain_adhesive_jump");
-    private static final Map<ResourceKey<Level>, List<Delayed>> DELAYED = new HashMap<>();
-    private static final Map<ResourceKey<Level>, List<Hazard>> HAZARDS = new HashMap<>();
-    private static final Map<UUID, Long> SUPPRESSED = new HashMap<>();
-    private static final Map<UUID, Long> GROUNDED = new HashMap<>();
-    private static final Map<UUID, Long> STUCK = new HashMap<>();
-    private static final List<ShieldReturn> SHIELDS = new ArrayList<>();
+    private static final Map<ResourceKey<Level>, List<Delayed>> DELAYED = ServerState.map(new HashMap<>());
+    private static final Map<ResourceKey<Level>, List<Hazard>> HAZARDS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> SUPPRESSED = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> GROUNDED = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> STUCK = ServerState.map(new HashMap<>());
+    private static final List<ShieldReturn> SHIELDS = ServerState.all(new ArrayList<>());
 
     private VillainWorld() {
     }
@@ -90,14 +91,25 @@ public final class VillainWorld {
                 }
             }
             for (Delayed entry : due) {
-                entry.action().run();
+                try {
+                    entry.action().run();
+                } catch (RuntimeException error) {
+                    failed(error);
+                }
             }
         }
         List<Hazard> hazards = HAZARDS.get(level.dimension());
         if (hazards != null && !hazards.isEmpty()) {
             List<Hazard> copy = new ArrayList<>(hazards);
             for (Hazard hazard : copy) {
-                if (!hazard.tick(level, now)) {
+                boolean keep;
+                try {
+                    keep = hazard.tick(level, now);
+                } catch (RuntimeException error) {
+                    failed(error);
+                    keep = false;
+                }
+                if (!keep) {
                     hazards.remove(hazard);
                 }
             }
@@ -106,6 +118,10 @@ public final class VillainWorld {
         if (now % 5L == 0L) {
             releaseStuck(level, now);
         }
+    }
+
+    private static void failed(RuntimeException error) {
+        IntegratedSuperheroes.LOGGER.error("A delayed villain or variant move failed", error);
     }
 
     private static void tickShields(ServerLevel level, long now) {

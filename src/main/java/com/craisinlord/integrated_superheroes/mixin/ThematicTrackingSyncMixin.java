@@ -3,6 +3,7 @@ package com.craisinlord.integrated_superheroes.mixin;
 import bond.thematic.api.component.core.SyncRecipient;
 import bond.thematic.api.content.entity.body.OwnerCopyEntity;
 import bond.thematic.api.util.ThematicHelper;
+import com.craisinlord.integrated_superheroes.compat.thematic.ThematicIdle;
 import com.craisinlord.integrated_superheroes.compat.thematic.ThematicOptions;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,7 +24,7 @@ public abstract class ThematicTrackingSyncMixin {
         if ("thematic".equals(BuiltInRegistries.ENTITY_TYPE.getKey(living.getType()).getNamespace())) {
             return;
         }
-        if (ThematicHelper.getArmor(living) == null) {
+        if (ThematicHelper.getArmor(living) == null && ThematicIdle.noStoredState(living)) {
             ci.cancel();
         }
     }

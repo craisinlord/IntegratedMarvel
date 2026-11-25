@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.hero;
 
+import com.craisinlord.integrated_superheroes.compat.thematic.ThematicFixes;
 import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import com.craisinlord.integrated_superheroes.compat.ViltrumiteBridge;
 import com.craisinlord.integrated_superheroes.compat.ViltrumiteCompat;
@@ -61,7 +62,7 @@ public final class HeroFlight {
             if (flight != null && !flight.hasModifier(id)) {
                 flight.addTransientModifier(new AttributeModifier(id, 1.0D, AttributeModifier.Operation.ADD_VALUE));
             }
-            if (player.getAbilities().getFlyingSpeed() != speed) {
+            if (player.getAbilities().getFlyingSpeed() != speed && !(ModCompat.THEMATIC && ThematicFixes.ownsAbilities(player))) {
                 player.getAbilities().setFlyingSpeed(speed);
                 player.onUpdateAbilities();
             }

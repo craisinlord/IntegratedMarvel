@@ -41,7 +41,7 @@ public final class JuggernautConfig {
 
     static void define(ModConfigSpec.Builder builder) {
         builder.push("juggernaut");
-        JUGGERNAUT = new MarvelBalanceConfig.HeroStats(builder, 70.0D, 18.0D, 2.0D, 0.5D, 0.0D, 65.0D, 1,
+        JUGGERNAUT = new MarvelBalanceConfig.HeroStats(builder, 74.0D, 7.0D, 2.0D, 0.5D, 0.0D, 65.0D, 1,
                 List.of("minecraft:generic.scale;0.25;ADD_MULTIPLIED_BASE", "minecraft:generic.armor_toughness;8.0;ADD_VALUE",
                         "minecraft:generic.knockback_resistance;0.5;ADD_VALUE", "minecraft:generic.safe_fall_distance;10.0;ADD_VALUE"));
         CHARGE_MAX_SPEED = builder.comment("Top speed of Unstoppable Charge in blocks per tick.")
@@ -57,10 +57,10 @@ public final class JuggernautConfig {
         CHARGE_MIN_DAMAGE_MULTIPLIER = builder.comment("Charge damage at zero momentum, as a multiple of Colossus' steelChargeDamage.")
                 .defineInRange("chargeMinDamageMultiplier", 0.5D, 0.0D, 10.0D);
         CHARGE_MAX_DAMAGE_MULTIPLIER = builder.comment("Charge damage at full momentum, as a multiple of Colossus' steelChargeDamage.")
-                .defineInRange("chargeMaxDamageMultiplier", 1.25D, 0.0D, 10.0D);
+                .defineInRange("chargeMaxDamageMultiplier", 1.8D, 0.0D, 10.0D);
         CHARGE_MAX_TARGETS_PER_TICK = builder.defineInRange("chargeMaxTargetsPerTick", 6, 1, 64);
         CHARGE_MAX_DAMAGE_PER_CAST = builder.comment("Total damage one charge can deal across every creature it hits.")
-                .defineInRange("chargeMaxDamagePerCharge", 400.0D, 0.0D, 100000.0D);
+                .defineInRange("chargeMaxDamagePerCharge", 600.0D, 0.0D, 100000.0D);
         CHARGE_KNOCKBACK = builder.defineInRange("chargeKnockback", 1.6D, 0.0D, 10.0D);
         CHARGE_COOLDOWN = builder.comment("Cooldown after a charge ends.")
                 .defineInRange("chargeCooldownSeconds", 10.0D, 0.0D, 600.0D);

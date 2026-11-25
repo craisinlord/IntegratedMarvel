@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.compat.thematic;
 
+import com.craisinlord.integrated_superheroes.hero.ServerState;
 import bond.thematic.api.content.ability.state.NumberSpec;
 import bond.thematic.api.content.action.ActionContext;
 import bond.thematic.api.content.action.Actions;
@@ -44,7 +45,7 @@ public final class BatmanActions {
     public static final String GEL_FLAG = "bat_gel_blew";
     private static final ResourceLocation GEL_BLOB = ResourceLocation.fromNamespaceAndPath("thematic", "bat_gel_blob");
     private static final ResourceLocation DETONATION = ResourceLocation.fromNamespaceAndPath("thematic", "major_detonation");
-    private static final Map<UUID, LinkedHashMap<UUID, Scan>> SCANS = new HashMap<>();
+    private static final Map<UUID, LinkedHashMap<UUID, Scan>> SCANS = ServerState.map(new HashMap<>());
     private static boolean registered;
 
     private BatmanActions() {

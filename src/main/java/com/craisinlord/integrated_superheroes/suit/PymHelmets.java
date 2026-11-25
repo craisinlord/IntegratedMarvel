@@ -4,6 +4,7 @@ import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 public final class PymHelmets {
@@ -15,7 +16,15 @@ public final class PymHelmets {
     private PymHelmets() {
     }
 
+    public static Kind of(LivingEntity caster) {
+        return caster instanceof Player player ? kind(player) : worn(caster);
+    }
+
     public static Kind kind(Player player) {
+        return worn(player);
+    }
+
+    private static Kind worn(LivingEntity player) {
         if (!ModCompat.ANTARCHY || player.isSpectator()) {
             return null;
         }

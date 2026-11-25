@@ -45,7 +45,7 @@ public final class JeanGreyConfig {
 
     static void define(ModConfigSpec.Builder builder) {
         builder.push("jeanGrey");
-        STATS = new MarvelBalanceConfig.HeroStats(builder, 40.0D, 12.0D, 0.2D, 0.0D, 0.0D, 3.0D, 0, List.of());
+        STATS = new MarvelBalanceConfig.HeroStats(builder, 42.0D, 5.0D, 0.2D, 0.0D, 0.0D, 3.0D, 0, List.of());
         FLY_SPEED = builder.comment("Flying speed while Levitation is on.")
                 .defineInRange("levitationFlySpeed", 0.045D, 0.01D, 1.0D);
         GRAB_RANGE = builder.comment("How far away Telekinetic Grab can reach a creature.")
@@ -74,7 +74,7 @@ public final class JeanGreyConfig {
         CRUSH_MULTIPLIER = builder.comment("Damage each held hostile takes every second, as a fraction of Magneto's magneticGripThrowDamage. Doubled while the Phoenix burns.")
                 .defineInRange("crushDamageMultiplier", 0.1D, 0.0D, 10.0D);
         builder.push("phoenix");
-        PHOENIX_STATS = new MarvelBalanceConfig.HeroStats(builder, 85.0D, 22.0D, 1.0D, 0.5D, 0.02D, 60.0D, 1, List.of());
+        PHOENIX_STATS = new MarvelBalanceConfig.HeroStats(builder, 89.0D, 9.0D, 1.0D, 0.5D, 0.02D, 60.0D, 1, List.of());
         DAMAGE_DEALT_PER_PERCENT = builder.comment("Damage you deal for each 1% of the Phoenix meter.")
                 .defineInRange("damageDealtPerPercent", 6.0D, 0.01D, 10000.0D);
         DAMAGE_TAKEN_PER_PERCENT = builder.comment("Damage you take for each 1% of the Phoenix meter.")

@@ -69,12 +69,12 @@ You have **10 ability slots**, shown in a list at the bottom right with each key
 
 ### Deadpool
 
-- **Healing factor:** you regenerate quickly. Dying knocks you down for a few seconds instead of killing you, up
-  to 3 times; the charges come back over time. Click **"Nah."** to get up early.
+- **Healing factor:** you regenerate quickly. Dying knocks you down for a few seconds instead of killing you,
+  once every 5 minutes. Click **"Nah."** to get up early.
 - **Read the Script:** dodges the first hit from a mob that just targeted you.
 - **Guns:** +25% damage with guns.
 - **Narration:** fourth-wall captions comment on what you're doing.
-- **Unload:** an auto-aimed volley of shots. Needs a gun.
+- **Unload:** an auto-aimed volley from the gun you're holding. Needs a gun.
 - **Pull the Pin:** throws a grenade. There's a small chance you fumble it at your own feet.
 - **Retcon:** rewinds your position and health by 5 seconds.
 - **Fourth Wall (wheel):**
@@ -84,8 +84,8 @@ You have **10 ability slots**, shown in a list at the bottom right with each key
 
 ### Wolverine and Spider-Man
 
-Their abilities come from Marvel Legacy. Wolverine also gets a healing factor with 2 knock-downs instead of
-deaths, and claw damage scaling.
+Their abilities come from Marvel Legacy. Wolverine also gets a healing factor with a knock-down instead of
+a death once every 5 minutes, and claw damage scaling.
 
 ### Quicksilver
 
@@ -183,7 +183,7 @@ deaths, and claw damage scaling.
 
 ### Kitty Pryde
 
-- **Phase (toggle):** walk through walls and take no damage, while a meter drains. You can't attack while phased,
+- **Phase (toggle):** walk through walls and take 55% less damage, while a meter drains. You can't attack while phased,
   and mobs can't see you. When the meter runs out you're pushed back to safe ground.
 - **Blocks you can't phase through:** anything tagged `integrated_superheroes:phase_blocking`.
 - **Phase Strike:** an attack that ends your phase.

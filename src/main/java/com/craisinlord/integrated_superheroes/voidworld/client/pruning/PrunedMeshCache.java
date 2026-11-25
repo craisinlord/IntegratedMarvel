@@ -54,7 +54,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public final class PrunedMeshCache {
-    private static final int CAPACITY = 16;
+    private static final int CAPACITY = 32;
     private static final long IDLE_MILLIS = 5000L;
     private static final int UV2 = DefaultVertexFormat.BLOCK.getElementAttributeNames().indexOf("UV2");
     private static final Map<UUID, Mesh> CACHE = new LinkedHashMap<>(CAPACITY, 0.75F, true);

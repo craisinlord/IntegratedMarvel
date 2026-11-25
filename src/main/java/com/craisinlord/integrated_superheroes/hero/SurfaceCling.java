@@ -34,11 +34,11 @@ public final class SurfaceCling {
     private static final int KICK_REPEAT_TICKS = 40;
     private static final double KICK_REPEAT_DISTANCE = 1.5D;
     private static final List<Source> SOURCES = new CopyOnWriteArrayList<>();
-    private static final Map<UUID, Hold> HOLDS = new HashMap<>();
-    private static final Map<UUID, Long> LAST_CLING = new HashMap<>();
-    private static final Map<UUID, Long> RELEASED = new HashMap<>();
-    private static final Map<UUID, Boolean> LOCAL_HOLD = new HashMap<>();
-    private static final Map<UUID, Kick> LAST_KICK = new HashMap<>();
+    private static final Map<UUID, Hold> HOLDS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> LAST_CLING = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> RELEASED = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Boolean> LOCAL_HOLD = ClientState.map(new HashMap<>());
+    private static final Map<UUID, Kick> LAST_KICK = ClientState.map(new HashMap<>());
     private static boolean listening;
 
     public record Style(DoubleSupplier lateral, double slide, String animation, String grabSound, boolean wallKick) {

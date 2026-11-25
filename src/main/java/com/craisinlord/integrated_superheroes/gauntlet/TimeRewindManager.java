@@ -45,6 +45,9 @@ public final class TimeRewindManager {
     private static final Map<UUID, Long> RECORDERS = new ConcurrentHashMap<>();
     private static final Deque<BlockChange> BLOCKS = new ArrayDeque<>();
     private static final Deque<Death> DEATHS = new ArrayDeque<>();
+    private static final int MAX_DEATHS_PER_TICK = 8;
+    private static long deathTick;
+    private static int deathsThisTick;
     private static final List<Playback> PLAYBACKS = new ArrayList<>();
     private static final Set<UUID> REWINDING = ConcurrentHashMap.newKeySet();
     private static final Map<UUID, Long> LOOP_READY = new ConcurrentHashMap<>();
@@ -161,6 +164,12 @@ public final class TimeRewindManager {
     public static void onDeath(LivingDeathEvent event) {
         LivingEntity entity = event.getEntity();
         if (entity instanceof Player || !(entity.level() instanceof ServerLevel level) || !recorded(level, entity.position())) return;
+        long gameTime = level.getServer().overworld().getGameTime();
+        if (gameTime != deathTick) {
+            deathTick = gameTime;
+            deathsThisTick = 0;
+        }
+        if (++deathsThisTick > MAX_DEATHS_PER_TICK) return;
         CompoundTag snapshot = SnapStone.rewindSnapshot();
         CompoundTag tag;
         if (snapshot != null) {

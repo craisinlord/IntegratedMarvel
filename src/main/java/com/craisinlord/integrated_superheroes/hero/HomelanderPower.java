@@ -51,8 +51,8 @@ public final class HomelanderPower {
     private static final int LASER_COLOR = 0xE01818;
     private static final int THEMATIC_LASER = 0xFF0000;
     private static final int INTIMIDATE_WAVE = 0x80E01818;
-    private static final Map<UUID, Map<Integer, Long>> FLEEING = new HashMap<>();
-    private static final Map<UUID, Long> MILK = new HashMap<>();
+    private static final Map<UUID, Map<Integer, Long>> FLEEING = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> MILK = ServerState.map(new HashMap<>());
     private static boolean registered;
 
     private HomelanderPower() {
@@ -63,6 +63,8 @@ public final class HomelanderPower {
             registered = true;
             NeoForge.EVENT_BUS.addListener(HomelanderPower::onEffectRemoved);
             NeoForge.EVENT_BUS.addListener(HomelanderPower::onFinishUsing);
+            HeroCaster.onTick(HomelanderPower::tickFleeing);
+            HeroCaster.onCleanup(caster -> FLEEING.remove(caster.getUUID()));
             SerumCostumes.register(ID, "thematic:homelander");
         }
         return new HeroPower(
@@ -72,9 +74,9 @@ public final class HomelanderPower {
                 NewSerumConfig.HOMELANDER,
                 List.of(),
                 List.of(
-                        new HeroPower.Ability("laser_sweep", "Laser Sweep", HomelanderPower::laserSweep),
-                        new HeroPower.Ability("intimidate", "Intimidate", HomelanderPower::intimidate),
-                        new HeroPower.Ability("grab_and_throw", "Grab and Throw", HomelanderPower::grabAndThrow),
+                        HeroPower.Ability.of("laser_sweep", "Laser Sweep", HomelanderPower::laserSweep),
+                        HeroPower.Ability.of("intimidate", "Intimidate", HomelanderPower::intimidate),
+                        HeroPower.Ability.of("grab_and_throw", "Grab and Throw", HomelanderPower::grabAndThrow),
                         HeroToggles.WHEEL
                 ),
                 HeroToggles.flying(SUPER_HEARING),
@@ -116,9 +118,9 @@ public final class HomelanderPower {
         return SerumKit.is(player, ID);
     }
 
-    private static double laserSweep(ServerPlayer player, int slot) {
-        ServerLevel level = player.serverLevel();
-        boolean griefing = level.getGameRules().getBoolean(MarvelGameRules.RULE_SUPERPOWERGRIEFING);
+    private static double laserSweep(LivingEntity player, int slot) {
+        ServerLevel level = HeroCaster.level(player);
+        boolean griefing = HeroCaster.griefs(player) && level.getGameRules().getBoolean(MarvelGameRules.RULE_SUPERPOWERGRIEFING);
         double terrain = griefing ? NewSerumConfig.LASER_SWEEP_TERRAIN_RADIUS.get() : 0.0D;
         BeamSettings settings = HeroBeams.settings(NewSerumConfig.LASER_SWEEP_RANGE.get(), NewSerumConfig.LASER_SWEEP_DURATION_TICKS.get(),
                 0.8F, 1.6F, NewSerumConfig.LASER_SWEEP_DAMAGE.get(), 0.3F, 2, terrain, 0.0D,
@@ -149,8 +151,8 @@ public final class HomelanderPower {
         NeoForge.EVENT_BUS.post(new HeroSensesEvent(player, radius));
     }
 
-    private static double intimidate(ServerPlayer player, int slot) {
-        ServerLevel level = player.serverLevel();
+    private static double intimidate(LivingEntity player, int slot) {
+        ServerLevel level = HeroCaster.level(player);
         int ticks = NewSerumConfig.INTIMIDATE_TICKS.get();
         long until = level.getGameTime() + ticks;
         Map<Integer, Long> fleeing = FLEEING.computeIfAbsent(player.getUUID(), ignored -> new HashMap<>());
@@ -187,7 +189,7 @@ public final class HomelanderPower {
         return NewSerumConfig.INTIMIDATE_COOLDOWN.get();
     }
 
-    private static void flee(Mob mob, ServerPlayer player) {
+    private static void flee(Mob mob, LivingEntity player) {
         mob.setTarget(null);
         mob.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);
         if (mob instanceof PathfinderMob pathfinder) {
@@ -198,12 +200,12 @@ public final class HomelanderPower {
         }
     }
 
-    private static void tickFleeing(ServerPlayer player) {
+    private static void tickFleeing(LivingEntity player) {
         Map<Integer, Long> fleeing = FLEEING.get(player.getUUID());
         if (fleeing == null) {
             return;
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         long now = level.getGameTime();
         Iterator<Map.Entry<Integer, Long>> iterator = fleeing.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -224,8 +226,8 @@ public final class HomelanderPower {
         }
     }
 
-    private static double grabAndThrow(ServerPlayer player, int slot) {
-        ServerLevel level = player.serverLevel();
+    private static double grabAndThrow(LivingEntity player, int slot) {
+        ServerLevel level = HeroCaster.level(player);
         if (HeroGrip.isHolding(player)) {
             Vec3 look = player.getLookAngle();
             Vec3 chest = player.position().add(0.0D, 1.0D, 0.0D);
@@ -242,7 +244,7 @@ public final class HomelanderPower {
         HeroAbilities.Beam beam = HeroAbilities.beam(player, player.getLookAngle(), NewSerumConfig.GRAB_RANGE.get(), 1);
         if (beam.targets().isEmpty() || !HeroGrip.grab(player, beam.targets().get(0), NewSerumConfig.GRAB_HOLD_TICKS.get(), null,
                 held -> held.fallDistance = 0.0F)) {
-            player.displayClientMessage(Component.literal("§7Get closer and look at something to grab it."), true);
+            HeroCaster.message(player, Component.literal("§7Get closer and look at something to grab it."));
             return 0.0D;
         }
         HeroFx.play(player, SoundEvents.IRON_GOLEM_ATTACK, 1.0F, 0.9F);

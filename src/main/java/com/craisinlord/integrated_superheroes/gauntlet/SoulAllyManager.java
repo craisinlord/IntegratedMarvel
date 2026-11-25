@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.gauntlet;
 
+import com.craisinlord.integrated_superheroes.mixin.MobPersistenceAccessor;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -21,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class SoulAllyManager {
     private static final String OWNER_TAG = "integrated_superheroes_soul_owner";
+    private static final String PERSISTENT_TAG = "integrated_superheroes_soul_ally_persistent";
     private static final Map<UUID, Ally> ALLIES = new ConcurrentHashMap<>();
 
     private SoulAllyManager() {
@@ -37,6 +39,7 @@ public final class SoulAllyManager {
             release(owner.server, oldest.get().getKey());
             owned--;
         }
+        if (!mob.getPersistentData().hasUUID(OWNER_TAG)) mob.getPersistentData().putBoolean(PERSISTENT_TAG, mob.isPersistenceRequired());
         mob.getPersistentData().putUUID(OWNER_TAG, owner.getUUID());
         mob.setPersistenceRequired();
         mob.setTarget(null);
@@ -54,7 +57,17 @@ public final class SoulAllyManager {
         if (ally == null) return;
         ServerLevel level = server.getLevel(ally.dimension());
         Entity entity = level == null ? null : level.getEntity(mobId);
-        if (entity != null) entity.getPersistentData().remove(OWNER_TAG);
+        if (entity instanceof Mob mob) unbind(mob);
+    }
+
+    private static void unbind(Mob mob) {
+        mob.getPersistentData().remove(OWNER_TAG);
+        if (mob.getPersistentData().contains(PERSISTENT_TAG)) {
+            if (!mob.getPersistentData().getBoolean(PERSISTENT_TAG)) {
+                ((MobPersistenceAccessor) mob).integratedSuperheroes$setPersistenceRequired(false);
+            }
+            mob.getPersistentData().remove(PERSISTENT_TAG);
+        }
     }
 
     public static void forget(UUID mob) {
@@ -71,6 +84,10 @@ public final class SoulAllyManager {
         if (!mob.getPersistentData().hasUUID(OWNER_TAG)) return;
         UUID owner = mob.getPersistentData().getUUID(OWNER_TAG);
         Ally previous = ALLIES.get(mob.getUUID());
+        if (previous == null && ALLIES.values().stream().filter(ally -> ally.owner().equals(owner)).count() >= GauntletConfig.SOUL_ALLY_CAP.get()) {
+            unbind(mob);
+            return;
+        }
         ALLIES.put(mob.getUUID(), new Ally(owner, event.getLevel().dimension(), previous == null ? 0L : previous.boundAt()));
     }
 

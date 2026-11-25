@@ -58,7 +58,7 @@ public final class SilverSurferPower {
                 List.of(),
                 List.of(
                         new HeroPower.Ability(BOARD, "Board", SilverSurferPower::board),
-                        new HeroPower.Ability(LANCE, "Cosmic Lance", SilverSurferPower::cosmicLance),
+                        HeroPower.Ability.of(LANCE, "Cosmic Lance", SilverSurferPower::cosmicLance),
                         HeroToggles.WHEEL
                 ),
                 List.of(PRECISION, TRAIL),
@@ -97,18 +97,19 @@ public final class SilverSurferPower {
         return SurferBoardController.press(player);
     }
 
-    private static double cosmicLance(ServerPlayer player, int slot) {
-        if (!isSurfer(player)) {
+    private static double cosmicLance(LivingEntity player, int slot) {
+        if (player instanceof Player surfer && !isSurfer(surfer)) {
             return 0.0D;
         }
         double damage = MarvelBalanceConfig.PHOTON_BLAST_DAMAGE.get() * SilverSurferConfig.LANCE_PHOTON_MULTIPLIER.get();
         HeroAdvancements.cast(player).kills(3, "fantastic_four/silver_surfer/skewered").run(() ->
-                lance(player, SerumKit.glow(player, LANCE_COLOR, 1.3F), SilverSurferConfig.LANCE_TARGETS.get(), KineticBurst::affects,
+                lance(player, SerumKit.glow(player, LANCE_COLOR, 1.3F), SilverSurferConfig.LANCE_TARGETS.get(),
+                        (caster, target) -> caster instanceof ServerPlayer surfer ? KineticBurst.affects(surfer, target) : HeroCaster.foe(caster, target),
                         target -> HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().mobAttack(player), (float) damage))));
         return SilverSurferConfig.LANCE_COOLDOWN.get();
     }
 
-    private static void lance(ServerPlayer player, ParticleOptions glow, int maxTargets, BiPredicate<ServerPlayer, LivingEntity> affects,
+    private static void lance(LivingEntity player, ParticleOptions glow, int maxTargets, BiPredicate<LivingEntity, LivingEntity> affects,
                               java.util.function.Consumer<LivingEntity> hit) {
         Vec3 direction = player.getLookAngle();
         HeroAbilities.Beam beam = HeroAbilities.beam(player, direction, SilverSurferConfig.LANCE_RANGE.get(), 32);
@@ -128,7 +129,7 @@ public final class SilverSurferPower {
                 target.knockback(knockback, -direction.x, -direction.z);
             }
         }
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         Vec3 start = player.getEyePosition().add(direction.scale(0.6D)).subtract(0.0D, 0.25D, 0.0D);
         Vec3 end = beam.end();
         HeroAbilities.particleLine(level, start, end, glow, 0.45D);
@@ -156,7 +157,7 @@ public final class SilverSurferPower {
     private static double rogueLance(ServerPlayer player) {
         double damage = MarvelBalanceConfig.PHOTON_BLAST_DAMAGE.get() * SilverSurferConfig.LANCE_PHOTON_MULTIPLIER.get()
                 * SilverSurferConfig.ROGUE_LANCE_MULTIPLIER.get();
-        lance(player, HeroAbilities.emissive(LANCE_COLOR, 1.1F), 1, RogueKit::affects, target -> RogueKit.hurt(player, target, damage));
+        lance(player, HeroAbilities.emissive(LANCE_COLOR, 1.1F), 1, (caster, target) -> RogueKit.affects(player, target), target -> RogueKit.hurt(player, target, damage));
         return SilverSurferConfig.ROGUE_LANCE_COOLDOWN.get();
     }
 

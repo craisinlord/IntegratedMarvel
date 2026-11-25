@@ -101,7 +101,9 @@ public class SwarmSquirrel extends TamableAnimal implements GeoEntity {
     private static final int MIN_CLIMB_HEIGHT = 5;
     private static final int MAX_CLIMB_HEIGHT = 18;
     private static final int GROUND_ESCAPE_MIN_CLIMB_HEIGHT = 12;
-    private static final float FALL_GLIDE_TRIGGER_DISTANCE = 0.75F;
+    private static final float FALL_GLIDE_TRIGGER_DISTANCE = 2.0F;
+    private static final int FALL_SCAN_INTERVAL = 20;
+    private static final int FALL_SCAN_STEP = 2;
     private static final double FALL_GLIDE_TRIGGER_SPEED = -0.08D;
     private static final int EMERGENCY_GLIDE_REPEAT_COOLDOWN = 60;
     private static final int RECENT_GLIDE_REPEAT_COOLDOWN = 80;
@@ -376,7 +378,7 @@ public class SwarmSquirrel extends TamableAnimal implements GeoEntity {
     private boolean bite(Entity target, float damage) {
         Vec3 motion = target.getDeltaMovement();
         target.invulnerableTime = 0;
-        boolean hit = target.hurt(this.damageSources().mobAttack(this), damage);
+        boolean hit = target.hurt(this.damageSources().mobAttack(this), damage * AbilityDamage.scale(this.getOwner(), target));
         target.setDeltaMovement(motion);
         return hit;
     }
@@ -505,7 +507,7 @@ public class SwarmSquirrel extends TamableAnimal implements GeoEntity {
         if (this.distanceToSqr(owner) < 6.0D && this.onGround() && !this.isClimbingTrunk()) {
             this.mountShoulder(owner);
             this.idleTicks = 0;
-        } else if (this.getNavigation().isDone()) {
+        } else if (this.tickCount % 20 == 0 && this.getNavigation().isDone()) {
             this.getNavigation().moveTo(owner, 1.4D);
         }
     }
@@ -1142,19 +1144,19 @@ public class SwarmSquirrel extends TamableAnimal implements GeoEntity {
 
     private void tryEmergencyGlide() {
         if (this.tickCount >= this.nextFallGlideScanTick) {
-            this.nextFallGlideScanTick = this.tickCount + 10;
+            this.nextFallGlideScanTick = this.tickCount + FALL_SCAN_INTERVAL;
             this.cachedFallGlideTarget = this.findFallGlideTarget();
         }
         BlockPos rescue = this.cachedFallGlideTarget;
         if (rescue == null) {
             if (this.tickCount >= this.nextBestGlideScanTick) {
-                this.nextBestGlideScanTick = this.tickCount + 10;
+                this.nextBestGlideScanTick = this.tickCount + FALL_SCAN_INTERVAL;
                 this.cachedBestGlideTarget = this.findBestGlideTarget();
+                if (this.cachedBestGlideTarget == null) {
+                    this.cachedBestGlideTarget = this.findForcedFallLanding();
+                }
             }
             rescue = this.cachedBestGlideTarget;
-        }
-        if (rescue == null) {
-            rescue = this.findForcedFallLanding();
         }
         if (rescue != null && this.isRecentEmergencyGlideTarget(rescue)) {
             rescue = null;
@@ -1257,8 +1259,8 @@ public class SwarmSquirrel extends TamableAnimal implements GeoEntity {
         Vec3 preferred = this.preferredGlideDirection();
         BlockPos best = null;
         double bestScore = Double.NEGATIVE_INFINITY;
-        for (int dx = -20; dx <= 20; dx++) {
-            for (int dz = -20; dz <= 20; dz++) {
+        for (int dx = -20; dx <= 20; dx += FALL_SCAN_STEP) {
+            for (int dz = -20; dz <= 20; dz += FALL_SCAN_STEP) {
                 for (int dy = -28; dy <= -2; dy++) {
                     BlockPos support = origin.offset(dx, dy, dz);
                     BlockState supportState = this.level().getBlockState(support);
@@ -1301,8 +1303,8 @@ public class SwarmSquirrel extends TamableAnimal implements GeoEntity {
         BlockPos origin = this.blockPosition();
         BlockPos best = null;
         double bestScore = Double.NEGATIVE_INFINITY;
-        for (int dx = -24; dx <= 24; dx++) {
-            for (int dz = -24; dz <= 24; dz++) {
+        for (int dx = -24; dx <= 24; dx += FALL_SCAN_STEP) {
+            for (int dz = -24; dz <= 24; dz += FALL_SCAN_STEP) {
                 for (int dy = -32; dy <= -1; dy++) {
                     BlockPos support = origin.offset(dx, dy, dz);
                     if (!isStandableSurface(this.level().getBlockState(support))) {
@@ -1833,7 +1835,8 @@ public class SwarmSquirrel extends TamableAnimal implements GeoEntity {
             BlockPos best = null;
             double bestScore = Double.NEGATIVE_INFINITY;
             for (BlockPos candidate : BlockPos.betweenClosed(origin.offset(-range, -verticalDown, -range), origin.offset(range, verticalUp, range))) {
-                if (!isOpenStandPos(squirrel.level(), candidate) || squirrel.isAtStandPos(candidate)
+                if (((candidate.getX() - origin.getX() ^ candidate.getZ() - origin.getZ()) & 1) != 0
+                        || !isOpenStandPos(squirrel.level(), candidate) || squirrel.isAtStandPos(candidate)
                         || !squirrel.ownerNearby(Vec3.atBottomCenterOf(candidate), IDLE_OWNER_RANGE)) {
                     continue;
                 }

@@ -8,7 +8,6 @@ import com.craisinlord.integrated_superheroes.compat.ModCompat;
 import com.craisinlord.integrated_superheroes.hero.IronManSuits;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
@@ -38,7 +37,16 @@ public final class SuitPassives {
     private SuitPassives() {
     }
 
+    private static Map<String, List<Holder<MobEffect>>> immunities;
+
     private static Map<String, List<Holder<MobEffect>>> immunities() {
+        if (immunities == null) {
+            immunities = findImmunities();
+        }
+        return immunities;
+    }
+
+    private static Map<String, List<Holder<MobEffect>>> findImmunities() {
         List<Holder<MobEffect>> midas = new ArrayList<>(List.of(MobEffects.MOVEMENT_SLOWDOWN));
         List<Holder<MobEffect>> hammerhead = new ArrayList<>();
         List<Holder<MobEffect>> jack = new ArrayList<>(List.of(MobEffects.WITHER, MobEffects.POISON));
@@ -67,7 +75,7 @@ public final class SuitPassives {
         return suit != null && !MK1.equals(suit);
     }
 
-    static boolean blocksEffect(ServerPlayer player, Holder<MobEffect> effect) {
+    static boolean blocksEffect(LivingEntity player, Holder<MobEffect> effect) {
         if (effect.is(IRRADIATED) && SuitStates.irradiatedImmune(player)) {
             return true;
         }
@@ -87,13 +95,13 @@ public final class SuitPassives {
         return false;
     }
 
-    static boolean blocksDamage(ServerPlayer player, DamageSource source) {
+    static boolean blocksDamage(LivingEntity player, DamageSource source) {
         String suit = IronManSuits.isLoaded() ? IronManSuits.fullSuitId(player) : null;
         return (SHADES.equals(suit) && source.is(DamageTypeTags.IS_FIRE))
                 || (MIDAS.equals(suit) && source.is(DamageTypeTags.IS_FREEZING));
     }
 
-    public static void tick(ServerPlayer player) {
+    public static void tick(LivingEntity player) {
         if (player.tickCount % 10 != 0 || !IronManSuits.isLoaded()) {
             return;
         }

@@ -60,6 +60,16 @@ public final class GauntletFx {
                 Math.max(horizontal.length(), vertical));
     }
 
+    public static void ring(ServerLevel level, ParticleOptions particle, Vec3 center, double radius, int points) {
+        shape(level, new GauntletShapePayload(particle, GauntletShapePayload.RING, center.x, center.y, center.z,
+                0.0D, 0.0D, 0.0D, (float) radius, points, 0.0F, 0.0F), center, radius);
+    }
+
+    public static void burst(ServerLevel level, ParticleOptions particle, Vec3 center, double radius, int points, double speed) {
+        shape(level, new GauntletShapePayload(particle, GauntletShapePayload.BURST, center.x, center.y, center.z,
+                0.0D, 0.0D, 0.0D, (float) radius, points, (float) speed, 0.0F), center, radius);
+    }
+
     public static void farEllipse(ServerLevel level, ParticleOptions particle, Vec3 center, Vec3 horizontal, double vertical, int points,
                                   double phase, double range) {
         double rangeSqr = range * range;

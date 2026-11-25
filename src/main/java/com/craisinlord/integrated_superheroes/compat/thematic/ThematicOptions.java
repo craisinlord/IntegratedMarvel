@@ -30,6 +30,7 @@ public final class ThematicOptions {
     public static final ModConfigSpec.BooleanValue LANTERN_CHARGE;
     public static final ModConfigSpec.BooleanValue CRIMINAL_SCORCHED_GUNS;
     public static final ModConfigSpec.IntValue DRACULA_VAMPIRE_LEVEL;
+    public static final ModConfigSpec.BooleanValue FREE_SUIT_SWAPS;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -88,6 +89,9 @@ public final class ThematicOptions {
         DRACULA_VAMPIRE_LEVEL = builder.comment("Witchery vampire level a player needs to wear Dracula and his variants. Needs Witchery; without it anyone can wear them.",
                         "0 lets anyone wear them.")
                 .defineInRange("draculaVampireLevel", 5, 0, 10);
+        FREE_SUIT_SWAPS = builder.comment("Let players take off or swap a suit while one of its abilities is active or cooling down.",
+                        "Off: Thematic puts Curse of Binding on the suit until the cooldown ends, so it can't be removed.")
+                .define("freeSuitSwaps", true);
         builder.pop();
 
         builder.push("performance");

@@ -110,6 +110,14 @@ public final class SuitAbilities {
         LOADOUTS.put(suitId, List.of(abilities));
     }
 
+    static List<SuitAbility> all() {
+        return List.copyOf(ABILITIES.values());
+    }
+
+    static List<String> loadoutNames(String suitId) {
+        return LOADOUTS.getOrDefault(suitId, List.of());
+    }
+
     public static SuitAbility get(String name) {
         return ABILITIES.get(name);
     }

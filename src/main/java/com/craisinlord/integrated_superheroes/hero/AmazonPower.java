@@ -33,7 +33,8 @@ public final class AmazonPower {
     private static final String GUARD_UNTIL = "integrated_superheroes_amazon_guard_until";
     private static final int LASSO_COLOR = 0xFFC83D;
     private static boolean registered;
-    private static final java.util.Map<java.util.UUID, Long> CAUGHT = new java.util.HashMap<>();
+    private static final java.util.Map<java.util.UUID, Long> CAUGHT = ServerState.map(new java.util.HashMap<>());
+    private static final java.util.Map<java.util.UUID, Long> MOB_GUARD = ServerState.map(new java.util.HashMap<>());
 
     private AmazonPower() {
     }
@@ -42,6 +43,12 @@ public final class AmazonPower {
         if (!registered) {
             registered = true;
             NeoForge.EVENT_BUS.addListener(AmazonPower::onProjectile);
+            NeoForge.EVENT_BUS.addListener(AmazonPower::onMobDamage);
+            HeroCaster.onTick(AmazonPower::tickMobGuard);
+            HeroCaster.onCleanup(caster -> {
+                MOB_GUARD.remove(caster.getUUID());
+                CAUGHT.remove(caster.getUUID());
+            });
         }
         return new HeroPower(
                 ID,
@@ -50,9 +57,9 @@ public final class AmazonPower {
                 NewSerumConfig.AMAZON,
                 List.of("agility"),
                 List.of(
-                        new HeroPower.Ability("lasso_of_truth", "Lasso of Truth", AmazonPower::lasso),
-                        new HeroPower.Ability("bracelet_clash", "Bracelet Clash", AmazonPower::braceletClash),
-                        new HeroPower.Ability("bracelets_up", "Bracelets Up", AmazonPower::guard),
+                        HeroPower.Ability.of("lasso_of_truth", "Lasso of Truth", AmazonPower::lasso),
+                        HeroPower.Ability.of("bracelet_clash", "Bracelet Clash", AmazonPower::braceletClash),
+                        HeroPower.Ability.of("bracelets_up", "Bracelets Up", AmazonPower::guard),
                         HeroToggles.WHEEL
                 ),
                 List.of(HeroToggles.SUPER_LEAP),
@@ -126,7 +133,56 @@ public final class AmazonPower {
         return SerumKit.is(player, ID) && HeroPowers.data(player).hasState(GUARD_STATE);
     }
 
-    private static boolean inFront(Player player, Vec3 from) {
+    private static boolean guarding(LivingEntity entity) {
+        if (entity instanceof Player player) {
+            return isGuarding(player);
+        }
+        Long until = MOB_GUARD.get(entity.getUUID());
+        return until != null && entity.level().getGameTime() < until;
+    }
+
+    private static void tickMobGuard(LivingEntity caster) {
+        Long until = MOB_GUARD.get(caster.getUUID());
+        if (until == null) {
+            return;
+        }
+        if (caster.level().getGameTime() >= until) {
+            MOB_GUARD.remove(caster.getUUID());
+            HeroFx.play(caster, SoundEvents.ARMOR_EQUIP_IRON.value(), 0.6F, 0.8F);
+            return;
+        }
+        if (caster.tickCount % 4 == 0) {
+            Vec3 front = caster.getEyePosition().add(caster.getLookAngle().scale(0.6D)).subtract(0.0D, 0.4D, 0.0D);
+            HeroCaster.level(caster).sendParticles(SerumKit.glow(caster, 0xE0E0E0, 0.6F), front.x, front.y, front.z, 2, 0.2D, 0.2D, 0.2D, 0.0D);
+        }
+    }
+
+    private static void onMobDamage(LivingIncomingDamageEvent event) {
+        LivingEntity mob = event.getEntity();
+        if (mob instanceof Player || !MOB_GUARD.containsKey(mob.getUUID()) || !guarding(mob)
+                || event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+            return;
+        }
+        Vec3 from = event.getSource().getSourcePosition();
+        boolean front = from != null && inFront(mob, from);
+        if (NewSerumConfig.BRACELETS_CATCH.get() && (event.getSource().is(DamageTypeTags.IS_LIGHTNING)
+                || event.getSource().getDirectEntity() == null && event.getSource().getEntity() != null && front)) {
+            event.setCanceled(true);
+            long now = mob.level().getGameTime();
+            Long ready = CAUGHT.get(mob.getUUID());
+            if (ready == null || now >= ready) {
+                CAUGHT.put(mob.getUUID(), now + 20L);
+                braceletClash(mob, -1);
+            }
+            return;
+        }
+        if (front) {
+            event.setAmount(event.getAmount() * NewSerumConfig.GUARD_MELEE_MULTIPLIER.get().floatValue());
+            HeroFx.play(mob, SoundEvents.ANVIL_LAND, 0.4F, 1.8F);
+        }
+    }
+
+    private static boolean inFront(LivingEntity player, Vec3 from) {
         Vec3 to = from.subtract(player.getEyePosition());
         Vec3 flat = new Vec3(to.x, 0.0D, to.z);
         if (flat.lengthSqr() < 1.0E-4D) {
@@ -137,8 +193,8 @@ public final class AmazonPower {
     }
 
     private static void onProjectile(ProjectileImpactEvent event) {
-        if (!(event.getRayTraceResult() instanceof EntityHitResult hit) || !(hit.getEntity() instanceof ServerPlayer player)
-                || !isGuarding(player)) {
+        if (!(event.getRayTraceResult() instanceof EntityHitResult hit) || !(hit.getEntity() instanceof LivingEntity player)
+                || !(player instanceof ServerPlayer || player instanceof Mob) || !guarding(player)) {
             return;
         }
         Projectile projectile = event.getProjectile();
@@ -151,15 +207,25 @@ public final class AmazonPower {
         projectile.setOwner(player);
         projectile.hurtMarked = true;
         projectile.hasImpulse = true;
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = HeroCaster.level(player);
         if (!HeroFx.vfx(level, projectile.position(), "impact_starburst", 0)) {
             level.sendParticles(ParticleTypes.CRIT, projectile.getX(), projectile.getY(), projectile.getZ(), 8, 0.2D, 0.2D, 0.2D, 0.2D);
         }
         HeroFx.play(player, SoundEvents.ANVIL_PLACE, 0.5F, 2.0F);
-        HeroAdvancements.count(player, "justice_league/amazon/bulletproof", 1.0D, 25.0D);
+        if (player instanceof ServerPlayer user) {
+            HeroAdvancements.count(user, "justice_league/amazon/bulletproof", 1.0D, 25.0D);
+        }
     }
 
-    private static double guard(ServerPlayer player, int slot) {
+    private static double guard(LivingEntity caster, int slot) {
+        if (!(caster instanceof ServerPlayer player)) {
+            if (guarding(caster)) {
+                return 0.0D;
+            }
+            MOB_GUARD.put(caster.getUUID(), caster.level().getGameTime() + Math.round(NewSerumConfig.GUARD_SECONDS.get() * 20.0D));
+            HeroFx.play(caster, SoundEvents.ARMOR_EQUIP_IRON.value(), 1.0F, 1.2F);
+            return NewSerumConfig.GUARD_COOLDOWN.get();
+        }
         PlayerData data = HeroPowers.data(player);
         if (data.hasState(GUARD_STATE)) {
             return 0.0D;
@@ -172,8 +238,8 @@ public final class AmazonPower {
         return NewSerumConfig.GUARD_COOLDOWN.get();
     }
 
-    private static double lasso(ServerPlayer player, int slot) {
-        ServerLevel level = player.serverLevel();
+    private static double lasso(LivingEntity player, int slot) {
+        ServerLevel level = HeroCaster.level(player);
         double range = NewSerumConfig.LASSO_RANGE.get();
         HeroAbilities.Beam beam = HeroAbilities.beam(player, player.getLookAngle(), range, 1);
         Vec3 hand = player.getEyePosition().subtract(0.0D, 0.4D, 0.0D);
@@ -200,27 +266,34 @@ public final class AmazonPower {
                 target.removeEffect(MobEffects.INVISIBILITY);
             }
             HeroFx.play(player, SoundEvents.LEASH_KNOT_PLACE, 1.2F, 0.8F);
-            player.displayClientMessage(Component.literal("§6" + SerumKit.describe(target)), true);
+            HeroCaster.message(player, Component.literal("§6" + SerumKit.describe(target)));
             HeroAnimations.play(player, "web_shoot_both");
             return NewSerumConfig.LASSO_COOLDOWN.get();
         }
-        Vec3 anchor = HeroGrapple.anchor(player, range);
+        if (!(player instanceof ServerPlayer user)) {
+            return 0.0D;
+        }
+        Vec3 anchor = HeroGrapple.anchor(user, range);
         if (anchor == null) {
             return 0.0D;
         }
-        HeroGrapple.start(player, anchor, SerumKit.glow(player, LASSO_COLOR, 0.7F));
+        HeroGrapple.start(user, anchor, SerumKit.glow(player, LASSO_COLOR, 0.7F));
         HeroFx.play(player, SoundEvents.LEASH_KNOT_PLACE, 1.2F, 1.2F);
         HeroAnimations.play(player, "web_shoot_both");
         return NewSerumConfig.LASSO_COOLDOWN.get() * 0.5D;
     }
 
-    private static double braceletClash(ServerPlayer player, int slot) {
-        ServerLevel level = player.serverLevel();
+    private static net.minecraft.world.damagesource.DamageSource attack(LivingEntity caster) {
+        return caster instanceof net.minecraft.world.entity.player.Player player ? caster.damageSources().playerAttack(player) : caster.damageSources().mobAttack(caster);
+    }
+
+    private static double braceletClash(LivingEntity player, int slot) {
+        ServerLevel level = HeroCaster.level(player);
         double radius = NewSerumConfig.BRACELET_CLASH_RADIUS.get();
         float damage = NewSerumConfig.BRACELET_CLASH_DAMAGE.get().floatValue();
         int hits = 0;
         for (LivingEntity target : HeroAbilities.sphere(player, radius)) {
-            HeroAbilities.runAsAbilityDamage(() -> target.hurt(player.damageSources().playerAttack(player), damage));
+            HeroAbilities.runAsAbilityDamage(() -> target.hurt(attack(player), damage));
             SerumKit.push(target, player.position(), 1.6D, 0.5D);
             hits++;
         }
@@ -240,8 +313,8 @@ public final class AmazonPower {
         if (!ViltrumiteAnimations.play(player, ViltrumiteAnimations.THUNDERCLAP)) {
             HeroAnimations.play(player, "bettercombat:two_handed_slam");
         }
-        if (hits >= 5) {
-            HeroAdvancements.award(player, "justice_league/amazon/clash_of_titans");
+        if (hits >= 5 && player instanceof ServerPlayer user) {
+            HeroAdvancements.award(user, "justice_league/amazon/clash_of_titans");
         }
         return NewSerumConfig.BRACELET_CLASH_COOLDOWN.get();
     }

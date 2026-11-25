@@ -2,12 +2,14 @@ package com.craisinlord.integrated_superheroes.suit;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -51,6 +53,28 @@ public final class SuitFx {
     public static void sound(Level level, Vec3 at, String name, SoundEvent fallback, float volume, float pitch) {
         SoundEvent sound = BuiltInRegistries.SOUND_EVENT.getOptional(id(name)).orElse(fallback);
         level.playSound(null, at.x, at.y, at.z, sound, SoundSource.PLAYERS, volume, pitch);
+    }
+
+    public static Vec3 turretBarrel(LivingEntity shooter) {
+        Vec3 look = shooter.getLookAngle();
+        return shooter.getEyePosition().add(0.0D, 0.15D, 0.0D).add(right(look).scale(0.45D)).add(look.scale(0.9D));
+    }
+
+    public static void turretShot(ServerLevel level, LivingEntity shooter, boolean casing) {
+        Vec3 look = shooter.getLookAngle();
+        Vec3 barrel = turretBarrel(shooter);
+        burst(level, MUZZLE_FLASH, ParticleTypes.FLAME, barrel, 1, 0.0D, 0.0D);
+        if (casing) {
+            Vec3 right = right(look);
+            Vec3 ejection = barrel.subtract(look.scale(0.6D));
+            level.sendParticles(particle(BRASS_CASING, ParticleTypes.CRIT), ejection.x, ejection.y, ejection.z, 0,
+                    right.x * 0.3D, 0.25D, right.z * 0.3D, 1.0D);
+        }
+    }
+
+    private static Vec3 right(Vec3 look) {
+        Vec3 right = look.cross(new Vec3(0.0D, 1.0D, 0.0D));
+        return right.lengthSqr() < 1.0E-6D ? new Vec3(1.0D, 0.0D, 0.0D) : right.normalize();
     }
 
     public static void burst(ServerLevel level, String name, SimpleParticleType fallback, Vec3 at, int count, double spread, double speed) {

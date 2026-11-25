@@ -1,12 +1,12 @@
 package com.craisinlord.integrated_superheroes.compat;
 
+import com.google.common.collect.MapMaker;
 import java.util.Collections;
 import java.util.Set;
-import java.util.WeakHashMap;
 import net.minecraft.world.entity.Entity;
 
 public final class AlexsCavesMovingBlocks {
-    private static final Set<Entity> LIVE = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
+    private static final Set<Entity> LIVE = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
     private static final Class<?> MOVING_BLOCK_CLASS = find();
 
     private AlexsCavesMovingBlocks() {

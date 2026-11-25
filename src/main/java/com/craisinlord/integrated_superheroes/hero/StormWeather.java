@@ -20,10 +20,10 @@ import java.util.UUID;
 public final class StormWeather {
     public static final String ABILITY = "weather_control";
     private static final Set<String> VANILLA = Set.of("clear", "rain", "thunder");
-    private static final Map<UUID, Map<String, Long>> READY_AT = new HashMap<>();
+    private static final Map<UUID, Map<String, Long>> READY_AT = ServerState.map(new HashMap<>());
     private static final Set<String> INTENSE = Set.of("thunder", "hail", "blizzard", "sandstorm", "tornado");
     private static final long INTENSE_TICKS = 6000L;
-    private static final Map<UUID, Long> INTENSE_UNTIL = new HashMap<>();
+    private static final Map<UUID, Long> INTENSE_UNTIL = ServerState.map(new HashMap<>());
     public static final List<HeroWheels.Option> OPTIONS = List.of(
             new HeroWheels.Option("clear", "Clear Skies", () -> Items.SUNFLOWER),
             new HeroWheels.Option("rain", "Rain", () -> Items.WATER_BUCKET),
@@ -141,13 +141,13 @@ public final class StormWeather {
         player.displayClientMessage(Component.literal("§b" + label(option)), true);
     }
 
-    public static boolean isStormy(Player player) {
-        Level level = player.level();
-        BlockPos pos = player.blockPosition();
+    public static boolean isStormy(net.minecraft.world.entity.LivingEntity caster) {
+        Level level = caster.level();
+        BlockPos pos = caster.blockPosition();
         if (level.isThundering() || level.isRainingAt(pos.above())) {
             return true;
         }
-        if (level.isClientSide || !weather2Here(level)) {
+        if (level.isClientSide || !weather2Here(level) || !(caster instanceof Player player)) {
             return false;
         }
         return Weather2Storms.isStormy(player);

@@ -1,5 +1,6 @@
 package com.craisinlord.integrated_superheroes.compat;
 
+import com.craisinlord.integrated_superheroes.hero.ServerState;
 import com.craisinlord.integrated_superheroes.hero.MarvelBalanceConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -23,7 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public final class Weather2Storms {
-    private static final Set<UUID> WINDS = new HashSet<>();
+    private static final Set<UUID> WINDS = ServerState.all(new HashSet<>());
 
     private Weather2Storms() {
     }

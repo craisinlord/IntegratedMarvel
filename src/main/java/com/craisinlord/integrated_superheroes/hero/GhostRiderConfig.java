@@ -44,7 +44,7 @@ public final class GhostRiderConfig {
 
     static void define(ModConfigSpec.Builder builder) {
         builder.push("ghostRider");
-        STATS = new MarvelBalanceConfig.HeroStats(builder, 40.0D, 14.0D, 0.5D, 0.0D, 0.0D, 35.0D, 1);
+        STATS = new MarvelBalanceConfig.HeroStats(builder, 42.0D, 6.0D, 0.5D, 0.0D, 0.0D, 35.0D, 1);
         CHAIN_RANGE = builder.defineInRange("hellchainRange", 10.0D, 2.0D, 32.0D);
         CHAIN_DAMAGE_SCALE = builder.comment("Hellchain damage as a share of Black Panther's Claw Swipe damage.")
                 .defineInRange("hellchainDamageScale", 0.6D, 0.0D, 10.0D);

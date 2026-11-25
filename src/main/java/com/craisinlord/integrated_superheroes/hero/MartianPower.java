@@ -60,13 +60,13 @@ public final class MartianPower {
     private static final List<TagKey<EntityType<?>>> FACTIONS = List.of(EntityTypeTags.RAIDERS, EntityTypeTags.ILLAGER,
             EntityTypeTags.UNDEAD, EntityTypeTags.ZOMBIES, EntityTypeTags.SKELETONS, EntityTypeTags.ARTHROPOD);
     private static final Set<EntityType<?>> PIGLINS = Set.of(EntityType.PIGLIN, EntityType.PIGLIN_BRUTE);
-    private static final Set<UUID> PHASING = new HashSet<>();
-    private static final Map<UUID, Long> DENSE_UNTIL = new HashMap<>();
-    private static final Map<UUID, Float> FALLING = new HashMap<>();
-    private static final Map<UUID, Long> CAMO_SEEN = new HashMap<>();
-    private static final Map<UUID, EntityType<?>> FORMS = new HashMap<>();
-    private static final Map<UUID, Long> BLOWN = new HashMap<>();
-    private static final Map<UUID, Thrall> THRALLS = new HashMap<>();
+    private static final Set<UUID> PHASING = ServerState.all(new HashSet<>());
+    private static final Map<UUID, Long> DENSE_UNTIL = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Float> FALLING = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> CAMO_SEEN = ServerState.map(new HashMap<>());
+    private static final Map<UUID, EntityType<?>> FORMS = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> BLOWN = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Thrall> THRALLS = ServerState.map(new HashMap<>());
     private static boolean registered;
 
     private record Thrall(UUID owner, long until) {
@@ -75,17 +75,31 @@ public final class MartianPower {
     private MartianPower() {
     }
 
+    public static void releaseThralls(ServerPlayer player) {
+        THRALLS.values().removeIf(thrall -> thrall.owner().equals(player.getUUID()));
+    }
+
     public static HeroPower create(Supplier<Item> syringe) {
         if (!registered) {
             registered = true;
             NeoForge.EVENT_BUS.addListener(MartianPower::onTarget);
+            HeroCaster.onTick(caster -> {
+                tickDense(caster);
+                if (caster.tickCount % 5 == 0) {
+                    tickThralls(caster);
+                }
+            });
+            HeroCaster.onCleanup(caster -> {
+                endDense(caster);
+                releaseThralls(caster);
+            });
         }
         List<HeroPower.Ability> abilities = new ArrayList<>(List.of(
-                new HeroPower.Ability(DENSITY, "Density Shift", MartianPower::densityShift),
+                HeroPower.Ability.of(DENSITY, "Density Shift", MartianPower::densityShift),
                 new HeroPower.Ability(VANISH, "Camouflage", MartianPower::vanish),
-                new HeroPower.Ability("martian_vision", "Martian Vision", MartianPower::martianVision),
+                HeroPower.Ability.of("martian_vision", "Martian Vision", MartianPower::martianVision),
                 HeroToggles.WHEEL,
-                new HeroPower.Ability("psychic_grip", "Psychic Grip", MartianPower::psychicGrip)
+                HeroPower.Ability.of("psychic_grip", "Psychic Grip", MartianPower::psychicGrip)
         ));
         if (ModCompat.MORPH) {
             abilities.add(new HeroPower.Ability("shapeshift", "Shapeshift", MartianPower::shapeshift));
@@ -187,7 +201,7 @@ public final class MartianPower {
         );
     }
 
-    private static int tint(Player player, int alpha) {
+    private static int tint(LivingEntity player, int alpha) {
         return alpha | SerumKit.primary(player, MIND_COLOR) & 0xFFFFFF;
     }
 
@@ -203,6 +217,10 @@ public final class MartianPower {
         return isMartian(player) && HeroPowers.data(player).hasState(DENSE_STATE);
     }
 
+    private static boolean dense(LivingEntity caster) {
+        return caster instanceof Player player ? isDense(player) : DENSE_UNTIL.containsKey(caster.getUUID());
+    }
+
     private static void tickPhase(ServerPlayer player) {
         if (KittyPower.isPhasing(player)) {
             PHASING.add(player.getUUID());
@@ -211,7 +229,18 @@ public final class MartianPower {
         }
     }
 
-    private static double densityShift(ServerPlayer player, int slot) {
+    private static double densityShift(LivingEntity caster, int slot) {
+        if (!(caster instanceof ServerPlayer player)) {
+            if (dense(caster)) {
+                endDense(caster);
+                return NewSerumConfig.DENSE_COOLDOWN.get();
+            }
+            if (caster.isOnFire()) {
+                return 0.0D;
+            }
+            startDense(caster);
+            return NewSerumConfig.DENSE_TICKS.get() / 20.0D + NewSerumConfig.DENSE_COOLDOWN.get();
+        }
         if (isDense(player)) {
             endDense(player);
             return NewSerumConfig.DENSE_COOLDOWN.get();
@@ -243,44 +272,55 @@ public final class MartianPower {
         return 0.5D;
     }
 
-    private static void startDense(ServerPlayer player) {
-        HeroPowers.data(player).addState(DENSE_STATE);
-        PlayerData.sync(player);
+    private static void startDense(LivingEntity player) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            HeroPowers.data(serverPlayer).addState(DENSE_STATE);
+            PlayerData.sync(serverPlayer);
+        }
         DENSE_UNTIL.put(player.getUUID(), player.level().getGameTime() + NewSerumConfig.DENSE_TICKS.get());
         modifier(player, Attributes.ARMOR, DENSE_ARMOR, NewSerumConfig.DENSE_ARMOR.get(), AttributeModifier.Operation.ADD_VALUE);
         modifier(player, Attributes.ARMOR_TOUGHNESS, DENSE_TOUGHNESS, 6.0D, AttributeModifier.Operation.ADD_VALUE);
         modifier(player, Attributes.KNOCKBACK_RESISTANCE, DENSE_KNOCKBACK, 1.0D, AttributeModifier.Operation.ADD_VALUE);
         modifier(player, Attributes.MOVEMENT_SPEED, DENSE_SPEED, -0.3D, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
         Vec3 center = player.getBoundingBox().getCenter();
-        player.serverLevel().sendParticles(SerumKit.glow(player, MIND_COLOR, 1.4F), center.x, center.y, center.z, 24, 0.4D, 0.7D, 0.4D, 0.0D);
+        HeroCaster.level(player).sendParticles(SerumKit.glow(player, MIND_COLOR, 1.4F), center.x, center.y, center.z, 24, 0.4D, 0.7D, 0.4D, 0.0D);
         HeroFx.play(player, SoundEvents.ANVIL_PLACE, 0.7F, 0.5F);
         HeroFx.play(player, SoundEvents.STONE_PLACE, 1.0F, 0.6F);
-        player.displayClientMessage(Component.literal("§2You pack yourself down. Nothing's moving you now."), true);
+        HeroCaster.message(player, Component.literal("§2You pack yourself down. Nothing's moving you now."));
     }
 
-    private static void endDense(ServerPlayer player) {
+    private static void endDense(LivingEntity player) {
+        boolean wasMob = !(player instanceof ServerPlayer) && DENSE_UNTIL.containsKey(player.getUUID());
         DENSE_UNTIL.remove(player.getUUID());
         FALLING.remove(player.getUUID());
         unmodifier(player, Attributes.ARMOR, DENSE_ARMOR);
         unmodifier(player, Attributes.ARMOR_TOUGHNESS, DENSE_TOUGHNESS);
         unmodifier(player, Attributes.KNOCKBACK_RESISTANCE, DENSE_KNOCKBACK);
         unmodifier(player, Attributes.MOVEMENT_SPEED, DENSE_SPEED);
-        PlayerData data = HeroPowers.data(player);
+        if (wasMob) {
+            HeroFx.play(player, SoundEvents.SLIME_SQUISH, 0.8F, 1.2F);
+        }
+        if (!(player instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
+        PlayerData data = HeroPowers.data(serverPlayer);
         if (data.hasState(DENSE_STATE)) {
             data.removeState(DENSE_STATE);
-            PlayerData.sync(player);
+            PlayerData.sync(serverPlayer);
             HeroFx.play(player, SoundEvents.SLIME_SQUISH, 0.8F, 1.2F);
         }
     }
 
-    private static void tickDense(ServerPlayer player) {
-        if (!isDense(player)) {
+    private static void tickDense(LivingEntity player) {
+        if (!dense(player)) {
             return;
         }
         Long until = DENSE_UNTIL.get(player.getUUID());
         if (until == null || player.level().getGameTime() >= until) {
             endDense(player);
-            HeroAbilities.setCooldown(player, DENSITY, NewSerumConfig.DENSE_COOLDOWN.get());
+            if (player instanceof ServerPlayer serverPlayer) {
+                HeroAbilities.setCooldown(serverPlayer, DENSITY, NewSerumConfig.DENSE_COOLDOWN.get());
+            }
             return;
         }
         if (!player.onGround()) {
@@ -290,24 +330,24 @@ public final class MartianPower {
             if (fell != null && fell >= 4.0F) {
                 float damage = NewSerumConfig.DENSE_SLAM_DAMAGE.get().floatValue();
                 HeroAbilities.runAsAbilityDamage(() -> HeroShockwaves.ring(player, 8, 4, damage));
-                HeroFx.shake(player.serverLevel(), player.position(), 12.0D, 0.5F, 8);
+                HeroFx.shake(HeroCaster.level(player), player.position(), 12.0D, 0.5F, 8);
                 HeroFx.play(player, SoundEvents.ANVIL_LAND, 1.0F, 0.5F);
             }
         }
         if (player.tickCount % 8 == 0) {
-            player.serverLevel().sendParticles(SerumKit.glow(player, MIND_COLOR, 0.6F), player.getX(), player.getY() + 0.2D, player.getZ(),
+            HeroCaster.level(player).sendParticles(SerumKit.glow(player, MIND_COLOR, 0.6F), player.getX(), player.getY() + 0.2D, player.getZ(),
                     3, 0.3D, 0.1D, 0.3D, 0.0D);
         }
     }
 
-    private static void modifier(ServerPlayer player, Holder<Attribute> attribute, ResourceLocation id, double amount, AttributeModifier.Operation operation) {
+    private static void modifier(LivingEntity player, Holder<Attribute> attribute, ResourceLocation id, double amount, AttributeModifier.Operation operation) {
         AttributeInstance instance = player.getAttribute(attribute);
         if (instance != null) {
             instance.addOrUpdateTransientModifier(new AttributeModifier(id, amount, operation));
         }
     }
 
-    private static void unmodifier(ServerPlayer player, Holder<Attribute> attribute, ResourceLocation id) {
+    private static void unmodifier(LivingEntity player, Holder<Attribute> attribute, ResourceLocation id) {
         AttributeInstance instance = player.getAttribute(attribute);
         if (instance != null) {
             instance.removeModifier(id);
@@ -334,11 +374,11 @@ public final class MartianPower {
         return 0.5D;
     }
 
-    private static double martianVision(ServerPlayer player, int slot) {
+    private static double martianVision(LivingEntity player, int slot) {
         double range = NewSerumConfig.MARTIAN_VISION_RANGE.get();
         BeamSettings settings = HeroBeams.settings(range, NewSerumConfig.MARTIAN_VISION_DURATION_TICKS.get(), 0.4F, 1.0F,
                 NewSerumConfig.MARTIAN_VISION_DAMAGE.get(), 0.2F, 2, 0.0D, 0.0D, 0.0D);
-        int color = SerumKit.secondary(player, VISION_COLOR);
+        int color = player instanceof Player human ? SerumKit.secondary(human, VISION_COLOR) : VISION_COLOR;
         HeroBeams.Eye eye = HeroBeams.thematicEye(0xFFFFFF, color, 0.7F, "thematic:heat_vision", 20, "powergirl_heat_lock");
         HeroBeams.fire(player, 0, new HeroBeams.Spec(HeroBeams.QUEEN_RED, settings, BeamTerrainMode.NONE, -4.0F, 0.6D, 0.0D, 3, 0.0F), eye);
         HeroBeams.fire(player, 1, new HeroBeams.Spec(HeroBeams.QUEEN_RED, settings, BeamTerrainMode.NONE, 4.0F, 0.6D, 0.0D, 3, 0.0F), eye);
@@ -348,15 +388,15 @@ public final class MartianPower {
         return NewSerumConfig.MARTIAN_VISION_COOLDOWN.get();
     }
 
-    private static double psychicGrip(ServerPlayer player, int slot) {
+    private static double psychicGrip(LivingEntity player, int slot) {
         HeroAbilities.Beam beam = HeroAbilities.beam(player, player.getLookAngle(), NewSerumConfig.PSYCHIC_GRIP_RANGE.get(), 1);
         if (beam.targets().isEmpty()) {
-            player.displayClientMessage(Component.literal("§7Look at a creature to reach into its mind."), true);
+            HeroCaster.message(player, Component.literal("§7Look at a creature to reach into its mind."));
             return 0.0D;
         }
         LivingEntity target = beam.targets().get(0);
-        ServerLevel level = player.serverLevel();
-        player.displayClientMessage(Component.literal("§a" + SerumKit.describe(target)), true);
+        ServerLevel level = HeroCaster.level(player);
+        HeroCaster.message(player, Component.literal("§a" + SerumKit.describe(target)));
         Vec3 eye = player.getEyePosition();
         Vec3 center = target.getBoundingBox().getCenter();
         if (HeroFx.beam(level, eye.add(player.getLookAngle()), center, "sonar_beam", tint(player, 0xE0000000))) {
@@ -378,7 +418,9 @@ public final class MartianPower {
         mob.addEffect(new MobEffectInstance(MobEffects.GLOWING, ticks, 0, false, false));
         retarget(mob);
         HeroFx.play(target, SoundEvents.ELDER_GUARDIAN_CURSE, 0.4F, 1.8F);
-        HeroAdvancements.award(player, "justice_league/martian/psychic_grip");
+        if (player instanceof ServerPlayer serverPlayer) {
+            HeroAdvancements.award(serverPlayer, "justice_league/martian/psychic_grip");
+        }
         return NewSerumConfig.PSYCHIC_GRIP_COOLDOWN.get();
     }
 
@@ -398,7 +440,7 @@ public final class MartianPower {
         }
     }
 
-    private static void tickThralls(ServerPlayer player) {
+    private static void tickThralls(LivingEntity player) {
         if (THRALLS.isEmpty()) {
             return;
         }
@@ -409,7 +451,7 @@ public final class MartianPower {
             if (!entry.getValue().owner().equals(player.getUUID())) {
                 continue;
             }
-            Entity entity = player.serverLevel().getEntity(entry.getKey());
+            Entity entity = HeroCaster.level(player).getEntity(entry.getKey());
             if (!(entity instanceof Mob mob) || !mob.isAlive()) {
                 iterator.remove();
                 continue;
@@ -427,7 +469,7 @@ public final class MartianPower {
         }
     }
 
-    private static void releaseThralls(ServerPlayer player) {
+    private static void releaseThralls(LivingEntity player) {
         Iterator<Map.Entry<UUID, Thrall>> iterator = THRALLS.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<UUID, Thrall> entry = iterator.next();
@@ -435,7 +477,7 @@ public final class MartianPower {
                 continue;
             }
             iterator.remove();
-            if (player.serverLevel().getEntity(entry.getKey()) instanceof Mob mob) {
+            if (HeroCaster.level(player).getEntity(entry.getKey()) instanceof Mob mob) {
                 mob.setTarget(null);
                 mob.removeEffect(MobEffects.GLOWING);
             }

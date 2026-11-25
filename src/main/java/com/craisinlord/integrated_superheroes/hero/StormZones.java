@@ -1,5 +1,8 @@
 package com.craisinlord.integrated_superheroes.hero;
 
+import net.neoforged.fml.util.thread.EffectiveSide;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import net.minecraft.server.MinecraftServer;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -17,9 +20,10 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class StormZones {
-    private static final Map<ResourceKey<Level>, Map<UUID, Zone>> SERVER = new ConcurrentHashMap<>();
+    private static final Map<ResourceKey<Level>, Map<UUID, Zone>> SERVER = ServerState.map(new ConcurrentHashMap<>());
     private static volatile List<Zone> client = List.of();
     private static volatile long clientTime;
+    private static ResourceKey<Level> ticking;
     private static volatile Vec3 clientFocus;
 
     private StormZones() {
@@ -44,12 +48,12 @@ public final class StormZones {
 
     public static Boolean forcedAt(double x, double z) {
         if (!SERVER.isEmpty()) {
-            for (Map<UUID, Zone> zones : SERVER.values()) {
-                for (Zone zone : zones.values()) {
-                    if (zone.covers(x, z)) {
-                        return zone.snow();
-                    }
-                }
+            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+            if (server != null && server.isSameThread()) {
+                return serverForced(x, z);
+            }
+            if (EffectiveSide.get().isServer()) {
+                return null;
             }
         }
         List<Zone> zones = client;
@@ -63,6 +67,38 @@ public final class StormZones {
             }
         }
         return null;
+    }
+
+    private static Boolean serverForced(double x, double z) {
+        ResourceKey<Level> dimension = ticking;
+        if (dimension != null) {
+            Map<UUID, Zone> zones = SERVER.get(dimension);
+            return zones == null ? null : covering(zones, x, z);
+        }
+        for (Map<UUID, Zone> zones : SERVER.values()) {
+            Boolean snow = covering(zones, x, z);
+            if (snow != null) {
+                return snow;
+            }
+        }
+        return null;
+    }
+
+    private static Boolean covering(Map<UUID, Zone> zones, double x, double z) {
+        for (Zone zone : zones.values()) {
+            if (zone.covers(x, z)) {
+                return zone.snow();
+            }
+        }
+        return null;
+    }
+
+    public static void startTick(ServerLevel level) {
+        ticking = level.dimension();
+    }
+
+    public static void endTick() {
+        ticking = null;
     }
 
     public static boolean focusForced() {
@@ -91,6 +127,7 @@ public final class StormZones {
     public static void release(ServerPlayer player) {
         Map<UUID, Zone> zones = SERVER.get(player.serverLevel().dimension());
         if (zones != null && zones.remove(player.getUUID()) != null) {
+            dropIfEmpty(player.serverLevel(), zones);
             sync(player.serverLevel());
         }
     }
@@ -102,7 +139,14 @@ public final class StormZones {
         }
         long now = level.getGameTime();
         if (zones.values().removeIf(zone -> zone.expires() <= now)) {
+            dropIfEmpty(level, zones);
             sync(level);
+        }
+    }
+
+    private static void dropIfEmpty(ServerLevel level, Map<UUID, Zone> zones) {
+        if (zones.isEmpty()) {
+            SERVER.remove(level.dimension());
         }
     }
 

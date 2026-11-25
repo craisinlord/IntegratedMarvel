@@ -1,5 +1,9 @@
 package com.craisinlord.integrated_superheroes.boss;
 
+import com.craisinlord.integrated_superheroes.hero.ServerState;
+import java.util.Set;
+import java.util.Collections;
+import com.google.common.collect.MapMaker;
 import com.craisinlord.anthology.multipart.MultipartEntityOwner;
 import com.craisinlord.anthology.multipart.MultipartFramework;
 import com.craisinlord.anthology.multipart.MultipartLayout;
@@ -133,6 +137,7 @@ public class WitherstormEntity extends Monster implements GeoEntity, MultipartEn
     private final WitherstormAttackScheduler scheduler = new WitherstormAttackScheduler();
     private final float[] headStun = new float[WitherstormLayout.HEAD_COUNT];
     private final LongOpenHashSet placedBlocks = new LongOpenHashSet();
+    private static final Set<WitherstormEntity> LIVE = ServerState.all(Collections.newSetFromMap(new MapMaker().weakKeys().makeMap()));
     private final Map<UUID, Long> grounded = new HashMap<>();
     @Nullable
     private Entity[] multipartParts;
@@ -174,7 +179,7 @@ public class WitherstormEntity extends Monster implements GeoEntity, MultipartEn
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MAX_HEALTH, 12000.0D)
-                .add(Attributes.ATTACK_DAMAGE, 60.0D)
+                .add(Attributes.ATTACK_DAMAGE, 20.0D)
                 .add(Attributes.ARMOR, 12.0D)
                 .add(Attributes.ARMOR_TOUGHNESS, 6.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
@@ -469,7 +474,7 @@ public class WitherstormEntity extends Monster implements GeoEntity, MultipartEn
         if (attacker == this) return true;
         if (attacker instanceof PartEntity<?> piece && piece.getParent() == this) return true;
         if (attacker == null && source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) return true;
-        return source.is(DamageTypes.IN_WALL) || source.is(DamageTypes.CRAMMING) || source.is(DamageTypes.FALL)
+        return source.is(DamageTypes.IN_WALL) || source.is(DamageTypes.FLY_INTO_WALL) || source.is(DamageTypes.CRAMMING) || source.is(DamageTypes.FALL)
                 || source.is(DamageTypes.DROWN) || source.is(DamageTypes.WITHER);
     }
 
@@ -547,6 +552,22 @@ public class WitherstormEntity extends Monster implements GeoEntity, MultipartEn
         Vec3 core = this.partCenter(WitherstormLayout.CORE);
         level.playSound(null, core.x, core.y, core.z, SoundEvents.BEACON_ACTIVATE, SoundSource.HOSTILE, 3.0F, 0.5F);
         this.playAnim("roar");
+    }
+
+    @Override
+    public void onAddedToLevel() {
+        super.onAddedToLevel();
+        if (!this.level().isClientSide) LIVE.add(this);
+    }
+
+    @Override
+    public void onRemovedFromLevel() {
+        super.onRemovedFromLevel();
+        LIVE.remove(this);
+    }
+
+    static List<WitherstormEntity> live(ServerLevel level) {
+        return LIVE.isEmpty() ? List.of() : LIVE.stream().filter(storm -> storm.level() == level).toList();
     }
 
     @Override
@@ -817,9 +838,14 @@ public class WitherstormEntity extends Monster implements GeoEntity, MultipartEn
     }
 
     private void witheringPresence(ServerLevel level) {
-        for (ServerPlayer player : level.getEntitiesOfClass(ServerPlayer.class, this.getBoundingBox().inflate(PRESENCE_RADIUS * this.attackScale()), this::fighting)) {
+        for (ServerPlayer player : this.fightersWithin(level, PRESENCE_RADIUS * this.attackScale())) {
             player.addEffect(new MobEffectInstance(MobEffects.WITHER, 60, 0), this);
         }
+    }
+
+    private List<ServerPlayer> fightersWithin(ServerLevel level, double radius) {
+        AABB box = this.getBoundingBox().inflate(radius);
+        return level.getPlayers(player -> this.fighting(player) && box.intersects(player.getBoundingBox()));
     }
 
     private boolean fighting(Player player) {
@@ -840,7 +866,7 @@ public class WitherstormEntity extends Monster implements GeoEntity, MultipartEn
     private void chooseAttack(ServerLevel level, LivingEntity target) {
         double reach = this.attackScale();
         double roar = this.roarRadius();
-        List<ServerPlayer> nearby = level.getEntitiesOfClass(ServerPlayer.class, this.getBoundingBox().inflate(roar), this::fighting);
+        List<ServerPlayer> nearby = this.fightersWithin(level, roar);
         boolean anyAirborne = nearby.stream().anyMatch(this::airborne);
         boolean builds = this.hasPlacedNear(roar);
         boolean headsReady = false;
@@ -903,8 +929,8 @@ public class WitherstormEntity extends Monster implements GeoEntity, MultipartEn
     private void volley(ServerLevel level) {
         LivingEntity main = this.getTarget();
         if (main == null) return;
-        List<ServerPlayer> others = level.getEntitiesOfClass(ServerPlayer.class, this.getBoundingBox().inflate(48.0D * this.attackScale()),
-                player -> this.fighting(player) && player != main && this.hasLineOfSight(player));
+        List<ServerPlayer> others = this.fightersWithin(level, 48.0D * this.attackScale()).stream()
+                .filter(player -> player != main && this.hasLineOfSight(player)).toList();
         boolean fired = false;
         for (int i = 0; i < WitherstormLayout.HEAD_COUNT; i++) {
             if (this.headStunned(i)) continue;
@@ -915,7 +941,7 @@ public class WitherstormEntity extends Monster implements GeoEntity, MultipartEn
             aimAt = aimAt.add(aim.getDeltaMovement().multiply(1.0D, 0.0D, 1.0D).scale(travel * 0.6D));
             Vec3 direction = aimAt.subtract(origin).normalize();
             boolean blue = this.random.nextInt(5) == 0;
-            WitherstormSkull skull = new WitherstormSkull(level, this, direction, this.attackDamage() * 0.8F, blue);
+            WitherstormSkull skull = new WitherstormSkull(level, this, direction, this.attackDamage() * 0.4F, blue);
             skull.setPos(origin.x, origin.y, origin.z);
             level.addFreshEntity(skull);
             fired = true;
@@ -1010,8 +1036,8 @@ public class WitherstormEntity extends Monster implements GeoEntity, MultipartEn
         DamageSource source = this.damageSources().mobAttack(this);
         for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class, new AABB(center, center).inflate(3.5D * reach), this::canHurt)) {
             if (victim.position().distanceTo(center) > 4.0D * reach) continue;
-            if (victim.hurt(source, this.attackDamage() * 2.0F)) {
-                victim.addEffect(new MobEffectInstance(MobEffects.WITHER, 160, 1), this);
+            if (victim.hurt(source, this.attackDamage() * 1.25F)) {
+                victim.addEffect(new MobEffectInstance(MobEffects.WITHER, 80, 1), this);
             }
         }
     }
@@ -1027,7 +1053,7 @@ public class WitherstormEntity extends Monster implements GeoEntity, MultipartEn
     }
 
     boolean breakable(ServerLevel level, BlockPos pos, BlockState state) {
-        return !state.isAir() && level.getBlockEntity(pos) == null && state.getDestroySpeed(level, pos) >= 0.0F
+        return !state.isAir() && !state.hasBlockEntity() && state.getDestroySpeed(level, pos) >= 0.0F
                 && !state.is(BlockTags.WITHER_IMMUNE) && state.getBlock().getExplosionResistance() <= 1200.0F
                 && level.getWorldBorder().isWithinBounds(pos);
     }
@@ -1042,10 +1068,10 @@ public class WitherstormEntity extends Monster implements GeoEntity, MultipartEn
             BlockState state = level.getBlockState(cursor);
             if (!this.breakable(level, cursor, state)) continue;
             BlockPos pos = cursor.immutable();
-            if (this.random.nextFloat() < 0.3F) {
+            if (this.random.nextFloat() < 0.05F) {
                 level.destroyBlock(pos, true, this);
             } else {
-                level.levelEvent(2001, pos, Block.getId(state));
+                if (broken % 8 == 0) level.levelEvent(2001, pos, Block.getId(state));
                 level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
             }
             this.placedBlocks.remove(pos.asLong());
@@ -1113,7 +1139,7 @@ public class WitherstormEntity extends Monster implements GeoEntity, MultipartEn
             if (distance > radius) continue;
             Vec3 flat = new Vec3(away.x, 0.0D, away.z);
             Vec3 push = flat.lengthSqr() < 0.01D ? Vec3.ZERO : flat.normalize().scale(0.8D + 2.2D * (1.0D - distance / radius));
-            victim.hurt(source, this.attackDamage() * 0.5F);
+            victim.hurt(source, this.attackDamage() * 0.75F);
             victim.setDeltaMovement(push.x, 0.6D, push.z);
             victim.hurtMarked = true;
             if (victim instanceof ServerPlayer player) {
@@ -1151,16 +1177,23 @@ public class WitherstormEntity extends Monster implements GeoEntity, MultipartEn
         if (this.placedBlocks.isEmpty()) return;
         boolean grief = this.griefing(level);
         double radiusSqr = radius * radius;
+        double forgetSqr = Math.max(128.0D * 128.0D, radiusSqr * 4.0D);
         List<BlockPos> hits = new ArrayList<>();
         LongIterator iterator = this.placedBlocks.iterator();
         while (iterator.hasNext()) {
             BlockPos pos = BlockPos.of(iterator.nextLong());
+            double distance = pos.distToCenterSqr(this.position());
+            if (!level.isLoaded(pos) || distance > forgetSqr) {
+                iterator.remove();
+                continue;
+            }
+            if (distance > radiusSqr) continue;
             BlockState state = level.getBlockState(pos);
             if (state.isAir()) {
                 iterator.remove();
                 continue;
             }
-            if (grief && hits.size() < maxBlocks && pos.distToCenterSqr(this.position()) <= radiusSqr && this.breakable(level, pos, state)) {
+            if (grief && hits.size() < maxBlocks && this.breakable(level, pos, state)) {
                 hits.add(pos);
                 iterator.remove();
             }

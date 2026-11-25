@@ -26,7 +26,7 @@ import java.util.UUID;
 public final class AstralProjection {
     private static final String TAG = "integrated_superheroes_astral";
     private static final int MIND_COLOR = 0xB57CFF;
-    private static final Map<UUID, Trip> TRIPS = new HashMap<>();
+    private static final Map<UUID, Trip> TRIPS = ServerState.map(new HashMap<>());
     private static boolean registered;
 
     private record Trip(ResourceKey<Level> dimension, Vec3 origin, long start, long until) {

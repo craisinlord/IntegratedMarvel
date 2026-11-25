@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public final class HeroShockwaves {
-    private static final List<Wave> ACTIVE = new ArrayList<>();
+    private static final List<Wave> ACTIVE = ServerState.all(new ArrayList<>());
 
     private HeroShockwaves() {
     }
@@ -35,7 +35,7 @@ public final class HeroShockwaves {
 
         int z();
 
-        void affect(ServerLevel level, ServerPlayer owner);
+        void affect(ServerLevel level, LivingEntity owner);
     }
 
     private record GroundPoint(BlockPos pos) implements Point {
@@ -55,7 +55,7 @@ public final class HeroShockwaves {
         }
 
         @Override
-        public void affect(ServerLevel level, ServerPlayer owner) {
+        public void affect(ServerLevel level, LivingEntity owner) {
             BlockState state = level.getBlockState(pos);
             if (state.isAir()) {
                 return;
@@ -112,7 +112,7 @@ public final class HeroShockwaves {
         }
     }
 
-    public static void ring(ServerPlayer player, int directions, int length, float damage) {
+    public static void ring(LivingEntity player, int directions, int length, float damage) {
         List<Float> yaws = new ArrayList<>();
         for (int i = 0; i < directions; i++) {
             yaws.add(360.0F / directions * i);
@@ -120,7 +120,7 @@ public final class HeroShockwaves {
         launch(player, yaws, 1.0D, length, damage);
     }
 
-    public static void fan(ServerPlayer player, int lines, float spread, int length, float damage) {
+    public static void fan(LivingEntity player, int lines, float spread, int length, float damage) {
         List<Float> yaws = new ArrayList<>();
         for (int i = 0; i < lines; i++) {
             float offset = lines == 1 ? 0.0F : -spread + 2.0F * spread * i / (lines - 1);
@@ -129,8 +129,8 @@ public final class HeroShockwaves {
         launch(player, yaws, 1.5D, length, damage);
     }
 
-    private static void launch(ServerPlayer player, List<Float> yaws, double start, int length, float damage) {
-        ServerLevel level = player.serverLevel();
+    private static void launch(LivingEntity player, List<Float> yaws, double start, int length, float damage) {
+        ServerLevel level = (ServerLevel) player.level();
         int y = Mth.floor(player.getBoundingBox().minY);
         List<List<Point>> lines = new ArrayList<>();
         for (float yaw : yaws) {
@@ -153,8 +153,7 @@ public final class HeroShockwaves {
         Iterator<Wave> iterator = ACTIVE.iterator();
         while (iterator.hasNext()) {
             Wave wave = iterator.next();
-            ServerPlayer owner = wave.level.getServer().getPlayerList().getPlayer(wave.owner);
-            if (owner == null || owner.level() != wave.level) {
+            if (!(wave.level.getEntity(wave.owner) instanceof LivingEntity owner) || !owner.isAlive()) {
                 iterator.remove();
                 continue;
             }
@@ -166,9 +165,9 @@ public final class HeroShockwaves {
                     point.affect(wave.level, owner);
                     AABB box = new AABB(point.x(), point.y() + 1.0D, point.z(), point.x() + 1.0D, point.y() + 3.0D, point.z() + 1.0D).inflate(0.5D);
                     for (LivingEntity target : wave.level.getEntitiesOfClass(LivingEntity.class, box,
-                            entity -> entity != owner && entity.isAlive() && !wave.hit.contains(entity.getId()))) {
+                            entity -> HeroCaster.foe(owner, entity) && !wave.hit.contains(entity.getId()))) {
                         wave.hit.add(target.getId());
-                        HeroAdvancements.within(wave.cast, () -> target.hurt(owner.damageSources().mobAttack(owner), wave.damage));
+                        HeroAdvancements.within(wave.cast, () -> HeroHits.hurt(owner, target, owner.damageSources().mobAttack(owner), wave.damage));
                         Vec3 push = new Vec3(target.getX() - owner.getX(), 0.0D, target.getZ() - owner.getZ());
                         Vec3 away = push.lengthSqr() < 1.0E-4D ? Vec3.ZERO : push.normalize().scale(ModCompat.MUTANT_MONSTERS ? 0.0D : 0.5D);
                         target.setDeltaMovement(target.getDeltaMovement().add(away.x, 0.6D, away.z));

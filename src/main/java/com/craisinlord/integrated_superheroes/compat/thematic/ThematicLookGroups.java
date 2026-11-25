@@ -12,9 +12,17 @@ import net.minecraft.world.item.Item;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class ThematicLookGroups {
+    private static final Map<String, List<String>> MEMBERS = new ConcurrentHashMap<>();
+
     private ThematicLookGroups() {
+    }
+
+    public static void clearCache() {
+        MEMBERS.clear();
     }
 
     public static boolean isSuit(String id) {
@@ -24,6 +32,10 @@ public final class ThematicLookGroups {
     }
 
     public static List<String> members(String base) {
+        return MEMBERS.computeIfAbsent(base, ThematicLookGroups::findMembers);
+    }
+
+    private static List<String> findMembers(String base) {
         ResourceLocation location = ResourceLocation.tryParse(base);
         if (location == null) {
             return List.of();
@@ -38,8 +50,11 @@ public final class ThematicLookGroups {
         if (found.isEmpty()) {
             String prefix = location.getPath() + "_";
             for (Item item : BuiltInRegistries.ITEM) {
+                if (!(item instanceof CharacterAltItem)) {
+                    continue;
+                }
                 ResourceLocation key = BuiltInRegistries.ITEM.getKey(item);
-                if (item instanceof CharacterAltItem && key.getNamespace().equals(location.getNamespace()) && key.getPath().startsWith(prefix)) {
+                if (key.getNamespace().equals(location.getNamespace()) && key.getPath().startsWith(prefix)) {
                     found.add(key);
                 }
             }

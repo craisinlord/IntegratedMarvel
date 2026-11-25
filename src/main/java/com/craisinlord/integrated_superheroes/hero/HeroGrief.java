@@ -4,6 +4,7 @@ import com.craisinlord.integrated_superheroes.gauntlet.GauntletGrief;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -25,24 +26,24 @@ public final class HeroGrief {
         return entity instanceof ServerPlayer || entity instanceof OwnableEntity ownable && ownable.getOwnerUUID() != null;
     }
 
-    public static boolean canBreak(ServerPlayer player, ServerLevel level, BlockPos pos) {
-        return player != null && GauntletGrief.canEdit(player, level, pos);
+    public static boolean canBreak(LivingEntity caster, ServerLevel level, BlockPos pos) {
+        return caster instanceof ServerPlayer player && GauntletGrief.canEdit(player, level, pos);
     }
 
-    public static boolean allowBreak(ServerPlayer player, ServerLevel level, BlockPos pos) {
-        if (player == null || !GauntletGrief.canEditQuietly(player, level, pos)) return false;
+    public static boolean allowBreak(LivingEntity caster, ServerLevel level, BlockPos pos) {
+        if (!(caster instanceof ServerPlayer player) || !GauntletGrief.canEditQuietly(player, level, pos)) return false;
         BlockState state = level.getBlockState(pos);
         if (state.isAir()) return true;
         return !NeoForge.EVENT_BUS.post(new BlockEvent.BreakEvent(level, pos, state, player)).isCanceled();
     }
 
-    public static boolean tryBreak(ServerPlayer player, ServerLevel level, BlockPos pos, boolean drop) {
-        if (!allowBreak(player, level, pos)) return false;
-        return level.destroyBlock(pos, drop, player);
+    public static boolean tryBreak(LivingEntity caster, ServerLevel level, BlockPos pos, boolean drop) {
+        if (!allowBreak(caster, level, pos)) return false;
+        return level.destroyBlock(pos, drop, caster);
     }
 
-    public static boolean canPlace(ServerPlayer player, ServerLevel level, BlockPos pos) {
-        if (player == null || !level.isInWorldBounds(pos) || !level.isLoaded(pos) || !player.mayInteract(level, pos)) return false;
+    public static boolean canPlace(LivingEntity caster, ServerLevel level, BlockPos pos) {
+        if (!(caster instanceof ServerPlayer player) || !level.isInWorldBounds(pos) || !level.isLoaded(pos) || !player.mayInteract(level, pos)) return false;
         BlockSnapshot snapshot = BlockSnapshot.create(level.dimension(), level, pos);
         return GauntletGrief.probe(new BlockEvent.EntityPlaceEvent(snapshot, level.getBlockState(pos.below()), player));
     }

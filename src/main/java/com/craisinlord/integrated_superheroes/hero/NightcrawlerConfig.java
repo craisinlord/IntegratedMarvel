@@ -27,7 +27,7 @@ public final class NightcrawlerConfig {
 
     static void define(ModConfigSpec.Builder builder) {
         builder.push("nightcrawler");
-        STATS = new MarvelBalanceConfig.HeroStats(builder, 20.0D, 6.0D, 0.0D, 0.0D, 0.01D, 18.0D, 0,
+        STATS = new MarvelBalanceConfig.HeroStats(builder, 22.0D, 2.0D, 0.0D, 0.0D, 0.01D, 18.0D, 0,
                 List.of("minecraft:generic.safe_fall_distance;6.0;ADD_VALUE"));
         BAMF_RANGE = builder.comment("Farthest a Bamf can take you, in blocks.")
                 .defineInRange("bamfRange", 12.0D, 2.0D, 32.0D);

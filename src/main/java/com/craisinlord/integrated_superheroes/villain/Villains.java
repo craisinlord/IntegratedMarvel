@@ -314,7 +314,11 @@ public final class Villains {
     }
 
     private static void onLevelTick(LevelTickEvent.Post event) {
-        if (!(event.getLevel() instanceof ServerLevel level) || !VillainConfig.enabled()) {
+        if (!(event.getLevel() instanceof ServerLevel level)) {
+            return;
+        }
+        VillainWorld.tick(level);
+        if (!VillainConfig.enabled()) {
             return;
         }
         BRAINS.keySet().removeIf(Entity::isRemoved);
@@ -323,7 +327,6 @@ public final class Villains {
                 brain.serverTick(level);
             }
         }
-        VillainWorld.tick(level);
         HydraAlarm.tick(level);
         RedBook.tick(level);
     }

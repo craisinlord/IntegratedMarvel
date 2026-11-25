@@ -24,7 +24,7 @@ import java.util.UUID;
 public final class HeroBeams {
     public static final int KING_FIRE = 1;
     public static final int QUEEN_RED = 3;
-    private static final Map<UUID, Map<Integer, Active>> BEAMS = new HashMap<>();
+    private static final Map<UUID, Map<Integer, Active>> BEAMS = ServerState.map(new HashMap<>());
 
     private HeroBeams() {
     }
@@ -68,25 +68,30 @@ public final class HeroBeams {
                 (float) dropChance, (float) maxResistance, terrainRadius > 0.0D, false);
     }
 
-    public static void fire(ServerPlayer player, int channel, Spec spec) {
+    public static void fire(LivingEntity player, int channel, Spec spec) {
         fire(player, channel, spec, null);
     }
 
-    public static void fire(ServerPlayer player, int channel, Spec spec, Eye eye) {
+    public static void fire(LivingEntity player, int channel, Spec spec, Eye eye) {
         stop(player, channel);
         BEAMS.computeIfAbsent(player.getUUID(), ignored -> new HashMap<>()).put(channel, new Active(new BeamController(player), spec, eye));
     }
 
-    public static void flash(ServerPlayer player, int channel, Vec3 end, Eye eye, int life) {
+    public static void flash(LivingEntity player, int channel, Vec3 end, Eye eye, int life) {
         send(player, new EyeBeamPayload(player.getId(), channel, true, end.x, end.y, end.z, eye.core(), eye.glow(), eye.scale(), life));
     }
 
-    public static boolean isFiring(ServerPlayer player, int channel) {
+    public static boolean isFiringAny(LivingEntity owner) {
+        Map<Integer, Active> beams = BEAMS.get(owner.getUUID());
+        return beams != null && !beams.isEmpty();
+    }
+
+    public static boolean isFiring(LivingEntity player, int channel) {
         Map<Integer, Active> beams = BEAMS.get(player.getUUID());
         return beams != null && beams.containsKey(channel);
     }
 
-    public static void stop(ServerPlayer player, int channel) {
+    public static void stop(LivingEntity player, int channel) {
         Map<Integer, Active> beams = BEAMS.get(player.getUUID());
         if (beams == null) {
             return;
@@ -105,7 +110,7 @@ public final class HeroBeams {
         }
     }
 
-    public static void stopAll(ServerPlayer player) {
+    public static void stopAll(LivingEntity player) {
         Map<Integer, Active> beams = BEAMS.get(player.getUUID());
         if (beams != null) {
             for (Integer channel : beams.keySet().toArray(Integer[]::new)) {
@@ -114,7 +119,7 @@ public final class HeroBeams {
         }
     }
 
-    public static void tick(ServerPlayer player) {
+    public static void tick(LivingEntity player) {
         Map<Integer, Active> beams = BEAMS.get(player.getUUID());
         if (beams == null) {
             return;
@@ -154,12 +159,12 @@ public final class HeroBeams {
         }
     }
 
-    private static void burn(ServerPlayer player, Vec3 start, Vec3 end, Spec spec) {
-        ServerLevel level = player.serverLevel();
+    private static void burn(LivingEntity player, Vec3 start, Vec3 end, Spec spec) {
+        ServerLevel level = ((ServerLevel) player.level());
         AABB area = new AABB(start, end).inflate(spec.settings().impactDamageRadius());
         Vec3 path = end.subtract(start);
         double lengthSqr = Math.max(1.0E-4D, path.lengthSqr());
-        for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, area, entity -> entity != player && entity.isAlive())) {
+        for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, area, entity -> HeroCaster.foe(player, entity))) {
             Vec3 center = target.getBoundingBox().getCenter();
             double t = Math.max(0.0D, Math.min(1.0D, center.subtract(start).dot(path) / lengthSqr));
             Vec3 closest = start.add(path.scale(t));
@@ -173,17 +178,17 @@ public final class HeroBeams {
                 && level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
             BlockPos firePos = BlockPos.containing(end);
             if (level.getBlockState(firePos).isAir() && BaseFireBlock.canBePlacedAt(level, firePos, player.getDirection())
-                    && HeroGrief.canPlace(player, level, firePos)) {
+                    && player instanceof ServerPlayer owner && HeroGrief.canPlace(owner, level, firePos)) {
                 level.setBlockAndUpdate(firePos, BaseFireBlock.getState(level, firePos));
             }
         }
     }
 
-    private static Vec3 origin(ServerPlayer player, Spec spec) {
+    private static Vec3 origin(LivingEntity player, Spec spec) {
         return player.getEyePosition().add(player.getLookAngle().scale(spec.forwardOffset())).subtract(0.0D, spec.downOffset(), 0.0D);
     }
 
-    private static Vec3 direction(ServerPlayer player, Spec spec, int age) {
+    private static Vec3 direction(LivingEntity player, Spec spec, int age) {
         float yaw = spec.yawOffset();
         if (spec.sweep() != 0.0F) {
             float progress = Math.min(1.0F, age / (float) Math.max(1, spec.settings().durationTicks() - 1));
@@ -197,7 +202,7 @@ public final class HeroBeams {
         return Vec3.directionFromRotation(player.getXRot() + pitch, player.getYRot() + yaw);
     }
 
-    private static void eye(ServerPlayer player, int channel, Active active, Vec3 end) {
+    private static void eye(LivingEntity player, int channel, Active active, Vec3 end) {
         Eye eye = active.eye;
         send(player, new EyeBeamPayload(player.getId(), channel, true, end.x, end.y, end.z, eye.core(), eye.glow(), eye.scale(), 4));
         if (channel != 0) {
@@ -207,7 +212,7 @@ public final class HeroBeams {
             HeroFx.play(player, HeroFx.sound(eye.sound(), SoundEvents.BLAZE_SHOOT), 0.8F, 1.0F);
         }
         if (eye.impact() != null && active.age % 6 == 1) {
-            ServerLevel level = player.serverLevel();
+            ServerLevel level = ((ServerLevel) player.level());
             for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, new AABB(end, end).inflate(1.5D),
                     entity -> entity != player && entity.isAlive())) {
                 HeroFx.vfx(level, target.position(), eye.impact(), 0, () -> {
@@ -217,18 +222,18 @@ public final class HeroBeams {
         }
     }
 
-    private static void send(ServerPlayer owner, EyeBeamPayload payload) {
-        for (ServerPlayer viewer : owner.serverLevel().players()) {
+    private static void send(LivingEntity owner, EyeBeamPayload payload) {
+        for (ServerPlayer viewer : ((ServerLevel) owner.level()).players()) {
             if (viewer.distanceToSqr(owner) <= 192.0D * 192.0D) {
                 PacketDistributor.sendToPlayer(viewer, payload);
             }
         }
     }
 
-    private static void broadcast(ServerPlayer owner, int channel, int kind, boolean active, Vec3 start, Vec3 end, int age) {
+    private static void broadcast(LivingEntity owner, int channel, int kind, boolean active, Vec3 start, Vec3 end, int age) {
         int key = -(owner.getId() * 16 + channel + 1);
         MindBeamStatePayload payload = new MindBeamStatePayload(active, kind, key, start.x, start.y, start.z, end.x, end.y, end.z, age);
-        for (ServerPlayer viewer : owner.serverLevel().players()) {
+        for (ServerPlayer viewer : ((ServerLevel) owner.level()).players()) {
             if (viewer.distanceToSqr(owner) <= 192.0D * 192.0D) {
                 PacketDistributor.sendToPlayer(viewer, payload);
             }

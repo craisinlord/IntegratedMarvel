@@ -43,13 +43,15 @@ import java.util.List;
 import java.util.Set;
 
 final class PrunedLanding {
-    private static final int BLOCKS_PER_TICK = 4096;
+    private static final int BLOCKS_PER_TICK = 1024;
+    private static final int SHAPES_PER_TICK = 2048;
 
     private final PrunedPiece piece;
     private final PrunedChunkEntity chunk;
     private final RandomSource random;
     private final RandomSource lootRandom;
     private int placed;
+    private int shaped;
     private boolean finished;
 
     PrunedLanding(PrunedPiece piece, PrunedChunkEntity chunk) {
@@ -91,13 +93,18 @@ final class PrunedLanding {
         if (this.placed < blocks.size()) {
             return;
         }
-        for (StructureTemplate.StructureBlockInfo info : blocks) {
-            BlockPos pos = info.pos();
+        int shapeEnd = Math.min(blocks.size(), this.shaped + SHAPES_PER_TICK);
+        for (int i = this.shaped; i < shapeEnd; i++) {
+            BlockPos pos = blocks.get(i).pos();
             BlockState state = level.getBlockState(pos);
             BlockState updated = Block.updateFromNeighbourShapes(state, level, pos);
             if (updated != state) {
                 level.setBlock(pos, updated, Block.UPDATE_CLIENTS);
             }
+        }
+        this.shaped = shapeEnd;
+        if (this.shaped < blocks.size()) {
+            return;
         }
         List<BlockPos> tops = this.tops(level);
         boolean hasLoot = false;
@@ -125,7 +132,7 @@ final class PrunedLanding {
             Clearable.tryClear(level.getBlockEntity(pos));
             level.setBlock(pos, Blocks.BARRIER.defaultBlockState(), Block.UPDATE_INVISIBLE | Block.UPDATE_KNOWN_SHAPE);
         }
-        if (!level.setBlock(pos, info.state(), Block.UPDATE_CLIENTS) || nbt == null) {
+        if (!level.setBlock(pos, info.state(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE) || nbt == null) {
             return;
         }
         BlockEntity entity = level.getBlockEntity(pos);
@@ -313,6 +320,9 @@ final class PrunedLanding {
         for (int i = 0; i < slots; i++) {
             if (this.random.nextDouble() >= chance) {
                 continue;
+            }
+            if (VoidVariants.full(level)) {
+                return;
             }
             try {
                 BlockPos spot = spots.get(this.random.nextInt(spots.size()));
