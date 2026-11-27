@@ -92,6 +92,8 @@ public final class ThematicVillains {
     private static final String KEY_CRADLE = "Cradle";
     private static final String MINION_TAG = "integrated_superheroes_ultron_minion";
     private static final String PLAYER_COOLDOWN = "integrated_superheroes_living_villain_next";
+    private static final String BLACK_ADAM_COOLDOWN = "integrated_superheroes_black_adam_next";
+    private static final String ESCAPEE_COOLDOWN = "integrated_superheroes_escapee_next";
     private static final TagKey<Biome> DESERTS = TagKey.create(Registries.BIOME, ResourceLocation.parse("c:is_desert"));
     private static final int CHECK_TICKS = 600;
     private static final Map<Entity, Tracked> TRACKED = new WeakHashMap<>();
@@ -363,13 +365,76 @@ public final class ThematicVillains {
                 tickVillain(level, tracked, now);
             }
         }
-        if (level.dimension() == Level.OVERWORLD && now % 20L == 0L) {
-            for (ServerPlayer player : level.players()) {
-                if ((now + player.getId() * 20L) % CHECK_TICKS == 0L && player.isAlive() && !player.isSpectator() && !player.isCreative()) {
+        if (now % 20L != 0L) {
+            return;
+        }
+        boolean overworld = level.dimension() == Level.OVERWORLD;
+        double caveChance = overworld ? 0.0D : caveEscapeeChance(level);
+        if (!overworld && caveChance <= 0.0D) {
+            return;
+        }
+        for (ServerPlayer player : level.players()) {
+            if ((now + player.getId() * 20L) % CHECK_TICKS == 0L && player.isAlive() && !player.isSpectator() && !player.isCreative()) {
+                if (overworld) {
                     checkSpawns(level, player);
+                } else {
+                    checkCaveEscapee(level, player, caveChance);
                 }
             }
         }
+    }
+
+    private static double caveEscapeeChance(ServerLevel level) {
+        if (!VillainConfig.ESCAPEE_SPAWNS.get()) {
+            return 0.0D;
+        }
+        String id = level.dimension().location().toString();
+        for (String entry : VillainConfig.ESCAPEE_CAVE_DIMENSIONS.get()) {
+            int split = entry.lastIndexOf('=');
+            if (split > 0 && entry.substring(0, split).trim().equals(id)) {
+                try {
+                    return Double.parseDouble(entry.substring(split + 1).trim());
+                } catch (NumberFormatException ignored) {
+                    return 0.0D;
+                }
+            }
+        }
+        return 0.0D;
+    }
+
+    private static void checkCaveEscapee(ServerLevel level, ServerPlayer player, double chance) {
+        if (!roll(level, chance) || !ready(player, ESCAPEE_COOLDOWN) || typeNear(level, player.position(), ESCAPEE, 128.0D)) {
+            return;
+        }
+        Vec3 at = floorSpot(level, player.position(), 12.0D, 24.0D);
+        if (at != null && spawn(level, ESCAPEE, at, null) != null) {
+            level.sendParticles(net.minecraft.core.particles.ParticleTypes.EXPLOSION_EMITTER, at.x, at.y + 0.5D, at.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+            level.playSound(null, BlockPos.containing(at), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.HOSTILE, 2.0F, 0.6F);
+            cooldown(player, ESCAPEE_COOLDOWN, VillainConfig.ESCAPEE_COOLDOWN_MINUTES.get());
+        }
+    }
+
+    private static Vec3 floorSpot(ServerLevel level, Vec3 around, double min, double max) {
+        int baseY = Mth.floor(around.y);
+        for (int attempt = 0; attempt < 16; attempt++) {
+            double angle = level.random.nextDouble() * Math.PI * 2.0D;
+            double distance = min + level.random.nextDouble() * (max - min);
+            int x = Mth.floor(around.x + Math.cos(angle) * distance);
+            int z = Mth.floor(around.z + Math.sin(angle) * distance);
+            if (!level.hasChunkAt(new BlockPos(x, baseY, z))) {
+                continue;
+            }
+            for (int dy = 6; dy >= -10; dy--) {
+                BlockPos pos = new BlockPos(x, baseY + dy, z);
+                if (level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), net.minecraft.core.Direction.UP)
+                        && level.getBlockState(pos.below()).getFluidState().isEmpty()
+                        && level.getBlockState(pos).isAir() && level.getBlockState(pos.above()).isAir()
+                        && level.getBlockState(pos.above(2)).isAir()) {
+                    return Vec3.atBottomCenterOf(pos);
+                }
+            }
+        }
+        return null;
     }
 
     private static void tickVillain(ServerLevel level, Tracked tracked, long now) {
@@ -470,21 +535,21 @@ public final class ThematicVillains {
             return;
         }
         if (outdoors && level.getBiome(pos).is(DESERTS) || outdoors && level.getBiome(pos).is(Biomes.DESERT)) {
-            if (roll(level, VillainConfig.BLACK_ADAM_CHANCE.get()) && ready(player) && livingNear(level, player.position(), BLACK_ADAM, 256.0D) == null) {
+            if (roll(level, VillainConfig.BLACK_ADAM_CHANCE.get()) && ready(player, BLACK_ADAM_COOLDOWN) && livingNear(level, player.position(), BLACK_ADAM, 256.0D) == null) {
                 Vec3 at = surfaceSpot(level, player.position(), 24.0D, 40.0D);
                 if (at != null && spawn(level, BLACK_ADAM, at, player) != null) {
-                    cooldown(player);
+                    cooldown(player, BLACK_ADAM_COOLDOWN, VillainConfig.BLACK_ADAM_COOLDOWN_MINUTES.get());
                     return;
                 }
             }
         }
         if (outdoors && level.isNight() && !level.isRaining() && VillainConfig.ESCAPEE_SPAWNS.get()
-                && roll(level, VillainConfig.ESCAPEE_CHANCE.get()) && ready(player) && !typeNear(level, player.position(), ESCAPEE, 128.0D)) {
+                && roll(level, VillainConfig.ESCAPEE_CHANCE.get()) && ready(player, ESCAPEE_COOLDOWN) && !typeNear(level, player.position(), ESCAPEE, 128.0D)) {
             Vec3 at = surfaceSpot(level, player.position(), 20.0D, 32.0D);
             if (at != null && spawn(level, ESCAPEE, at, null) != null) {
                 level.sendParticles(net.minecraft.core.particles.ParticleTypes.EXPLOSION_EMITTER, at.x, at.y + 0.5D, at.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
                 level.playSound(null, BlockPos.containing(at), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.HOSTILE, 2.0F, 0.6F);
-                cooldown(player);
+                cooldown(player, ESCAPEE_COOLDOWN, VillainConfig.ESCAPEE_COOLDOWN_MINUTES.get());
                 return;
             }
         }
@@ -521,7 +586,15 @@ public final class ThematicVillains {
     }
 
     private static boolean ready(ServerPlayer player) {
-        return System.currentTimeMillis() >= player.getPersistentData().getLong(PLAYER_COOLDOWN);
+        return ready(player, PLAYER_COOLDOWN);
+    }
+
+    private static boolean ready(ServerPlayer player, String key) {
+        return System.currentTimeMillis() >= player.getPersistentData().getLong(key);
+    }
+
+    private static void cooldown(ServerPlayer player, String key, int minutes) {
+        player.getPersistentData().putLong(key, System.currentTimeMillis() + minutes * 60000L);
     }
 
     private static boolean crewReady(ServerPlayer player) {

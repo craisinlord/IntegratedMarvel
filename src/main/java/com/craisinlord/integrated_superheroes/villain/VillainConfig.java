@@ -38,6 +38,9 @@ public final class VillainConfig {
     public static final ModConfigSpec.DoubleValue BLACK_ADAM_CHANCE;
     public static final ModConfigSpec.DoubleValue REVERSE_FLASH_CHANCE;
     public static final ModConfigSpec.IntValue LIVING_VILLAIN_COOLDOWN_MINUTES;
+    public static final ModConfigSpec.IntValue BLACK_ADAM_COOLDOWN_MINUTES;
+    public static final ModConfigSpec.IntValue ESCAPEE_COOLDOWN_MINUTES;
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> ESCAPEE_CAVE_DIMENSIONS;
     public static final ModConfigSpec.DoubleValue VILLAGE_CREW_CHANCE;
     public static final ModConfigSpec.DoubleValue STREET_CREW_CHANCE;
     public static final ModConfigSpec.DoubleValue JOKER_CHANCE;
@@ -121,8 +124,12 @@ public final class VillainConfig {
                 .defineInRange("blackAdamChance", 0.004D, 0.0D, 1.0D);
         REVERSE_FLASH_CHANCE = builder.comment("Chance per check (every 30 seconds, per player outdoors in an Overworld thunderstorm) that Reverse Flash appears.")
                 .defineInRange("reverseFlashChance", 0.02D, 0.0D, 1.0D);
-        LIVING_VILLAIN_COOLDOWN_MINUTES = builder.comment("Real minutes before the same player can meet Black Adam, Reverse Flash or a Phantom Zone Escapee again.")
+        LIVING_VILLAIN_COOLDOWN_MINUTES = builder.comment("Real minutes before the same player can meet Reverse Flash or the Joker again.")
                 .defineInRange("livingVillainCooldownMinutes", 120, 0, 100000);
+        BLACK_ADAM_COOLDOWN_MINUTES = builder.comment("Real minutes before the same player can meet Black Adam again. Separate from the other living villains.")
+                .defineInRange("blackAdamCooldownMinutes", 30, 0, 100000);
+        ESCAPEE_COOLDOWN_MINUTES = builder.comment("Real minutes before the same player can meet another Phantom Zone Escapee. Separate from the other living villains.")
+                .defineInRange("escapeeCooldownMinutes", 30, 0, 100000);
         VILLAGE_CREW_CHANCE = builder.comment("Chance per check (every 30 seconds, per player in an Overworld village at night) that the Penguin's or Two-Face's crew",
                         "starts a raid. Each player can only run each raid once every two hours.")
                 .defineInRange("villageCrewChance", 0.01D, 0.0D, 1.0D);
@@ -132,15 +139,18 @@ public final class VillainConfig {
         JOKER_CHANCE = builder.comment("Chance per check (every 30 seconds, per player inside an Abandoned Street at night) that the Joker shows up.",
                         "Only for players who have beaten both the Penguin and Two-Face. Shares the living villain cooldown.")
                 .defineInRange("jokerChance", 0.2D, 0.0D, 1.0D);
-        ESCAPEE_SPAWNS = builder.comment("A Phantom Zone Escapee can crash down near players outdoors on clear Overworld nights.")
+        ESCAPEE_SPAWNS = builder.comment("A Phantom Zone Escapee can crash down near players outdoors on clear Overworld nights, or in the escapeeCaveDimensions.")
                 .define("escapeeSpawns", true);
         ESCAPEE_CHANCE = builder.comment("Chance per check (every 30 seconds, per player outdoors on a clear Overworld night) that a Phantom Zone Escapee appears.",
-                        "Shares the living villain cooldown.")
-                .defineInRange("escapeeChance", 0.003D, 0.0D, 1.0D);
+                        "Uses the Escapee cooldown.")
+                .defineInRange("escapeeChance", 0.015D, 0.0D, 1.0D);
+        ESCAPEE_CAVE_DIMENSIONS = builder.comment("Dimensions without open sky where a Phantom Zone Escapee can break through at any time, as dimension=chance per check",
+                        "(every 30 seconds, per player). They land on solid ground near the player. Uses the Escapee cooldown.")
+                .defineListAllowEmpty("escapeeCaveDimensions", List.of("antarchy:thoraxis=0.04"), () -> "", entry -> entry instanceof String);
         KRYPTONIAN_BLOOD_CHANCE = builder.comment("Chance a Phantom Zone Escapee killed by a player drops Kryptonian Blood.")
-                .defineInRange("kryptonianBloodChance", 0.5D, 0.0D, 1.0D);
+                .defineInRange("kryptonianBloodChance", 1.0D, 0.0D, 1.0D);
         MARTIAN_BLOOD_CHANCE = builder.comment("Chance a Manhunter killed by a player drops Martian Blood.")
-                .defineInRange("martianBloodChance", 1.0D, 0.0D, 1.0D);
+                .defineInRange("martianBloodChance", 0.5D, 0.0D, 1.0D);
         ALIEN_BLOOD_MOBS = builder.comment("Gigeresque aliens that can drop Alien Blood when killed by a player.")
                 .defineListAllowEmpty("alienBloodMobs", List.of("gigeresque:alien", "gigeresque:runner_alien", "gigeresque:aquatic_alien",
                         "gigeresque:hellmorph_runner", "gigeresque:spitter"), () -> "", entry -> entry instanceof String);

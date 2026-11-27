@@ -55,6 +55,7 @@ public final class LanternRings {
             "life", "white_lantern");
     private static final EquipmentSlot[] SLOTS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
     private static final int OFFHAND_SLOT = 40;
+    private static final int DEFAULT_SPEED_DIAL = 50;
     private static boolean curios;
     private static final Map<Item, String> PREFIXES = new java.util.concurrent.ConcurrentHashMap<>();
 
@@ -192,6 +193,19 @@ public final class LanternRings {
         CustomData.update(DataComponents.CUSTOM_DATA, ring, tag -> tag.putString(LOOK, id));
     }
 
+    public static boolean locksSpeedDial(Player player) {
+        return bond.thematic.api.util.ThematicHelper.getArmor(player) == null || made(player.getItemBySlot(EquipmentSlot.CHEST));
+    }
+
+    private static void resetSpeedDial(ServerPlayer player) {
+        bond.thematic.api.registries.data.bars.SpeedComponent speed = bond.thematic.api.registries.data.EntityComponents.SPEED.get(player);
+        if (speed != null && speed.getModifier() < DEFAULT_SPEED_DIAL) {
+            speed.setModifier(DEFAULT_SPEED_DIAL);
+            bond.thematic.api.registries.data.EntityComponents.SPEED.sync(player);
+            bond.thematic.api.util.ThematicHelper.applyStatModifiers(player);
+        }
+    }
+
     static boolean made(ItemStack stack) {
         CustomData data = stack.get(DataComponents.CUSTOM_DATA);
         return data != null && data.contains(MADE);
@@ -232,6 +246,7 @@ public final class LanternRings {
         }
         if (want != null) {
             dress(player, want);
+            resetSpeedDial(player);
         }
         evict(player);
         purge(player);

@@ -3,9 +3,6 @@ package com.craisinlord.integrated_superheroes.gauntlet;
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
 import com.craisinlord.integrated_superheroes.gauntlet.InfinityGauntletStones;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -73,12 +70,11 @@ public final class GauntletInputClientEvents {
     @SubscribeEvent
     public static void onMouseScroll(InputEvent.MouseScrollingEvent event) {
         Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player == null || minecraft.screen != null || !Screen.hasShiftDown()) return;
-        boolean aimingAtLiving = minecraft.hitResult instanceof EntityHitResult hit && hit.getEntity() instanceof LivingEntity;
-        if (!GauntletAbilityController.canScroll(minecraft.player, aimingAtLiving)) return;
+        if (minecraft.player == null || minecraft.screen != null || !GauntletKeyMappings.SCROLL_MODIFIER.isDown()) return;
+        if (!GauntletAbilityController.hasScroll(minecraft.player)) return;
+        event.setCanceled(true);
         double delta = Math.clamp(event.getScrollDeltaY(), -1.0D, 1.0D);
         if (delta == 0.0D) return;
         PacketDistributor.sendToServer(new GauntletInputPayload(GauntletAbilityController.ABILITY_SCROLL, delta));
-        event.setCanceled(true);
     }
 }

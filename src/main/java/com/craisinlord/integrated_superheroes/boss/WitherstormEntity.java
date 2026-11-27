@@ -121,7 +121,9 @@ public class WitherstormEntity extends Monster implements GeoEntity, MultipartEn
 
     private static final float SHIELDED_SHARE = 0.1F;
     private static final float HEAD_STUN_SHARE = 0.02F;
-    private static final int CORE_OPEN_TICKS = 220;
+    private static final float LATE_HEAD_STUN_SHARE = 0.035F;
+    private static final List<Double> DEFAULT_STAGE_DAMAGE = List.of(1.0D, 1.5D, 2.25D, 3.0D, 4.0D);
+    private static final int CORE_OPEN_TICKS = 160;
     private static final int INTRO_TICKS = 70;
     private static final int GROUNDED_TICKS = 100;
     private static final double ROAR_RADIUS = 32.0D;
@@ -180,8 +182,8 @@ public class WitherstormEntity extends Monster implements GeoEntity, MultipartEn
         return Monster.createMonsterAttributes()
                 .add(Attributes.MAX_HEALTH, 12000.0D)
                 .add(Attributes.ATTACK_DAMAGE, 20.0D)
-                .add(Attributes.ARMOR, 12.0D)
-                .add(Attributes.ARMOR_TOUGHNESS, 6.0D)
+                .add(Attributes.ARMOR, 20.0D)
+                .add(Attributes.ARMOR_TOUGHNESS, 12.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
                 .add(Attributes.FOLLOW_RANGE, 80.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.3D)
@@ -512,7 +514,7 @@ public class WitherstormEntity extends Monster implements GeoEntity, MultipartEn
     }
 
     private float stunThreshold() {
-        return this.getMaxHealth() * HEAD_STUN_SHARE;
+        return this.getMaxHealth() * (this.getStage() >= 3 ? LATE_HEAD_STUN_SHARE : HEAD_STUN_SHARE);
     }
 
     private boolean headStunned(int head) {
@@ -890,7 +892,13 @@ public class WitherstormEntity extends Monster implements GeoEntity, MultipartEn
     }
 
     float attackDamage() {
-        return (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE);
+        return (float) (this.getAttributeValue(Attributes.ATTACK_DAMAGE) * stageDamage(this.getStage()));
+    }
+
+    private static double stageDamage(int stage) {
+        List<? extends Double> scale = VoidConfig.SPEC.isLoaded() ? VoidConfig.STORM_STAGE_DAMAGE.get() : DEFAULT_STAGE_DAMAGE;
+        int index = stage - 1;
+        return index >= 0 && index < scale.size() ? scale.get(index) : 1.0D;
     }
 
     private double roarRadius() {

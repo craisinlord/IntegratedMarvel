@@ -32,6 +32,7 @@ public final class GauntletAbilityController {
     public static final int ACTIVATE_START = 5;
     public static final int ACTIVATE_RELEASE = 6;
     public static final int ACTIVATE = 7;
+    public static final String SCROLL_MODIFIER_KEY = "key.integrated_superheroes.gauntlet_scroll_modifier";
     private static final int MAX_BEAM_CHARGE_TICKS = 40;
     private static final int MAX_BEAM_BLOCKS = 768;
     private static final Map<AbilityCooldownKey, Cooldown> ABILITY_COOLDOWNS = new ConcurrentHashMap<>();
@@ -137,11 +138,9 @@ public final class GauntletAbilityController {
         return ability != null && ability.held();
     }
 
-    public static boolean canScroll(Player player, boolean aimingAtLiving) {
+    public static boolean hasScroll(Player player) {
         GauntletAbility ability = GauntletAbilities.selected(InfinityGauntletStones.equippedGauntlet(player));
-        if (ability == null || ability.scrollHandler() == null) return false;
-        return ability.scroll() == GauntletAbility.Scroll.ANY
-                || ability.scroll() == GauntletAbility.Scroll.ENTITY && aimingAtLiving;
+        return ability != null && ability.scrollHandler() != null;
     }
 
     private static void scroll(ServerPlayer player, ItemStack gauntlet, double delta) {

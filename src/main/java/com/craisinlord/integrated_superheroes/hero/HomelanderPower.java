@@ -108,6 +108,10 @@ public final class HomelanderPower {
                     public void incomingDamage(ServerPlayer player, LivingIncomingDamageEvent event) {
                         if (event.getSource().is(DamageTypeTags.IS_FALL) || event.getSource().is(DamageTypes.FLY_INTO_WALL)) {
                             event.setCanceled(true);
+                            return;
+                        }
+                        if (!event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY) && !event.getSource().is(DamageTypeTags.BYPASSES_RESISTANCE)) {
+                            event.setAmount(event.getAmount() * (float) (1.0D - NewSerumConfig.HOMELANDER_DAMAGE_REDUCTION.get() / 100.0D));
                         }
                     }
                 }

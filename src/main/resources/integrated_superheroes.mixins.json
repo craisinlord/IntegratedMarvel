@@ -127,6 +127,7 @@
     "ThematicStateFlagsMixin",
     "MobPersistenceAccessor",
     "ThematicRingActiveMixin",
+    "ThematicSpeedDialMixin",
     "ThematicSuitPieceSlotMixin",
     "ThematicScorchedGunsBrainMixin",
     "ThematicScorchedGunsRollMixin",

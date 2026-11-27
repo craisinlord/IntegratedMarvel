@@ -173,7 +173,7 @@ final class WitherstormDevour {
 
     private void swallow(ServerLevel level, LivingEntity entity) {
         if (entity instanceof ServerPlayer player) {
-            if (this.ticks % 10 == 1) player.hurt(this.storm.damageSources().mobAttack(this.storm), this.storm.attackDamage() * 0.25F);
+            if (this.ticks % 10 == 1) player.hurt(this.storm.damageSources().mobAttack(this.storm), this.storm.attackDamage() * 0.4F);
             return;
         }
         level.sendParticles(ParticleTypes.SQUID_INK, entity.getX(), entity.getY() + entity.getBbHeight() * 0.5D, entity.getZ(), 12, 0.4D, 0.4D, 0.4D, 0.05D);

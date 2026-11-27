@@ -7,11 +7,23 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.settings.IKeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 
 @EventBusSubscriber(modid = IntegratedSuperheroes.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public final class GauntletKeyMappings {
     public static final String CATEGORY = "key.categories.integrated_superheroes.gauntlet";
+    private static final IKeyConflictContext GAUNTLET_MODIFIER = new IKeyConflictContext() {
+        @Override
+        public boolean isActive() {
+            return KeyConflictContext.IN_GAME.isActive();
+        }
+
+        @Override
+        public boolean conflicts(IKeyConflictContext other) {
+            return other == KeyConflictContext.IN_GAME;
+        }
+    };
     public static final KeyMapping PREVIOUS_STONE = new KeyMapping(
             "key.integrated_superheroes.gauntlet_previous_stone",
             KeyConflictContext.IN_GAME,
@@ -50,7 +62,14 @@ public final class GauntletKeyMappings {
 
     public static final KeyMapping ABILITY_INFO = new KeyMapping(
             "key.integrated_superheroes.gauntlet_ability_info",
-            KeyConflictContext.IN_GAME,
+            GAUNTLET_MODIFIER,
+            InputConstants.Type.KEYSYM,
+            InputConstants.KEY_LALT,
+            CATEGORY
+    );
+    public static final KeyMapping SCROLL_MODIFIER = new KeyMapping(
+            GauntletAbilityController.SCROLL_MODIFIER_KEY,
+            GAUNTLET_MODIFIER,
             InputConstants.Type.KEYSYM,
             InputConstants.KEY_LALT,
             CATEGORY
@@ -67,5 +86,6 @@ public final class GauntletKeyMappings {
         event.register(NEXT_ABILITY);
         event.register(SPACE_DESTINATION);
         event.register(ABILITY_INFO);
+        event.register(SCROLL_MODIFIER);
     }
 }

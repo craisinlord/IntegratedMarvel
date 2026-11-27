@@ -64,6 +64,7 @@ public final class MartianPower {
     private static final Map<UUID, Long> DENSE_UNTIL = ServerState.map(new HashMap<>());
     private static final Map<UUID, Float> FALLING = ServerState.map(new HashMap<>());
     private static final Map<UUID, Long> CAMO_SEEN = ServerState.map(new HashMap<>());
+    private static final Map<UUID, Long> CAMO_UNTIL = ServerState.map(new HashMap<>());
     private static final Map<UUID, EntityType<?>> FORMS = ServerState.map(new HashMap<>());
     private static final Map<UUID, Long> BLOWN = ServerState.map(new HashMap<>());
     private static final Map<UUID, Thrall> THRALLS = ServerState.map(new HashMap<>());
@@ -121,11 +122,9 @@ public final class MartianPower {
                         tickDense(player);
                         if (InvisibleWomanPower.isInvisible(player)) {
                             CAMO_SEEN.put(player.getUUID(), player.level().getGameTime());
-                            if (player.tickCount % 10 == 0) {
-                                InvisibleWomanPower.loseMobs(player);
-                                if (KittyPower.isPhasing(player)) {
-                                    HeroAdvancements.award(player, "justice_league/martian/not_here");
-                                }
+                            Long until = CAMO_UNTIL.get(player.getUUID());
+                            if (until == null || player.level().getGameTime() >= until) {
+                                endCamo(player);
                             }
                         }
                         if (player.tickCount % 5 == 0) {
@@ -157,6 +156,7 @@ public final class MartianPower {
                         FORMS.remove(player.getUUID());
                         BLOWN.remove(player.getUUID());
                         CAMO_SEEN.remove(player.getUUID());
+                        CAMO_UNTIL.remove(player.getUUID());
                     }
 
                     @Override
@@ -168,7 +168,7 @@ public final class MartianPower {
                         if (event.getSource().is(DamageTypeTags.IS_FIRE)) {
                             event.setAmount(event.getAmount() * NewSerumConfig.MARTIAN_FIRE_MULTIPLIER.get().floatValue());
                             if (InvisibleWomanPower.isInvisible(player)) {
-                                InvisibleWomanPower.reveal(player);
+                                endCamo(player);
                             }
                         }
                     }
@@ -190,8 +190,7 @@ public final class MartianPower {
                         Long seen = CAMO_SEEN.remove(player.getUUID());
                         if (seen != null && player.level().getGameTime() - seen <= 2L) {
                             event.setAmount(event.getAmount() * NewSerumConfig.CAMOUFLAGE_STRIKE_MULTIPLIER.get().floatValue());
-                            InvisibleWomanPower.reveal(player);
-                            HeroAbilities.setCooldown(player, VANISH, NewSerumConfig.MARTIAN_VANISH_COOLDOWN.get());
+                            endCamo(player);
                             Vec3 center = victim.getBoundingBox().getCenter();
                             player.serverLevel().sendParticles(ParticleTypes.CRIT, center.x, center.y, center.z, 12, 0.3D, 0.4D, 0.3D, 0.2D);
                             HeroFx.play(victim, SoundEvents.PLAYER_ATTACK_CRIT, 1.0F, 0.7F);
@@ -260,6 +259,12 @@ public final class MartianPower {
         }
         if (player.getY() < player.level().getMinBuildHeight() + 2) {
             return 0.0D;
+        }
+        if (InvisibleWomanPower.isInvisible(player)) {
+            endCamo(player);
+        }
+        if (hunted(player)) {
+            HeroAdvancements.award(player, "justice_league/martian/not_here");
         }
         KittyPower.timedPhase(player, NewSerumConfig.MARTIAN_PHASE_TICKS.get());
         PHASING.add(player.getUUID());
@@ -354,19 +359,37 @@ public final class MartianPower {
         }
     }
 
+    private static void endCamo(ServerPlayer player) {
+        CAMO_UNTIL.remove(player.getUUID());
+        InvisibleWomanPower.reveal(player);
+        HeroAbilities.setCooldown(player, VANISH, NewSerumConfig.MARTIAN_VANISH_COOLDOWN.get());
+    }
+
+    private static boolean hunted(ServerPlayer player) {
+        return !player.serverLevel().getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(24.0D),
+                mob -> mob.isAlive() && mob.getTarget() == player).isEmpty();
+    }
+
     private static double vanish(ServerPlayer player, int slot) {
         PlayerData data = HeroPowers.data(player);
         if (data.hasState(InvisibleWomanPower.INVISIBLE_STATE)) {
+            CAMO_UNTIL.remove(player.getUUID());
             data.removeState(InvisibleWomanPower.INVISIBLE_STATE);
             PlayerData.sync(player);
             HeroFx.play(player, SoundEvents.ILLUSIONER_MIRROR_MOVE, 0.8F, 1.3F);
             return NewSerumConfig.MARTIAN_VANISH_COOLDOWN.get();
+        }
+        if (KittyPower.isPhasing(player)) {
+            PHASING.remove(player.getUUID());
+            KittyPower.endPhase(player);
+            HeroAbilities.setCooldown(player, DENSITY, NewSerumConfig.MARTIAN_PHASE_COOLDOWN.get());
         }
         if (player.isOnFire()) {
             player.displayClientMessage(Component.literal("§cYou can't hold your camouflage while you're burning."), true);
             return 0.0D;
         }
         data.addState(InvisibleWomanPower.INVISIBLE_STATE);
+        CAMO_UNTIL.put(player.getUUID(), player.level().getGameTime() + NewSerumConfig.MARTIAN_CAMO_TICKS.get());
         PlayerData.sync(player);
         InvisibleWomanPower.loseMobs(player);
         HeroFx.vfx(player.serverLevel(), player.position(), "void_depart", tint(player, 0xC0000000));

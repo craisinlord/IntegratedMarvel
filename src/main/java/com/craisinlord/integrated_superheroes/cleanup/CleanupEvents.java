@@ -35,6 +35,7 @@ public final class CleanupEvents {
             DeferredRegister.create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, IntegratedSuperheroes.MODID);
     private static final ResourceLocation EMPTY_SYRINGE = ResourceLocation.parse("marvellegacy:syringe_empty");
     private static final ResourceLocation BLOOD_SAMPLE = ResourceLocation.parse("marvel:villager_blood_sample");
+    private static final ResourceLocation GUARD = ResourceLocation.parse("guardvillagers:guard");
 
     static {
         LOOT_MODIFIERS.register("cleanup", () -> CleanupLootModifier.CODEC);
@@ -99,7 +100,8 @@ public final class CleanupEvents {
         ItemStack stack = event.getItemStack();
         if (!EMPTY_SYRINGE.equals(BuiltInRegistries.ITEM.getKey(stack.getItem()))
                 || !(event.getTarget() instanceof LivingEntity target)
-                || !(target.getType() == EntityType.VILLAGER || target.getType() == EntityType.WANDERING_TRADER)) {
+                || !(target.getType() == EntityType.VILLAGER || target.getType() == EntityType.WANDERING_TRADER
+                || GUARD.equals(BuiltInRegistries.ENTITY_TYPE.getKey(target.getType())))) {
             return;
         }
         if (event.getLevel().isClientSide() || target.isBaby() || target.hasEffect(MobEffects.CONFUSION)) {

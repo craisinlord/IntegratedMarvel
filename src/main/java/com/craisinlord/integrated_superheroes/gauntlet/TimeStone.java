@@ -4,6 +4,7 @@ import com.craisinlord.integrated_superheroes.hero.HeroFx;
 import com.craisinlord.anthology.time.TimeDilationApi;
 import com.craisinlord.anthology.time.TimeDilationEntityAccess;
 import com.craisinlord.anthology.time.TimeDilationManager;
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
@@ -97,7 +98,7 @@ public final class TimeStone {
 
     public static void age(GauntletCast cast) {
         if (!cast.crouching()) {
-            cast.message("time_target_controls");
+            cast.message("time_target_controls", Component.keybind(GauntletAbilityController.SCROLL_MODIFIER_KEY));
             return;
         }
         ServerPlayer player = cast.player();

@@ -15,6 +15,7 @@ public final class VoidConfig {
     public static final ModConfigSpec.IntValue ARRIVAL_SLOW_FALL_TICKS;
     public static final ModConfigSpec.DoubleValue NATURAL_SPAWN_CHANCE;
     public static final ModConfigSpec.BooleanValue STORM_ENABLED;
+    public static final ModConfigSpec.ConfigValue<List<? extends Double>> STORM_STAGE_DAMAGE;
     public static final ModConfigSpec.IntValue STORM_START_STAGE;
     public static final ModConfigSpec.IntValue STORM_SPAWN_DISTANCE;
     public static final ModConfigSpec.IntValue STORM_CLOSEST_DISTANCE;
@@ -112,6 +113,9 @@ public final class VoidConfig {
         STORM_COMMAND_BLOCK_DROPS = builder
                 .comment("Storm Command Blocks a Witherstorm gives the player who kills it, by the stage it died at. Stage 1 first, five values.")
                 .defineList("commandBlockDrops", List.of(0, 0, 1, 2, 4), () -> 0, value -> value instanceof Integer i && i >= 0 && i <= 64);
+        STORM_STAGE_DAMAGE = builder
+                .comment("Witherstorm attack damage multiplier by stage. Stage 1 first, five values.")
+                .defineList("stageDamage", List.of(1.0D, 1.5D, 2.25D, 3.0D, 4.0D), () -> 1.0D, value -> value instanceof Double d && d >= 0.0D && d <= 100.0D);
         builder.pop();
         builder.push("pruning");
         PRUNE_ENABLED = builder

@@ -1,6 +1,7 @@
 package com.craisinlord.integrated_superheroes.hero;
 
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
+import com.craisinlord.integrated_superheroes.compat.MorphAbilityHudCompat;
 import com.craisinlord.integrated_superheroes.compat.ScorchedGunsHud;
 import com.craisinlord.integrated_superheroes.gauntlet.InfinityGauntletStones;
 import com.craisinlord.integrated_superheroes.suit.SuitAbilities;
@@ -159,6 +160,15 @@ public final class HeroSlotsClient {
         boolean bottom = corner == HeroHudClientConfig.Corner.BOTTOM_RIGHT || corner == HeroHudClientConfig.Corner.BOTTOM_LEFT;
         int right = (rightSide ? width - padding : padding + blockWidth) + HeroHudClientConfig.offsetX();
         int top = (bottom ? height - padding - blockHeight : padding) + HeroHudClientConfig.offsetY();
+        if (corner == HeroHudClientConfig.Corner.BOTTOM_RIGHT && HeroHudClientConfig.avoidMorphHud()) {
+            float morphTop = MorphAbilityHudCompat.panelTop(minecraft, graphics);
+            if (morphTop >= 0F) {
+                int limit = (int) Math.floor(morphTop / scale) - 3;
+                if (top + blockHeight > limit) {
+                    top = Math.max(padding, limit - blockHeight);
+                }
+            }
+        }
         if (corner == HeroHudClientConfig.Corner.BOTTOM_RIGHT && HeroHudClientConfig.avoidAmmoHud()
                 && ScorchedGunsHud.showsAmmo(minecraft.player)) {
             int ammoLeft = (int) ((graphics.guiWidth() * 0.88D - 24) / scale);

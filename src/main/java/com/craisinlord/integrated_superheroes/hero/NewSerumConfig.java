@@ -42,6 +42,7 @@ public final class NewSerumConfig {
     public static ModConfigSpec.IntValue MARTIAN_PHASE_TICKS;
     public static ModConfigSpec.DoubleValue MARTIAN_PHASE_COOLDOWN;
     public static ModConfigSpec.DoubleValue MARTIAN_VANISH_COOLDOWN;
+    public static ModConfigSpec.IntValue MARTIAN_CAMO_TICKS;
     public static ModConfigSpec.IntValue DENSE_TICKS;
     public static ModConfigSpec.DoubleValue DENSE_COOLDOWN;
     public static ModConfigSpec.DoubleValue DENSE_ARMOR;
@@ -160,6 +161,7 @@ public final class NewSerumConfig {
     public static ModConfigSpec.DoubleValue GRAB_RANGE;
     public static ModConfigSpec.DoubleValue GRAB_THROW_SPEED;
     public static ModConfigSpec.DoubleValue GRAB_THROW_DAMAGE;
+    public static ModConfigSpec.DoubleValue HOMELANDER_DAMAGE_REDUCTION;
     public static ModConfigSpec.IntValue GRAB_HOLD_TICKS;
     public static ModConfigSpec.DoubleValue GRAB_COOLDOWN;
     public static ModConfigSpec.DoubleValue MILK_HEAL;
@@ -224,8 +226,10 @@ public final class NewSerumConfig {
                 List.of("minecraft:generic.safe_fall_distance;40.0;ADD_VALUE"));
         MARTIAN_FLY_SPEED = builder.defineInRange("flySpeed", 0.09D, 0.01D, 1.0D);
         MARTIAN_PHASE_TICKS = builder.defineInRange("phaseTicks", 120, 20, 2400);
-        MARTIAN_PHASE_COOLDOWN = builder.defineInRange("phaseCooldownSeconds", 12.0D, 0.0D, 600.0D);
+        MARTIAN_PHASE_COOLDOWN = builder.defineInRange("phaseCooldownSeconds", 16.0D, 0.0D, 600.0D);
         MARTIAN_VANISH_COOLDOWN = builder.defineInRange("vanishCooldownSeconds", 6.0D, 0.0D, 600.0D);
+        MARTIAN_CAMO_TICKS = builder.comment("How long Camouflage lasts before it drops on its own. Starting a phase also ends it.")
+                .defineInRange("camouflageTicks", 160, 20, 12000);
         DENSE_TICKS = builder.comment("How long crouch + Density Shift keeps you dense.")
                 .defineInRange("denseTicks", 200, 20, 2400);
         DENSE_COOLDOWN = builder.defineInRange("denseCooldownSeconds", 12.0D, 0.0D, 600.0D);
@@ -235,8 +239,8 @@ public final class NewSerumConfig {
         DENSE_SLAM_DAMAGE = builder.comment("Damage of the shockwave when you land from a fall of 4+ blocks while dense.")
                 .defineInRange("denseSlamDamage", 40.0D, 0.0D, 10000.0D);
         CAMOUFLAGE_STRIKE_MULTIPLIER = builder.comment("Damage multiplier on the hit that breaks Camouflage.")
-                .defineInRange("camouflageStrikeMultiplier", 1.75D, 1.0D, 10.0D);
-        MARTIAN_VISION_DAMAGE = builder.defineInRange("martianVisionDamage", 45.0D, 0.0D, 10000.0D);
+                .defineInRange("camouflageStrikeMultiplier", 1.5D, 1.0D, 10.0D);
+        MARTIAN_VISION_DAMAGE = builder.defineInRange("martianVisionDamage", 60.0D, 0.0D, 10000.0D);
         MARTIAN_VISION_RANGE = builder.defineInRange("martianVisionRange", 14.0D, 2.0D, 64.0D);
         MARTIAN_VISION_DURATION_TICKS = builder.defineInRange("martianVisionDurationTicks", 24, 1, 400);
         MARTIAN_VISION_COOLDOWN = builder.defineInRange("martianVisionCooldownSeconds", 6.0D, 0.0D, 600.0D);
@@ -387,7 +391,7 @@ public final class NewSerumConfig {
         HOMELANDER = new MarvelBalanceConfig.HeroStats(builder, 89.0D, 9.0D, 2.0D, 0.5D, 0.0D, 120.0D, 2,
                 List.of("minecraft:generic.knockback_resistance;0.8;ADD_VALUE", "minecraft:generic.safe_fall_distance;100.0;ADD_VALUE"));
         HOMELANDER_FLY_SPEED = builder.defineInRange("flySpeed", 0.15D, 0.01D, 1.0D);
-        LASER_SWEEP_DAMAGE = builder.defineInRange("laserSweepDamage", 90.0D, 0.0D, 10000.0D);
+        LASER_SWEEP_DAMAGE = builder.defineInRange("laserSweepDamage", 120.0D, 0.0D, 10000.0D);
         LASER_SWEEP_RANGE = builder.defineInRange("laserSweepRange", 28.0D, 4.0D, 128.0D);
         LASER_SWEEP_DURATION_TICKS = builder.defineInRange("laserSweepDurationTicks", 30, 1, 400);
         LASER_SWEEP_ARC = builder.comment("How many degrees the lasers sweep across, left to right.")
@@ -408,7 +412,9 @@ public final class NewSerumConfig {
                 .defineInRange("grabRange", 5.0D, 1.0D, 32.0D);
         GRAB_THROW_SPEED = builder.defineInRange("grabThrowSpeed", 2.4D, 0.1D, 10.0D);
         GRAB_THROW_DAMAGE = builder.comment("Damage to the thrown creature and whatever it hits.")
-                .defineInRange("grabThrowDamage", 70.0D, 0.0D, 10000.0D);
+                .defineInRange("grabThrowDamage", 130.0D, 0.0D, 10000.0D);
+        HOMELANDER_DAMAGE_REDUCTION = builder.comment("Percent of incoming damage ignored, day or night. Sources that bypass resistance or invulnerability ignore it.")
+                .defineInRange("damageReductionPercent", 50.0D, 0.0D, 100.0D);
         GRAB_HOLD_TICKS = builder.comment("How long you can carry a grabbed creature before you drop it.")
                 .defineInRange("grabHoldTicks", 200, 20, 2400);
         GRAB_COOLDOWN = builder.defineInRange("grabCooldownSeconds", 8.0D, 0.0D, 600.0D);

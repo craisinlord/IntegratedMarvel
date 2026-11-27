@@ -539,7 +539,8 @@ Wearing a **full Iron Man, War Machine or Iron Patriot suit** adds that mark's a
 - **Using:** right-click.
   - **Charged beams:** hold, then release. A longer charge goes farther and hits harder.
   - **Crouching:** many abilities do something different when you crouch.
-  - **Shift + scroll:** tunes abilities that have a setting, like a radius, size, speed or paste rotation.
+  - **Left Alt + scroll:** tunes abilities that have a setting, like a radius, size, speed or paste rotation. The
+    modifier is its own key (Gauntlet Scroll Modifier in Controls), so tuning never counts as crouching.
 - **Controls card:** a short card under the gauntlet panel lists the selected ability's controls. Hold **Left Alt** for
   the full description. The card can be set to full, controls-only or off in the client config.
 - **Infinity Tier:** with all six stones in the full Infinity Gauntlet, cooldowns are halved, power goes up by half and
@@ -567,13 +568,13 @@ Wearing a **full Iron Man, War Machine or Iron Patriot suit** adds that mark's a
 **Reality Stone**
 
 - **Transmute:** rewrites a sphere of blocks into your clipboard block, or new forms, for 10 seconds. Crouch to make
-  it permanent. Aimed mobs turn into animals; crouch to pop them instead. **Shift + scroll** sets the radius.
+  it permanent. Aimed mobs turn into animals; crouch to pop them instead. **Alt + scroll** sets the radius.
 - **Gravity Field:** gives every creature around the aimed point the Inverted effect, so effect immunities apply.
   Crouch to toggle Inverted on yourself.
-- **Size Shift:** **Shift + scroll** to resize a mob, or yourself when you aim at nothing, from 0.01× to 100×. Crouch
+- **Size Shift:** **Alt + scroll** to resize a mob, or yourself when you aim at nothing, from 0.01× to 100×. Crouch
   and use it to reset to 1×.
 - **Reality Clipboard:** crouch-use to copy a block or mob, or crouch-use twice to copy a whole region, contents
-  included. Use to paste on the aimed face. **Shift + scroll** rotates the paste (up) or undoes the last one (down).
+  included. Use to paste on the aimed face. **Alt + scroll** rotates the paste (up) or undoes the last one (down).
 
 **Soul Stone**
 
@@ -588,9 +589,9 @@ Wearing a **full Iron Man, War Machine or Iron Patriot suit** adds that mark's a
 **Time Stone**
 
 - **Chronostasis:** freezes everything in your dimension while you hold the button.
-- **Temporal Dilation:** **Shift + scroll** at a mob to set its speed between 5% and 300%. Crouch to age a mob or
+- **Temporal Dilation:** **Alt + scroll** at a mob to set its speed between 5% and 300%. Crouch to age a mob or
   grow plants in an instant.
-- **Time Field:** a field at the aimed point that slows or speeds up everything inside. **Shift + scroll** picks the
+- **Time Field:** a field at the aimed point that slows or speeds up everything inside. **Alt + scroll** picks the
   rate. Fast fields also speed up crops and machines. Crouch to slow the whole dimension instead.
 - **Time Surge:** fast-forwards the world for 20 seconds. The sun races across the sky while crops, furnaces and baby
   animals run many times faster.

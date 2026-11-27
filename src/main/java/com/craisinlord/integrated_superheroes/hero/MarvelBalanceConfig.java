@@ -532,7 +532,7 @@ public final class MarvelBalanceConfig {
         builder.pop();
 
         builder.push("spiderPowersPeterParker");
-        SPIDER_POWERS = new HeroStats(builder, 12.0D, 3.0D, 0.5D, 0.5D, 0.04D, 0.0D, 2,
+        SPIDER_POWERS = new HeroStats(builder, 22.0D, 3.0D, 0.5D, 0.5D, 0.04D, 0.0D, 2,
                 List.of("apothic_attributes:dodge_chance;0.16;ADD_VALUE", "sinew:air_speed;0.02;ADD_VALUE"));
         builder.pop();
 
@@ -540,7 +540,7 @@ public final class MarvelBalanceConfig {
         WEAPON_X_LOGAN = new HeroStats(builder, 18.0D, 5.0D, 0.2D, 0.5D, 0.02D, 21.0D, 1,
                 List.of("apothic_attributes:healing_received;0.6;ADD_VALUE", "apothic_attributes:crit_damage;0.4;ADD_VALUE"));
         LOGAN_CLAW_DAMAGE = builder.defineInRange("clawAttackBaseDamage", 22.0D, 0.0D, 10000.0D);
-        WOLVERINE_REGEN_PERCENT_PER_SECOND = builder.defineInRange("regenPercentOfMaxHealthPerSecond", 0.02D, 0.0D, 1.0D);
+        WOLVERINE_REGEN_PERCENT_PER_SECOND = builder.defineInRange("regenPercentOfMaxHealthPerSecond", 0.025D, 0.0D, 1.0D);
         double[] wolverineDowned = {5.0D};
         double[] wolverineHealth = {0.4D};
         for (int i = 0; i < wolverineDowned.length; i++) {
@@ -643,7 +643,7 @@ public final class MarvelBalanceConfig {
         OPTIC_BLAST_DAMAGE = builder.defineInRange("opticBlastDamagePerHit", 70.0D, 0.0D, 10000.0D);
         OPTIC_BLAST_DURATION_TICKS = builder.defineInRange("opticBlastDurationTicks", 20, 1, 200);
         OPTIC_BLAST_RANGE = builder.defineInRange("opticBlastRange", 64.0D, 1.0D, 256.0D);
-        OPTIC_BLAST_COOLDOWN = builder.defineInRange("opticBlastCooldownSeconds", 2.0D, 0.0D, 600.0D);
+        OPTIC_BLAST_COOLDOWN = builder.defineInRange("opticBlastCooldownSeconds", 3.0D, 0.0D, 600.0D);
         WIDE_BLAST_DAMAGE = builder.defineInRange("wideBlastDamagePerHit", 60.0D, 0.0D, 10000.0D);
         WIDE_BLAST_RANGE = builder.defineInRange("wideBlastRange", 18.0D, 1.0D, 64.0D);
         WIDE_BLAST_COOLDOWN = builder.defineInRange("wideBlastCooldownSeconds", 4.0D, 0.0D, 600.0D);

@@ -25,7 +25,7 @@ public final class KittyClient {
             return false;
         }
         String primary = HeroPowers.data(player).getPrimaryPower();
-        return KittyPower.ID.equals(primary)
+        return KittyPower.ID.equals(primary) && KittyPower.isPhasing(player)
                 || (KryptonianPower.ID.equals(primary) || AtlanteanPower.ID.equals(primary)) && KittyPower.clientMeter() >= 0;
     }
 

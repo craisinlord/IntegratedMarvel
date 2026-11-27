@@ -3,6 +3,7 @@ package com.craisinlord.integrated_superheroes.gauntlet;
 import com.craisinlord.integrated_superheroes.hero.HeroFx;
 import com.craisinlord.anthology.effect.AnthologyEffects;
 import com.craisinlord.integrated_superheroes.IntegratedSuperheroes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
@@ -252,7 +253,7 @@ public final class RealityStone {
 
     public static void sizeShiftActivate(GauntletCast cast) {
         if (!cast.crouching()) {
-            cast.message("reality_size_controls");
+            cast.message("reality_size_controls", Component.keybind(GauntletAbilityController.SCROLL_MODIFIER_KEY));
             return;
         }
         ServerPlayer player = cast.player();

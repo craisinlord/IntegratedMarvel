@@ -24,6 +24,9 @@ public final class VariantConfig {
     public static final ModConfigSpec.DoubleValue DROP_CHANCE;
     public static final ModConfigSpec.DoubleValue DROP_CHANCE_PER_TIER;
     public static final ModConfigSpec.DoubleValue LOOTING_BONUS;
+    public static final ModConfigSpec.DoubleValue MATERIAL_CHANCE;
+    public static final ModConfigSpec.DoubleValue MATERIAL_CHANCE_PER_TIER;
+    public static final ModConfigSpec.IntValue MATERIAL_MAX;
     public static final ModConfigSpec.BooleanValue FIGHT_EACH_OTHER;
     public static final ModConfigSpec.DoubleValue RIVAL_RADIUS;
     public static final ModConfigSpec.DoubleValue PLAYER_FOCUS_RADIUS;
@@ -83,6 +86,11 @@ public final class VariantConfig {
         DROP_CHANCE_PER_TIER = builder.defineInRange("dropChancePerTier", 0.014D, 0.0D, 1.0D);
         LOOTING_BONUS = builder.comment("Extra drop chance per Looting level.")
                 .defineInRange("lootingBonus", 0.0D, 0.0D, 1.0D);
+        MATERIAL_CHANCE = builder.comment("Chance a Variant killed by a player drops crafting materials from the recipe of the suit, armor or serum it had.")
+                .defineInRange("materialChance", 0.5D, 0.0D, 1.0D);
+        MATERIAL_CHANCE_PER_TIER = builder.defineInRange("materialChancePerTier", 0.08D, 0.0D, 1.0D);
+        MATERIAL_MAX = builder.comment("Most material stacks one Variant can drop. Each stack is 1 or 2 items.")
+                .defineInRange("materialMax", 2, 1, 8);
         FIGHT_EACH_OTHER = builder.comment("Hero and villain Variants attack each other.")
                 .define("fightEachOther", true);
         RIVAL_RADIUS = builder.defineInRange("rivalRadius", 16.0D, 2.0D, 64.0D);

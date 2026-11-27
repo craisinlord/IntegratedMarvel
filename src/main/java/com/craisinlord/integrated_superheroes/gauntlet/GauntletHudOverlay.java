@@ -103,7 +103,8 @@ public final class GauntletHudOverlay {
         boolean scorched = minecraft.level != null && SnapStone.isScorched(gauntlet, minecraft.level.getGameTime());
         CardKey key = new CardKey(ability, GauntletClientState.hud(), expanded, infinity, scorched, graphics.guiWidth(),
                 graphics.guiHeight(), minecraft.getWindow().getGuiScale(), right, top,
-                minecraft.getLanguageManager().getSelected(), GauntletKeyMappings.ABILITY_INFO.saveString());
+                minecraft.getLanguageManager().getSelected(), GauntletKeyMappings.ABILITY_INFO.saveString(),
+                GauntletKeyMappings.SCROLL_MODIFIER.saveString());
         CardLayout layout = cachedLayout;
         if (layout == null || !layout.key().equals(key)) {
             layout = layoutCard(minecraft, ability, key);
@@ -193,7 +194,8 @@ public final class GauntletHudOverlay {
 
     private static void control(List<CardLine> lines, String label, String key, boolean present) {
         if (!present || !I18n.exists(key)) return;
-        lines.add(new CardLine(Component.translatable("hud.integrated_superheroes.gauntlet." + label)
+        lines.add(new CardLine(Component.translatable("hud.integrated_superheroes.gauntlet." + label,
+                        GauntletKeyMappings.SCROLL_MODIFIER.getTranslatedKeyMessage())
                 .withStyle(style -> style.withColor(0x9A9A9A))
                 .append(Component.translatable(key).withStyle(style -> style.withColor(0xFFFFFF))), 0xFFFFFFFF));
     }
@@ -221,7 +223,8 @@ public final class GauntletHudOverlay {
     }
 
     private record CardKey(GauntletAbility ability, GauntletHudPayload hud, boolean expanded, boolean infinity, boolean scorched,
-                           int guiWidth, int guiHeight, double guiScale, int right, int top, String language, String infoKey) {
+                           int guiWidth, int guiHeight, double guiScale, int right, int top, String language, String infoKey,
+                           String scrollKey) {
     }
 
     private record CardLayout(CardKey key, float scale, List<FormattedCharSequence> rows, List<Integer> colors, List<Integer> widths,
